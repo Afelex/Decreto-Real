@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Decreto Real - RPG Card Game</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Lato:wght@400;700&family=Spline+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Round" rel="stylesheet"/>
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ["Spline Sans", "sans-serif"],
+                        display: ["Cinzel", "serif"],
+                        body: ["Lato", "sans-serif"],
+                        decorative: ["Cinzel Decorative", "cursive"],
+                        rpg: ['Cinzel', 'serif'],
+                    },
+                    colors: {
+                        primary: "#D4AF37", 
+                        "theme-pink": "#ee2b8c",
+                        "background-light": "#F5F5F0",
+                        "background-dark": "#0B0C10",
+                        "card-dark": "#1A1C23",
+                        "panel-dark": "#1a1c23",
+                        "card-bg": "#2A2520",
+                        "accent-red": "#9E2A2B",
+                        "ornate-border": "#8B6F36",
+                        'gold-light': '#fdf2d0',
+                        'gold-main': '#e5cfa5',
+                        'gold-dark': '#9e814d',
+                        'bg-dark': '#050505',
+                    },
+                    backgroundImage: {
+                        'ornate-pattern': "url('https://www.transparenttextures.com/patterns/dark-matter.png')",
+                        'dark-texture': "linear-gradient(to bottom, #000000cc, #000000cc), url('https://www.transparenttextures.com/patterns/black-scales.png')",
+                        'card-glow': "radial-gradient(circle, rgba(255,215,0,0.3) 0%, rgba(0,0,0,0) 70%)"
+                    },
+                    boxShadow: {
+                        'glow': '0 0 15px rgba(212, 175, 55, 0.5)',
+                        'card': '0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3)',
+                    },
+                    animation: {
+                        'float': 'float 4s ease-in-out infinite',
+                        'float-delayed': 'float 4s ease-in-out 2s infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-5px)' },
+                        }
+                    }
+                },
+            },
+        };
+    </script>
+
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+            overflow-x: hidden;
+            background-color: #0B0C10;
+        }
+        
+        .text-shadow-gold {
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8), 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+        .ornate-border {
+            border: 2px solid #D4AF37;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4), inset 0 0 20px rgba(0,0,0,0.8);
+            background: linear-gradient(180deg, rgba(26,28,35,0.95) 0%, rgba(13,14,18,0.95) 100%);
+        }
+        .btn-ornate {
+            background: linear-gradient(to bottom, #5a1a1a, #380e0e);
+            border: 2px solid #cfaa56;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+        .bg-texture {
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react-router-dom": "https://esm.sh/react-router-dom@^7.11.0"
+  }
+}
+</script>
+</head>
+<body class="bg-background-dark text-white font-sans">
+    <div id="root"></div>
+</body>
+</html>
