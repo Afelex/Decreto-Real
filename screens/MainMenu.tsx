@@ -44,7 +44,7 @@ const MainMenu: React.FC = () => {
         <header className="flex flex-col items-center w-full text-center gap-1">
           <div className="flex items-center space-x-2 opacity-90">
             <span className="h-[1px] w-8 bg-gold-dark" />
-            <h2 className="text-[clamp(9px,1.3vw,11px)] tracking-[0.2em] font-bold text-gold-dark uppercase">
+            <h2 className="text-[clamp(7px,1.3vw,9px)] tracking-[0.2em] font-bold text-gold-dark uppercase">
               Juego de Cartas Táctico RPG
             </h2>
             <span className="h-[1px] w-8 bg-gold-dark" />
