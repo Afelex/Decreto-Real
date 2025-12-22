@@ -12,7 +12,7 @@ const GAUGE_MAX = 3;
 const SPECIAL_VALUE = 3;
 
 // --- ASSETS ---
-const IMG_ATTACK = 'https://i.imgur.com/C9CzzVk_d.webp?maxwidth=760&fidelity=grand';
+const IMG_ATTACK = 'https://i.imgur.com/x9iHqkK.png';
 const IMG_DEFEND = 'https://i.imgur.com/z9KyWGL_d.webp?maxwidth=760&fidelity=grand';
 const IMG_IMPACT = 'https://i.imgur.com/l0ZwqZN_d.webp?maxwidth=760&fidelity=grand';
 
