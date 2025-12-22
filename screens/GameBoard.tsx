@@ -291,17 +291,26 @@ const GameBoard: React.FC = () => {
   const Board = (
     <div className={`bg-[#050505] font-body w-full overflow-hidden select-none flex flex-col relative text-white ${shakeScreen ? 'animate-shake' : ''}`} style={{ width: 430, height: 932 }}>
       <style>{`
+        /* Animaciones para el botón de fuego */
         @keyframes fire-glow { 0%, 100% { box-shadow: 0 0 15px #f59e0b, 0 0 30px #f97316; } 50% { box-shadow: 0 0 25px #fbbf24, 0 0 50px #ef4444; } }
         .fire-button { animation: fire-glow 2s infinite ease-in-out; border: 2px solid #f59e0b !important; background: radial-gradient(circle, #27272a 0%, #000 100%); }
         .fire-layer { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 115%; height: 115%; background: radial-gradient(circle, rgba(249,115,22,0.3) 0%, transparent 70%); filter: blur(10px); z-index: 0; }
+        
+        /* Animaciones generales (Shake, etc) */
         @keyframes shake { 0%, 100% { transform: translate(0,0); } 10%, 30%, 50%, 70%, 90% { transform: translate(-2px, 1px); } 20%, 40%, 60%, 80% { transform: translate(2px, -1px); } }
         .animate-shake { animation: shake 0.5s; }
-        .slash-effect { animation: slash 0.4s ease-out forwards; }
-        @keyframes slash { 0% { opacity: 0; transform: scale(0.5) rotate(-45deg); } 50% { opacity: 1; transform: scale(1.2); } 100% { opacity: 0; transform: scale(1.5); } }
-        .heal-effect { animation: healPulse 0.8s ease-out forwards; }
-        @keyframes healPulse { 0% { transform: scale(0.8); opacity: 0; } 50% { transform: scale(1.1); opacity: 0.8; box-shadow: 0 0 30px #22c55e; } 100% { transform: scale(1.2); opacity: 0; } }
+        
+        /* EFECTOS DE BATALLA ORIGINALES */
+        @keyframes slash { 0% { opacity: 0; transform: scale(0.5) rotate(-45deg) translateX(-50px); filter: blur(2px); } 50% { opacity: 1; transform: scale(1.2) rotate(-45deg) translateX(0); filter: blur(0px); } 100% { opacity: 0; transform: scale(1.5) rotate(-45deg) translateX(50px); filter: blur(4px); } }
+        .slash-effect { animation: slash 0.4s ease-out forwards; will-change: transform, opacity; }
+
+        @keyframes healPulse { 0% { transform: scale(0.8); opacity: 0; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); } 50% { transform: scale(1.1); opacity: 0.8; box-shadow: 0 0 30px 15px rgba(34, 197, 94, 0.5); } 100% { transform: scale(1.2); opacity: 0; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
+        .heal-effect { animation: healPulse 0.8s ease-out forwards; will-change: transform, opacity, box-shadow; }
+
+        @keyframes specialBurst { 0% { transform: scale(0); opacity: 0; } 50% { transform: scale(1.5); opacity: 1; filter: brightness(2); } 100% { transform: scale(2); opacity: 0; } }
         .special-burst { animation: specialBurst 0.8s ease-out forwards; }
-        @keyframes specialBurst { 0% { transform: scale(0); opacity: 0; } 50% { transform: scale(1.5); opacity: 1; } 100% { transform: scale(2); opacity: 0; } }
+        
+        /* Utiles */
         .gold-leaf-frame { background: linear-gradient(45deg, #8B6F36, #F9E076, #D4AF37, #8B6F36); box-shadow: 0 0 15px rgba(212,175,55,0.4); }
       `}</style>
 
@@ -310,6 +319,56 @@ const GameBoard: React.FC = () => {
         <img src={BATTLE_BG_IMG} className="w-full h-full object-cover opacity-100" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/90 via-black/20 to-black/90"></div>
       </div>
+
+      {/* --- VISUAL EFFECTS LAYER (RESTAURADO) --- */}
+      {visualEffect.type && (
+        <div className="absolute inset-0 z-40 pointer-events-none flex items-center justify-center">
+          {visualEffect.type === 'ATTACK' && (
+            <>
+              <div className={`absolute w-96 h-1 bg-gradient-to-r from-transparent via-white to-transparent shadow-[0_0_20px_rgba(255,255,255,0.8)] slash-effect ${visualEffect.target === 'PLAYER' ? 'bottom-[20%]' : 'top-[20%]'}`}></div>
+              <div className={`absolute w-80 h-6 bg-gradient-to-r from-transparent via-cyan-200 to-transparent blur-md slash-effect ${visualEffect.target === 'PLAYER' ? 'bottom-[20%]' : 'top-[20%]'}`} style={{ animationDelay: '0.05s' }}></div>
+            </>
+          )}
+
+          {visualEffect.type === 'DEFENSE' && (
+            <div className={`absolute w-40 h-40 rounded-full border-4 border-emerald-400 bg-emerald-900/30 heal-effect flex items-center justify-center ${visualEffect.target === 'PLAYER' ? 'bottom-[15%]' : 'top-[15%]'}`}>
+              <div className="w-full h-full absolute animate-ping rounded-full border border-emerald-500 opacity-50"></div>
+              <span className="material-icons text-6xl text-emerald-300 drop-shadow-[0_0_10px_rgba(52,211,153,0.8)]">verified_user</span>
+            </div>
+          )}
+
+          {visualEffect.type === 'SPECIAL_ATTACK' && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="absolute w-[500px] h-[500px] bg-purple-500/20 rounded-full blur-3xl special-burst"></div>
+              <div className="absolute w-2 h-[100vh] bg-white rotate-45 special-burst"></div>
+              <div className="absolute w-2 h-[100vh] bg-white -rotate-45 special-burst"></div>
+              <span className="material-icons text-9xl text-purple-300 drop-shadow-[0_0_30px_rgba(168,85,247,1)] special-burst">bolt</span>
+            </div>
+          )}
+
+          {visualEffect.type === 'SPECIAL_HEAL' && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="absolute w-[500px] h-[500px] bg-blue-500/20 rounded-full blur-3xl special-burst"></div>
+              <div className="absolute w-[400px] h-[400px] border-4 border-blue-400 rounded-full special-burst opacity-50"></div>
+              <span className="material-icons text-9xl text-blue-300 drop-shadow-[0_0_30px_rgba(59,130,246,1)] special-burst">health_and_safety</span>
+            </div>
+          )}
+
+          {visualEffect.type === 'IMPACT' && (
+            <div className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none">
+              <div className="absolute inset-0 bg-gold-main/20 animate-pulse duration-500"></div>
+              <div className="scale-150 animate-bounce text-gold-main drop-shadow-glow opacity-50">
+                <span className="material-icons text-8xl">auto_awesome</span>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* --- MENU BUTTON (ARRIBA A LA DERECHA) --- */}
+      <button onClick={handleMenuToggle} className="absolute top-6 right-6 z-50 w-12 h-12 rounded-full bg-black/50 border border-gold-dark/50 text-gold-main flex items-center justify-center hover:bg-black/80 transition-all shadow-lg hover:scale-110">
+        <span className="material-icons">menu</span>
+      </button>
 
       {/* TOP: OPPONENT */}
       <div className="flex-1 flex flex-col items-center pt-8 relative z-10">
@@ -344,11 +403,16 @@ const GameBoard: React.FC = () => {
             {playerHand.map((card, i) => {
               const rot = (i - (playerHand.length-1)/2) * 6;
               const ty = Math.pow(Math.abs(i - (playerHand.length-1)/2), 2) * 5;
-              const playable = card.type !== 'IMPACT' || (card.rank === playerImpactLevel + 1 && !playerImpactPlayedThisTurn);
+              const isImpact = card.type === 'IMPACT';
+              const isPlayable = isImpact ? (card.rank === playerImpactLevel + 1 && !playerImpactPlayedThisTurn) : true;
+              
+              // LOGICA DE OPACIDAD: Si es impacto, SIEMPRE opacidad 1. Si no es impacto y no es turno, opacidad baja.
+              const opacityClass = isImpact ? 'opacity-100' : (!isPlayable || phase !== 'PLAYER_TURN' ? 'opacity-40 grayscale' : 'opacity-100');
+
               return (
                 <div key={card.id} onClick={() => handlePlayerCardClick(card)} style={{ transform: `rotate(${rot}deg) translateY(${ty}px)` }}
                      className={`w-28 h-40 bg-stone-900 rounded-lg border-2 transition-all hover:z-50 hover:-translate-y-12 hover:scale-110 shadow-xl cursor-pointer overflow-hidden
-                                ${card.type === 'IMPACT' ? 'border-gold-main' : 'border-stone-700'} ${!playable ? 'opacity-40 grayscale' : ''}`}>
+                                ${card.type === 'IMPACT' ? 'border-gold-main' : 'border-stone-700'} ${opacityClass}`}>
                   <img src={card.img} className="w-full h-3/5 object-cover" />
                   <div className="p-2 text-center bg-black/80 h-2/5 border-t border-white/10">
                     <div className="text-[9px] font-bold text-gold-main">{card.name}</div>
@@ -362,7 +426,7 @@ const GameBoard: React.FC = () => {
 
         {/* PLAYER STATS & DECK */}
         <div className="flex justify-between items-end px-8">
-          {/* DECK + AUDIO */}
+          {/* DECK + AUDIO (IZQUIERDA) */}
           <div className="flex flex-col items-center relative group">
             <button onClick={handleGlobalAudioToggle} className="absolute -top-10 w-8 h-8 rounded-full bg-black/60 border border-gold-dark/40 text-gold-main flex items-center justify-center hover:bg-gold-main hover:text-black transition-all">
               <span className="material-icons text-lg">{isMuted ? 'volume_off' : 'volume_up'}</span>
@@ -374,7 +438,7 @@ const GameBoard: React.FC = () => {
             <span className="text-[8px] text-stone-500 mt-1 uppercase">Mazo</span>
           </div>
 
-          {/* PORTRAIT + HP */}
+          {/* PORTRAIT + HP (CENTRO) */}
           <div className="flex flex-col items-center flex-1 mx-4">
             <div className="relative p-[3px] gold-leaf-frame transition-all" style={{ clipPath: 'polygon(15% 0, 85% 0, 100% 100%, 0% 100%)' }}>
               <div className="relative w-28 h-32 bg-black overflow-hidden" style={{ clipPath: 'polygon(15% 0, 85% 0, 100% 100%, 0% 100%)' }}>
@@ -387,16 +451,14 @@ const GameBoard: React.FC = () => {
             </div>
             {renderGauge(playerGauge)}
           </div>
-
-          {/* MENU BUTTON */}
-          <button onClick={handleMenuToggle} className="w-12 h-12 rounded-full bg-black/50 border border-gold-dark/50 text-gold-main flex items-center justify-center hover:bg-black/80 transition-all shadow-lg">
-            <span className="material-icons">menu</span>
-          </button>
+          
+          {/* ESPACIO VACÍO A LA DERECHA (Para equilibrar el mazo) */}
+          <div className="w-14"></div>
         </div>
       </div>
 
-      {/* END TURN BUTTON (FIRE) */}
-      <div className="absolute bottom-8 right-6 z-40">
+      {/* END TURN BUTTON (FIRE) - SUBIDO 25 PIXELES (bottom-[4.5rem]) */}
+      <div className="absolute bottom-[4.5rem] right-6 z-40">
         <button onClick={handleEndTurn} disabled={phase !== 'PLAYER_TURN' || showSpecialSelection}
                 className={`w-20 h-20 rounded-full flex flex-col items-center justify-center transition-all relative
                            ${phase === 'PLAYER_TURN' ? 'fire-button scale-110' : 'bg-stone-900 border-stone-700 opacity-50 grayscale'}`}>
