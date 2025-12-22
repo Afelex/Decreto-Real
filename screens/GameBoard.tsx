@@ -291,6 +291,17 @@ const GameBoard: React.FC = () => {
     </div>
   );
 
+  const renderImpactSlots = (currentLevel: number) => (
+    <div className="flex gap-2 p-1 bg-[#0a0a0a]/80 rounded-lg border border-gold-dark/50 justify-center mt-2">
+      {[1, 2, 3, 4].map(lvl => (
+        <div key={lvl} className="relative w-4 h-4 flex items-center justify-center">
+          {lvl <= currentLevel && <div className="absolute inset-0 bg-gold-main blur-sm animate-pulse"></div>}
+          <div className={`absolute inset-0 transition-all duration-700 transform border border-black rotate-45 ${lvl <= currentLevel ? 'bg-gold-main scale-110' : 'bg-stone-800 scale-90'}`}></div>
+        </div>
+      ))}
+    </div>
+  );
+
   const Board = (
     <div className={`bg-[#050505] font-body w-full overflow-hidden select-none flex flex-col relative text-white ${shakeScreen ? 'animate-shake' : ''}`} style={{ width: 430, height: 932 }}>
       <style>{`
@@ -374,7 +385,7 @@ const GameBoard: React.FC = () => {
         <span className="material-icons">menu</span>
       </button>
 
-      {/* --- MENU MODAL (RESTAURADO) --- */}
+      {/* --- MENU MODAL --- */}
       {isMenuOpen && (
         <div className="absolute inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
           <div className="bg-[#0B0C10] border-2 border-gold-dark p-6 rounded-lg w-full max-w-sm shadow-[0_0_20px_rgba(212,175,55,0.2)] relative">
@@ -410,7 +421,7 @@ const GameBoard: React.FC = () => {
         </div>
       )}
 
-      {/* --- SPECIAL SELECTION MODAL (RESTAURADO) --- */}
+      {/* --- SPECIAL SELECTION MODAL --- */}
       {showSpecialSelection && (
         <div className="absolute inset-0 z-[60] bg-black/80 backdrop-blur-md flex items-center justify-center animate-in fade-in duration-300">
           <div className="w-full max-w-md p-6 relative flex flex-col items-center">
@@ -448,19 +459,48 @@ const GameBoard: React.FC = () => {
         </div>
       )}
 
-      {/* TOP: OPPONENT */}
-      <div className="flex-1 flex flex-col items-center pt-8 relative z-10">
-        <div className="flex flex-col items-center flex-1">
-          <div className="relative p-[3px] gold-leaf-frame transition-all duration-500 mb-2" style={{ clipPath: 'polygon(0 0, 100% 0, 85% 100%, 15% 100%)' }}>
-            <div className="relative w-28 h-32 bg-black overflow-hidden" style={{ clipPath: 'polygon(0 0, 100% 0, 85% 100%, 15% 100%)' }}>
-              <img src={OPPONENT_IMG} className="w-full h-full object-cover" />
-              <div className="absolute bottom-0 w-full h-5 bg-black/60 backdrop-blur-md flex items-center justify-center">
-                <div className="absolute left-0 h-full bg-red-600 transition-all duration-700" style={{ width: `${(opponentHP/MAX_HP)*100}%` }}></div>
-                <span className="relative z-10 text-[10px] font-bold">HP: {opponentHP}/{MAX_HP}</span>
+      {/* TOP: OPPONENT AREA */}
+      <div className="flex-1 flex flex-col items-center pt-4 w-full max-w-md mx-auto relative z-10">
+        <div className="flex justify-between items-start w-full px-4 mb-2">
+          {/* OPPONENT DECK (RESTORED) */}
+          <div className="flex flex-col items-center">
+            <div className="relative w-14 h-20 bg-stone-800 border-2 border-stone-600 shadow-lg flex items-center justify-center rounded-sm">
+              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/black-scales.png')] opacity-50"></div>
+              <div className="relative z-10 bg-black/60 w-8 h-8 flex items-center justify-center border border-gold-dark/30 rounded-full">
+                <span className="text-sm text-gold-main font-bold font-display">{opponentDeck.length}</span>
               </div>
             </div>
           </div>
-          {renderGauge(opponentGauge)}
+
+          {/* OPPONENT PORTRAIT + GAUGE + IMPACTS */}
+          <div className="flex flex-col items-center flex-1 mx-4">
+             {/* Portrait */}
+            <div className="relative p-[3px] gold-leaf-frame transition-all duration-500 mb-2" style={{ clipPath: 'polygon(0 0, 100% 0, 85% 100%, 15% 100%)' }}>
+              <div className="relative w-28 h-32 bg-black overflow-hidden" style={{ clipPath: 'polygon(0 0, 100% 0, 85% 100%, 15% 100%)' }}>
+                <img src={OPPONENT_IMG} className="w-full h-full object-cover" />
+                <div className="absolute bottom-0 w-full h-5 bg-black/60 backdrop-blur-md flex items-center justify-center">
+                  <div className="absolute left-0 h-full bg-red-600 transition-all duration-700" style={{ width: `${(opponentHP/MAX_HP)*100}%` }}></div>
+                  <span className="relative z-10 text-[10px] font-bold">HP: {opponentHP}/{MAX_HP}</span>
+                </div>
+              </div>
+            </div>
+            {/* Gauge */}
+            {renderGauge(opponentGauge)}
+            {/* Impact Slots (RESTORED) */}
+            {renderImpactSlots(opponentImpactLevel)}
+          </div>
+
+          <div className="w-14"></div>
+        </div>
+
+        {/* OPPONENT HAND (RESTORED - CARD BACKS) */}
+        <div className="flex justify-center -space-x-4 mb-2 scale-75 h-24 opacity-80">
+          {opponentHand.map((c, i) => (
+            <div key={c.id} className="w-16 h-24 bg-gradient-to-b from-stone-800 to-black border border-stone-600 rounded-sm shadow-black shadow-lg relative overflow-hidden" style={{ transform: `translateY(${i % 2 * 4}px)` }}>
+              <div className="w-full h-full opacity-30 bg-[url('https://www.transparenttextures.com/patterns/diagmonds-light.png')]"></div>
+              <div className="absolute inset-0 border border-white/5"></div>
+            </div>
+          ))}
         </div>
       </div>
 
