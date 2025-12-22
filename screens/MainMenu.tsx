@@ -75,7 +75,7 @@ const MainMenu: React.FC = () => {
           {/* Card Container */}
           <div
            className="relative z-10 animate-float-delayed group perspective-1000"
-           style={{ height: 'clamp(300px, 52dvh, 540px)' }}   // 👈 clave
+           style={{ height: 'clamp(260px, 52dvh, 500px)' }}   // 👈 clave
           >
           <div className="h-full aspect-[2/3] relative transform transition-transform duration-500 group-hover:scale-[1.03] group-hover:rotate-y-12">
 
