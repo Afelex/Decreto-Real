@@ -12,9 +12,9 @@ const GAUGE_MAX = 3;
 const SPECIAL_VALUE = 3;
 
 // --- ASSETS ---
-const IMG_ATTACK = 'https://lh3.googleusercontent.com/aida-public/AB6AXuCz0KG07Lruyfwcs0CylpCBzQELmDZ8708K4g8nRHRvtmNEJDol2TBIf1UXTI9hVtxik0ghc8TWVgOvBG_KrvOOzfxdmKx2jVqOTnFAbplSVsVvmBQc2JaEDy3yVqBnZKW_uTGD6k1fV3e6YH9wnLe5B6QKGutNPrRd76IKEyqztPw5hRp3M3wdh7SBmgG0ACCRZfvTFTdOvLJebq0Ya0UIj5OZBkOcUSWo8H3xesJAB3Z4pUtuoNjQ9ZoQ97rYP-M5cVjPAfFLkwI';
-const IMG_DEFEND = 'https://lh3.googleusercontent.com/aida-public/AB6AXuCroE4sS8jthKtiw7SbOcVB7m-XJ9F3ztM3cQBZN-P64TNZdLXsRTab7aiBwwyjkTBMfr1Mi6DOsWd5_k1_m7XhaDLppSi732GALkqjJXtwDAry8OzPM84NL3-R1i6jFXVXnX9AeMBqGI3pVpY8ri31x0rXOSP0YnI92BuyOgrldGuo_qZeJTMR5CpHiDBNzqerWyQ95n-v8NiazgHIYAFf4niy5_iTy_FfOeqnM8jhrfw0kNZkEHR1YRObCJmPzslp4JMrNTC-Kdk';
-const IMG_IMPACT = 'https://lh3.googleusercontent.com/aida-public/AB6AXuDw80oIeHzQfRuaHPRmW8hbhRaMwZc2_qLwyOKXD38HscRqtNsr2FFeOxuS0ls2PA7VJA9yEFL59caHnxxF2VS5nyo9hBLv6e38RF6UwvtNjkLLsY5pMB5WKoYKHPidC5hrRBo32Qxpn-SM-dUViy2G9jIQHkTiXvX0XPLht13PqAoQhA-bg9Z-NaaM1R2XwtOAIkVrWsJGhnGQkFHBJDB_QeftHPxZUV7ajSr3h_KBEc_iIVnV3km9MnCsxRgP8FOrZY7zk6QljBI';
+const IMG_ATTACK = 'https://i.imgur.com/C9CzzVk_d.webp?maxwidth=760&fidelity=grand';
+const IMG_DEFEND = 'https://i.imgur.com/z9KyWGL_d.webp?maxwidth=760&fidelity=grand';
+const IMG_IMPACT = 'https://i.imgur.com/l0ZwqZN_d.webp?maxwidth=760&fidelity=grand';
 
 // --- DECK GENERATION & UTILS ---
 const generateDeck = (playerIdPrefix: string): CardData[] => {
