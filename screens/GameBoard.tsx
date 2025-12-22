@@ -871,8 +871,20 @@ const GameBoard: React.FC = () => {
                   `}
                 >
                   <div className="absolute inset-1 border border-white/10 rounded-md overflow-hidden bg-black">
-                    <img className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" src={card.img} alt={card.name} />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                  <img className={`w-full h-full object-cover transition-opacity ${card.type === 'IMPACT' ? 'opacity-100' : 'opacity-80 group-hover:opacity-100'}
+                  `}
+                  src={card.img}
+                  alt={card.name}
+                  />
+
+                   <div
+  className={`absolute inset-0
+    ${card.type === 'IMPACT'
+      ? 'bg-gradient-to-t from-black/40 via-transparent to-transparent'
+      : 'bg-gradient-to-t from-black via-transparent to-transparent'}
+  `}
+></div>
+
 
                     <div className="absolute bottom-0 w-full p-2 text-center bg-black/80 backdrop-blur-sm border-t border-white/10">
                       <div className={`text-[9px] font-display font-bold uppercase tracking-wider ${isImpact ? 'text-gold-main' : 'text-gray-200'}`}>{card.name}</div>
