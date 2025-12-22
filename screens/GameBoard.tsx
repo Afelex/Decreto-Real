@@ -277,6 +277,9 @@ const GameBoard: React.FC = () => {
   };
 
   const handleMenuToggle = () => { playSound('CLICK'); setIsMenuOpen(!isMenuOpen); setShowSurrenderConfirm(false); };
+  const handleSurrenderRequest = () => { playSound('CLICK'); setShowSurrenderConfirm(true); };
+  const handleSurrenderConfirm = () => { playSound('CLICK'); navigate('/'); };
+  const handleSurrenderCancel = () => { playSound('CLICK'); setShowSurrenderConfirm(false); };
 
   const renderGauge = (val: number) => (
     <div className="flex gap-1 mt-1 justify-center">
@@ -312,6 +315,7 @@ const GameBoard: React.FC = () => {
         
         /* Utiles */
         .gold-leaf-frame { background: linear-gradient(45deg, #8B6F36, #F9E076, #D4AF37, #8B6F36); box-shadow: 0 0 15px rgba(212,175,55,0.4); }
+        .text-gold-gradient { background: linear-gradient(to bottom, #fff 0%, #ffd700 50%, #b8860b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
       `}</style>
 
       {/* BACKGROUND */}
@@ -320,7 +324,7 @@ const GameBoard: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-black/90 via-black/20 to-black/90"></div>
       </div>
 
-      {/* --- VISUAL EFFECTS LAYER (RESTAURADO) --- */}
+      {/* --- VISUAL EFFECTS LAYER --- */}
       {visualEffect.type && (
         <div className="absolute inset-0 z-40 pointer-events-none flex items-center justify-center">
           {visualEffect.type === 'ATTACK' && (
@@ -370,6 +374,80 @@ const GameBoard: React.FC = () => {
         <span className="material-icons">menu</span>
       </button>
 
+      {/* --- MENU MODAL (RESTAURADO) --- */}
+      {isMenuOpen && (
+        <div className="absolute inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-[#0B0C10] border-2 border-gold-dark p-6 rounded-lg w-full max-w-sm shadow-[0_0_20px_rgba(212,175,55,0.2)] relative">
+            <button onClick={handleMenuToggle} className="absolute top-2 right-2 text-gray-500 hover:text-white"><span className="material-icons">close</span></button>
+            <h2 className="text-xl font-decorative text-gold-main text-center mb-6 uppercase tracking-widest border-b border-gold-dark/30 pb-2">Pausa</h2>
+            <div className="space-y-4 mb-8">
+              <div className="flex justify-between items-center p-3 bg-white/5 rounded border border-white/10">
+                <div className="flex items-center gap-2"><span className="material-icons text-gray-400 text-sm">music_note</span><span className="text-gray-300 text-sm">Música</span></div>
+                <button onClick={() => { toggleMusic(); playSound('CLICK'); }} className={`text-xs font-bold px-3 py-1 rounded border ${musicEnabled ? 'bg-green-900/30 text-green-400 border-green-800' : 'bg-red-900/30 text-red-400 border-red-800'}`}>{musicEnabled ? 'ENCENDIDO' : 'APAGADO'}</button>
+              </div>
+              <div className="flex justify-between items-center p-3 bg-white/5 rounded border border-white/10">
+                <div className="flex items-center gap-2"><span className="material-icons text-gray-400 text-sm">volume_up</span><span className="text-gray-300 text-sm">Efectos</span></div>
+                <button onClick={() => { toggleSfx(); playSound('CLICK'); }} className={`text-xs font-bold px-3 py-1 rounded border ${sfxEnabled ? 'bg-green-900/30 text-green-400 border-green-800' : 'bg-red-900/30 text-red-400 border-red-800'}`}>{sfxEnabled ? 'ENCENDIDO' : 'APAGADO'}</button>
+              </div>
+            </div>
+            <div className="flex flex-col gap-3">
+              {!showSurrenderConfirm ? (
+                <>
+                  <button onClick={handleMenuToggle} className="w-full py-3 bg-gold-dark text-black font-bold uppercase text-sm rounded">Continuar Batalla</button>
+                  <button onClick={handleSurrenderRequest} className="w-full py-3 border border-red-900/50 text-red-500 uppercase text-sm rounded">Rendirse</button>
+                </>
+              ) : (
+                <div className="text-center bg-red-900/10 p-4 rounded border border-red-900/30">
+                  <p className="text-red-400 text-sm font-bold mb-4">¿Aceptar derrota?</p>
+                  <div className="flex gap-3">
+                    <button onClick={handleSurrenderConfirm} className="flex-1 py-2 bg-red-800 text-white uppercase text-xs rounded">Sí</button>
+                    <button onClick={handleSurrenderCancel} className="flex-1 py-2 border border-gray-600 text-gray-300 uppercase text-xs rounded">Cancelar</button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- SPECIAL SELECTION MODAL (RESTAURADO) --- */}
+      {showSpecialSelection && (
+        <div className="absolute inset-0 z-[60] bg-black/80 backdrop-blur-md flex items-center justify-center animate-in fade-in duration-300">
+          <div className="w-full max-w-md p-6 relative flex flex-col items-center">
+            <div className="absolute inset-0 bg-purple-900/20 blur-3xl rounded-full animate-pulse"></div>
+            <h2 className="text-3xl font-decorative text-transparent bg-clip-text bg-gradient-to-b from-white to-purple-400 drop-shadow-[0_0_10px_rgba(168,85,247,0.8)] text-center mb-8 uppercase tracking-widest relative z-10">
+              Combo Completo
+            </h2>
+            <p className="text-gray-300 font-body text-center mb-8 relative z-10 text-sm">
+              Tu poder arcano está al máximo. Elige tu destino.
+            </p>
+            <div className="grid grid-cols-2 gap-6 w-full relative z-10">
+              <button
+                onClick={() => triggerSpecialAbility('PLAYER', 'DAMAGE')}
+                className="group relative flex flex-col items-center p-4 bg-black/60 border border-purple-900 hover:border-purple-500 rounded-lg transition-all hover:bg-purple-900/20 active:scale-95"
+              >
+                <div className="w-16 h-16 rounded-full bg-purple-900/30 border border-purple-500 flex items-center justify-center mb-3 group-hover:shadow-[0_0_20px_#a855f7]">
+                  <span className="material-icons text-3xl text-purple-300">bolt</span>
+                </div>
+                <span className="font-display font-bold text-white uppercase text-sm mb-1">Furia Real</span>
+                <span className="font-body text-xs text-purple-300">{SPECIAL_VALUE} Daño al Rival</span>
+              </button>
+
+              <button
+                onClick={() => triggerSpecialAbility('PLAYER', 'HEAL')}
+                className="group relative flex flex-col items-center p-4 bg-black/60 border border-blue-900 hover:border-blue-500 rounded-lg transition-all hover:bg-blue-900/20 active:scale-95"
+              >
+                <div className="w-16 h-16 rounded-full bg-blue-900/30 border border-blue-500 flex items-center justify-center mb-3 group-hover:shadow-[0_0_20px_#3b82f6]">
+                  <span className="material-icons text-3xl text-blue-300">health_and_safety</span>
+                </div>
+                <span className="font-display font-bold text-white uppercase text-sm mb-1">Gracia Divina</span>
+                <span className="font-body text-xs text-blue-300">Curar {SPECIAL_VALUE} HP</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* TOP: OPPONENT */}
       <div className="flex-1 flex flex-col items-center pt-8 relative z-10">
         <div className="flex flex-col items-center flex-1">
@@ -406,7 +484,6 @@ const GameBoard: React.FC = () => {
               const isImpact = card.type === 'IMPACT';
               const isPlayable = isImpact ? (card.rank === playerImpactLevel + 1 && !playerImpactPlayedThisTurn) : true;
               
-              // LOGICA DE OPACIDAD: Si es impacto, SIEMPRE opacidad 1. Si no es impacto y no es turno, opacidad baja.
               const opacityClass = isImpact ? 'opacity-100' : (!isPlayable || phase !== 'PLAYER_TURN' ? 'opacity-40 grayscale' : 'opacity-100');
 
               return (
@@ -452,12 +529,11 @@ const GameBoard: React.FC = () => {
             {renderGauge(playerGauge)}
           </div>
           
-          {/* ESPACIO VACÍO A LA DERECHA (Para equilibrar el mazo) */}
           <div className="w-14"></div>
         </div>
       </div>
 
-      {/* END TURN BUTTON (FIRE) - SUBIDO 25 PIXELES (bottom-[4.5rem]) */}
+      {/* END TURN BUTTON (FIRE) - SUBIDO (bottom-[4.5rem]) */}
       <div className="absolute bottom-[4.5rem] right-6 z-40">
         <button onClick={handleEndTurn} disabled={phase !== 'PLAYER_TURN' || showSpecialSelection}
                 className={`w-20 h-20 rounded-full flex flex-col items-center justify-center transition-all relative
@@ -468,7 +544,7 @@ const GameBoard: React.FC = () => {
         </button>
       </div>
 
-      {/* OVERLAYS (TURN/WIN/COIN) */}
+      {/* OVERLAYS */}
       {(phase === 'START_BANNER' || phase === 'TURN_BANNER') && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
           <div className="w-full py-10 bg-stone-900/90 border-y-4 border-gold-dark text-center">
