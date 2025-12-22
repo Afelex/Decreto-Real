@@ -61,7 +61,7 @@ type EffectTarget = 'PLAYER' | 'OPPONENT' | 'GLOBAL' | null;
  * Base “lienzo” del juego (puedes ajustar si quieres):
  *  - 430x932 ≈ móvil vertical típico.
  */
-function useFitScale(baseW = 430, baseH = 932) {
+function useFitScale(baseW = 1080, baseH = 932) {
   const [vw, setVw] = useState(window.innerWidth);
   const [vh, setVh] = useState(window.innerHeight);
 
@@ -635,7 +635,7 @@ const GameBoard: React.FC = () => {
           {visualEffect.type === 'IMPACT' && (
             <div className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none">
               <div className="absolute inset-0 bg-gold-main/20 animate-pulse duration-500"></div>
-              <div className="scale-150 animate-bounce text-gold-main drop-shadow-glow opacity-80">
+              <div className="scale-150 animate-bounce text-gold-main drop-shadow-glow opacity-50">
                 <span className="material-icons text-8xl">auto_awesome</span>
               </div>
             </div>
@@ -1002,7 +1002,7 @@ const GameBoard: React.FC = () => {
 
       {(phase === 'VICTORY' || phase === 'DEFEAT') && (
         <div className={`absolute inset-0 z-50 flex items-center justify-center backdrop-blur-md animate-in fade-in duration-1000 ${phase === 'VICTORY' ? 'bg-gold-dark/20' : 'bg-red-900/30'}`}>
-          <div className="text-center scale-150 transform transition-transform duration-1000 p-12 bg-black border-[6px] border-double border-gold-dark shadow-[0_0_80px_rgba(0,0,0,1)] relative">
+          <div className="text-center scale-80 transform transition-transform duration-1000 p-12 bg-black border-[6px] border-double border-gold-dark shadow-[0_0_80px_rgba(0,0,0,1)] relative">
             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')] opacity-20"></div>
             <h1 className={`relative z-10 text-7xl font-decorative drop-shadow-[0_5px_15px_rgba(0,0,0,1)] ${phase === 'VICTORY' ? 'text-transparent bg-clip-text bg-gradient-to-b from-white to-gold-main' : 'text-red-600'}`}>
               {phase === 'VICTORY' ? 'VICTORIA' : 'CAÍDA'}
