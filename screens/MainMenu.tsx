@@ -39,9 +39,9 @@ const MainMenu: React.FC = () => {
         />
       </div>
 
-      <main className="relative z-30 w-full min-h-[100dvh] max-w-md mx-auto flex flex-col items-center px-4 py-4 sm:py-6">
+     <main className="relative z-30 w-full min-h-[100dvh] max-w-md mx-auto flex flex-col items-center px-4 py-2 sm:py-3">
         {/* Header */}
-        <header className="flex flex-col items-center w-full text-center gap-2">
+        <header className="flex flex-col items-center w-full text-center gap-1">
           <div className="flex items-center space-x-2 opacity-90">
             <span className="h-[1px] w-8 bg-gold-dark" />
             <h2 className="text-[clamp(9px,1.3vw,11px)] tracking-[0.2em] font-bold text-gold-dark uppercase">
@@ -55,7 +55,7 @@ const MainMenu: React.FC = () => {
             style={{
               backgroundImage:
                 'linear-gradient(to bottom, #fff 0%, #ffd700 50%, #b8860b 100%)',
-              fontSize: 'clamp(2.2rem, 6vw, 3.5rem)',
+              fontSize: 'clamp(2.0rem, 5.2vw, 3.1rem)',
             }}
           >
             DECRETO
@@ -63,10 +63,7 @@ const MainMenu: React.FC = () => {
             REAL
           </h1>
 
-          <div className="text-[clamp(18px,3.5vw,30px)] text-[#ffd700] animate-float drop-shadow-glow">
-            👑
-          </div>
-        </header>
+         </header>
 
         {/* Hero Card */}
         <section className="flex-1 flex items-center justify-center relative w-full py-2">
@@ -75,7 +72,7 @@ const MainMenu: React.FC = () => {
           {/* Card Container */}
           <div
            className="relative z-10 animate-float-delayed group perspective-1000"
-           style={{ height: 'clamp(260px, 52dvh, 500px)' }}   // 👈 clave
+           style={{ height: 'clamp(260px, 44dvh, 460px)' }}   // 👈 clave
           >
           <div className="h-full aspect-[2/3] relative transform transition-transform duration-500 group-hover:scale-[1.03] group-hover:rotate-y-12">
 
@@ -86,7 +83,7 @@ const MainMenu: React.FC = () => {
               <div className="absolute inset-0 rounded-xl overflow-hidden bg-black border-2 border-[#b8860b]">
                 <img
                   alt="El Monarca"
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-cover"
                   src={SOVEREIGN_IMG}
                 />
 
@@ -116,7 +113,7 @@ const MainMenu: React.FC = () => {
           <button
             onClick={() => navigate('/game')}
             aria-label="Empezar Juego"
-            className="group w-full max-w-[90%] h-[56px] relative transition-all active:scale-95 bg-gradient-to-r from-[#8f1f1f] via-[#d93838] to-[#8f1f1f] bg-[length:200%_100%] hover:bg-[100%_0] flex items-center justify-center space-x-3 hover:shadow-[0_0_20px_rgba(217,56,56,0.4)]"
+            className="group w-full max-w-[90%] h-[52px] relative transition-all active:scale-95 bg-gradient-to-r from-[#8f1f1f] via-[#d93838] to-[#8f1f1f] bg-[length:200%_100%] hover:bg-[100%_0] flex items-center justify-center space-x-3 hover:shadow-[0_0_20px_rgba(217,56,56,0.4)]"
             style={{
               border: '2px solid #d4af37',
               borderRadius: '4px',
