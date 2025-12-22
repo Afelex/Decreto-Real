@@ -6,33 +6,35 @@ const MainMenu: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="bg-[radial-gradient(circle_at_center,_#2a2a2a_0%,_#000_100%)] text-gold-main font-rpg w-full relative flex flex-col items-center min-h-[100dvh] overflow-x-hidden">
-      {/* Background texture */}
-      <div className="absolute inset-0 pointer-events-none z-10 bg-texture" />
-
-      {/* Corners (más pequeños en móvil para que “respiren”) */}
-      <div className="absolute top-0 left-0 w-[86px] h-[86px] sm:w-[120px] sm:h-[120px] pointer-events-none z-20">
+     <div className="absolute top-0 left-0 w-[86px] h-[86px] sm:w-[120px] sm:h-[120px] pointer-events-none z-20">
         <img
+          src={CORNER_IMG}
           alt="Corner Decoration"
           className="w-full h-full object-contain transform scale-x-[-1]"
-          src={CORNER_IMG}
         />
       </div>
+
       <div className="absolute top-0 right-0 w-[86px] h-[86px] sm:w-[120px] sm:h-[120px] pointer-events-none z-20">
-        <img alt="Corner Decoration" className="w-full h-full object-contain" src={CORNER_IMG} />
+        <img
+          src={CORNER_IMG}
+          alt="Corner Decoration"
+          className="w-full h-full object-contain"
+        />
       </div>
+
       <div className="absolute bottom-0 left-0 w-[86px] h-[86px] sm:w-[120px] sm:h-[120px] pointer-events-none z-20">
         <img
+          src={CORNER_IMG}
           alt="Corner Decoration"
           className="w-full h-full object-contain transform rotate-180"
-          src={CORNER_IMG}
         />
       </div>
+
       <div className="absolute bottom-0 right-0 w-[86px] h-[86px] sm:w-[120px] sm:h-[120px] pointer-events-none z-20">
         <img
+          src={CORNER_IMG}
           alt="Corner Decoration"
           className="w-full h-full object-contain transform scale-y-[-1]"
-          src={CORNER_IMG}
         />
       </div>
 
