@@ -39,7 +39,7 @@ const MainMenu: React.FC = () => {
         />
       </div>
 
-     <main className="relative z-30 w-full min-h-[100dvh] max-w-md mx-auto flex flex-col items-center px-4 py-2 sm:py-3">
+     <main className="relative z-50 w-full min-h-[100dvh] max-w-md mx-auto flex flex-col items-center px-4 py-2 sm:py-3">
         {/* Header */}
         <header className="flex flex-col items-center w-full text-center gap-1">
           <div className="flex items-center space-x-2 opacity-90">
