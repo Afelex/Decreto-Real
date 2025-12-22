@@ -73,8 +73,12 @@ const MainMenu: React.FC = () => {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gold-dark/20 rounded-full blur-3xl animate-pulse" />
 
           {/* Card Container */}
-          <div className="relative w-auto aspect-[2/3] z-10 animate-float-delayed group perspective-1000 max-h-[48dvh] sm:max-h-[52dvh]">
-            <div className="h-full aspect-[2/3] relative transform transition-transform duration-500 group-hover:scale-[1.03] group-hover:rotate-y-12">
+          <div
+           className="relative z-10 animate-float-delayed group perspective-1000"
+           style={{ height: 'clamp(320px, 52dvh, 560px)' }}   // 👈 clave
+          >
+          <div className="h-full aspect-[2/3] relative transform transition-transform duration-500 group-hover:scale-[1.03] group-hover:rotate-y-12">
+
               {/* Glowing Border */}
               <div className="absolute -inset-[3px] rounded-xl bg-gradient-to-tr from-gold-dark via-[#ffd700] to-gold-dark opacity-80 blur-sm group-hover:opacity-100 transition-opacity" />
 
