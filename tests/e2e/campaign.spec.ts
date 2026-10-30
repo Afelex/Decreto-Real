@@ -67,6 +67,7 @@ test('defeating all missions in a region unlocks the next chapter', async ({ pag
 test('the prologue introduces the conflict and all eight generals', async ({ page }) => {
   await page.goto('/Decreto-Real/#/campania/historia');
   await expect(page.getByRole('heading', { name: 'El reino escucha dos verdades' })).toBeVisible();
+  await page.getByRole('button', { name: 'Ocho generales' }).click();
   await expect(page.locator('.dc-general-list > div')).toHaveCount(8);
 });
 
