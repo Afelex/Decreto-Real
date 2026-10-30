@@ -14,9 +14,10 @@ async function noPageOverflow(page: Page) {
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 }
 
-test('touch selection, confirmation, rival response, pause and dialogs fit the viewport', async ({ page }) => {
+test('touch selection, confirmation, rival response, pause and dialogs fit the viewport', async ({ page }, testInfo) => {
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
   await open(page); await noPageOverflow(page);
+  await page.screenshot({ path: testInfo.outputPath('board.png'), fullPage: true });
   const state = createCombat(0);
   const index = state.hand.findIndex(card => card.cost <= state.mana && card.kind !== 'impact');
   const card = page.locator('.dr-card').nth(index);
@@ -39,6 +40,7 @@ test('touch selection, confirmation, rival response, pause and dialogs fit the v
     await page.getByRole('button', { name: opener }).tap();
     const dialog = page.getByRole('dialog', { name: title });
     await expect(dialog).toBeVisible(); await noPageOverflow(page);
+    if (title === 'Cómo se juega') await page.screenshot({ path: testInfo.outputPath('help.png') });
     const box = await dialog.boundingBox();
     expect(box).not.toBeNull();
     const viewport = page.viewportSize()!;
@@ -60,7 +62,10 @@ test('primary touch controls have at least 44 by 44 CSS pixels', async ({ page }
   await open(page);
   for (const selector of ['.dr-back', '.dr-iconbtn', '.dr-difficulty', '.dr-actions button']) {
     for (const button of await page.locator(selector).all()) {
+      await button.scrollIntoViewIfNeeded();
       const box = await button.boundingBox();
+      expect(box!.x, selector).toBeGreaterThanOrEqual(0);
+      expect(box!.x + box!.width, selector).toBeLessThanOrEqual(page.viewportSize()!.width);
       expect(box!.width, selector).toBeGreaterThanOrEqual(44);
       expect(box!.height, selector).toBeGreaterThanOrEqual(44);
     }

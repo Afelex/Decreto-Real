@@ -11,9 +11,11 @@ Base de `main`: `48cc6386ab151e53ee3086216bec21ba94a6761d`. No se modificó ni f
 |---|---|---|
 | DR-00 Base | Parcial | Catálogo y reglas existentes inventariados. Contrato del motor documentado en `DR-01-motor.md`. Agotamiento, empate, abandono y contratos futuros de integración siguen pendientes. |
 | DR-01 Combate | Núcleo del prototipo consolidado; puerta completa aún pendiente | `combatEngine.ts`: estado/acción/eventos puros, validación central, RNG por semilla, journal versionado, exportación JSON y replay con comprobación de eventos. `/duelo-v1` ya consume este motor. Pendientes decisión de agotamiento y definición de desconexión/restauración; no se declara completada toda la fase. |
-| DR-02 Muestra jugable | Parcial | Mismo tablero y cartas, una baraja, tres perfiles sencillos de IA, ayuda estática y resultado. Integración React-motor probada en DOM simulado con 12 casos. Pendientes tres barajas, tutorial guiado y pruebas con investigadores/navegador móvil. |
+| DR-02 Muestra jugable | Parcial | Mismo tablero y cartas, una baraja, tres perfiles sencillos de IA, ayuda estática y resultado. Integración React-motor probada en DOM simulado con 12 casos. E2E real en Chromium CI: 20 casos aprobados para cinco viewports. Pendientes tres barajas, tutorial guiado, investigadores y dispositivos físicos. |
 
 ## Problemas resueltos
+
+- QA real detectó y corrigió botones menores de 44 px, panel de ayuda recortado en poca altura y etiquetas Mando/Racha pegadas. Segunda ejecución: 20/20 E2E aprobados.
 
 - “Inspiración” calcula el robo después de retirar la carta de la mano e informa cuando no puede robar.
 - La IA antigua de `/game` consulta estado vigente entre cartas. Su controlador pausa/reanuda conservando la espera y cancela cartas y habilidades pendientes al terminar/salir del turno.
@@ -32,13 +34,14 @@ Base de `main`: `48cc6386ab151e53ee3086216bec21ba94a6761d`. No se modificó ni f
 | `npm test` en Node 24.22.1 | 23 pruebas aprobadas: 9 reglas, 4 IA anterior, 10 motor |
 | `npm run test:ui` en Node 24.22.1 y 22.23.4 | 12 aprobadas: selección/uso, turnos, pausa/reanudación, diálogos, cancelación al salir, victoria y derrota completas |
 | `npm run test:e2e -- --list` | 20 casos preparados en cinco viewports; no equivale a ejecución |
-| Arranque E2E de mobile-320 | Bloqueado antes de abrir página por Chromium ausente; instalación falló por descarga truncada |
+| E2E en Chromium 156 / GitHub Actions | 20/20 aprobadas: 320×568, 360×800, 390×844, 360×480 y 844×390. Evidencia: run 41084549868, commit 38b1602 |
+| Primer E2E real | 12 aprobadas / 8 fallidas; corregidos controles pequeños y diálogos fuera del viewport, ver informe |
 | Mismas pruebas con Node 22.23.4 y `--experimental-strip-types` | 23 aprobadas |
 | TypeScript `tsc --noEmit` en Node 24 y Node 22 | Aprobado |
 | Compilación Vite en Node 24 y Node 22 | Aprobada |
 | `git diff --check` | Sin errores |
 | Reproducción serializada con semillas 0–39 | 40 partidas completas: estados/eventos idénticos, conservación de cartas, límites de vida/mano/mando, cambios de dificultad y pausa |
-| Navegador real / Android / iOS | **No ejecutado; QA móvil no completado** |
+| Dispositivo Android / iOS físico | **No ejecutado; validación humana de tacto y legibilidad pendiente** |
 
 Las pruebas del motor cubren victoria y derrota por vida o cuarto Impacto, cambio de turno, acciones inválidas sin mutación y detección de registros divergentes. Las del controlador anterior usan reloj simulado para pausa, reanudación y cancelación de acciones pendientes. Las 23 pruebas anteriores no montan React; las 12 nuevas sí montan la pantalla con el motor real en jsdom/StrictMode. DOM simulado no verifica layout.
 
@@ -48,7 +51,7 @@ Se observaron avisos de npm `http-proxy`, del agente proxy del entorno y de Mock
 
 1. **Agotamiento sin implementar:** mazo vacío no causa fatiga, reciclaje ni empate. Se conserva el comportamiento previo y el riesgo de partidas sin salida. Requiere decisión de diseño explícita.
 2. No hay persistencia automática ni reconexión. El registro exportable/reproducible está disponible por API del motor, en memoria; la interfaz no descarga archivos ni restaura al recargar.
-3. Integración funcional de React cubierta por 12 tests; falta QA en navegador real, geometría, legibilidad y tacto. Matriz E2E preparada: 320×568, 360×800, 390×844, 360×480 y 844×390. No hay Chromium ejecutable; su descarga falló. Cero casos de navegador completados. Ver checklist manual en `DR-02-qa-interfaz.md`.
+3. Integración funcional de React cubierta por 12 tests y 20 E2E aprobados con Chromium real en Actions. Geometría y tacto simulados se probaron en los cinco viewports. Faltan Android/iOS físicos y revisión humana de legibilidad/contraste; no se declara todo el QA móvil completado. El navegador local sigue sin arrancar. Ver checklist en `DR-02-qa-interfaz.md`.
 4. El motor nuevo solo gobierna `/duelo-v1`. `/game` conserva su lógica anterior, sus puntuaciones de muestra y temporizadores de banners/moneda/efectos fuera del controlador de IA. No se unificaron los dos juegos en esta entrega.
 5. El registro se clona por acción: coste creciente en partidas largas. El replay comprueba consistencia, no autenticidad competitiva. No es un servidor autoritativo.
 6. Sigue pendiente el piloto con investigadores y la medición de balance/rendimiento. Las 40 semillas son pruebas de regresión, no un estudio de equilibrio.
@@ -56,4 +59,4 @@ Se observaron avisos de npm `http-proxy`, del agente proxy del entorno y de Mock
 
 ## Preparación para pull request
 
-El trabajo se conserva en commits de desarrollo y se publica exclusivamente en esa rama, cotejando los árboles de GitHub con los locales. No se incluyen dependencias instaladas, build, secretos ni temporales; `package-lock.json` conserva versiones. Puede revisarse como avance de DR-01 con límites explícitos; no como cierre de DR-00 a DR-02 ni como QA móvil aprobado. No se abrió ni fusionó ningún PR.
+El trabajo se conserva en commits de desarrollo y se publica exclusivamente en esa rama, cotejando los árboles de GitHub con los locales. No se incluyen dependencias instaladas, build, secretos ni temporales; `package-lock.json` conserva versiones. Puede revisarse como avance de DR-01 con límites explícitos; no como cierre de DR-00 a DR-02 ni como QA móvil aprobado. No se abrió ni fusionó ningún PR. CI de desarrollo con Node 22/24 y navegador se ejecuta solo sobre esta rama; no despliega.
