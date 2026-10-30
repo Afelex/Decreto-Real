@@ -52,3 +52,26 @@ test('the named general is presented both in the briefing and on the real duel b
   await expect(page.locator('.dr-rival').getByText('Almirante de Hierro')).toBeVisible();
   await page.screenshot({ path: test.info().outputPath('campaign-boss-duel.png'), fullPage: true });
 });
+
+test('tactile campaign duel lets the player physically drag a card onto the table', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile-390', 'Full drag motion is sampled at the taller phone viewport');
+  await page.goto('/Decreto-Real/#/campania/mision/01');
+  await page.getByRole('button', { name: /Comenzar duelo/ }).click();
+  const hand = page.locator('.dr-hand .dr-card');
+  const initialCount = await hand.count();
+  const card = page.locator('.dr-hand .dr-card:not(.disabled)').first();
+  const cardBox = await card.boundingBox();
+  const tableBox = await page.locator('.dr-arena').boundingBox();
+  expect(cardBox).not.toBeNull();
+  expect(tableBox).not.toBeNull();
+  const from = { x: cardBox!.x + cardBox!.width / 2, y: cardBox!.y + cardBox!.height / 2 };
+  const to = { x: tableBox!.x + tableBox!.width / 2, y: tableBox!.y + tableBox!.height / 2 };
+  await page.mouse.move(from.x, from.y);
+  await page.mouse.down();
+  await page.mouse.move(to.x, to.y, { steps: 12 });
+  await expect(page.locator('.dr-arena.drop-ready')).toBeVisible();
+  await page.mouse.up();
+  await expect(hand).toHaveCount(initialCount - 1);
+  await expect(page.locator('.dr-drag-ghost')).toHaveCount(0);
+  await page.screenshot({ path: testInfo.outputPath('duel-table-after-drag.png'), fullPage: true });
+});
