@@ -12,7 +12,7 @@ export type CampaignMission = StoryStage & {
 export const CAMPAIGN_MISSIONS: readonly CampaignMission[] = STORY_STAGES.map((stage, index) => ({
   ...stage,
   seed: (1101 * (index + 1)) >>> 0,
-  difficulty: index < 7 ? 'Aprendiz' : index < 25 ? 'Estratega' : 'Maestro',
+  difficulty: (index < 7 ? 'Aprendiz' : index < 25 ? 'Estratega' : 'Maestro') as Difficulty,
   healthGoal: Math.max(7, 12 - Math.floor(index / 8)),
   turnGoal: Math.max(7, 10 - Math.floor(index / 12)),
 }));
