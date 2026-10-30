@@ -1,7 +1,7 @@
 /** DR-C02 · Lore and 38 missions of Decreto Real I: El Sello y la Falsa Luz.
  * X, Zero, Vile and Sigma remain provisional names. Regional minor opponents
  * and the connecting dialogue are UI adaptations pending final editorial review.
- * The eight general names, regions, special cards and overarching conclusion
+ * The eight general names, regions, special cards, canonical subbosses, original 2+32+4 layout and overarching conclusion
  * preserve the agreed narrative. No combat cards or abilities are added here.
  */
 export type StoryChapter = {
@@ -138,17 +138,6 @@ export const STORY_STAGES: readonly StoryStage[] = [
   },
   {
     "id": "03",
-    "chapterId": "p",
-    "title": "Juramento de campaña",
-    "description": "Antes de partir, el joven soldado debe demostrar que merece la confianza de Zero.",
-    "kind": "subboss",
-    "opponent": "Capitán de prueba",
-    "openingLine": "Zero: «Defiende a los inocentes, incluso cuando la victoria parezca sencilla».",
-    "victoryLine": "Zero te encomienda seguir el rastro de la Falsa Luz.",
-    "defeatLine": "Aún debes demostrar que puedes soportar la misión."
-  },
-  {
-    "id": "04",
     "chapterId": "1",
     "title": "Niebla sobre el Callao",
     "description": "Los muelles ocultan un cargamento de pólvora.",
@@ -159,18 +148,18 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "defeatLine": "Los muelles vuelven a quedar bajo vigilancia enemiga."
   },
   {
-    "id": "05",
+    "id": "04",
     "chapterId": "1",
-    "title": "El vigía de la costa",
-    "description": "Un vigía controla todas las comunicaciones del puerto.",
+    "title": "El contramaestre rebelde",
+    "description": "Un contramaestre ha convertido los muelles del Callao en un puesto de vigilancia para el Almirante.",
     "kind": "subboss",
-    "opponent": "Vigía de la costa",
-    "openingLine": "«Corta sus señales antes de que cierre el paso».",
+    "opponent": "Contramaestre rebelde",
+    "openingLine": "Contramaestre: «Nadie cruza el puerto si no lleva mi contraseña».",
     "victoryLine": "Las comunicaciones quedan interrumpidas.",
     "defeatLine": "El vigía mantiene abierto el aviso al Almirante."
   },
   {
-    "id": "06",
+    "id": "05",
     "chapterId": "1",
     "title": "El arsenal del puerto",
     "description": "El arsenal guarda pruebas y municiones en igual medida.",
@@ -181,7 +170,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "defeatLine": "El arsenal permanece inaccesible."
   },
   {
-    "id": "07",
+    "id": "06",
     "chapterId": "1",
     "title": "El Almirante de Hierro",
     "description": "El general del Callao protege la primera pieza del engaño.",
@@ -192,7 +181,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "defeatLine": "El puerto sigue cerrado y la trama permanece oculta."
   },
   {
-    "id": "08",
+    "id": "07",
     "chapterId": "2",
     "title": "Polvo en el camino",
     "description": "Un convoy lleva decretos sellados hacia el interior.",
@@ -203,18 +192,18 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "defeatLine": "El convoy escapa hacia la sierra."
   },
   {
-    "id": "09",
+    "id": "08",
     "chapterId": "2",
-    "title": "La avanzada escarlata",
-    "description": "Una patrulla desafía a cualquiera que dude de las proclamas.",
+    "title": "El capitán de salteadores",
+    "description": "Un capitán intercepta caminos, mensajeros y provisiones para confundir a los viajeros.",
     "kind": "subboss",
-    "opponent": "Capitán de avanzada",
-    "openingLine": "«La velocidad del enemigo también puede ser su debilidad».",
+    "opponent": "Capitán de salteadores",
+    "openingLine": "Capitán: «Los caminos pertenecen a quien se atreve a tomarlos».",
     "victoryLine": "La patrulla revela la ubicación del puesto de mando.",
     "defeatLine": "La avanzada corta la ruta."
   },
   {
-    "id": "10",
+    "id": "09",
     "chapterId": "2",
     "title": "La posta intervenida",
     "description": "Una estación postal guarda registros de envíos contradictorios.",
@@ -225,7 +214,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "defeatLine": "Las pruebas son destruidas antes de recuperarlas."
   },
   {
-    "id": "11",
+    "id": "10",
     "chapterId": "2",
     "title": "El Jinete Escarlata",
     "description": "El general dirige mensajeros y caballería por todo el reino.",
@@ -236,7 +225,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "defeatLine": "El Jinete mantiene su control del camino."
   },
   {
-    "id": "12",
+    "id": "11",
     "chapterId": "3",
     "title": "El precio de la plata",
     "description": "Los mineros denuncian abusos reales, mezclados con proclamas falsas.",
@@ -247,18 +236,18 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "defeatLine": "La confusión mantiene a los trabajadores enfrentados."
   },
   {
-    "id": "13",
+    "id": "12",
     "chapterId": "3",
-    "title": "La galería cerrada",
-    "description": "Una galería oculta documentos bajo la roca.",
+    "title": "El capataz de la mina",
+    "description": "El capataz impone silencio a los mineros y oculta los libros de trabajo.",
     "kind": "subboss",
-    "opponent": "Capataz de galería",
-    "openingLine": "«Una verdad enterrada sigue siendo verdad».",
+    "opponent": "Capataz",
+    "openingLine": "Capataz: «Aquí la roca obedece a mi voz».",
     "victoryLine": "Aseguras los registros antes del derrumbe.",
     "defeatLine": "Los archivos continúan inaccesibles."
   },
   {
-    "id": "14",
+    "id": "13",
     "chapterId": "3",
     "title": "La pólvora escondida",
     "description": "Un depósito minero amenaza las rutas de salida.",
@@ -269,7 +258,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "defeatLine": "La salida permanece bloqueada."
   },
   {
-    "id": "15",
+    "id": "14",
     "chapterId": "3",
     "title": "El Señor de la Plata",
     "description": "El general se niega a perder su poder sobre la sierra.",
@@ -280,7 +269,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "defeatLine": "El Señor conserva sus libros y su influencia."
   },
   {
-    "id": "16",
+    "id": "15",
     "chapterId": "4",
     "title": "Camino de los cañones",
     "description": "La artillería impide llegar al bastión.",
@@ -291,18 +280,18 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "defeatLine": "El avance queda detenido."
   },
   {
-    "id": "17",
+    "id": "16",
     "chapterId": "4",
-    "title": "El maestro de pólvora",
-    "description": "Un subjefe prepara las piezas para la próxima ofensiva.",
+    "title": "El maestro bombardero",
+    "description": "El maestro bombardero dirige el fuego de la fortaleza con precisión.",
     "kind": "subboss",
-    "opponent": "Maestro de pólvora",
-    "openingLine": "«La precisión vence a la fuerza sin juicio».",
+    "opponent": "Maestro bombardero",
+    "openingLine": "Maestro: «Cada disparo es una sentencia».",
     "victoryLine": "Las piezas quedan inutilizadas para el siguiente enfrentamiento.",
     "defeatLine": "El enemigo mantiene sus suministros."
   },
   {
-    "id": "18",
+    "id": "17",
     "chapterId": "4",
     "title": "La puerta del bastión",
     "description": "Un último destacamento protege la fortaleza.",
@@ -313,7 +302,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "defeatLine": "El bastión no cede."
   },
   {
-    "id": "19",
+    "id": "18",
     "chapterId": "4",
     "title": "El Artillero del Trueno",
     "description": "El general utiliza su fortaleza para intimidar a todo el reino.",
@@ -324,7 +313,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "defeatLine": "Los cañones siguen imponiendo su ley."
   },
   {
-    "id": "20",
+    "id": "19",
     "chapterId": "5",
     "title": "Sendero sin nombre",
     "description": "Las rutas de la frontera no aparecen en los mapas reales.",
@@ -335,18 +324,18 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "defeatLine": "El sendero se desvanece antes de completarlo."
   },
   {
-    "id": "21",
+    "id": "20",
     "chapterId": "5",
-    "title": "El puente de raíces",
-    "description": "Un subjefe controla el único paso firme sobre las aguas.",
+    "title": "El explorador renegado",
+    "description": "El explorador renegado conduce patrullas por rutas invisibles de la frontera oriental.",
     "kind": "subboss",
-    "opponent": "Centinela del puente",
-    "openingLine": "«No confundas silencio con ausencia».",
+    "opponent": "Explorador renegado",
+    "openingLine": "Explorador: «Conozco senderos que tus mapas no pueden nombrar».",
     "victoryLine": "El puente queda abierto.",
     "defeatLine": "Los centinelas retienen el paso."
   },
   {
-    "id": "22",
+    "id": "21",
     "chapterId": "5",
     "title": "Voces entre las hojas",
     "description": "Las proclamas se repiten con cambios cuidadosamente calculados.",
@@ -357,7 +346,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "defeatLine": "El mensaje falso alcanza nuevas aldeas."
   },
   {
-    "id": "23",
+    "id": "22",
     "chapterId": "5",
     "title": "El Fantasma de la Selva",
     "description": "El general domina las rutas ocultas de la frontera.",
@@ -368,7 +357,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "defeatLine": "La selva sigue ocultando a sus emisarios."
   },
   {
-    "id": "24",
+    "id": "23",
     "chapterId": "6",
     "title": "La plaza dividida",
     "description": "Dos banderas reclaman obediencia sobre la misma ciudad.",
@@ -379,18 +368,18 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "defeatLine": "La disputa se extiende por la ciudad."
   },
   {
-    "id": "25",
+    "id": "24",
     "chapterId": "6",
-    "title": "El portador del pendón",
-    "description": "Un subjefe protege el símbolo de la rebelión.",
+    "title": "El predicador impostor",
+    "description": "El predicador impostor mezcla falsas promesas y juramentos para controlar a la ciudad.",
     "kind": "subboss",
-    "opponent": "Portador del pendón",
-    "openingLine": "«Un estandarte no debe sustituir la verdad».",
+    "opponent": "Predicador impostor",
+    "openingLine": "Predicador: «La Falsa Luz os dará un solo camino».",
     "victoryLine": "El pendón pierde su poder sobre la multitud.",
     "defeatLine": "Las proclamas continúan dominando la plaza."
   },
   {
-    "id": "26",
+    "id": "25",
     "chapterId": "6",
     "title": "Los libros del cabildo",
     "description": "Los archivos civiles contienen decretos contradictorios.",
@@ -401,7 +390,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "defeatLine": "Los archivos quedan sellados."
   },
   {
-    "id": "27",
+    "id": "26",
     "chapterId": "6",
     "title": "La Dama del Estandarte",
     "description": "La general custodia la última defensa de la ciudad.",
@@ -412,7 +401,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "defeatLine": "La ciudad continúa bajo su estandarte."
   },
   {
-    "id": "28",
+    "id": "27",
     "chapterId": "7",
     "title": "El paso de las nubes",
     "description": "El ejército debe atravesar un sendero de altura.",
@@ -423,18 +412,18 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "defeatLine": "El frío y los guardias obligan a retroceder."
   },
   {
-    "id": "29",
+    "id": "28",
     "chapterId": "7",
-    "title": "El vigía del cóndor",
-    "description": "Un subjefe domina el desfiladero desde una atalaya.",
+    "title": "El guardián de los pasos",
+    "description": "Un guardián de altura domina las rutas que conducen a la fortaleza de las cumbres.",
     "kind": "subboss",
-    "opponent": "Vigía del cóndor",
-    "openingLine": "«No mires solo al frente; mira también arriba».",
+    "opponent": "Guardián de los pasos",
+    "openingLine": "Guardián: «Nadie cruza sin rendir su estandarte».",
     "victoryLine": "La atalaya pierde el dominio de la ruta.",
     "defeatLine": "La atalaya conserva su vigilancia."
   },
   {
-    "id": "30",
+    "id": "29",
     "chapterId": "7",
     "title": "El filo de la cordillera",
     "description": "La fortaleza utiliza el terreno como última muralla.",
@@ -445,7 +434,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "defeatLine": "El desfiladero queda bloqueado."
   },
   {
-    "id": "31",
+    "id": "30",
     "chapterId": "7",
     "title": "El Cóndor de los Andes",
     "description": "El general espera en la última posición de altura.",
@@ -456,7 +445,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "defeatLine": "La montaña continúa en manos del general."
   },
   {
-    "id": "32",
+    "id": "31",
     "chapterId": "8",
     "title": "Los heraldos del juramento",
     "description": "Una vieja promesa obliga a soldados a obedecer sin preguntar.",
@@ -467,18 +456,18 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "defeatLine": "Los heraldos rechazan cualquier testimonio."
   },
   {
-    "id": "33",
+    "id": "32",
     "chapterId": "8",
-    "title": "La capilla de los papeles",
-    "description": "Un archivo religioso guarda copias de decretos reales.",
+    "title": "El teniente de la Guardia",
+    "description": "El teniente protege los registros y juramentos que conducen hasta Sigma.",
     "kind": "subboss",
-    "opponent": "Custodio de la capilla",
-    "openingLine": "«No permitas que utilicen la fe como máscara», dice Zero.",
+    "opponent": "Teniente de la Guardia",
+    "openingLine": "Teniente: «La Casa del Juramento no reconoce tus preguntas».",
     "victoryLine": "Las copias muestran la manipulación del Escribano.",
     "defeatLine": "Las copias permanecen fuera de alcance."
   },
   {
-    "id": "34",
+    "id": "33",
     "chapterId": "8",
     "title": "La última guardia",
     "description": "Un subjefe defiende la sala donde se custodian los compromisos.",
@@ -489,7 +478,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "defeatLine": "La sala continúa cerrada."
   },
   {
-    "id": "35",
+    "id": "34",
     "chapterId": "8",
     "title": "El Caballero del Juramento",
     "description": "El último general se enfrenta a la contradicción de su propio juramento.",
@@ -498,6 +487,17 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "openingLine": "Caballero: «Todo juramento exige un sacrificio».",
     "victoryLine": "La Casa del Juramento abre el camino hasta Sigma y la Falsa Luz.",
     "defeatLine": "El Caballero sigue guardando el acceso a la verdad."
+  },
+  {
+    "id": "35",
+    "chapterId": "f",
+    "title": "El Escribano del Alba",
+    "description": "La falsificación queda expuesta: agravios reales fueron usados para fabricar una causa falsa.",
+    "kind": "subboss",
+    "opponent": "Escribano del Alba",
+    "openingLine": "«Sigma conoció parte del engaño y aun así continuó», revela un testimonio.",
+    "victoryLine": "El fraude del Escribano queda descubierto y la Casa del Sello se abre.",
+    "defeatLine": "Los documentos vuelven a ocultar el origen de la Falsa Luz."
   },
   {
     "id": "36",
@@ -511,15 +511,15 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "defeatLine": "Vile escapa y Zero queda a merced de su ataque."
   },
   {
-    "id": "37",
     "chapterId": "f",
-    "title": "El Escribano del Alba",
-    "description": "La falsificación queda expuesta: agravios reales fueron usados para fabricar una causa falsa.",
-    "kind": "subboss",
-    "opponent": "Escribano del Alba",
-    "openingLine": "«Sigma conoció parte del engaño y aun así continuó», revela un testimonio.",
-    "victoryLine": "El fraude del Escribano queda descubierto y la Casa del Sello se abre.",
-    "defeatLine": "Los documentos vuelven a ocultar el origen de la Falsa Luz."
+    "title": "La última promesa de Zero",
+    "description": "Tras la captura de Vile, Zero permanece desaparecido y gravemente herido. Su última orden conduce hasta la entrada de la Casa del Sello.",
+    "kind": "skirmish",
+    "opponent": "Guardia de Sigma",
+    "openingLine": "Zero (recuerdo): «Si no regreso, sigue la verdad, no mi sombra».",
+    "victoryLine": "Rescatas el último testimonio de Zero y llegas ante Sigma. No hay certeza sobre el paradero de tu capitán.",
+    "defeatLine": "La guardia de Sigma oculta todavía las últimas pistas sobre Zero.",
+    "id": "37"
   },
   {
     "id": "38",
