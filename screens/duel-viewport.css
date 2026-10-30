@@ -178,3 +178,26 @@
 @media (prefers-reduced-motion:reduce) {
   .dr-game *,.dr-game *::before,.dr-game *::after {transition-duration:.01ms!important;animation-duration:.01ms!important;}
 }
+
+/* Browser QA accessibility gate: all gameplay text >=10px, all primary
+ * controls >=44px even on 360x480 and landscape. The hand may compress
+ * slightly, but never the touch targets or decision information. */
+.dr-game .dr-top small,
+.dr-game .dr-person small,
+.dr-game .dr-difficulty,
+.dr-game .dr-seals,
+.dr-game .dr-mana span,
+.dr-game .dr-mana .dr-streak,
+.dr-game>.dr-hand-meta,
+.dr-game>.dr-hand-meta span,
+.dr-game .dr-hand .dr-card>small,
+.dr-game .dr-hand .dr-card p {
+  font-size:10px !important;
+}
+.dr-game>.dr-actions {flex-basis:44px!important;min-height:44px!important;}
+.dr-game>.dr-actions button {height:44px!important;min-height:44px!important;}
+.dr-game>.dr-actions button span {font-size:10px;}
+@media(max-height:550px) {
+  .dr-game>.dr-actions {flex-basis:44px!important;}
+  .dr-game>.dr-actions button {height:44px!important;}
+}
