@@ -64,10 +64,10 @@ Los subjefes de la historia original son, en orden: **Contramaestre rebelde, Cap
 - `campaign/campaign.test.ts`: progresión, puntaje, almacenamiento, estructura de 38 misiones, ocho generales y cierre.
 - `tests/integration/campaign.test.tsx`: mapa, desbloqueo, navegación, selector de regiones.
 - `tests/integration/story.test.tsx`: prólogo, presentación del encuentro, bloqueo de jefe y acceso al epílogo.
-- `tests/e2e/campaign.spec.ts`: flujo de mapa y entrada a la escena de duelo en cinco viewports.
+- `tests/e2e/campaign.spec.ts`: mapa, prólogo, epílogo bloqueado, entrada al duelo y presentación del Almirante de Hierro en cinco viewports; las capturas quedan como artefactos de Actions cuando el workflow se ejecute.
 - Pruebas anteriores de motor, juego, tutorial y guardado deben permanecer vigentes.
 
-**No comprobado:** navegador físico, duración real de las 38 misiones, balance de estrellas, adaptación literaria final, sistemas de jefes particulares y resultado efectivo de las verificaciones CI de esta rama.
+**No comprobado:** resultados CI de esta rama, navegador físico, duración real de las 38 misiones, balance de estrellas, adaptación literaria final, sistemas de jefes particulares y resultado efectivo de las verificaciones CI de esta rama.
 
 ## Próxima entrega
 
