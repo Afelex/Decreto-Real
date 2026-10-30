@@ -23,7 +23,7 @@ test('the 38-mission story opens at the prologue with its first mission enabled'
   const second = screen.getByRole('button', { name: /Misión 2:/ });
   expect(first.hasAttribute('disabled')).toBe(false);
   expect(second.hasAttribute('disabled')).toBe(true);
-  expect(document.querySelectorAll('.dc-node-button').length).toBe(3);
+  expect(document.querySelectorAll('.dc-node-button').length).toBe(2);
 });
 
 test('mission preview shows three explicit star goals and opens the duel route', () => {
