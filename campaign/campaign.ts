@@ -1,26 +1,21 @@
 import type { Difficulty } from '../game/combatEngine.ts';
+import { STORY_STAGES, type StoryStage } from './story.ts';
 
-/** Independent PvE campaign. This module does not change duel rules. */
-export type CampaignMission = {
-  id: string;
-  title: string;
-  description: string;
+/** Future balance parameters; no duel rule is changed by mission metadata. */
+export type CampaignMission = StoryStage & {
   seed: number;
   difficulty: Difficulty;
   healthGoal: number;
   turnGoal: number;
 };
 
-export const CAMPAIGN_MISSIONS: readonly CampaignMission[] = [
-  { id: '01', title: 'El primer decreto', description: 'Da tus primeros pasos frente a un rival aprendiz.', seed: 1101, difficulty: 'Aprendiz', healthGoal: 12, turnGoal: 9 },
-  { id: '02', title: 'Camino de los pregones', description: 'Aprende a aprovechar ataques y defensas.', seed: 2202, difficulty: 'Aprendiz', healthGoal: 12, turnGoal: 9 },
-  { id: '03', title: 'El puente de piedra', description: 'Cada decisión de mando cuenta.', seed: 3303, difficulty: 'Estratega', healthGoal: 11, turnGoal: 9 },
-  { id: '04', title: 'Guardia del bastión', description: 'Resiste a un rival más decidido.', seed: 4404, difficulty: 'Estratega', healthGoal: 10, turnGoal: 9 },
-  { id: '05', title: 'La biblioteca real', description: 'Busca la secuencia correcta de Impactos.', seed: 5505, difficulty: 'Estratega', healthGoal: 10, turnGoal: 8 },
-  { id: '06', title: 'Plaza de las banderas', description: 'La corona te exige un duelo limpio.', seed: 6606, difficulty: 'Estratega', healthGoal: 10, turnGoal: 8 },
-  { id: '07', title: 'Las puertas del palacio', description: 'Prueba tu estrategia contra un maestro.', seed: 7707, difficulty: 'Maestro', healthGoal: 9, turnGoal: 8 },
-  { id: '08', title: 'Audiencia del virrey', description: 'La última prueba del primer recorrido.', seed: 8808, difficulty: 'Maestro', healthGoal: 8, turnGoal: 8 },
-];
+export const CAMPAIGN_MISSIONS: readonly CampaignMission[] = STORY_STAGES.map((stage, index) => ({
+  ...stage,
+  seed: (1101 * (index + 1)) >>> 0,
+  difficulty: index < 7 ? 'Aprendiz' : index < 25 ? 'Estratega' : 'Maestro',
+  healthGoal: Math.max(7, 12 - Math.floor(index / 8)),
+  turnGoal: Math.max(7, 10 - Math.floor(index / 12)),
+}));
 
 export const CAMPAIGN_STORAGE_KEY = 'decreto-real.campania.v1';
 export type CampaignProgress = { version: 1; stars: Record<string, number> };
