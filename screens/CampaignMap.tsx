@@ -2,140 +2,153 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   CAMPAIGN_MISSIONS, bestStars, isMissionUnlocked, loadCampaignProgress,
-  type CampaignMission,
+  type CampaignMission, type CampaignProgress,
 } from '../campaign/campaign.ts';
-import { STORY_CHAPTERS, chapterForStage, stagesForChapter } from '../campaign/story.ts';
-import './campaign.css';
+import { STORY_CHAPTERS, stagesForChapter } from '../campaign/story.ts';
+import mapImage from '../public/virreinato-map.svg';
+import './campaign-map-fullscreen.css';
 
-const readStorage = (): Storage | null => {
-  try { return typeof window !== 'undefined' ? window.localStorage : null; }
-  catch { return null; }
+const storage = (): Storage | null => {
+  try { return window.localStorage; } catch { return null; }
 };
 
-function StarRow({ count }: { count: number }) {
-  return <span className="dc-stars" aria-label={`${count} de 3 estrellas`} role="img">
-    {[0, 1, 2].map(index => <span key={index} className={index < count ? 'earned' : ''} aria-hidden="true">★</span>)}
+/** Chapter navigation is gated by wins, not by clicks on future regions. */
+const chapterOpen = (progress: CampaignProgress, chapterId: string) =>
+  stagesForChapter(chapterId).some(stage => isMissionUnlocked(progress, stage.id));
+
+const chapterMissions = (chapterId: string): CampaignMission[] =>
+  stagesForChapter(chapterId).map(stage => CAMPAIGN_MISSIONS.find(mission => mission.id === stage.id)!);
+
+const initialSelection = (progress: CampaignProgress, missions: readonly CampaignMission[]) =>
+  missions.find(mission => isMissionUnlocked(progress, mission.id) && bestStars(progress, mission.id) === 0)
+  ?? [...missions].reverse().find(mission => isMissionUnlocked(progress, mission.id))
+  ?? missions[0];
+
+/** Map coordinates are relative percentages and work on any screen size. */
+const POSITIONS: Record<number, readonly [number, number][]> = {
+  2: [[51, 22], [58, 72]],
+  4: [[48, 13], [61, 37], [46, 62], [62, 85]],
+};
+
+function MapStars({ count }: { count: number }) {
+  return <span className="dcm-stars" role="img" aria-label={`${count} de 3 estrellas`}>
+    {[0, 1, 2].map(index => <span key={index} className={index < count ? 'won' : ''} aria-hidden="true">★</span>)}
   </span>;
 }
 
-/** The chapter map never changes the combat engine. */
 const CampaignMap: React.FC = () => {
   const navigate = useNavigate();
-  const [progress] = React.useState(() => loadCampaignProgress(readStorage()));
-  const nextUnfinished = CAMPAIGN_MISSIONS.find(mission => bestStars(progress, mission.id) === 0);
-  const firstChapter = chapterForStage(nextUnfinished?.id ?? '38')?.id ?? 'p';
-  const [chapterId, setChapterId] = React.useState(firstChapter);
-  const [selected, setSelected] = React.useState<CampaignMission | null>(null);
-  const closeRef = React.useRef<HTMLButtonElement>(null);
-  const lastTrigger = React.useRef<HTMLElement | null>(null);
+  const [progress] = React.useState(() => loadCampaignProgress(storage()));
+  const firstIncomplete = CAMPAIGN_MISSIONS.find(mission => bestStars(progress, mission.id) === 0);
+  const initialChapterIndex = Math.max(0, STORY_CHAPTERS.findIndex(chapter =>
+    stagesForChapter(chapter.id).some(stage => stage.id === firstIncomplete?.id),
+  ));
+  const [chapterIndex, setChapterIndex] = React.useState(initialChapterIndex);
+  const chapter = STORY_CHAPTERS[chapterIndex];
+  const missions = chapterMissions(chapter.id);
+  const [selectedId, setSelectedId] = React.useState(() => initialSelection(progress, chapterMissions(STORY_CHAPTERS[initialChapterIndex].id)).id);
   const completed = CAMPAIGN_MISSIONS.filter(mission => bestStars(progress, mission.id) > 0).length;
-  const totalStars = CAMPAIGN_MISSIONS.reduce((sum, mission) => sum + bestStars(progress, mission.id), 0);
-  const chapter = STORY_CHAPTERS.find(item => item.id === chapterId) ?? STORY_CHAPTERS[0];
-  const missions = stagesForChapter(chapter.id).map(stage => CAMPAIGN_MISSIONS.find(mission => mission.id === stage.id)!);
-  const index = STORY_CHAPTERS.findIndex(item => item.id === chapter.id);
-  const activeColor = { '--dc-accent': chapter.color } as React.CSSProperties;
+  const earnedStars = CAMPAIGN_MISSIONS.reduce((sum, mission) => sum + bestStars(progress, mission.id), 0);
+  const chapterCompleted = missions.filter(mission => bestStars(progress, mission.id) > 0).length;
+  const selected = missions.find(mission => mission.id === selectedId && isMissionUnlocked(progress, mission.id))
+    ?? initialSelection(progress, missions);
+  const nextChapter = STORY_CHAPTERS[chapterIndex + 1];
+  const canGoNext = !!nextChapter && chapterOpen(progress, nextChapter.id);
+  const mapPositions = POSITIONS[missions.length] ?? POSITIONS[4];
+  const linePoints = mapPositions.map(([x, y]) => `${x},${y}`).join(' ');
+  const accent = { '--dcm-accent': chapter.color } as React.CSSProperties;
 
-  React.useEffect(() => {
-    if (!selected) return;
-    closeRef.current?.focus();
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') { event.preventDefault(); setSelected(null); }
-      if (event.key === 'Tab') {
-        const dialog = document.querySelector<HTMLElement>('.dc-dialog');
-        const buttons = [...(dialog?.querySelectorAll<HTMLButtonElement>('button:not(:disabled)') ?? [])];
-        if (!buttons.length) return;
-        const first = buttons[0], last = buttons[buttons.length - 1];
-        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
-        if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
-      }
-    };
-    document.addEventListener('keydown', onKey);
-    return () => {
-      document.removeEventListener('keydown', onKey);
-      lastTrigger.current?.focus();
-    };
-  }, [selected]);
+  const switchChapter = (nextIndex: number) => {
+    const target = STORY_CHAPTERS[nextIndex];
+    if (!target || !chapterOpen(progress, target.id)) return;
+    setChapterIndex(nextIndex);
+    setSelectedId(initialSelection(progress, chapterMissions(target.id)).id);
+  };
 
-  return <main className="dc-page" style={activeColor}>
-    <header className="dc-header">
-      <button type="button" onClick={() => navigate('/')} aria-label="Volver al menú">‹ Volver</button>
-      <div><small>DECRETO REAL I · MODO HISTORIA</small><h1>El Sello y la Falsa Luz</h1></div>
-    </header>
+  const startSelected = () => {
+    if (selected && isMissionUnlocked(progress, selected.id)) {
+      navigate(`/campania/mision/${selected.id}`);
+    }
+  };
 
-    <section className="dc-progress" aria-label="Progreso de la campaña">
-      <div><strong>Tu recorrido</strong><span>{completed === 38 ? 'La campaña ha concluido' : 'El reino aún guarda secretos'}</span></div>
-      <div className="dc-progress-numbers"><b>{completed}/{CAMPAIGN_MISSIONS.length}</b><small>misiones</small></div>
-      <div className="dc-progress-numbers"><b>★ {totalStars}/{CAMPAIGN_MISSIONS.length * 3}</b><small>estrellas</small></div>
-    </section>
-
-    <div className="dc-map-actions">
-      <button className="dc-outline" onClick={() => navigate('/campania/historia')}>▣ Ver la historia</button>
-      {completed === CAMPAIGN_MISSIONS.length && <button className="dc-outline" onClick={() => navigate('/campania/epilogo')}>✦ Epílogo</button>}
-    </div>
-    <p className="dc-intro">Avanza por el mapa, vence a los subjefes y generales y descubre quién está detrás de la Falsa Luz. Una victoria abre la siguiente misión; puedes repetirla para obtener tres estrellas.</p>
-
-    <nav className="dc-chapter-strip" aria-label="Capítulos de la campaña">
-      {STORY_CHAPTERS.map((item, i) => {
-        const stages = stagesForChapter(item.id);
-        const opened = stages.some(stage => isMissionUnlocked(progress, stage.id));
-        return <button key={item.id} className={`dc-chapter-tab ${item.id === chapter.id ? 'active' : ''}`}
-          aria-current={item.id === chapter.id ? 'page' : undefined}
-          aria-label={`${item.title}, capítulo ${i + 1} ${opened ? 'disponible' : 'bloqueado'}`}
-          onClick={() => setChapterId(item.id)}>
-          <span>{i === 0 ? 'PRÓLOGO' : i === 9 ? 'FINAL' : `REGIÓN ${i}`}</span>
-          <strong>{item.title}</strong>
-          {!opened && <small>◈ Por descubrir</small>}
-        </button>;
-      })}
-    </nav>
-
-    <section className="dc-chapter-hero" aria-label="Historia de esta región">
-      <span className="dc-chapter-symbol" aria-hidden="true">✥</span>
-      <div><small>{chapter.subtitle}</small><h2>{chapter.title}</h2><p>{chapter.summary}</p>
-        <span className="dc-region-label">⌖ {chapter.region}</span>
-      </div>
-    </section>
-
-    <ol className="dc-trail" aria-label={`Misiones de ${chapter.title}`}>
-      {missions.map((mission, i) => {
-        const unlocked = isMissionUnlocked(progress, mission.id);
-        const stars = bestStars(progress, mission.id);
-        return <li key={mission.id} className={`dc-node ${i % 2 ? 'right' : 'left'} ${unlocked ? 'open' : 'locked'} ${mission.kind}`}>
-          <button type="button" disabled={!unlocked}
-            aria-label={`Misión ${Number(mission.id)}: ${mission.title}. ${unlocked ? `${stars} de 3 estrellas` : 'Bloqueada'}`}
-            onClick={event => { lastTrigger.current = event.currentTarget; setSelected(mission); }}
-            className="dc-node-button">{unlocked ? (mission.kind === 'boss' || mission.kind === 'final' ? '♛' : Number(mission.id)) : <span aria-hidden="true">♙</span>}</button>
-          <div className="dc-node-info">
-            <small className="dc-stage-type">{mission.kind === 'final' ? 'ENCUENTRO FINAL' : mission.kind === 'boss' ? 'GENERAL' : mission.kind === 'subboss' ? 'SUBJEFE' : 'MISIÓN' } · {mission.id}/38</small>
-            <b>{mission.title}</b>
-            {unlocked ? <StarRow count={stars}/> : <small>Completa la misión anterior</small>}
-          </div>
-        </li>;
-      })}
-    </ol>
-    <div className="dc-chapter-nav">
-      <button className="dc-secondary" disabled={index === 0} onClick={() => setChapterId(STORY_CHAPTERS[index - 1].id)}>‹ Anterior</button>
-      <button className="dc-primary" disabled={index === STORY_CHAPTERS.length - 1} onClick={() => setChapterId(STORY_CHAPTERS[index + 1].id)}>Siguiente región ›</button>
-    </div>
-    {chapter.general && <p className="dc-reward-note">Carta especial vinculada al general: <strong>{chapter.specialCard}</strong>. Su uso en combate está reservado para una etapa posterior.</p>}
-    <p className="dc-footnote">Las estrellas se guardan en este navegador. El capítulo usa el mismo combate que el duelo libre, con rivales y escenas narrativas de campaña.</p>
-
-    {selected && <div className="dc-overlay" role="presentation" onClick={() => setSelected(null)}>
-      <section className="dc-dialog" role="dialog" aria-modal="true" aria-labelledby="dc-mission-title" onClick={event => event.stopPropagation()}>
-        <small>MISIÓN {selected.id}/38 · {selected.kind === 'boss' ? 'GENERAL' : selected.kind === 'subboss' ? 'SUBJEFE' : selected.kind === 'final' ? 'FINAL' : 'ENCUENTRO'} · IA {selected.difficulty}</small>
-        <h2 id="dc-mission-title">{selected.title}</h2>
-        <p>{selected.description}</p>
-        <p className="dc-dialogue">«{selected.openingLine.replace(/^[^:]+:\s*[«]?/, '').replace(/[»]$/, '')}»</p>
-        <div className="dc-star-goals">
-          <div><span>★</span><strong>Gana el duelo</strong></div>
-          <div><span>★</span><strong>Conserva {selected.healthGoal} de vida o más</strong></div>
-          <div><span>★</span><strong>Gana antes o durante el turno {selected.turnGoal}</strong></div>
+  return <main className="dcm-screen" style={accent} aria-label="Mapa de campaña de Decreto Real">
+    <div className="dcm-shell">
+      <header className="dcm-header">
+        <button type="button" className="dcm-back" onClick={() => navigate('/')} aria-label="Volver al menú">‹</button>
+        <div className="dcm-heading">
+          <h1>Campaña</h1>
+          <span>Virreinato del Perú · El Sello y la Falsa Luz</span>
         </div>
-        <p className="dc-note">Juegas con las reglas y cartas actuales. Cambiar la dificultad durante la misión limita su recompensa a una estrella.</p>
-        <button className="dc-primary" onClick={() => navigate(`/campania/mision/${selected.id}`)}>Entrar en la misión</button>
-        <button ref={closeRef} className="dc-secondary" onClick={() => setSelected(null)}>Volver al mapa</button>
+        <button type="button" className="dcm-story" onClick={() => navigate('/campania/historia')} aria-label="Ver la historia">▤<span>Historia</span></button>
+      </header>
+
+      <nav className="dcm-chapter-nav" aria-label="Regiones de campaña">
+        <button type="button" onClick={() => switchChapter(chapterIndex - 1)} disabled={chapterIndex === 0}
+          aria-label="Capítulo anterior">‹</button>
+        <div className="dcm-chapter-title" aria-live="polite">
+          <small>{chapterIndex === 0 ? 'PRÓLOGO' : chapterIndex === STORY_CHAPTERS.length - 1 ? 'CAPÍTULO FINAL' : `REGIÓN ${chapterIndex} DE 8`}</small>
+          <strong>{chapter.title}</strong>
+          <span>{chapterCompleted}/{missions.length} retos · ★ {earnedStars}/114</span>
+        </div>
+        <button type="button" onClick={() => switchChapter(chapterIndex + 1)} disabled={!canGoNext}
+          aria-label={canGoNext ? 'Capítulo siguiente' : 'Capítulo siguiente bloqueado'}>›</button>
+      </nav>
+
+      <section className="dcm-map" aria-label={`Mapa de retos de ${chapter.title}`}>
+        <img src={mapImage} alt="Mapa antiguo ilustrado del Virreinato del Perú" draggable={false} className="dcm-map-art"/>
+        <div className="dcm-map-wash" aria-hidden="true" />
+        <svg className="dcm-route" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <polyline points={linePoints} fill="none" stroke="#674322" strokeWidth="1.65" strokeDasharray="2.3 2.4" strokeLinecap="round" strokeLinejoin="round"/>
+          <polyline points={linePoints} fill="none" stroke="#f9dea5" strokeWidth=".45" strokeDasharray="2.3 2.4" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+        <span className="dcm-map-label" aria-hidden="true">✥ &nbsp; {chapter.region}</span>
+        {missions.map((mission, index) => {
+          const unlocked = isMissionUnlocked(progress, mission.id);
+          const won = bestStars(progress, mission.id);
+          const active = selected.id === mission.id && unlocked;
+          const [x, y] = mapPositions[index];
+          return <button
+            key={mission.id}
+            type="button"
+            className={`dcm-marker ${!unlocked ? 'locked' : won ? 'completed' : 'available'} ${active ? 'selected' : ''}`}
+            style={{ left: `${x}%`, top: `${y}%` }}
+            disabled={!unlocked}
+            aria-pressed={unlocked ? active : undefined}
+            aria-label={`Misión ${Number(mission.id)}: ${mission.title}. ${unlocked ? `${won} de 3 estrellas` : 'Bloqueada'}`}
+            onClick={() => { if (unlocked) setSelectedId(mission.id); }}
+          >
+            <span className="dcm-marker-flag" aria-hidden="true">⚑</span>
+            <span className="dcm-marker-face" aria-hidden="true">{unlocked ? won ? '★' : mission.kind === 'boss' || mission.kind === 'final' ? '♛' : Number(mission.id) : '🔒'}</span>
+          </button>;
+        })}
+        <div className="dcm-map-legend">
+          <span><i className="available"/> Actual</span>
+          <span><i className="completed"/> Superado</span>
+          <span><i className="locked"/> Bloqueado</span>
+        </div>
       </section>
-    </div>}
+
+      <section className="dcm-selected-card" aria-live="polite" aria-label="Reto seleccionado">
+        <div className="dcm-selected-copy">
+          <span className="dcm-eyebrow">{selected.kind === 'boss' ? '♛ GENERAL' : selected.kind === 'subboss' ? '⚔ SUBJEFE' : selected.kind === 'final' ? '♛ FINAL' : '⚔ MISIÓN'} {Number(selected.id)} DE 38</span>
+          <h2>{selected.title}</h2>
+          <p>{selected.description}</p>
+        </div>
+        <div className="dcm-selected-score">
+          <MapStars count={bestStars(progress, selected.id)} />
+          <small>{selected.difficulty}</small>
+        </div>
+      </section>
+
+      <footer className="dcm-footer">
+        <p className="dcm-lock-note" role="status">🔒 {canGoNext || chapterIndex === STORY_CHAPTERS.length - 1 && completed === CAMPAIGN_MISSIONS.length
+          ? 'Puedes repetir cualquier reto superado para mejorar tus estrellas.'
+          : 'Derrota el reto actual para desbloquear la siguiente fase.'}</p>
+        <button type="button" className="dcm-play" onClick={startSelected} disabled={!isMissionUnlocked(progress, selected.id)}>
+          <span aria-hidden="true">⚔</span> Seleccionar reto <span aria-hidden="true">›</span>
+        </button>
+      </footer>
+    </div>
   </main>;
 };
 
