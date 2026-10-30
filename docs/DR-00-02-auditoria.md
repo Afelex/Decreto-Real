@@ -1,65 +1,52 @@
 # Decreto Real — Auditoría DR-00 a DR-02
 
-**Fecha:** 30 de octubre de 2026  
-**Rama revisada:** `codex/decreto-real-combate-v1`  
-**Base:** `48cc638` (mismo commit que `main` al inicio de la revisión)  
-**Alcance:** revisión local de código y verificaciones disponibles. No se modificó ni fusionó `main`; no se abrió un pull request. El trabajo previo se publicó en la rama de desarrollo (commit `ed64db94d56a830b02e44dfea4a3422495c90ba4`).
-
-## Resumen
-
-La rama contiene una pantalla de combate nueva en `/duelo-v1` y conserva el juego anterior en `/game`. La muestra es jugable en términos de UI y tiene reglas puras para parte de sus efectos, pero todavía no alcanza la puerta de salida de DR-01 ni la de DR-02. La integración con Colección, tres barajas iniciales, tutorial guiado, motor determinista, resultados verificables y validación móvil siguen pendientes.
-
-Se corrigieron dos defectos confirmados: el robo de “Inspiración” al llegar al límite de mano, y la continuación de las acciones temporizadas de la IA antigua mientras el menú de pausa está abierto. Se añadieron nueve pruebas automatizadas de reglas y robo. La consolidación posterior corrige la lectura de estado de la IA antigua y añade cuatro pruebas de turnos y temporizadores.
+**Actualización:** 30 de octubre de 2026. Rama: `codex/decreto-real-combate-v1`.
+Base de `main`: `48cc6386ab151e53ee3086216bec21ba94a6761d`. No se modificó ni fusionó `main` ni se abrió un PR.
 
 ## Estado por fase
 
-| Fase | Estado | Evidencia y brecha principal |
+| Fase | Estado | Evidencia y pendientes |
 |---|---|---|
-| DR-00 — Base | Parcial | Hay ruta y prototipo aislados, catálogo estructurado y descripción visible de reglas. Falta cerrar/documentar contratos de integración, casos límite (agotamiento, empate, abandono, orden completo de efectos) y validación de interfaz de la IA antigua. El alcance de Colección no está integrado. |
-| DR-01 — Combate | Parcial; no cumple puerta de salida | `game/rules.ts` contiene funciones puras para ataque, escudo, Impactos, combo y robo. Ahora hay pruebas de ellas. Todavía no existe un motor de estado/acción atómica, aleatoriedad reproducible por semilla ni registro reproducible de eventos. No se pueden rechazar ilegalidades mediante un único motor independiente de la UI. |
-| DR-02 — Muestra jugable | Parcial; no cumple puerta de salida | `/duelo-v1` permite iniciar un duelo contra una IA sencilla, jugar cartas, pausar durante el turno del jugador y ver un resultado. El acceso se agregó como “Probar nuevo combate” desde el menú. La ayuda es una guía estática, hay un solo mazo aleatorio de 24 cartas, no hay tres barajas predefinidas ni personalización y no se ha probado con investigadores. |
+| DR-00 Base | Parcial | Catálogo y reglas existentes inventariados. Contrato del motor documentado en `DR-01-motor.md`. Agotamiento, empate, abandono y contratos futuros de integración siguen pendientes. |
+| DR-01 Combate | Núcleo del prototipo consolidado; puerta completa aún pendiente | `combatEngine.ts`: estado/acción/eventos puros, validación central, RNG por semilla, journal versionado, exportación JSON y replay con comprobación de eventos. `/duelo-v1` ya consume este motor. Pendientes decisión de agotamiento y definición de desconexión/restauración; no se declara completada toda la fase. |
+| DR-02 Muestra jugable | Parcial | Mismo tablero y cartas, una baraja, tres perfiles sencillos de IA, ayuda estática y resultado. Pendientes tres barajas, tutorial guiado y pruebas con investigadores/navegador móvil. |
 
-## Funciones revisadas
+## Problemas resueltos
 
-| Área | Completo en la muestra | Pendiente o defectuoso |
-|---|---|---|
-| Reglas | Daño absorbe escudo antes de vida; tope de mano; combo de tres; Impactos en orden, uno por turno; victoria por vida o cuarto Impacto. | Fatiga/fin de partida por agotamiento no está definida; no hay límite de turnos ni empate. La ayuda no cubre ese caso. No se conserva una semilla para repetir partidas. |
-| IA nueva | Resuelve una respuesta por turno, contempla tres perfiles de dificultad y puede cerrar con el Impacto Final. | No evalúa secuencias ni daño letal de manera general; sus decisiones usan probabilidades simples y no son reproducibles. La pausa no se puede abrir durante la espera breve de la IA porque el botón se deshabilita mientras `busy`. |
-| IA antigua (`/game`) | La rutina automatiza el turno rival. | Resuelto: la rutina lee mano, vida y nivel de Impacto actualizados entre acciones; usa la función de jugada del render actual y el medidor actual. La habilidad diferida decide con la vida vigente. Un controlador por turno conserva el tiempo restante al pausar y cancela cartas, habilidades y finalización al salir del turno/desmontar. La prioridad sigue siendo Impacto legal, defensas con vida menor de cinco y ataques. Falta validación interactiva de React. |
-| Pausa nueva | En el turno del jugador, el panel cubre los controles y permite continuar o volver al menú. | No se abrió durante el turno de la IA; el botón queda inhabilitado en ese lapso. Falta validación interactiva en navegador. |
-| Victoria/derrota | El prototipo deriva fin de partida de vida o Impactos y presenta un resumen. | No hay prueba de integración/render para ambos resultados. La pantalla antigua de resultado incluye puntuaciones fijas; no equivalen a un resultado calculado ni a un ranking y deben tratarse como contenido de muestra. |
-| Agotamiento | El robo no inventa cartas ni excede la mano máxima; el contador de mazo llega a cero. | El mazo vacío no produce fatiga ni finaliza la partida, por decisión aún pendiente de reglas. No se añadieron mecánicas para resolverlo. El mensaje de Apoyo ya informa cuando no se pudo robar. |
-| Móvil | Hay estilos responsivos, mano desplazable horizontalmente, `100svh`/`100dvh` y respeto por movimiento reducido. | No había Chromium disponible en el entorno para medir desbordamiento/recortes con viewports reales. No se verificó en Android ni iOS. La estabilidad móvil queda pendiente de QA visual en tamaños pequeños y en orientación horizontal. |
-| Integración | Ruta separada accesible desde el menú de prueba. | No reemplaza “Reales Ideales” por Decreto Real en Colección; no comparte identidad, sesión, inventario o cartas con Peruanistas. Esto corresponde a fases posteriores y se mantuvo fuera del alcance. |
-
-## Cambios hechos en esta revisión
-
-- Se extrajo `drawFromPile` como regla pura y se corrigió “Inspiración”: el cálculo usa la mano después de retirar la carta jugada. Antes, con seis cartas, la función veía la mano llena y denegaba el robo aunque la carta de Apoyo dejaba espacio.
-- Cuando no hay robo posible, el mensaje de Apoyo ya no afirma que se robó una carta.
-- La IA antigua espera mientras el menú de pausa permanece abierto y evita continuar si la partida termina o el componente se desmonta.
-- Se agregaron nueve casos automatizados para daño/escudo, límites, Impactos, combos, robo, mazo vacío y el espacio liberado por una carta de Apoyo.
+- “Inspiración” calcula el robo después de retirar la carta de la mano e informa cuando no puede robar.
+- La IA antigua de `/game` consulta estado vigente entre cartas. Su controlador pausa/reanuda conservando la espera y cancela cartas y habilidades pendientes al terminar/salir del turno.
+- El prototipo ya no distribuye las reglas en setters de React: el motor resuelve cartas, costes, combos, escudos, Impactos, respuestas rivales y resultados atómicamente.
+- La semilla reproduce tanto el barajado como las decisiones de IA. Los IDs de instancia son estables dentro de la partida. El RNG forma parte del estado.
+- Acciones ilegales no cambian estado ni RNG ni registro: carta ausente/repetida, mando insuficiente, Impacto fuera de orden/segundo del turno, turno incorrecto, pausa, partida terminada, tipos/dificultades/versiones inválidos.
+- Se registra cada acción aceptada junto con sus eventos, incluida la dificultad y pausa. El replay verifica los eventos y produce el mismo estado serializado.
+- La UI deriva mensajes e historial de los eventos. Su temporizador rival de 700 ms se limpia al desmontar/salir o pausar; los estilos y las mecánicas existentes se conservan.
 
 ## Verificaciones ejecutadas
 
-| Comando | Resultado |
+| Verificación | Resultado |
 |---|---|
-| `npm run test:rules` | Aprobado: 9 pruebas, 0 fallidas. |
-| `npm run test:ai` | Aprobado: 4 pruebas, 0 fallidas: turnos consecutivos con estado actualizado, pausa/reanudación sin duplicar jugadas, cancelación de habilidades pendientes y cancelación tras una carta. |
-| `npx tsc --noEmit` | Aprobado: sin errores de tipos. |
-| `npm run build` | Aprobado: Vite generó el build de producción. |
-| `git diff --check` | Aprobado: sin errores de espacios/parches. |
+| `npm test` en Node 24.22.1 | 23 pruebas aprobadas: 9 reglas, 4 IA anterior, 10 motor |
+| Mismas pruebas con Node 22.23.4 y `--experimental-strip-types` | 23 aprobadas |
+| TypeScript `tsc --noEmit` en Node 24 y Node 22 | Aprobado |
+| Compilación Vite en Node 24 y Node 22 | Aprobada |
+| `git diff --check` | Sin errores |
+| Reproducción serializada con semillas 0–39 | 40 partidas completas: estados/eventos idénticos, conservación de cartas, límites de vida/mano/mando, cambios de dificultad y pausa |
+| Navegador real / Android / iOS | **No ejecutado; QA móvil no completado** |
 
-El entorno mostró una advertencia de configuración npm `Unknown env config "http-proxy"`; no impidió ninguna de las verificaciones.
+Las pruebas del motor cubren victoria y derrota por vida o cuarto Impacto, cambio de turno, acciones inválidas sin mutación y detección de registros divergentes. Las del controlador anterior usan reloj simulado para pausa, reanudación y cancelación de acciones pendientes. No montan componentes React.
 
-## Riesgos y trabajo pendiente antes de aceptar DR-02
+Se observaron avisos de npm `http-proxy`, del agente proxy del entorno y de MockTimers experimental en Node 22; no impidieron las verificaciones. La compatibilidad comprobada es con Node 22.23.4, no con cada parche de Node 22.
 
-1. Resolver y escribir la regla de agotamiento y el caso de partida que no termina; cubrirla con pruebas sin cambiarla hasta que esté aprobada.
-2. Completar el motor determinista de DR-01, RNG con semilla, acciones legales y log de eventos; completar la validación de la conexión React de la IA antigua; el defecto de estado capturado se corrigió en esta consolidación.
-3. Añadir pruebas de integración de pausa/reanudación, victoria, derrota y transición de turnos. Las trece pruebas actuales verifican reglas y el ejecutor real de IA con temporizadores simulados, pero no montan React. Se ejecutaron en Node 24.22.1; no se comprobó aún el runner en Node 22. Los temporizadores de banners, moneda y efectos visuales antiguos siguen fuera de este controlador de IA.
-4. Probar la partida en navegador real a 360 px, 320 px, altura reducida y orientación horizontal, incluyendo mano llena y diálogos abiertos.
-5. Hacer prueba observada con investigadores: comprensión, duración, decisiones, finalización sin ayuda y deseo de revancha.
-6. Revisar los tres commits de desarrollo antes de abrir el PR; el trabajo previo ya está consolidado y publicado. No se abrió ningún PR.
+## Riesgos y decisiones pendientes
+
+1. **Agotamiento sin implementar:** mazo vacío no causa fatiga, reciclaje ni empate. Se conserva el comportamiento previo y el riesgo de partidas sin salida. Requiere decisión de diseño explícita.
+2. No hay persistencia automática ni reconexión. El registro exportable/reproducible está disponible por API del motor, en memoria; la interfaz no descarga archivos ni restaura al recargar.
+3. Falta QA real de React, transiciones y diálogos; validación móvil a 320/360 px, poca altura y horizontal. No hay Chromium instalado en este entorno.
+4. El motor nuevo solo gobierna `/duelo-v1`. `/game` conserva su lógica anterior, sus puntuaciones de muestra y temporizadores de banners/moneda/efectos fuera del controlador de IA. No se unificaron los dos juegos en esta entrega.
+5. El registro se clona por acción: coste creciente en partidas largas. El replay comprueba consistencia, no autenticidad competitiva. No es un servidor autoritativo.
+6. Sigue pendiente el piloto con investigadores y la medición de balance/rendimiento. Las 40 semillas son pruebas de regresión, no un estudio de equilibrio.
+7. Rankings, multijugador e integración en Peruanistas continúan fuera de esta entrega.
 
 ## Preparación para pull request
 
-**No está listo para solicitar revisión de DR-00 a DR-02 como entregas completas.** Está en condición de PR incremental etiquetado como “prototipo / QA parcial” si se desea revisar estos cambios y las brechas quedan claramente visibles. Antes de abrirlo, revisar el diff completo, separar el trabajo previo del arreglo de auditoría y completar QA de navegador/móvil. El trabajo se organiza en tres commits coherentes: prototipo, correcciones/pruebas iniciales y corrección de estado/temporizadores de IA. La publicación utiliza el conector de GitHub porque el envío directo de Git carece de credenciales; los árboles se cotejan con los locales. `main` permanece en `48cc6386ab151e53ee3086216bec21ba94a6761d` y no se realizó fusión. No se incluyeron `node_modules`, `dist`, secretos detectados ni archivos temporales; `package-lock.json` conserva las versiones reproducibles.
+El trabajo se conserva en commits de desarrollo y se publica exclusivamente en esa rama, cotejando los árboles de GitHub con los locales. No se incluyen dependencias instaladas, build, secretos ni temporales; `package-lock.json` conserva versiones. Puede revisarse como avance de DR-01 con límites explícitos; no como cierre de DR-00 a DR-02 ni como QA móvil aprobado. No se abrió ni fusionó ningún PR.
