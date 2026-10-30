@@ -32,20 +32,22 @@ El menú principal mantiene tres accesos: campaña, duelo libre y juego original
 
 ## Estructura de 38 misiones
 
-- Prólogo: 3 misiones (01–03).
-- Ocho regiones: 4 misiones cada una (04–35), de las cuales la cuarta es el enfrentamiento con el general; en cada región existe un subjefe (segundo reto).
-- Final: 3 misiones (36–38) contra Vile, Escribano del Alba y Sigma.
+- Prólogo: 2 misiones (01–02).
+- Ocho regiones: 4 misiones cada una (03–34), de las cuales la cuarta es el enfrentamiento con el general; en cada región existe un subjefe nombrado (segundo reto).
+- Final: 4 misiones (35–38): Escribano del Alba, Vile, legado de Zero y Sigma. **Zero no es enemigo:** su escena consiste en superar la guardia de Sigma y seguir sus últimas pistas.
 
 | General | Región | Carta especial de lore | Jefe |
 |---|---|---|---|
-| Almirante de Hierro | Puerto del Callao | Bombardeo naval | 07 |
-| Jinete Escarlata | Caminos del Reino | Carga de caballería | 11 |
-| Señor de la Plata | Minas de la Sierra | Pólvora enterrada | 15 |
-| Artillero del Trueno | Fortaleza de Artillería | Fuego concentrado | 19 |
-| Fantasma de la Selva | Frontera Oriental | Sendero secreto | 23 |
-| Dama del Estandarte | Ciudad de los Estandartes | Estandarte de resistencia | 27 |
-| Cóndor de los Andes | Fortaleza de las Cumbres | Ataque de las cumbres | 31 |
-| Caballero del Juramento | Casa del Juramento | Último juramento | 35 |
+| Almirante de Hierro | Puerto del Callao | Bombardeo naval | 06 |
+| Jinete Escarlata | Caminos del Reino | Carga de caballería | 10 |
+| Señor de la Plata | Minas de la Sierra | Pólvora enterrada | 14 |
+| Artillero del Trueno | Fortaleza de Artillería | Fuego concentrado | 18 |
+| Fantasma de la Selva | Frontera Oriental | Sendero secreto | 22 |
+| Dama del Estandarte | Ciudad de los Estandartes | Estandarte de resistencia | 26 |
+| Cóndor de los Andes | Fortaleza de las Cumbres | Ataque de las cumbres | 30 |
+| Caballero del Juramento | Casa del Juramento | Último juramento | 34 |
+
+Los subjefes de la historia original son, en orden: **Contramaestre rebelde, Capitán de salteadores, Capataz, Maestro bombardero, Explorador renegado, Predicador impostor, Guardián de los pasos y Teniente de la Guardia**.
 
 ## Mecánica y progresión, sin cambios de motor
 
