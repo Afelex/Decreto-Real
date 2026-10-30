@@ -52,4 +52,4 @@ El robo de mazo vacío permanece sin efecto. No hay fatiga, reciclaje, límite d
 
 Probadas en Node 24.22.1 y Node 22.23.4 con `--experimental-strip-types`; se comprobaron también TypeScript y Vite en ambos. No se garantiza compatibilidad con todos los parches antiguos de Node 22. MockTimers emite una advertencia experimental en Node 22.
 
-No se ejecutó un navegador real ni QA móvil. Las pruebas no montan React ni verifican estilos, interacción táctil o tiempos de animación. El registro completo se clona al resolver cada acción; su coste crece con partidas muy largas. Quedan pendientes persistencia/reconexión y la decisión de agotamiento.
+No se ejecutó un navegador real ni QA móvil. Las pruebas del motor no montan React. La revisión posterior añade 12 pruebas de integración en jsdom que sí montan la UI; no verifican estilos, geometría ni interacción táctil real. Ver `DR-02-qa-interfaz.md` para los resultados y la matriz E2E pendiente. El registro completo se clona al resolver cada acción; su coste crece con partidas muy largas. Quedan pendientes persistencia/reconexión y la decisión de agotamiento.
