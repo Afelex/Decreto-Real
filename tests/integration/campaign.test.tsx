@@ -1,6 +1,6 @@
 import React from 'react';
 import { afterEach, beforeEach, expect, test } from 'vitest';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import CampaignMap from '../../screens/CampaignMap';
 import { CAMPAIGN_STORAGE_KEY } from '../../campaign/campaign.ts';
@@ -111,7 +111,7 @@ test('mission objectives change with the selected unlocked challenge', () => {
   fireEvent.click(screen.getByRole('button', { name: /Misión 2:/ }));
   fireEvent.click(screen.getByRole('button', { name: 'Ver objetivos del reto' }));
   expect(screen.getByRole('dialog', { name: 'La orden sin sello' })).toBeTruthy();
-  fireEvent.click(screen.getByRole('button', { name: /Seleccionar reto/ }));
+  fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: /Seleccionar reto/ }));
   expect(screen.getByRole('heading', { name: 'Duelo de misión' })).toBeTruthy();
 });
 
