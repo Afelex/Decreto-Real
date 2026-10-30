@@ -1,7 +1,7 @@
 # Decreto Real — Auditoría DR-00 a DR-02
 
 **Actualización:** 30 de octubre de 2026. Rama: `codex/decreto-real-combate-v1`.
-Traspaso completo a Claude: `CLAUDE_HANDOFF.md` (estado, reglas, evidencias, riesgos y próximo encargo).
+Traspaso: `CLAUDE_HANDOFF.md` (estado, reglas, evidencias, riesgos y próximo encargo). Paquete de Claude de esta fecha: motor `dr-combat-2` (`DR-01-motor.md`) y guardado/tutorial (`DR-02-guardado-tutorial.md`).
 
 Revisión de interfaz: `DR-02-qa-interfaz.md` separa pruebas ejecutadas de QA visual pendiente.
 
@@ -11,11 +11,22 @@ Base de `main`: `48cc6386ab151e53ee3086216bec21ba94a6761d`. No se modificó ni f
 
 | Fase | Estado | Evidencia y pendientes |
 |---|---|---|
-| DR-00 Base | Parcial | Catálogo y reglas existentes inventariados. Contrato del motor documentado en `DR-01-motor.md`. Agotamiento, empate, abandono y contratos futuros de integración siguen pendientes. |
-| DR-01 Combate | Núcleo del prototipo consolidado; puerta completa aún pendiente | `combatEngine.ts`: estado/acción/eventos puros, validación central, RNG por semilla, journal versionado, exportación JSON y replay con comprobación de eventos. `/duelo-v1` ya consume este motor. Pendientes decisión de agotamiento y definición de desconexión/restauración; no se declara completada toda la fase. |
-| DR-02 Muestra jugable | Parcial | Mismo tablero y cartas, una baraja, tres perfiles sencillos de IA, ayuda estática y resultado. Integración React-motor probada en DOM simulado con 12 casos. E2E real en Chromium CI: 20 casos aprobados para cinco viewports. Pendientes tres barajas, tutorial guiado, investigadores y dispositivos físicos. |
+| DR-00 Base | Parcial | Catálogo y reglas inventariados. Contrato del motor y **política de compatibilidad de registros** documentados en `DR-01-motor.md`. Agotamiento, empate, abandono y contratos de integración siguen pendientes. |
+| DR-01 Combate | Núcleo consolidado; puerta completa pendiente | `dr-combat-2`: eventos de solo datos, textos derivados, lectura de `dr-combat-1` por proyección, acciones canónicas, registro lineal, validación de registros externos y motivos de bloqueo. Restauración local implementada mediante replay. Falta la decisión de agotamiento; la desconexión entre dispositivos no existe (solo local). |
+| DR-02 Muestra jugable | Parcial | Guardado y recuperación local, tutorial guiado opcional, Impactos visibles, motivos de bloqueo y textos ≥ 10 px. 26 integración + 45 E2E Chromium aprobados. Pendientes tres barajas, piloto con usuarios nuevos y dispositivos físicos. |
 
 ## Problemas resueltos
+
+Paquete de Claude (30 de octubre de 2026), cada uno con reproducción y regresión:
+
+- Textos de defensa que anunciaban el escudo pedido y no el obtenido (jugador en tope 12; rival en tope 10). Corregido sin invalidar registros gracias a la nueva política.
+- Coste cuadrático del registro: 5.000 acciones tardaban 24 s en construirse y otros 24 s en reproducirse; ahora 0,2 s. Medido antes de optimizar.
+- Acciones con campos ajenos se guardaban tal cual y un campo no clonable lanzaba excepción tras resolver la acción.
+- La pantalla se rompía con `localStorage` bloqueado.
+- Impactos propios ausentes del tablero; Impactos rivales ocultos a ≤ 370 px.
+- Motivos de bloqueo de cartas imprecisos o silenciosos; texto a 9,6 px; solapes del encabezado y de la última jugada a 320–360 px; aviso de recuperación que ocultaba el turno rival.
+
+Antecedentes:
 
 - QA real detectó y corrigió botones menores de 44 px, panel de ayuda recortado en poca altura y etiquetas Mando/Racha pegadas. Segunda ejecución: 20/20 E2E aprobados.
 
@@ -31,34 +42,37 @@ Base de `main`: `48cc6386ab151e53ee3086216bec21ba94a6761d`. No se modificó ni f
 
 ## Verificaciones ejecutadas
 
+Paquete actual (código `e4822cc`, CI [41095702756](https://github.com/Afelex/Decreto-Real/actions/runs/41095702756)):
+
 | Verificación | Resultado |
 |---|---|
-| `npm test` en Node 24.22.1 | 23 pruebas aprobadas: 9 reglas, 4 IA anterior, 10 motor |
-| `npm run test:ui` en Node 24.22.1 y 22.23.4 | 12 aprobadas: selección/uso, turnos, pausa/reanudación, diálogos, cancelación al salir, victoria y derrota completas |
-| `npm run test:e2e -- --list` | 20 casos preparados en cinco viewports; no equivale a ejecución |
-| E2E en Chromium 156 / GitHub Actions | 20/20 aprobadas: 320×568, 360×800, 390×844, 360×480 y 844×390. Evidencia final: run 41085102590, commit 5f48cfb; incluye capturas y límites horizontales de controles |
-| Primer E2E real | 12 aprobadas / 8 fallidas; corregidos controles pequeños y diálogos fuera del viewport, ver informe |
-| Mismas pruebas con Node 22.23.4 y `--experimental-strip-types` | 23 aprobadas |
-| TypeScript `tsc --noEmit` en Node 24 y Node 22 | Aprobado |
-| Compilación Vite en Node 24 y Node 22 | Aprobada |
-| `git diff --check` | Sin errores |
-| Reproducción serializada con semillas 0–39 | 40 partidas completas: estados/eventos idénticos, conservación de cartas, límites de vida/mano/mando, cambios de dificultad y pausa |
-| Dispositivo Android / iOS físico | **No ejecutado; validación humana de tacto y legibilidad pendiente** |
+| `npm test` | 42 aprobadas: 9 reglas, 4 IA anterior, 20 motor/textos, 6 guardado, 3 tutorial. Local Node 22.22.0 y 24.22.2; CI Node 22 y 24 |
+| `npm run test:ui` | 26 aprobadas en jsdom/StrictMode. Local Node 22.22.0 y 24.22.2; CI Node 22 y 24 |
+| `npx tsc --noEmit`, `npm run build` | Aprobados en los mismos cuatro entornos |
+| E2E Chromium | 45/45 en CI (Chrome Headless Shell 156.0.8078.4) y 45/45 locales (Chrome for Testing 153.0.8010.12) |
+| Equivalencia de reglas | 600 registros generados con el motor anterior reproducen el mismo estado final con `dr-combat-2` (comprobación puntual, no versionada como prueba; el fixture versionado cubre un registro) |
+| Reproducción del fallo de almacenamiento | El componente de `454a3a4` lanza `SecurityError` con `localStorage` bloqueado (prueba temporal, no versionada) |
+| Dispositivo Android / iOS físico | **No ejecutado** |
 
-Las pruebas del motor cubren victoria y derrota por vida o cuarto Impacto, cambio de turno, acciones inválidas sin mutación y detección de registros divergentes. Las del controlador anterior usan reloj simulado para pausa, reanudación y cancelación de acciones pendientes. Las 23 pruebas anteriores no montan React; las 12 nuevas sí montan la pantalla con el motor real en jsdom/StrictMode. DOM simulado no verifica layout.
+Antecedentes (código `5f48cfb`):
 
-Se observaron avisos de npm `http-proxy`, del agente proxy del entorno y de MockTimers experimental en Node 22; no impidieron las verificaciones. La compatibilidad comprobada es con Node 22.23.4, no con cada parche de Node 22.
+| Verificación | Resultado |
+|---|---|
+| `npm test` en Node 24.22.1 | 23 pruebas aprobadas |
+| `npm run test:ui` en Node 24.22.1 y 22.23.4 | 12 aprobadas |
+| E2E en Chromium 156 / GitHub Actions | 20/20, run 41085102590 |
+| Primer E2E real | 12 aprobadas / 8 fallidas; corregido |
 
 ## Riesgos y decisiones pendientes
 
-1. **Agotamiento sin implementar:** mazo vacío no causa fatiga, reciclaje ni empate. Se conserva el comportamiento previo y el riesgo de partidas sin salida. Requiere decisión de diseño explícita.
-2. No hay persistencia automática ni reconexión. El registro exportable/reproducible está disponible por API del motor, en memoria; la interfaz no descarga archivos ni restaura al recargar.
-3. Integración funcional de React cubierta por 12 tests y 20 E2E aprobados con Chromium real en Actions. Geometría y tacto simulados se probaron en los cinco viewports. Faltan Android/iOS físicos y revisión humana de legibilidad/contraste; no se declara todo el QA móvil completado. El navegador local sigue sin arrancar. Ver checklist en `DR-02-qa-interfaz.md`.
-4. El motor nuevo solo gobierna `/duelo-v1`. `/game` conserva su lógica anterior, sus puntuaciones de muestra y temporizadores de banners/moneda/efectos fuera del controlador de IA. No se unificaron los dos juegos en esta entrega.
-5. El registro se clona por acción: coste creciente en partidas largas. El replay comprueba consistencia, no autenticidad competitiva. No es un servidor autoritativo.
-6. Sigue pendiente el piloto con investigadores y la medición de balance/rendimiento. Las 40 semillas son pruebas de regresión, no un estudio de equilibrio.
-7. Rankings, multijugador e integración en Peruanistas continúan fuera de esta entrega.
+1. **Agotamiento sin implementar:** mazo vacío no causa fatiga, reciclaje ni empate. Requiere decisión de diseño explícita.
+2. **Guardado solo local:** un navegador y perfil, sin sincronización, copia ni protección competitiva; dos pestañas se sobrescriben. Reconexión entre dispositivos no existe.
+3. QA en Android/iOS físicos, Safari/WebKit, Firefox, lector de pantalla y contraste medido sigue pendiente. El tutorial no se ha probado con jugadores nuevos.
+4. El motor nuevo solo gobierna `/duelo-v1` y su tutorial. `/game` conserva su lógica anterior; no se unificaron.
+5. El replay comprueba consistencia, no autenticidad. No es un servidor autoritativo.
+6. Balance y rendimiento en teléfonos sin medir. La semilla del tutorial depende del catálogo/RNG actuales (protegida por prueba).
+7. Rankings, multijugador e integración en Peruanistas continúan fuera de alcance.
 
 ## Preparación para pull request
 
-El trabajo se conserva en commits de desarrollo y se publica exclusivamente en esa rama, cotejando los árboles de GitHub con los locales. No se incluyen dependencias instaladas, build, secretos ni temporales; `package-lock.json` conserva versiones. Puede revisarse como avance de DR-01 con límites explícitos; no como cierre de DR-00 a DR-02 ni como QA móvil aprobado. No se abrió ni fusionó ningún PR. CI de desarrollo con Node 22/24 y navegador se ejecuta solo sobre esta rama; no despliega.
+El trabajo se conserva en commits de desarrollo y se publica exclusivamente en esa rama, cotejando los árboles de GitHub con los locales. No se incluyen dependencias instaladas, build, secretos ni temporales; `package-lock.json` conserva versiones. Puede revisarse como avance de DR-01 con límites explícitos; no como cierre de DR-00 a DR-02 ni como QA móvil aprobado. No se abrió ni fusionó ningún PR ni se desplegó. CI de desarrollo con Node 22/24 y navegador se ejecuta solo sobre esta rama; no despliega.

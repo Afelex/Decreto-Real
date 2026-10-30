@@ -1,6 +1,7 @@
 # DR-01 — Contrato del motor del prototipo
 
-Versión de reglas/registro: `dr-combat-2` (lee también `dr-combat-1`). Implementación: `game/combatEngine.ts`; textos en `game/combatText.ts`.
+Versión de reglas/registro: `dr-combat-2` (lee también `dr-combat-1`). Implementación: `game/combatEngine.ts`; textos en `game/combatText.ts`; guardado en `game/combatSave.ts`.
+Se aplica a `/duelo-v1` y `/duelo-v1/tutorial`; `/game` conserva el combate anterior y su controlador de IA.
 
 ## Política de compatibilidad de registros
 
@@ -14,15 +15,17 @@ Definida antes de cambiar el formato de eventos (octubre de 2026):
 6. **Rechazo explícito:** versión desconocida, forma inválida (`invalidRecord`), acción ilegal o eventos divergentes lanzan error; nunca se acepta parcialmente un registro.
 
 Motivo del cambio: con `dr-combat-1` un texto erróneo era parte del registro. La defensa con el escudo cerca del tope mostraba «obtienes 7 de escudo» con `gained: 4`, y el rival «obtiene 3» con el escudo ya en 10. Corregirlo sin esta política habría invalidado todos los registros. El fixture `game/fixtures/dr-combat-1-record.json`, generado con el motor anterior, demuestra la lectura de registros antiguos; además se reprodujeron 600 registros v1 (200 semillas × 3 dificultades, tres estrategias de juego) con estado final idéntico al del motor anterior.
-Se aplica a `/duelo-v1`; `/game` conserva el combate anterior y su controlador de IA.
 
 ## Entrada, salida y reproducción
 
 - `createCombat(seed, difficulty)` crea un estado serializable. La semilla es un entero de 32 bits sin signo, incluido cero. La dificultad inicial se conserva por separado de los cambios durante la partida.
-- `invalidAction(state, action)` devuelve un motivo o `null`. Valida turno, pausa, resultado, carta en mano, coste e Impactos en orden/uno por turno. Rechaza tipos desconocidos y dificultades inválidas.
-- `applyCombatAction(state, action)` devuelve `{ state, events, error }`. No modifica la entrada. Si rechaza la acción, devuelve el mismo estado, ningún evento y un motivo; no consume aleatoriedad ni añade una entrada al registro.
-- `exportCombat(state)` produce `{ version, seed, difficulty, journal }`, apto para JSON. Cada entrada contiene la acción aceptada y sus eventos en orden.
-- `replayCombat(record)` inicializa desde la semilla y reaplica las acciones; comprueba los eventos generados y rechaza versiones incompatibles, acciones ilegales o eventos divergentes.
+- `canonicalAction(input)` copia solo los campos que define cada acción (`type`, `cardId` o `value`). El registro guarda siempre la forma canónica; campos ajenos o no clonables se descartan.
+- `invalidAction(state, action)` devuelve un motivo o `null`. Valida versión, resultado, pausa, turno, carta en mano, Impactos en orden y uno por turno, y mando.
+- `playBlockReason(state, cardId)` devuelve el motivo estructurado (`finished`, `paused`, `not_your_turn`, `not_in_hand`, `impact_order`, `impact_used`, `mana`). La interfaz lo usa para explicar bloqueos; `invalidAction` lo usa para jugar cartas, así no hay dos criterios.
+- `applyCombatAction(state, action)` devuelve `{ state, events, error }`. No modifica la entrada. Si rechaza la acción, devuelve la misma referencia, ningún evento y un motivo; no consume aleatoriedad ni añade una entrada al registro.
+- `exportCombat(state)` produce `{ version, seed, difficulty, journal }`, apto para JSON e independiente del estado.
+- `invalidRecord(input)` comprueba la forma de un registro externo: versión admitida, semilla, dificultad, acciones canónicas y eventos con `type`, `turn` y `data`.
+- `replayCombat(record)` aplica `invalidRecord`, inicializa desde la semilla, reaplica las acciones y compara eventos según la política anterior.
 
 Ejemplo reproducible sin navegador:
 
@@ -35,7 +38,7 @@ const record = JSON.parse(JSON.stringify(exportCombat(state)));
 const restored = replayCombat(record); // mismo estado completo, RNG y registro
 ```
 
-La reproducción verifica consistencia, no autenticidad: no es una firma, protección competitiva ni validación de servidor. El registro y estado permanecen en memoria; no hay botón de descarga, persistencia automática ni reconexión. La semilla se genera con `crypto.getRandomValues` solo al crear la partida en la interfaz. El motor no consulta reloj, DOM, almacenamiento ni aleatoriedad global.
+La reproducción verifica consistencia, no autenticidad: no es una firma, protección competitiva ni validación de servidor. La semilla se genera con `crypto.getRandomValues` solo al crear la partida en la interfaz. El motor no consulta reloj, DOM, almacenamiento ni aleatoriedad global.
 
 ## Acciones y eventos
 
@@ -47,22 +50,30 @@ La reproducción verifica consistencia, no autenticidad: no es una firma, protec
 | `pause` / `resume` | Pausa coherente, partida sin terminar | Bloquea/restaura acciones sin consumir RNG |
 | `difficulty`, `value` | Valor admitido, sin pausa y partida activa | Cambia el perfil y registra el cambio para reproducción |
 
-Los eventos incluyen tipo, turno y datos estructurados para carta, ataque, escudo, Impacto, robo, cambio de turno, resultado, pausa y dificultad. Los mensajes del historial se derivan de estos eventos; no controlan las reglas. No se registra tiempo real.
+Los eventos contienen tipo, turno y datos estructurados de lo realmente aplicado: carta, ataque (daño, bloqueo, escudo restante, bono o ataque entrante), escudo (ganancia real, cantidad pedida y resultado), Impacto (sellos, daño, curación), robo, turno, resultado, pausa y dificultad. `combatText.ts` deriva de ellos el mensaje del tablero y el historial; por ejemplo, una defensa con el escudo en 10 indica «obtienes 2 de escudo (tope 12; 2 sin efecto)». No se registra tiempo real.
+
+## Coste del registro (medido antes de optimizar)
+
+| Escenario | `dr-combat-1` | `dr-combat-2` |
+|---|---:|---:|
+| 3.000 partidas con estrategia voraz (semillas 0–999 × 3 dificultades) | mediana 34 entradas, máx. 60; JSON máx. 14,3 KB | mismas entradas; JSON máx. 11,5 KB (sin mensajes) |
+| Jugador pasivo, Aprendiz, 1.000 semillas | máx. 68 entradas, 14,8 KB | máx. 68 entradas, 11,5 KB |
+| 1.000 acciones (pausa/reanudar) | construir 972 ms, replay 933 ms | 36 ms / 39 ms |
+| 5.000 acciones | 24,3 s / 24,2 s | 207 ms / 221 ms |
+| 10.000 acciones | 101,7 s / 103,5 s; siguiente acción 21 ms | 448 ms / 441 ms; siguiente acción 0,05 ms |
+
+Medido en el contenedor de desarrollo con Node 22.22.0; las cifras son orientativas, no un banco de pruebas formal. Las partidas naturales son cortas; el coste cuadrático solo aparecía al inflar el registro, pero bloqueaba la recuperación de una partida guardada. Causa: `structuredClone(state)` copiaba todo el registro en cada acción. Ahora se clona el estado sin registro y las entradas, congeladas con `Object.freeze`, se comparten entre estados sucesivos. Se conserva la información completa para reproducir. La regresión `journal cost grows linearly` construye y reproduce 5.000 acciones con un límite holgado de 6 s.
 
 ## Mecánicas conservadas
 
-24 cartas existentes, mano inicial de cuatro, tope de seis, 20 de vida, tres de mando por turno; mismos costes y efectos. Se mantienen el combo de tres cartas, escudos persistentes (tope del jugador 12, rival 10), cuatro Impactos ordenados y uno por turno del jugador. La IA conserva sus probabilidades, prioridades y una respuesta por turno. El contador y robo tras la respuesta rival conservan el comportamiento anterior incluso si esa respuesta es letal. El daño de Impacto no pasa por escudo. No se añadieron cartas ni reglas.
+24 cartas existentes, mano inicial de cuatro, tope de seis, 20 de vida, tres de mando por turno; mismos costes y efectos. Se mantienen el combo de tres cartas, escudos persistentes (tope del jugador 12, rival 10), cuatro Impactos ordenados y uno por turno del jugador. La IA conserva sus probabilidades, prioridades, consumo de RNG y una respuesta por turno. El contador y robo tras la respuesta rival conservan el comportamiento anterior incluso si esa respuesta es letal. El daño de Impacto no pasa por escudo. No se añadieron cartas ni reglas. La equivalencia se comprobó reproduciendo 600 registros generados con el motor anterior: mismo estado final campo a campo.
 
-La UI conserva estilos y diálogos. Su efecto de 700 ms únicamente envía `resolve_rival` y se limpia al salir/desmontar o pausar; el motor resuelve la acción completa. El botón de pausa sigue deshabilitado durante la respuesta rival como antes. La pantalla antigua tiene un controlador distinto que conserva el tiempo restante de cada espera.
+La UI conserva estilos y diálogos. Su efecto de 700 ms únicamente envía `resolve_rival` y se limpia al salir/desmontar o pausar; el motor resuelve la acción completa.
 
 ## Decisión pendiente: agotamiento
 
 El robo de mazo vacío permanece sin efecto. No hay fatiga, reciclaje, límite de turnos ni empate nuevo. Una partida sin salida sigue siendo un riesgo pendiente de diseño; este trabajo no declara cerrada la puerta completa de DR-01.
 
-## Verificaciones y límites
+## Verificaciones
 
-23 pruebas automáticas: nueve de reglas, cuatro del controlador anterior de IA y diez del motor. Cubren ilegalidades, turnos, pausa, victoria/derrota por vida e Impactos, límites, conservación de 24 instancias y reproducción de partidas completas para semillas 0–39 con cambios de dificultad. Es una regresión determinista, no una simulación estadística de balance ni 10.000 partidas.
-
-Probadas en Node 24.22.1 y Node 22.23.4 con `--experimental-strip-types`; se comprobaron también TypeScript y Vite en ambos. No se garantiza compatibilidad con todos los parches antiguos de Node 22. MockTimers emite una advertencia experimental en Node 22.
-
-La revisión inicial no ejecutó navegador. La revisión posterior sí ejecutó 20 E2E con Chromium real en Actions; Android/iOS físicos siguen pendientes. Las pruebas del motor no montan React. La revisión posterior añade 12 pruebas de integración en jsdom que sí montan la UI; no verifican estilos, geometría ni interacción táctil real. Ver `DR-02-qa-interfaz.md` para los resultados y los límites del QA automatizado. El registro completo se clona al resolver cada acción; su coste crece con partidas muy largas. Quedan pendientes persistencia/reconexión y la decisión de agotamiento.
+`npm test`: 42 pruebas (9 reglas, 4 controlador anterior de IA, 20 motor y textos, 6 guardado y 3 del guion del tutorial). Cubren ilegalidades, atomicidad, turnos, pausa, victoria/derrota, 40 semillas reproducidas, compatibilidad `dr-combat-1`, textos de escudo y respuesta rival, acciones canónicas, registro compartido y congelado, coste lineal, validación de registros externos y motivos de bloqueo. Aprobadas en Node 22.22.0 y 24.22.2 locales y en los trabajos Node 22/24 de CI.

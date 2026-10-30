@@ -1,6 +1,6 @@
-# Decreto Real — Informe de estado y traspaso a Claude
+# Decreto Real — Informe de estado y traspaso
 
-Fecha: 30 de octubre de 2026. Este documento describe el estado comprobado del proyecto, sus límites y un encargo inicial de revisión. No declara el juego terminado ni autoriza ampliar mecánicas.
+Actualizado el 30 de octubre de 2026 tras el paquete «combate sólido, recuperable y comprensible» (Claude). No declara el juego terminado ni autoriza ampliar mecánicas.
 
 ## 1. Punto de partida verificable
 
@@ -8,71 +8,46 @@ Fecha: 30 de octubre de 2026. Este documento describe el estado comprobado del p
 |---|---|
 | Repositorio | https://github.com/Afelex/Decreto-Real |
 | Rama de trabajo | `codex/decreto-real-combate-v1` |
-| Último código y QA revisados | `5f48cfbf22f0faa257e2f65ff599b0249fbb4fd0` |
-| `main`, sin cambios de este trabajo | `48cc6386ab151e53ee3086216bec21ba94a6761d` |
-| CI aprobado sobre el código revisado | https://github.com/Afelex/Decreto-Real/actions/runs/41085102590 |
-| Rama y ejecución | Verificadas de nuevo mediante la API de GitHub al preparar este informe |
-| Esta entrega | Documentación de traspaso; no cambia código, reglas ni apariencia |
+| Base del paquete | `454a3a4be134401675585b81f3c73ed1ef31ece9` (código validado `5f48cfb`) |
+| Último código verificado | `e4822ccca7f695a7aaa8c73b437e77ffc895d65a` |
+| CI aprobado sobre ese código | [run 41095702756](https://github.com/Afelex/Decreto-Real/actions/runs/41095702756): Node 22, Node 24 y navegador `success` |
+| CI del commit del motor | [run 41092850163](https://github.com/Afelex/Decreto-Real/actions/runs/41092850163) `success` |
+| `main` | `48cc6386ab151e53ee3086216bec21ba94a6761d`, sin cambios |
 
-El commit que añade este informe será posterior al SHA de código de la tabla. Para trabajar, actualizar la rama remota y comprobar `git status`; no volver a una copia antigua de `main`. El árbol local estaba limpio antes de escribir este documento.
+El commit de documentación que actualiza este informe es posterior al código verificado. No se abrió ni fusionó un PR, no se tocó `main` y no se desplegó: GitHub Pages sigue sirviendo `main`, que **no** contiene el prototipo. Para evaluarlo, ejecutar la rama localmente (sección 9).
 
-No se abrió ni fusionó un PR en estas entregas. No se desplegó esta rama: GitHub Pages continúa asociado al despliegue existente de `main`. **La web publicada no sirve para evaluar el prototipo nuevo.** Para verlo, ejecutar la rama localmente.
+## 2. Qué cambió en este paquete
 
-## 2. Visión y límites vigentes
-
-Visión del usuario: duelo de cartas histórico peruano con presentación cuidada, decisiones interesantes, IA, futura personalización de jugador y baraja y, más adelante, acceso desde Colección de Peruanistas, clasificación y partidas entre jugadores. La imagen conceptual aprobada es una dirección artística, no una captura de la implementación actual.
-
-El alcance trabajado hasta ahora es consolidar el prototipo, extraer su motor y verificar su interfaz. Se preservaron las reglas existentes durante la extracción; las cifras de la hoja de ruta eran propuestas de balance y no se aplicaron automáticamente.
-
-Restricciones expresas:
-
-- Trabajar solo en la rama de desarrollo; no modificar, fusionar ni desplegar `main`.
-- No abrir PR sin una nueva instrucción del usuario.
-- No implementar agotamiento del mazo: necesita decisión de diseño.
-- No añadir cartas, rankings, multijugador ni integración en Peruanistas en este tramo.
-- No contratar servicios ni añadir IA por API de pago. La IA actual es lógica local.
-- Corregir defectos reproducidos con regresión; separar propuestas de diseño de errores de implementación.
-
-## 3. Hay dos juegos en el mismo repositorio
-
-| Ruta real del HashRouter | Componente | Estado |
+| Entrega | Resultado | Documento |
 |---|---|---|
-| `/#/game` | `screens/GameBoard.tsx` | Juego antiguo, 10 de vida y reglas originales; sigue accesible por el botón principal |
-| `/#/duelo-v1` | `screens/CombatPrototype.tsx` | Prototipo nuevo, 20 de vida y mando; usa el motor extraído. Acceso «Probar nuevo combate» |
-| `/#/victory` | `screens/VictoryScreen.tsx` | Resultado del juego antiguo; incluye cifras de muestra, no puntuación competitiva validada |
+| A. Motor | `dr-combat-2`: eventos solo con datos y textos derivados; política de compatibilidad; lectura de `dr-combat-1`; acciones canónicas; registro con coste lineal; validación de registros externos; motivos de bloqueo estructurados | `DR-01-motor.md` |
+| B. Guardado | Guardado local tras cada acción aceptada; «Continuar partida» / «Nueva partida»; restauración solo por replay; corrupción, versión, almacenamiento bloqueado y cuota con mensajes; respuesta rival pendiente resuelta una vez | `DR-02-guardado-tutorial.md` |
+| C. Tutorial | `/duelo-v1/tutorial`, 7 pasos sobre el motor normal con semilla preparada; omitir, salir, repetir y reabrir desde la ayuda; no escribe la partida guardada | `DR-02-guardado-tutorial.md` |
+| D. Interfaz | Impactos propios y rivales siempre visibles; motivo de bloqueo al tocar; textos ≥ 10 px; mano con contador y aviso de deslizamiento; sin solapes a 320–360 px; foco en el resultado; «Jugar otra vez» sin recargar; hover solo en punteros | `DR-02-guardado-tutorial.md`, `DR-02-qa-interfaz.md` |
 
-Con el `base` de Vite actual, la URL local completa es `http://127.0.0.1:4173/Decreto-Real/#/duelo-v1`. Las dos rutas no comparten un motor unificado. Las 12 pruebas de integración y los 20 E2E se refieren al prototipo, no a toda la UI antigua.
+Defectos reales corregidos, todos con reproducción y regresión: textos de escudo que no coincidían con lo aplicado; registro cuadrático (5.000 acciones: 24 s → 0,2 s); acciones con campos ajenos en el registro; pantalla rota con `localStorage` bloqueado; Impactos invisibles; motivos de bloqueo imprecisos; texto a 9,6 px; solapes en móvil estrecho; aviso de recuperación que tapaba el turno rival.
 
-La extracción DR-01 no convirtió al rival del prototipo en un jugador simétrico: el rival realiza una respuesta de ataque, defensa o Impacto por turno mediante probabilidades y estado público. No tiene una mano, baraja o presupuesto de mando propios. «Aprendiz», «Estratega» y «Maestro» son perfiles simples; no representan búsqueda avanzada de secuencias.
+## 3. Rutas y arquitectura
 
-## 4. Arquitectura actual
+| Ruta (HashRouter) | Componente | Estado |
+|---|---|---|
+| `/#/game` | `screens/GameBoard.tsx` | Juego antiguo, sin cambios |
+| `/#/duelo-v1` | `screens/CombatPrototype.tsx` → `DuelBoard` | Entrada: recuperación, bienvenida o duelo |
+| `/#/duelo-v1/tutorial` | `screens/TutorialScreen.tsx` → `DuelBoard` | Tutorial guiado, solo en memoria |
 
-| Archivo | Responsabilidad y observaciones |
+| Archivo | Responsabilidad |
 |---|---|
-| `game/cards.ts` | Catálogo, tipos y barajado con RNG inyectable. IDs estables por instancia; efectos copiados para evitar compartir mutaciones con el catálogo |
-| `game/rules.ts` | Ataque/absorción de escudo, robo con límite de mano, Impactos y racha |
-| `game/combatEngine.ts` | Estado serializable, acciones, validación, RNG Mulberry32, efectos atómicos, eventos, registro y reproducción |
-| `screens/CombatPrototype.tsx` | Render y diálogos; `useReducer` delega al motor. Genera la semilla inicial en la frontera de UI; temporizador de 700 ms envía la respuesta rival y se limpia al desmontar |
-| `screens/combat-prototype.css` | Apariencia propia con SVG, tamaños adaptables, movimiento reducido y paneles desplazables |
-| `game/aiTurn.ts` | Controlador distinto para la IA antigua: lectura de estado vigente, esperas pausables y cancelables |
-| `screens/GameBoard.tsx` | Conexión de la IA antigua con referencias a estado/funciones actuales. Conserva temporizadores antiguos fuera de ese controlador |
-| `tests/scenarios.ts` | Genera secuencias legales reproducibles para probar resultados reales desde UI |
-| `tests/integration/duel.test.tsx` | React montado con router, motor real y StrictMode; solo controla semilla y reloj |
-| `tests/e2e/duel.spec.ts` | Chromium real: interacción, resultados, reinicio, geometría y capturas por viewport |
-| `.github/workflows/development-qa.yml` | CI exclusivamente en pushes de esta rama; Node 22/24 y Chromium, permisos de lectura, sin despliegue |
+| `game/combatEngine.ts` | Estado, acciones, validación, RNG Mulberry32, eventos de datos, registro compartido y congelado, `invalidRecord`, replay y compatibilidad |
+| `game/combatText.ts` | Mensajes, historial y motivos de bloqueo derivados de eventos; editables sin versión nueva |
+| `game/combatSave.ts` | Lectura/escritura tolerante a fallos con almacenamiento inyectado; restauración por replay |
+| `game/tutorial.ts` | Semilla 2308, pasos, acciones permitidas y objetivo; progreso derivado del registro |
+| `screens/DuelBoard.tsx` | Tablero reutilizable: reducer del motor, temporizador rival de 700 ms, guardado tras cada acción, diálogos con foco y capa opcional de guía |
+| `screens/CombatPrototype.tsx` | Sesión: «¿Continuar el duelo?», «No se pudo recuperar», bienvenida, duelo |
+| `game/fixtures/dr-combat-1-record.json` | Registro real del motor anterior para la prueba de compatibilidad |
 
-Contrato del motor, versión `dr-combat-1`:
+La IA del prototipo sigue sin mano ni baraja propias: una respuesta por turno con probabilidades. No es una IA simétrica ni de competición.
 
-- `createCombat(seed, difficulty)`: inicialización reproducible; semilla entera sin signo de 32 bits, incluido cero.
-- `invalidAction(state, action)`: devuelve el motivo de rechazo o `null`.
-- `applyCombatAction(state, action)`: devuelve `{ state, events, error }` sin mutar la entrada. Rechazo conserva el mismo estado, no consume RNG y no añade registro.
-- Acciones: `play`, `end_turn`, `resolve_rival`, `pause`, `resume`, `difficulty`.
-- `exportCombat(state)`: registro serializable con versión, semilla, dificultad inicial, acciones aceptadas y eventos.
-- `replayCombat(record)`: reinicializa desde la semilla, reaplica acciones y verifica los eventos generados.
-
-No es un servidor autoritativo ni un sistema antifraude. El estado, RNG y registro viven en memoria del cliente. No hay restauración automática tras recargar ni botones de importación/exportación.
-
-## 5. Reglas efectivamente implementadas en el prototipo
+## 4. Reglas efectivamente implementadas en el prototipo
 
 | Elemento | Comportamiento actual |
 |---|---|
@@ -92,97 +67,62 @@ No es un servidor autoritativo ni un sistema antifraude. El estado, RNG y regist
 | Pausa | Motor bloquea acciones mientras está pausado. UI permite pausa durante turno del jugador; botón deshabilitado durante respuesta rival |
 | Mazo vacío | Robo sin efecto. No fatiga, reciclaje, empate ni límite de turnos nuevos |
 
+El paquete de Claude no cambió ninguna de estas reglas: se comprobó reproduciendo 600 registros del motor anterior con estado final idéntico.
+
 Los detalles anteriores son la referencia de regresión actual, no una aprobación de balance definitivo. Cambiarlos requiere distinguir una decisión de diseño de un defecto.
 
-## 6. Correcciones realizadas
 
-1. Separación del catálogo y efectos estructurados; eliminación del rango de Impacto duplicado.
-2. Inspiración con mano llena ahora usa el espacio liberado al jugarla; no anuncia una carta robada cuando no se pudo robar.
-3. IA antigua: sustituida lectura de estado capturado por datos vigentes entre acciones y al resolver habilidades diferidas.
-4. Pausa de la IA antigua: conserva esperas y cancela acciones/habilidades al salir o terminar el turno.
-5. Motor puro del prototipo con semilla, validación central y replay.
-6. UI indica «TURNO DEL RIVAL» durante su respuesta, en vez de mostrar «TU TURNO».
-7. Diálogos: foco inicial, Tab/Shift+Tab contenido, Escape y retorno del foco; pausa se reanuda al cerrar.
-8. QA real detectó ayuda fuera de pantalla y botones menores de 44 px; paneles ahora tienen altura limitada y scroll interno, y controles mínimos de 44×44 px.
-9. Etiquetas «Mando» y «Racha» separadas tras revisar capturas.
-10. CI de la rama y capturas/trazas automáticas para reproducir regresiones.
+## 5. Pruebas y evidencias
 
-## 7. Pruebas y evidencias
-
-| Nivel | Cantidad | Qué se comprobó |
+| Nivel | Casos | Ejecución |
 |---|---:|---|
-| Funciones de reglas | 9 | Daño/escudo, límites, Impactos, combo y robo |
-| Controlador de IA antigua | 4 | Turnos consecutivos, estado vigente, pausa/reanudación y cancelación de acciones/habilidades |
-| Motor nuevo | 10 | Ilegalidades, atomicidad, turnos, pausa, victoria/derrota, semilla y replay |
-| Integración React–motor | 12 | Selección/uso/descarte, contadores, turno y tiempo, diálogos, teclado, salida de ruta y partidas completas |
-| E2E Chromium | 20 | Cuatro casos en cinco viewports; geometría de paneles y controles, toque simulado, resultados y reinicio real |
+| Reglas | 9 | CI Node 22/24; local Node 22.22.0 y 24.22.2 |
+| Controlador IA antigua | 4 | Igual |
+| Motor y textos | 20 | Igual |
+| Guardado | 6 | Igual |
+| Guion del tutorial | 3 | Igual |
+| Integración React–motor (jsdom) | 26 | Igual |
+| E2E Chromium | 45 = 9 casos × 5 viewports | CI: Chrome Headless Shell 156.0.8078.4, 45/45. Local: Chrome for Testing 153.0.8010.12, 45/45 |
 
-Son **35 casos funcionales y 20 E2E** distintos; no sumar otra vez las ejecuciones repetidas en Node 22/24 como si fueran casos nuevos.
+Son 68 casos funcionales y 9 casos E2E distintos; no sumar las ejecuciones repetidas por Node o viewport como casos nuevos. TypeScript y build aprobados en los cuatro entornos.
 
-- Se reprodujeron 40 partidas del motor (semillas 0–39) con estados/eventos idénticos, conservación de 24 cartas y límites de vida/mano/mando. No son 10.000 simulaciones ni un estudio estadístico de equilibrio.
-- Los flujos completos de UI usan semilla 0 para victoria (31 acciones, turno 9) y 5 para derrota (25 acciones, turno 8), comparando UI con el motor tras cada acción.
-- Node 24.22.1 y Node 22.23.4 se comprobaron localmente en entregas anteriores; el workflow también aprobó sus trabajos Node 22/24 en runners limpios. No se verificó cada parche antiguo de Node 22.
-- TypeScript y build de producción aprobados. El workflow instala con `npm ci`.
+Matriz E2E en CI (run 41095702756): 320×568, 360×800, 390×844, 360×480 y 844×390, 9/9 cada uno. Artefacto `browser-results` ID `12996581520` ([descarga](https://github.com/Afelex/Decreto-Real/actions/runs/41095702756/artifacts/12996581520)), retención de siete días. Las capturas se inspeccionaron en local (320×568, 360×480, 390×844, 844×390); no se versionan.
 
-Matriz E2E aprobada en Chromium 156.0.8078.4 sobre Ubuntu:
+Comprobaciones puntuales no versionadas como pruebas: 600 registros del motor anterior reproducidos con estado idéntico; mediciones de coste del registro; reproducción del fallo de almacenamiento sobre `454a3a4`.
 
-| Viewport | Resultado |
+**No ejecutado:** Android/iPhone físicos, Safari/WebKit, Firefox, lector de pantalla real, contraste medido, jugadores nuevos probando el tutorial, rendimiento en teléfonos y red móvil, ensayo de balance. Viewport y tacto simulados en Chromium no sustituyen esas verificaciones.
+
+## 6. Estado de las fases
+
+| Fase | Evaluación |
 |---|---|
-| 320 × 568 | 4/4 |
-| 360 × 800 | 4/4 |
-| 390 × 844 | 4/4 |
-| 360 × 480 | 4/4 |
-| 844 × 390 | 4/4 |
+| DR-00 | Parcial: contratos, política de versiones y diagnóstico documentados; casos límite e integración pendientes |
+| DR-01 | Núcleo consolidado y restauración local. No se cierra mientras el agotamiento no tenga decisión |
+| DR-02 | Muestra jugable, recuperable y con tutorial, probada en navegador simulado. Faltan tres barajas, piloto y dispositivos físicos |
+| Siguientes | Catálogo/editor, IA avanzada, integración, ranking, colección y PvP no implementados |
 
-Evidencia exacta más reciente: [run 41085102590](https://github.com/Afelex/Decreto-Real/actions/runs/41085102590), commit de código `5f48cfbf22f0faa257e2f65ff599b0249fbb4fd0`, conclusión `success` confirmada de nuevo para este informe.
+## 7. Decisiones de producto pendientes
 
-Antecedentes: primer Chromium real [41083955390](https://github.com/Afelex/Decreto-Real/actions/runs/41083955390), 12 aprobadas/8 fallidas; tras corregir estilos [41084549868](https://github.com/Afelex/Decreto-Real/actions/runs/41084549868), 20/20. El último run añadió límites horizontales de controles y capturas de tablero/ayuda.
+1. **Agotamiento del mazo.** Hoy el robo con mazo vacío no hace nada; una partida puede prolongarse. Alternativas: (a) fatiga creciente al no poder robar; (b) barajar el descarte en un mazo nuevo; (c) límite de turnos con desempate por vida/Impactos; (d) dejarlo como está porque los Impactos del rival terminan la partida. Cada una cambia reglas y exige versión de registro nueva. No implementado.
+2. **Varias pestañas.** Ahora gana la última jugada. ¿Avisar o bloquear la segunda pestaña?
+3. **Tutorial.** ¿Ofrecerlo siempre en la primera visita (actual) o solo desde la ayuda? ¿Ampliar a combos y victoria completa? Conviene decidirlo tras observar a jugadores nuevos.
+4. **Descarga/importación de partidas** y cualquier guardado en servidor o entre dispositivos.
+5. **Unificación con `/game`** y asimetrías conservadas (escudo 12/10, rival sin baraja).
 
-Artefacto `browser-results` del último run: ID `12992315092`, [descarga en Actions](https://github.com/Afelex/Decreto-Real/actions/runs/41085102590/artifacts/12992315092), retención de siete días (vence el 6 de noviembre de 2026 según metadatos). Contiene capturas de los cinco tamaños; se inspeccionaron muestras de 320 px, 390 px y horizontal. Las imágenes no están versionadas dentro del código.
+## 8. Riesgos técnicos
 
-**No ejecutado:** pruebas en Android/iPhone físicos, validación de Safari/WebKit o Firefox, piloto con investigadores, auditoría completa de accesibilidad, medición de fluidez/carga en red móvil y ensayo de balance. El viewport y tacto simulados en Chromium no sustituyen esas verificaciones.
+- El guardado es local y manipulable; nunca usarlo como resultado competitivo.
+- Recuperar un registro cerca del límite (2 M caracteres) puede tardar ~0,5–1 s en escritorio; en teléfonos no se midió.
+- La semilla del tutorial depende del catálogo, barajado y RNG; `tutorial.test.ts` avisa si deja de servir.
+- `LEGACY_VERSIONS` solo es correcto mientras las reglas no cambien (ver política en `DR-01-motor.md`).
+- Fuentes de Google y recursos del juego antiguo siguen siendo remotos; no se verificó el funcionamiento sin red.
 
-## 8. Estado de las fases
-
-| Fase | Evaluación actual |
-|---|---|
-| DR-00 | Parcial: contratos del motor y diagnóstico documentados; decisiones de casos límite e integración futura pendientes |
-| DR-01 | Núcleo consolidado: motor determinista, acciones atómicas, eventos y pruebas. No cerrar toda la fase mientras agotamiento y desconexión/restauración sigan sin definición |
-| DR-02 | Muestra jugable con pruebas de interfaz y navegador. Faltan tres barajas, tutorial guiado, piloto y validación física |
-| Fases siguientes | Catálogo ampliado/editor, IA avanzada, integración, ranking, colección y PvP no implementados |
-
-Aún no se ha alcanzado la presentación artística de la imagen conceptual ni estándares finales de publicación. Hay una base técnica probada para seguir iterando, no un producto final terminado.
-
-## 9. Pendientes y revisión recomendada para Claude
-
-| Prioridad | Trabajo | Criterio de salida |
-|---|---|---|
-| Alta | Revisar invariantes y fronteras del motor/replay sin cambiar reglas | Hallazgos con archivo, reproducción, gravedad y prueba de regresión; conservar semillas reproducibles |
-| Alta | Proponer decisión de agotamiento y de desconexión al usuario | Alternativas y consecuencias explícitas. No implementar antes de autorización |
-| Alta | Organizar QA en el teléfono del usuario y revisión visual humana | Comprobar legibilidad, tacto, diálogos y toda la información de estado; registrar dispositivo/navegador y observaciones |
-| Media | Evaluar coste del registro para partidas largas | Medición de memoria/tiempo antes de optimizar; no perder reproducibilidad |
-| Media | Acordar política de versiones de registros | Documentar cómo tratar registros antiguos al cambiar catálogo, RNG, eventos o mensajes |
-| Posterior | Plan de una única implementación de combate | Propuesta de migración con regresiones, antes de eliminar `/game` o duplicar más código |
-
-Puntos concretos para revisión estática; no todos son defectos reproducidos:
-
-- `structuredClone(state)` copia también todo el journal en cada acción; el coste crece con la longitud de la partida.
-- El replay compara eventos completos por JSON, incluidos mensajes. Cambiar un texto puede invalidar registros de la misma versión; revisar la estrategia antes de editar mensajes del motor.
-- Se valida la acción contra un estado de confianza, no todo estado externo ni un esquema JSON hostil. No usar esta API como endpoint autoritativo sin un trabajo específico de validación.
-- Hay valores conservados explícitos (20 de vida, 3 de mando, 12/10 de escudo) además de `GAME_RULES`. Cualquier refactor debe preservar las asimetrías actuales hasta acordar cambios.
-- La UI consume `result.state` y descarta `error` del reducer; botones bloqueados previenen usos normales, pero revisar si los motivos de bloqueo son siempre comprensibles.
-- En el CSS actual `.dr-seals` se oculta a anchuras de 370 px o menos; algunos textos llegan a 7–9 px. Los E2E no verifican que todos los datos importantes estén visibles ni miden comprensión. Revisar antes de afirmar que todo el móvil es legible.
-- El rival del prototipo no administra cartas propias. No asumir que las probabilidades actuales equivalen a una IA de baraja simétrica, equilibrada o lista para competición.
-- El escudo puede limitar la ganancia real por debajo de la cantidad indicada en el mensaje de una defensa. Revisar consistencia entre evento `gained`, texto y estado antes de cambiar mensajes/versiones.
-- Fuentes y algunos recursos del juego antiguo siguen siendo remotos. No se comprobó funcionamiento completo offline ni presupuesto de carga.
-
-## 10. Puesta en marcha y verificaciones
+## 9. Puesta en marcha y verificaciones
 
 ```sh
 git fetch origin
 git switch codex/decreto-real-combate-v1
 git pull --ff-only origin codex/decreto-real-combate-v1
-git status --short --branch
 npm ci
 npm test
 npm run test:ui
@@ -192,18 +132,19 @@ npx playwright install --with-deps chromium
 npm run test:e2e -- --workers=2
 ```
 
-Para abrir la muestra:
+Si Playwright no puede descargar su navegador pero hay un Chromium local compatible: `PW_CHROMIUM_PATH=/ruta/a/chrome npm run test:e2e`. CI no usa esa variable.
+
+Para probar a mano:
 
 ```sh
 npm run dev -- --host 127.0.0.1 --port 4173 --strictPort
-# Abrir http://127.0.0.1:4173/Decreto-Real/#/duelo-v1
 ```
 
-Si el entorno no permite instalar/arrancar Chromium, usar el workflow ya existente de la rama y consultar sus resultados reales. No presentar un `--list`, jsdom o un intento de arranque fallido como navegador aprobado. En el entorno de ChatGPT falló la descarga directa de Playwright y un binario alternativo no arrancó; por eso la matriz se ejecutó en Actions. No se deben copiar rutas temporales de ese entorno al código.
+Abrir `http://127.0.0.1:4173/Decreto-Real/#/duelo-v1`. Primera visita: elegir «Aprender a jugar» o «Ir directamente al duelo». Para la recuperación: jugar una carta, pulsar «Terminar turno» y recargar enseguida; debe aparecer «¿Continuar el duelo?». Para volver a ver la bienvenida, borrar los datos del sitio o la clave `decreto-real.duelo-v1.tutorial`.
 
-Conservar `package-lock.json`, no confirmar `node_modules`, `dist`, trazas locales ni secretos. Los artefactos locales de tests están ignorados. La CI puede emitir avisos sobre los runtimes internos de actions v4; los trabajos revisados terminaron correctamente.
+No confirmar `node_modules`, `dist`, `test-results` ni secretos.
 
-## 11. Historial de entregas principales
+## 10. Historial de entregas
 
 | Commit | Entrega |
 |---|---|
@@ -217,9 +158,14 @@ Conservar `package-lock.json`, no confirmar `node_modules`, `dist`, trazas local
 | `c619963` | CI de desarrollo con Node 22/24 y Chromium |
 | `38b1602` | Arreglo de paneles y controles táctiles |
 | `5f48cfb` | Capturas por viewport y documentación de QA real |
+| `454a3a4` | Informe de traspaso |
+| `b9eaea2` | Motor `dr-combat-2`, política de compatibilidad, registro lineal |
+| `afbede3` | Guardado local por replay |
+| `877aabd` | Guion del tutorial |
+| `e4822cc` | Interfaz: recuperación, tutorial, claridad, pruebas |
 
-## 12. Encargo sugerido para la primera intervención de Claude
+## 11. Próximo paquete recomendado (no implementado)
 
-Lee este informe, `DR-01-motor.md`, `DR-00-02-auditoria.md` y `DR-02-qa-interfaz.md` desde la rama de desarrollo actualizada. Confirma el SHA y la limpieza del árbol antes de trabajar. Haz una revisión del motor, sus invariantes, el replay y la conexión React. Prioriza defectos comprobables que las pruebas actuales no detecten y añade regresión para los que corrijas. Conserva las reglas y el contrato reproducible; justifica cualquier cambio que afecte eventos/versiones. No implementes agotamiento, cartas, ranking, PvP ni integración, no modifiques `main` y no abras/fusiones PR. Entrega hallazgos con evidencia, archivos modificados, pruebas realmente ejecutadas, limitaciones y SHA publicado en desarrollo.
-
-Coordinar el siguiente paquete con el usuario para evitar ediciones simultáneas de Claude y ChatGPT sobre los mismos archivos. Este informe habilita el traspaso de contexto; no implica que Claude ya haya revisado o ejecutado nada.
+1. **QA humana y física** con el usuario: Android e iPhone reales, Safari, lector de pantalla; tres o cuatro personas nuevas completando el tutorial sin ayuda. Registrar dispositivo, navegador y observaciones.
+2. **Decisión de agotamiento** (sección 7.1) y, tras aprobarla, implementación con versión de registro nueva y regresiones.
+3. Después, según prioridades de producto: barajas iniciales o propuesta de unificación con `/game`.

@@ -2,6 +2,23 @@
 
 30 de octubre de 2026. Rama `codex/decreto-real-combate-v1`, base `8889d275e69c992c47f82b795b4a77a4862036aa`.
 
+## Actualización 2: guardado, tutorial y claridad (Claude, 30 de octubre de 2026)
+
+Comportamiento y defectos: `DR-02-guardado-tutorial.md`. Esta sección resume la verificación.
+
+| Nivel | Casos | Estado |
+|---|---:|---|
+| Integración React + motor real (jsdom, StrictMode) | 26 (12 anteriores + 14) | Aprobados en Node 22.22.0 y 24.22.2 locales y en CI |
+| E2E Chromium | 45 (9 casos × 5 viewports; antes 4 × 5) | 45/45 en CI con Chrome Headless Shell 156.0.8078.4 ([run 41095702756](https://github.com/Afelex/Decreto-Real/actions/runs/41095702756)) y 45/45 locales con Chrome for Testing 153.0.8010.12 (`PW_CHROMIUM_PATH`) |
+
+Nuevos casos de integración: guardado y recuperación tras «recarga» (desmontar y montar) con el mismo estado, RNG y dificultad; respuesta rival interrumpida que se resuelve una vez; «Nueva partida» que conserva la guardada hasta la primera jugada; datos dañados que solo borran su clave; versión incompatible; almacenamiento bloqueado; cuota agotada; motivo de carta bloqueada; Impactos visibles; bienvenida; tutorial completado; jugadas fuera de la guía; omitir, abandonar con respuesta pendiente y reabrir desde la ayuda; repetir.
+
+Nuevos E2E por viewport: recarga real del documento durante la respuesta rival y recuperación; tutorial completo por toque con guía y objetivo dentro de pantalla; mano de seis cartas con desplazamiento interno y todas las cartas alcanzables; ningún texto visible no decorativo por debajo de 10 px y Impactos/contadores visibles; movimiento reducido sin pulso de guía.
+
+La primera ejecución local de los E2E nuevos falló en los cinco tamaños por «· Historial» a 9,6 px; se corrigió. Las capturas locales a 320×568 y 390×844 mostraron el solape del encabezado y de la última jugada, también corregidos (sin aserción automática de solapamiento).
+
+**Sigue sin hacerse:** Android/iPhone físicos, Safari/WebKit y Firefox, lector de pantalla real, contraste medido, usuarios nuevos haciendo el tutorial y rendimiento en teléfonos. La matriz es Chromium con viewport y tacto simulados.
+
 ## Actualización: navegador real en GitHub Actions
 
 La ejecución [41084549868](https://github.com/Afelex/Decreto-Real/actions/runs/41084549868), sobre el commit `38b16026d491b82fed3aefb916ef0e2e54c47969`, instaló Chrome Headless Shell 156.0.8078.4 y aprobó **20 de 20 pruebas E2E** en Ubuntu, además de reglas, integración, TypeScript y build en Node 22 y 24. Se ejecutaron los cinco viewports con `hasTouch`/`isMobile`. Es navegador real automatizado con viewport y tacto simulados, no un teléfono físico.
