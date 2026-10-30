@@ -123,8 +123,8 @@ const MainMenu: React.FC = () => {
         {/* Footer: SUBE los botones para que no choquen con adornos */}
         <footer className="w-full flex flex-col items-center gap-2 pb-12 sm:pb-8">
           <button
-            onClick={() => navigate('/game')}
-            aria-label="Empezar Juego"
+            onClick={() => navigate('/campania')}
+            aria-label="Empezar campaña"
             className="group w-full max-w-[92%] h-[52px] sm:h-[56px] relative transition-all active:scale-95 bg-gradient-to-r from-[#8f1f1f] via-[#d93838] to-[#8f1f1f] bg-[length:200%_100%] hover:bg-[100%_0] flex items-center justify-center gap-3 hover:shadow-[0_0_20px_rgba(217,56,56,0.4)]"
             style={{
               border: '2px solid #d4af37',
@@ -138,7 +138,7 @@ const MainMenu: React.FC = () => {
               className="text-white font-bold font-rpg text-[16px] sm:text-xl tracking-[0.14em] relative z-10"
               style={{ textShadow: '0 2px 4px black' }}
             >
-              EMPEZAR
+              CAMPAÑA
             </span>
           </button>
 
@@ -172,7 +172,14 @@ const MainMenu: React.FC = () => {
             onClick={() => navigate('/duelo-v1')}
             className="w-full max-w-[92%] h-[42px] border border-[#cda952] rounded bg-gradient-to-r from-[#263d52] to-[#152638] text-[#f1d891] font-bold text-xs tracking-[0.12em] uppercase active:scale-95 transition-transform"
           >
-            ✦ Probar nuevo combate
+            ✦ Duelo libre contra IA
+          </button>
+
+          <button
+            onClick={() => navigate('/game')}
+            className="w-full max-w-[92%] min-h-[44px] border border-[#66594a] rounded bg-[#2c2b30] text-[#d7c6a1] font-semibold text-xs tracking-[0.08em] uppercase active:scale-95 transition-transform"
+          >
+            Juego original
           </button>
         </footer>
       </main>
