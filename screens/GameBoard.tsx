@@ -59,7 +59,6 @@ function useFitScale(baseW = 430, baseH = 932) {
 const GameBoard: React.FC = () => {
   const navigate = useNavigate();
   const { playSound, sfxEnabled, musicEnabled, toggleSfx, toggleMusic } = useAudio();
-  const scale = useFitScale();
 
   const [phase, setPhase] = useState<GamePhase>('INIT');
   const [turnCount, setTurnCount] = useState(0);
@@ -631,7 +630,7 @@ const GameBoard: React.FC = () => {
   return (
     <div className="w-screen overflow-hidden bg-black" style={{ height: '100dvh' }}>
       <div className="w-full h-full flex items-center justify-center">
-        <div style={{ width: 430, height: 932, transform: `scale(${scale})`, transformOrigin: 'center' }}>{Board}</div>
+        <div style={{ width: 'min(100vw, 430px)', height: '100dvh' }}>{Board}</div>
       </div>
     </div>
   );
