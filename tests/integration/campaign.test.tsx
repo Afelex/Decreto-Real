@@ -41,8 +41,9 @@ test('earned stars unlock exactly the next level and display best result', () =>
   window.localStorage.setItem(CAMPAIGN_STORAGE_KEY, JSON.stringify({ version: 1, stars: { '01': 2 } }));
   openMap();
   expect(screen.getByRole('button', { name: /Misión 2:/ }).hasAttribute('disabled')).toBe(false);
-  expect(screen.getByRole('button', { name: /Misión 3:/ }).hasAttribute('disabled')).toBe(true);
   expect(screen.getByText('★ 2/114')).toBeTruthy();
+  fireEvent.click(screen.getByRole('button', { name: /El puerto de hierro, capítulo 2/ }));
+  expect(screen.getByRole('button', { name: /Misión 3:/ }).hasAttribute('disabled')).toBe(true);
 });
 
 test('invalid saved campaign state fails closed without unlocking levels', () => {
