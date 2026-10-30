@@ -39,7 +39,7 @@ test('a reachable mission opens a story briefing before the battle', () => {
 });
 
 test('a locked boss cannot be opened by manually navigating to the URL', () => {
-  screenAt('/campania/mision/07');
+  screenAt('/campania/mision/06');
   expect(screen.getByRole('heading', { name: 'Misión no disponible' })).toBeTruthy();
 });
 
