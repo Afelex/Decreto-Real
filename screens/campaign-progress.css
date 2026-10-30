@@ -1,0 +1,183 @@
+/* DR-C03 — progress and star objectives. This layer keeps the existing
+ * full-viewport layout and never changes game logic or the existing save. */
+
+.dr-menu-campaign-label {
+  display:flex;
+  flex:0 1 min(78%,250px);
+  min-width:0;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:1px;
+  line-height:1.12;
+  text-align:center;
+}
+.dr-menu-campaign-label strong {
+  font:800 clamp(14px,4.1vw,18px)/1.1 'Cinzel',Georgia,serif;
+  letter-spacing:.12em;
+}
+.dr-menu-campaign-label small {
+  max-width:100%;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  font:700 clamp(10px,2.7vw,12px)/1.15 system-ui,sans-serif;
+  letter-spacing:0;
+  color:#ffe7b4;
+}
+.dr-menu-progress-track {
+  position:absolute;
+  bottom:2px;
+  left:7px;
+  right:7px;
+  height:3px;
+  overflow:hidden;
+  border-radius:3px;
+  background:#1a0a0b80;
+  pointer-events:none;
+}
+.dr-menu-progress-track span {
+  display:block;
+  height:100%;
+  border-radius:3px;
+  background:linear-gradient(90deg,#ffe6a1,#fff0c6);
+  transition:width .18s ease-out;
+}
+.dcm-chapter-title {position:relative;padding-bottom:5px;}
+.dcm-journey-progress {
+  position:absolute;
+  bottom:2px;
+  left:8px;
+  right:8px;
+  height:3px;
+  border-radius:4px;
+  background:#6c543e;
+  overflow:hidden;
+}
+.dcm-journey-progress span {
+  display:block;
+  height:100%;
+  background:linear-gradient(90deg,#e7bc6a,#fff0b9);
+  transition:width .2s ease-out;
+}
+.dcm-eyebrow {
+  display:block;
+  max-width:100%;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.dcm-objectives-trigger {
+  align-self:stretch;
+  min-height:0;
+  border:0;
+  border-left:1px solid #ad8158;
+  border-radius:0 5px 5px 0;
+  padding:2px;
+  background:#e6c48a47;
+  cursor:pointer;
+}
+.dcm-objectives-trigger:active {background:#eab8727e;}
+.dcm-objectives-trigger small {font-size:11px;line-height:1.1;text-decoration:underline;text-underline-offset:2px;}
+.dcm-objectives-overlay {
+  position:absolute;
+  inset:0;
+  z-index:25;
+  display:grid;
+  place-items:center;
+  padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right))
+          max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));
+  background:#090f18dc;
+  backdrop-filter:blur(4px);
+}
+.dcm-objectives-panel {
+  position:relative;
+  width:min(100%,430px);
+  max-height:calc(100dvh - 24px);
+  min-height:0;
+  padding:clamp(12px,2.8dvh,23px);
+  display:flex;
+  flex-direction:column;
+  gap:clamp(5px,1.2dvh,11px);
+  border:3px ridge #d8b372;
+  border-radius:15px;
+  background:linear-gradient(160deg,#f5e1b3,#d0ae78);
+  color:#573820;
+  text-align:left;
+  box-shadow:0 15px 38px #000a,inset 0 0 0 1px #fff0c2;
+  overflow:hidden;
+}
+.dcm-objectives-panel>small {
+  color:#905222;
+  font:800 clamp(10px,2.8vw,12px)/1 system-ui,sans-serif;
+  letter-spacing:.09em;
+}
+.dcm-objectives-panel h2 {
+  margin:0 35px 0 0;
+  font:700 clamp(19px,5vw,27px)/1.1 'Cinzel',Georgia,serif;
+  color:#5d3420;
+}
+.dcm-objectives-panel p {
+  margin:0;
+  font:500 clamp(11px,3vw,13px)/1.3 system-ui,sans-serif;
+  color:#68482c;
+}
+.dcm-objectives-close {
+  position:absolute;
+  top:7px;
+  right:7px;
+  width:44px;
+  height:44px;
+  min-height:44px;
+  border:1px solid #ac8554;
+  border-radius:9px;
+  background:#efe0bc;
+  color:#5d3924;
+  font:700 29px/1 system-ui,sans-serif !important;
+}
+.dcm-objectives-list {display:grid;gap:clamp(5px,1dvh,9px);}
+.dcm-objectives-list>div {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-height:clamp(43px,7dvh,57px);
+  padding:clamp(5px,1dvh,8px);
+  border:1px solid #b68e54;
+  border-radius:9px;
+  background:#fff0cd9c;
+}
+.dcm-objectives-list>div>span:first-child {
+  flex:0 0 28px;
+  color:#b37b2f;
+  font-size:23px;
+  line-height:1;
+  text-align:center;
+}
+.dcm-objectives-list>div>span:last-child {display:grid;gap:2px;min-width:0;font:500 clamp(11px,2.9vw,13px)/1.2 system-ui,sans-serif;}
+.dcm-objectives-list strong {font-size:11px;color:#865122;}
+.dcm-objectives-hint {font-size:clamp(10px,2.8vw,12px)!important;}
+.dcm-objectives-play {
+  min-height:46px;
+  width:100%;
+  border:2px ridge #eac178;
+  border-radius:9px;
+  background:linear-gradient(#9f3031,#671d24);
+  color:#ffedc3;
+  font:700 clamp(15px,4vw,18px) 'Cinzel',Georgia,serif !important;
+  text-shadow:0 2px #451619;
+}
+@media(max-height:530px) {
+  .dcm-chapter-title {padding-bottom:3px;}
+  .dcm-journey-progress {height:2px;bottom:1px;}
+  .dcm-objectives-panel {padding:9px 10px;gap:4px;}
+  .dcm-objectives-panel>small {font-size:10px;}
+  .dcm-objectives-panel h2 {font-size:18px;}
+  .dcm-objectives-list {gap:4px;}
+  .dcm-objectives-list>div {min-height:38px;padding:4px 6px;}
+  .dcm-objectives-hint {font-size:10px!important;}
+  .dcm-objectives-play {min-height:43px;}
+  .dcm-objectives-close {top:4px;right:4px;}
+}
+@media(prefers-reduced-motion:reduce) {
+  .dr-menu-progress-track span,.dcm-journey-progress span {transition:none;}
+}
