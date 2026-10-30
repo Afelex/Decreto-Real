@@ -91,3 +91,35 @@ test('the story and back buttons remain available without unlocking any mission'
   fireEvent.click(screen.getByRole('button', { name: 'Ver la historia' }));
   expect(screen.getByText('Historia de Decreto Real')).toBeTruthy();
 });
+
+test('selected mission shows all three star objectives without leaving the map', () => {
+  openMap();
+  fireEvent.click(screen.getByRole('button', { name: 'Ver objetivos del reto' }));
+  const dialog = screen.getByRole('dialog', { name: 'El pregón alterado' });
+  expect(dialog).toBeTruthy();
+  expect(screen.getByText('Gana el duelo')).toBeTruthy();
+  expect(screen.getByText('Conserva al menos 12 de vida')).toBeTruthy();
+  expect(screen.getByText('Vence hasta el turno 10')).toBeTruthy();
+  expect(screen.getByRole('button', { name: 'Cerrar objetivos' })).toBeTruthy();
+  fireEvent.click(screen.getByRole('button', { name: 'Cerrar objetivos' }));
+  expect(screen.queryByRole('dialog')).toBeNull();
+});
+
+test('mission objectives change with the selected unlocked challenge', () => {
+  save({ '01': 1 });
+  openMap();
+  fireEvent.click(screen.getByRole('button', { name: /Misión 2:/ }));
+  fireEvent.click(screen.getByRole('button', { name: 'Ver objetivos del reto' }));
+  expect(screen.getByRole('dialog', { name: 'La orden sin sello' })).toBeTruthy();
+  fireEvent.click(screen.getByRole('button', { name: /Seleccionar reto/ }));
+  expect(screen.getByRole('heading', { name: 'Duelo de misión' })).toBeTruthy();
+});
+
+test('map progress bar counts verified wins, not forged later stars', () => {
+  save({ '01': 1, '38': 3 });
+  openMap();
+  const bar = screen.getByRole('progressbar', { name: 'Retos superados' });
+  expect(bar.getAttribute('aria-valuenow')).toBe('1');
+  expect(bar.getAttribute('aria-valuemax')).toBe('38');
+  expect(screen.getByText(/1\/2 retos · ★ 1\/114/)).toBeTruthy();
+});
