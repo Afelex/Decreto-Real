@@ -54,9 +54,14 @@ type BoardProps = {
   headerAction?: React.ReactNode;
   /** Campaign-only visible rival name, without changing engine state or rules. */
   opponentName?: string;
+  /** Physical-card table presentation; campaign opts in, tutorial remains unchanged. */
+  immersive?: boolean;
 };
 
-export const DuelBoard: React.FC<BoardProps> = ({ initial, storage, restored = false, onNewGame, onExit, onStateChange, onSelect, guide, headerAction, opponentName = 'Virrey estratega' }) => {
+type DragPosition = { card: Card; x: number; y: number; over: boolean };
+type DragStart = { id: string; pointer: number; x: number; y: number; active: boolean };
+
+export const DuelBoard: React.FC<BoardProps> = ({ initial, storage, restored = false, onNewGame, onExit, onStateChange, onSelect, guide, headerAction, opponentName = 'Virrey estratega', immersive = false }) => {
   const navigate = useNavigate();
   const exit = onExit ?? (() => navigate('/'));
   const [combat, dispatch] = React.useReducer((state: CombatState, action: CombatAction) => applyCombatAction(state, action).state, initial);
@@ -80,6 +85,10 @@ export const DuelBoard: React.FC<BoardProps> = ({ initial, storage, restored = f
   const resultRef = React.useRef<HTMLHeadingElement>(null);
   const handRef = React.useRef<HTMLElement>(null);
   const [handOverflow, setHandOverflow] = useState(false);
+  const arenaRef = React.useRef<HTMLElement>(null);
+  const gestureRef = React.useRef<DragStart | null>(null);
+  const suppressedClick = React.useRef<string | null>(null);
+  const [drag, setDrag] = useState<DragPosition | null>(null);
 
   // Save after each accepted action (journal growth). A failed save never blocks play.
   React.useEffect(() => {
@@ -165,33 +174,91 @@ export const DuelBoard: React.FC<BoardProps> = ({ initial, storage, restored = f
     dispatch({ type: 'play', cardId: card.id });
     setSelected(null);
   };
+  // Presentational drag-and-drop. Only the existing engine may accept a card play.
+  // A vertical gesture drags; a horizontal gesture remains the hand's native scroll.
+  const pointerDown = (event: React.PointerEvent<HTMLButtonElement>, card: Card) => {
+    if (!immersive || gameOver || busy || showPause || (event.pointerType === 'mouse' && event.button !== 0)) return;
+    if (invalidAction(combat, { type: 'play', cardId: card.id })) return;
+    gestureRef.current = { id: card.id, pointer: event.pointerId, x: event.clientX, y: event.clientY, active: false };
+    try { event.currentTarget.setPointerCapture(event.pointerId); } catch { /* capture is not guaranteed on every browser */ }
+  };
+  const insideArena = (x: number, y: number) => {
+    const bounds = arenaRef.current?.getBoundingClientRect();
+    return !!bounds && x >= bounds.left && x <= bounds.right && y >= bounds.top && y <= bounds.bottom;
+  };
+  const pointerMove = (event: React.PointerEvent<HTMLButtonElement>, card: Card) => {
+    const gesture = gestureRef.current;
+    if (!gesture || gesture.id !== card.id || gesture.pointer !== event.pointerId) return;
+    const dx = event.clientX - gesture.x, dy = event.clientY - gesture.y;
+    if (!gesture.active) {
+      if (dy >= -14 || Math.abs(dy) < Math.abs(dx) * .7) return;
+      gesture.active = true;
+      suppressedClick.current = card.id;
+    }
+    setDrag({ card, x: event.clientX, y: event.clientY, over: insideArena(event.clientX, event.clientY) });
+  };
+  const pointerFinish = (event: React.PointerEvent<HTMLButtonElement>, card: Card, cancelled = false) => {
+    const gesture = gestureRef.current;
+    if (!gesture || gesture.id !== card.id || gesture.pointer !== event.pointerId) return;
+    gestureRef.current = null;
+    const wasActive = gesture.active;
+    const over = !cancelled && insideArena(event.clientX, event.clientY);
+    setDrag(null);
+    try { event.currentTarget.releasePointerCapture(event.pointerId); } catch { /* no active capture */ }
+    if (!wasActive) return;
+    suppressedClick.current = card.id;
+    window.setTimeout(() => { if (suppressedClick.current === card.id) suppressedClick.current = null; }, 0);
+    if (over) play(card);
+    else setNotice('La carta volvió a tu mano. Arrástrala hacia la mesa para jugarla.');
+  };
+
   const endTurn = () => {
+    setDrag(null); gestureRef.current = null;
     const error = invalidAction(combat, { type: 'end_turn' });
     if (error || !guideAllows({ kind: 'end_turn' })) { setNotice(error ?? guide!.refusal); return; }
     dispatch({ type: 'end_turn' });
     setSelected(null);
   };
+  React.useEffect(() => {
+    if (busy || gameOver || showPause || !immersive) {
+      gestureRef.current = null;
+      setDrag(null);
+    }
+  }, [busy, gameOver, showPause, immersive]);
+
   const setDifficulty = (value: Difficulty) => { dispatch({ type: 'difficulty', value }); writePreference(storage ?? null, DIFFICULTY_KEY, value); };
   const pips = (count: number) => <div aria-hidden="true">{[0, 1, 2, 3].map(i => <span className={i < count ? 'filled' : ''} key={i}>✦</span>)}</div>;
   const saveWarning = (save === 'quota' || save === 'unavailable') && !saveWarningSeen;
 
-  return <main className={`dr-game${guide ? ' tutorial' : ''}`}>
+  return <main className={`dr-game${guide ? ' tutorial' : ''}${immersive ? ' immersive' : ''}${drag ? ' dragging-card' : ''}`}>
     <header className="dr-top"><button className="dr-back" onClick={exit}>‹ <span>{guide ? 'Salir' : 'Menú'}</span></button><div><small>{guide ? 'TUTORIAL' : 'DUELO DE PRUEBA'} · TURNO {turn}</small><h1>Decreto Real</h1>{SAVE_TEXT[save] && <span className={`dr-save ${save}`} title={SAVE_DETAIL[save]}>{SAVE_TEXT[save]}</span>}</div>{headerAction ?? <button className="dr-iconbtn" onClick={() => setShowHelp(true)} aria-label="Reglas del prototipo">?</button>}</header>
     {saveWarning && <div className="dr-banner" role="status"><span>{SAVE_DETAIL[save]}</span><button onClick={() => setSaveWarningSeen(true)}>Entendido</button></div>}
     {restoredNotice && !saveWarning && <div className="dr-banner restored" role="status"><span>Partida recuperada en el turno {initial.turn}.</span><button onClick={() => setRestoredNotice(false)} aria-label="Cerrar aviso">×</button></div>}
     <section className="dr-rival" aria-label="Rival"><div className="dr-avatar rival"><Portrait rival/></div><div className="dr-person"><strong>{opponentName}</strong>{guide ? <small className="dr-difficulty-label">IA · {difficulty}</small> : <button className="dr-difficulty" onClick={() => setShowDifficulty(true)}>IA · {difficulty}　⌄</button>}<div className="dr-health"><span style={{ width: `${enemyHp * 5}%` }} /></div><b aria-label={`Vida del rival ${enemyHp} de 20, escudo ${enemyShield}`}>♥ {enemyHp}<i>/20</i>　🛡 {enemyShield}</b></div><div className="dr-seals" aria-label={`Impactos del rival: ${enemySeals} de 4`}>IMPACTOS <strong>{enemySeals}/4</strong>{pips(enemySeals)}</div></section>
-    <section className={`dr-arena${guide ? ' coaching' : ''}`}>{guide ? guide.panel : <><div className="dr-map" aria-hidden="true">✥<small>CAMPO DE BATALLA</small></div>{lastPlay && <div key={`${lastPlay.side}-${lastPlay.name}-${journalLength}`} className={`dr-played ${lastPlay.side}`}><span aria-hidden="true">{lastPlay.icon}</span><b>{lastPlay.name}</b><small>{lastPlay.side === 'player' ? 'Tu jugada' : 'Jugada del rival'}</small></div>}<button className="dr-log" onClick={() => setShowHistory(true)} aria-label="Ver historial de jugadas">✦　{message} <small>· Historial</small></button></>}</section>
+    <section ref={arenaRef} className={`dr-arena${guide ? ' coaching' : ''}${drag?.over ? ' drop-ready' : ''}`}>{guide ? guide.panel : <><div className="dr-map" aria-hidden="true">✥<small>CAMPO DE BATALLA</small></div>{immersive && <div className="dr-drop-label" aria-hidden="true">{drag ? drag.over ? "Suelta para jugar" : "Desliza hasta la mesa" : "Arrastra una carta aquí"}</div>}{lastPlay && <div key={`${lastPlay.side}-${lastPlay.name}-${journalLength}`} className={`dr-played ${lastPlay.side}`}><span aria-hidden="true">{lastPlay.icon}</span><b>{lastPlay.name}</b><small>{lastPlay.side === 'player' ? 'Tu jugada' : 'Jugada del rival'}</small></div>}<button className="dr-log" onClick={() => setShowHistory(true)} aria-label="Ver historial de jugadas">✦　{message} <small>· Historial</small></button></>}</section>
     <section className="dr-player" aria-label="Tu monarca"><div className="dr-avatar"><Portrait/></div><div className="dr-person"><strong>Tu monarca</strong><small>Investigador de Peruanistas</small><div className="dr-health"><span style={{ width: `${playerHp * 5}%` }} /></div><b aria-label={`Tu vida ${playerHp} de 20, escudo ${shield}`}>♥ {playerHp}<i>/20</i>　🛡 {shield}</b></div><div className="dr-seals player" aria-label={`Tus Impactos: ${seals} de 4`}>IMPACTOS <strong>{seals}/4</strong>{pips(seals)}</div><div className="dr-mana"><strong>{mana}<small>/3</small></strong><span>Mando</span><small className="dr-streak">Racha {streak}/3</small></div></section>
     {gameOver ? <section className="dr-result" aria-labelledby="dr-result-title"><small>FIN DEL DUELO</small><h2 id="dr-result-title" ref={resultRef} tabIndex={-1}>{playerWon ? '¡Victoria!' : 'Derrota'}</h2><p>{seals >= 4 ? 'Completaste los cuatro Impactos.' : enemySeals >= 4 ? `${opponentName} completó los cuatro Impactos.` : enemyHp <= 0 ? 'El rival se quedó sin vida.' : playerHp <= 0 ? 'Tu monarca se quedó sin vida.' : playerWon ? 'El reino recuerda tu decreto.' :  `${opponentName} ha prevalecido esta vez.`}</p><div className="dr-result-stats"><div><b>{turn}</b><small>Turno</small></div><div><b>{playerHp}</b><small>Tu vida</small></div><div><b>{seals}/4</b><small>Impactos</small></div></div><button onClick={onNewGame ?? (() => window.location.reload())}>Jugar otra vez</button><button className="dr-result-menu" onClick={() => navigate('/')}>Volver al menú</button></section> : <>
       <div className="dr-prompt" role="status" aria-live="polite">{chosen ? <><b>{chosen.name}</b> · {chosen.text}<button onClick={() => setSelected(null)}>Cancelar</button><button className={`dr-confirm${guide?.target === 'confirm' ? ' dr-guide-target' : ''}`} disabled={!!invalidAction(combat, { type: 'play', cardId: chosen.id })} onClick={() => play(chosen)}>Jugar carta</button></> : notice ? <span className="dr-notice">{notice}</span> : busy ? <>TURNO DEL RIVAL<span>Preparando respuesta…</span></> : <>TU TURNO <b>· {mana} de mando</b><span>Selecciona una carta</span></>}</div>
-      <div className="dr-hand-meta"><span>Mano {hand.length}/6</span>{handOverflow && <span aria-hidden="true">Desliza para ver todas →</span>}</div>
+      <div className="dr-hand-meta"><span>Mano {hand.length}/6</span>{immersive && <span>↑ Arrastra a la mesa · Toca para ver</span>}{handOverflow && <span aria-hidden="true">Desliza para ver todas →</span>}</div>
       <section className="dr-hand" ref={handRef} aria-label={`Tu mano: ${hand.length} de 6 cartas`}>{hand.map(card => {
         const block = playBlockReason(combat, card.id);
         const locked = !!block;
         const specific = block === 'mana' || block === 'impact_order' || block === 'impact_used';
         const dim = !locked && !!guide && !guide.allows({ kind: 'select', cardId: card.id });
-        return <button key={card.id} type="button" className={`dr-card ${card.kind} ${selected === card.id ? 'active' : ''} ${locked ? 'disabled' : ''}${dim ? ' dim' : ''}${target(card.id)}`} aria-disabled={locked} aria-pressed={selected === card.id} aria-label={`${card.name}, coste ${card.cost}. ${card.text}${specific ? ` Bloqueada: ${blockText(combat, block, card)}` : ''}`} onClick={() => choose(card)}><span className="dr-cost" aria-hidden="true">{card.cost}</span><small>{label[card.kind]}{impactRank(card) ? ` · ${impactRank(card)}/4` : ''}</small><span className="dr-art"><CardArt kind={card.kind} rank={impactRank(card)}/></span><strong>{card.name}</strong><p>{card.text}</p>{specific && <span className="dr-lock">{BLOCK_LABELS[block].short}</span>}</button>;
+        return <button key={card.id} type="button" className={`dr-card ${card.kind} ${selected === card.id ? 'active' : ''} ${locked ? 'disabled' : ''}${dim ? ' dim' : ''}${drag?.card.id === card.id ? ' dragging-source' : ''}${target(card.id)}`} aria-disabled={locked} aria-pressed={selected === card.id} aria-label={`${card.name}, coste ${card.cost}. ${card.text}${specific ? ` Bloqueada: ${blockText(combat, block, card)}` : ''}`} style={immersive ? { '--dr-fan-angle': `${(hand.indexOf(card) - (hand.length - 1) / 2) * 2.2}deg`, '--dr-fan-y': `${Math.abs(hand.indexOf(card) - (hand.length - 1) / 2) * 2}px` } as React.CSSProperties : undefined}
+          onPointerDown={event => pointerDown(event, card)}
+          onPointerMove={event => pointerMove(event, card)}
+          onPointerUp={event => pointerFinish(event, card)}
+          onPointerCancel={event => pointerFinish(event, card, true)}
+          onClick={event => { if (suppressedClick.current === card.id) { event.preventDefault(); suppressedClick.current = null; return; } choose(card); }}><span className="dr-cost" aria-hidden="true">{card.cost}</span><small>{label[card.kind]}{impactRank(card) ? ` · ${impactRank(card)}/4` : ''}</small><span className="dr-art"><CardArt kind={card.kind} rank={impactRank(card)}/></span><strong>{card.name}</strong><p>{card.text}</p>{specific && <span className="dr-lock">{BLOCK_LABELS[block].short}</span>}</button>;
       })}</section>
+      {drag && <div className={`dr-card dr-drag-ghost ${drag.card.kind} ${drag.over ? ' valid' : ''}`} aria-hidden="true" style={{ left: drag.x, top: drag.y }}>
+        <span className="dr-cost">{drag.card.cost}</span>
+        <small>{label[drag.card.kind]}</small>
+        <span className="dr-art"><CardArt kind={drag.card.kind} rank={impactRank(drag.card)}/></span>
+        <strong>{drag.card.name}</strong>
+        <p>{drag.card.text}</p>
+      </div>}
       <footer className="dr-actions"><button onClick={() => setPileView('draw')}>▤ <span>Mazo {drawPile.length}</span></button><button className={`dr-end${target('end_turn')}`} onClick={endTurn} disabled={busy}>TERMINAR TURNO　→</button>{!guide && <button onClick={() => setShowPause(true)} disabled={busy} aria-label="Pausar partida">Ⅱ <span>Pausa</span></button>}</footer>
     </>}
     {showHelp && <div className="dr-overlay" role="presentation" onClick={() => setShowHelp(false)}><section className="dr-help" role="dialog" aria-modal="true" aria-labelledby="dr-help-title" onClick={(event) => event.stopPropagation()}><button className="dr-help-close" onClick={() => setShowHelp(false)} aria-label="Cerrar ayuda">×</button><small>GUÍA RÁPIDA</small><h2 id="dr-help-title">Cómo se juega</h2><ol><li><b>Usa tu mando.</b> Cada turno tienes 3 puntos. El coste aparece en la esquina de cada carta.</li><li><b>Ataca o protégete.</b> El escudo absorbe el daño antes que la vida.</li><li><b>Prepara los Impactos.</b> Juega I, II, III y Final en orden. Solo uno por turno.</li><li><b>Busca una racha.</b> Tres cartas seguidas de Ataque añaden daño; tres de Defensa añaden escudo.</li><li><b>Gana el duelo.</b> Reduce la vida rival a cero o completa los cuatro Impactos.</li></ol><p>La mano admite hasta seis cartas. La IA también puede avanzar sus Impactos.</p><button className="dr-pause-menu" onClick={() => navigate('/duelo-v1/tutorial')}>Ver tutorial guiado</button><button className="dr-help-ok" onClick={() => setShowHelp(false)}>Entendido</button></section></div>}
