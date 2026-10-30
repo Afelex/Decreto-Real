@@ -1,0 +1,169 @@
+/* DR-UX01: a table of cards instead of a flat list.
+   Scoped to story duels; free duel and tutorial retain their validated UI. */
+.dr-game.immersive {
+  --table-brass: #bd9759;
+  --table-felt: #24433e;
+  background:
+    radial-gradient(ellipse at 50% 38%, #526b5866, transparent 52%),
+    linear-gradient(145deg, #192e33, #142333 58%, #251e24);
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+  overscroll-behavior-y: contain;
+}
+.dr-game.immersive .dr-top h1 { letter-spacing: .06em; }
+.dr-game.immersive .dr-rival,
+.dr-game.immersive .dr-player {
+  background: linear-gradient(110deg, #202f3be8, #26352ded);
+  border-color: #b69a6a;
+  box-shadow: inset 0 1px 0 #fff2c51a, 0 6px 22px #0005;
+}
+.dr-game.immersive .dr-arena {
+  min-height: clamp(155px, 26dvh, 290px);
+  max-height: 38dvh;
+  flex: 1 0 auto;
+  background:
+    radial-gradient(ellipse at center, #55735f 0%, #294b40 65%, #1c372f 100%);
+  border: 8px solid #55422d;
+  outline: 2px solid #caa870;
+  outline-offset: -5px;
+  box-shadow: inset 0 0 0 1px #edd09a80, inset 0 0 26px #0b211b, 0 9px 26px #0007;
+  transition: border-color .14s, box-shadow .14s;
+}
+.dr-game.immersive .dr-arena::before {
+  inset: 8px;
+  border: 1px solid #edc98a45;
+  background:
+    repeating-linear-gradient(90deg, #fff0b006 0 1px, transparent 1px 29px),
+    repeating-linear-gradient(0deg, #fff0b004 0 1px, transparent 1px 29px);
+}
+.dr-game.immersive .dr-arena.drop-ready {
+  border-color: #f3d08c;
+  box-shadow: inset 0 0 0 2px #fff6c6b5, inset 0 0 30px #eccc7c5e, 0 0 25px #eccc7c65;
+}
+.dr-game.immersive .dr-map {
+  height: 74px;
+  width: 74px;
+  font-size: 28px;
+  background: radial-gradient(circle, #e0c991, #ad8955);
+  color: #61472f;
+  box-shadow: 0 0 0 6px #dbc18a22, 0 0 23px #030f0b6b;
+}
+.dr-game.immersive .dr-drop-label {
+  position: absolute;
+  top: 13px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 90%;
+  padding: 5px 12px;
+  border: 1px dashed #eacb8966;
+  background: #152e27bb;
+  border-radius: 99px;
+  color: #f9e8c2;
+  letter-spacing: .06em;
+  font-size: 11px;
+  font-weight: 700;
+  z-index: 1;
+  pointer-events: none;
+}
+.dr-game.immersive .dr-arena.drop-ready .dr-drop-label {
+  background: #f3d088;
+  color: #24362e;
+  border-color: #fff3c9;
+}
+.dr-game.immersive .dr-log {
+  bottom: 7px;
+  min-height: 35px;
+  padding: 6px 12px;
+  border-color: #ac956e;
+  background: #10271fe8;
+}
+.dr-game.immersive .dr-hand-meta {
+  font-size: 11px;
+  margin-bottom: -8px;
+  flex-wrap: wrap;
+  color: #e4cda2;
+}
+.dr-game.immersive .dr-hand {
+  width: 100%;
+  flex: 0 0 auto;
+  min-height: 175px;
+  display: flex;
+  justify-content: safe center;
+  align-items: flex-end;
+  gap: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: none;
+  padding: 12px 24px 15px 12px;
+  scrollbar-width: thin;
+  scrollbar-color: #a99065 #172b2b;
+}
+.dr-game.immersive .dr-hand .dr-card {
+  flex: 0 0 clamp(116px, 35vw, 158px);
+  min-height: clamp(152px, 22dvh, 202px);
+  margin-right: -22px;
+  padding: 11px 7px 8px;
+  transform-origin: center 95%;
+  transform: rotate(var(--dr-fan-angle, 0deg)) translateY(var(--dr-fan-y, 0px));
+  touch-action: pan-x;
+  user-select: none;
+  -webkit-user-select: none;
+  scroll-snap-align: none;
+  transition: transform .18s ease-out, border-color .18s ease-out, box-shadow .18s ease-out;
+}
+.dr-game.immersive .dr-hand .dr-card.active,
+.dr-game.immersive .dr-hand .dr-card:focus-visible {
+  z-index: 12;
+  transform: translateY(-13px) rotate(0deg) scale(1.04);
+  border-color: #ffe2a1;
+  box-shadow: 0 12px 24px #0009, 0 0 18px #f8d38677;
+}
+.dr-game.immersive .dr-hand .dr-card.dragging-source {
+  opacity: .18;
+}
+@media (hover:hover) {
+  .dr-game.immersive .dr-hand .dr-card:not(.dragging-source):hover {
+    z-index: 11;
+    transform: translateY(-11px) rotate(0deg) scale(1.04);
+  }
+}
+.dr-game.immersive .dr-drag-ghost {
+  position: fixed;
+  z-index: 200;
+  width: clamp(116px, 35vw, 158px);
+  height: clamp(152px, 22dvh, 202px);
+  flex: none;
+  min-height: 0;
+  transform: translate(-50%, -70%) rotate(-4deg) scale(1.05);
+  pointer-events: none;
+  box-shadow: 0 20px 32px #000b, 0 0 0 4px #f9e5b433;
+  transition: border-color .1s ease-out;
+}
+.dr-game.immersive .dr-drag-ghost.valid {
+  border-color: #fdf0ad;
+  box-shadow: 0 20px 32px #000b, 0 0 24px #ffe09b88;
+}
+.dr-game.immersive.dragging-card { cursor: grabbing; }
+.dr-game.immersive .dr-prompt { min-height: 40px; flex-wrap: wrap; font-size: 12px; }
+.dr-game.immersive .dr-actions .dr-end { letter-spacing: .04em; }
+@media (max-width: 370px) {
+  .dr-game.immersive .dr-hand { padding-left: 8px; padding-right: 24px; min-height: 145px; }
+  .dr-game.immersive .dr-hand .dr-card { flex-basis: 114px; min-height: 145px; margin-right: -16px; }
+  .dr-game.immersive .dr-drag-ghost { width: 114px; height: 150px; }
+  .dr-game.immersive .dr-arena { min-height: 136px; max-height: 30dvh; }
+  .dr-game.immersive .dr-card p { font-size: 11px; }
+  .dr-game.immersive .dr-top h1 { font-size: 20px; }
+}
+@media (max-height: 530px) {
+  .dr-game.immersive .dr-arena { min-height: 120px; max-height: none; }
+  .dr-game.immersive .dr-hand { min-height: 125px; }
+  .dr-game.immersive .dr-hand .dr-card { min-height: 120px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dr-game.immersive *, .dr-game.immersive *::before, .dr-game.immersive *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
