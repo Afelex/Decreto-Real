@@ -126,6 +126,7 @@ const CampaignMission: React.FC = () => {
     onNewGame={retry}
     onStateChange={onStateChange}
     opponentName={mission.opponent}
+    missionLabel={`MISIÓN ${mission.id}/38`}
     immersive
   />;
 };
