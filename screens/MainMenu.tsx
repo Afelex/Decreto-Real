@@ -167,6 +167,13 @@ const MainMenu: React.FC = () => {
               </span>
             </button>
           </div>
+
+          <button
+            onClick={() => navigate('/duelo-v1')}
+            className="w-full max-w-[92%] h-[42px] border border-[#cda952] rounded bg-gradient-to-r from-[#263d52] to-[#152638] text-[#f1d891] font-bold text-xs tracking-[0.12em] uppercase active:scale-95 transition-transform"
+          >
+            ✦ Probar nuevo combate
+          </button>
         </footer>
       </main>
     </div>
