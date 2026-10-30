@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './combat-prototype.css';
+import './duel-immersive.css';
 import { CARD_LABELS, type Card, type CardKind } from '../game/cards';
 import { applyCombatAction, invalidAction, playBlockReason, type CombatAction, type CombatState, type Difficulty } from '../game/combatEngine';
 import { BLOCK_LABELS, blockText, currentMessage, historyLines } from '../game/combatText';
