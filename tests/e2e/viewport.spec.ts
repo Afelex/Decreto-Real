@@ -1,5 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 
+test.describe.configure({ timeout: 20_000 });
+
 const route = (name: string) => `/Decreto-Real/#/${name}`;
 
 async function fits(page: Page, selector: string) {
