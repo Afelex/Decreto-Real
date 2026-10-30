@@ -57,6 +57,6 @@ test('invalid saved campaign state fails closed without unlocking levels', () =>
 test('chapter selector reveals the first general without unlocking blocked battles', () => {
   openMap();
   fireEvent.click(screen.getByRole('button', { name: /El puerto de hierro, capítulo 2/ }));
-  expect(screen.getByText('Almirante de Hierro')).toBeTruthy();
+  expect(screen.getByText('General I · Almirante de Hierro')).toBeTruthy();
   expect(screen.getByRole('button', { name: /Misión 4:/ }).hasAttribute('disabled')).toBe(true);
 });
