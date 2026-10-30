@@ -98,10 +98,10 @@ test('all eight canonical generals and their special-card labels appear as boss 
   assert.equal(STORY_STAGES[STORY_STAGES.length - 1].opponent, 'Sigma');
 });
 
-test('chapters contain three prologue, four stages per general, and three finales', () => {
-  assert.equal(STORY_STAGES.filter(stage => stage.chapterId === 'p').length, 3);
+test('chapters contain two prologue, four stages per general, and four finales', () => {
+  assert.equal(STORY_STAGES.filter(stage => stage.chapterId === 'p').length, 2);
   for (let chapter = 1; chapter <= 8; chapter++) {
     assert.equal(STORY_STAGES.filter(stage => stage.chapterId === String(chapter)).length, 4);
   }
-  assert.equal(STORY_STAGES.filter(stage => stage.chapterId === 'f').length, 3);
+  assert.equal(STORY_STAGES.filter(stage => stage.chapterId === 'f').length, 4);
 });
