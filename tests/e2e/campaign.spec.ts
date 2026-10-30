@@ -28,3 +28,15 @@ test('mission details can be dismissed without starting a duel', async ({ page }
   await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog')).toHaveCount(0);
 });
+
+test('story prologue introduces the main conflict and all eight generals', async ({ page }) => {
+  await page.goto('/Decreto-Real/#/campania/historia');
+  await expect(page.getByRole('heading', { name: 'El reino escucha dos verdades' })).toBeVisible();
+  await expect(page.locator('.dc-general-list > div')).toHaveCount(8);
+  await page.screenshot({ path: test.info().outputPath('story-prologue.png'), fullPage: true });
+});
+
+test('the epilogue is inaccessible until the last mission is won', async ({ page }) => {
+  await page.goto('/Decreto-Real/#/campania/epilogo');
+  await expect(page.getByRole('heading', { name: 'El epílogo sigue sellado' })).toBeVisible();
+});
