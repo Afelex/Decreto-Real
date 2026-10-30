@@ -197,7 +197,7 @@ const CampaignMap: React.FC = () => {
           <p id="dcm-objectives-description">Rival: {selected.opponent} · IA {selected.difficulty}</p>
           <div className="dcm-objectives-list" aria-label="Tres objetivos para conseguir las estrellas">
             {missionStarGoals(selected).map((goal, index) => <div key={goal.id}><span aria-hidden="true">★</span>
-              <span><strong>Estrella {index + 1}</strong>{goal.label}</span></div>)}
+              <span><strong>Estrella {index + 1}</strong><span>{goal.label}</span></span></div>)}
           </div>
           <p className="dcm-objectives-hint">Una victoria abre el siguiente reto. Las otras dos estrellas mejoran tu marca.</p>
           <button ref={playObjectivesButton} type="button" className="dcm-objectives-play" onClick={startSelected}>
