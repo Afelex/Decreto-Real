@@ -55,10 +55,11 @@ La referencia de progresión son los mapas de niveles con estrellas de juegos co
 Pruebas automatizadas agregadas:
 - `campaign/campaign.test.ts`: ocho casos de reglas de progresión y almacenamiento.
 - `tests/integration/campaign.test.tsx`: cuatro casos de mapa y navegación en React.
+- `tests/e2e/campaign.spec.ts`: tres casos en cada uno de los cinco viewports de Playwright (15 ejecuciones previstas) para desbloqueo, detalles, salida y entrada al duelo.
 - `npm test` ejecuta reglas de juego y reglas de campaña.
 - El workflow de desarrollo de esta rama ejecuta Node 22/24, integración, compilación y E2E existentes.
 
-**Pendientes:** E2E específicos del flujo completo de campaña, verificación visual humana y pruebas reales en móviles. No confundir E2E del duelo con QA del mapa.
+**Pendientes:** ejecutar y verificar las pruebas CI de esta rama; E2E de victoria completa, registro de estrellas y desbloqueo posterior; verificación visual humana y pruebas reales en móviles. Los 15 casos E2E de mapa son pruebas preparadas, no aprobadas hasta que el workflow termine satisfactoriamente. No confundir E2E del duelo con QA del mapa.
 
 ## Evolución recomendada
 
