@@ -62,13 +62,13 @@ const CampaignMission: React.FC = () => {
     });
   };
 
-  if (!mission || !unlocked) return <main className="dc-page dc-center">
+  if (!mission || !unlocked) return <main className="dc-page dc-center dc-full-page">
     <h1>Misión no disponible</h1>
     <p>Completa las misiones anteriores para desbloquear este camino.</p>
     <button className="dc-primary" onClick={() => navigate('/campania')}>Volver al mapa</button>
   </main>;
 
-  if (outcome) return <main className="dc-page dc-center" style={accent}>
+  if (outcome) return <main className="dc-page dc-center dc-full-page dc-mission-result" style={accent}>
     <section className="dc-result-card dc-story-result" aria-label="Resultado y crónica de la misión">
       <small>DECRETO REAL I · MISIÓN {mission.id}/38</small>
       <span className="dc-story-emblem" aria-hidden="true">{outcome.won ? '✦' : '✧'}</span>
@@ -85,17 +85,19 @@ const CampaignMission: React.FC = () => {
       {!outcome.saved && <p role="alert" className="dc-warning">No se pudo guardar tu progreso en este navegador.</p>}
       {outcome.won && !next && <button className="dc-primary" onClick={() => navigate('/campania/epilogo')}>Leer epílogo ✦</button>}
       {outcome.won && next && outcome.saved && <button className="dc-primary" onClick={() => { setOutcome(null); setAttempt(0); setView('briefing'); navigate(`/campania/mision/${next.id}`); }}>Siguiente misión →</button>}
-      <button className="dc-secondary" onClick={retry}>Repetir duelo</button>
-      <button className="dc-secondary" onClick={() => navigate('/campania')}>Volver al mapa</button>
+      <div className="dc-result-actions">
+        <button className="dc-secondary" onClick={retry}>Repetir duelo</button>
+        <button className="dc-secondary" onClick={() => navigate('/campania')}>Volver al mapa</button>
+      </div>
     </section>
   </main>;
 
-  if (view === 'briefing') return <main className="dc-page dc-story-page" style={accent}>
+  if (view === 'briefing') return <main className="dc-page dc-full-page dc-story-page dc-mission-briefing" style={accent}>
     <header className="dc-header">
       <button type="button" onClick={() => navigate('/campania')}>‹ Mapa</button>
       <div><small>DECRETO REAL I · HISTORIA</small><h1>{chapter?.title ?? 'Camino de campaña'}</h1></div>
     </header>
-    <section className="dc-story-scene" aria-labelledby="dc-scene-title">
+    <section className="dc-story-scene dc-briefing-scene" aria-labelledby="dc-scene-title">
       <div className="dc-story-art" aria-hidden="true">
         <div className="dc-story-sun">✥</div>
         <span>{mission.kind === 'boss' || mission.kind === 'final' ? '♛' : '⚔'}</span>
@@ -113,9 +115,11 @@ const CampaignMission: React.FC = () => {
         <div><span>★</span> Conserva al menos {mission.healthGoal} de vida</div>
         <div><span>★</span> Vence hasta el turno {mission.turnGoal}</div>
       </div>
-      <p className="dc-note">Rival: {mission.opponent}. Dificultad inicial: {mission.difficulty}. La escena es narrativa; el duelo utiliza el motor y las cartas existentes.</p>
-      <button className="dc-primary" onClick={() => setView('duel')}>¡Comenzar duelo! ⚔</button>
-      <button className="dc-secondary" onClick={() => navigate('/campania')}>Volver al mapa</button>
+      <p className="dc-note dc-briefing-note">Rival: {mission.opponent} · IA {mission.difficulty}. El duelo utiliza las cartas actuales.</p>
+      <div className="dc-briefing-actions">
+        <button className="dc-primary" onClick={() => setView('duel')}>¡Comenzar duelo! ⚔</button>
+        <button className="dc-secondary" onClick={() => navigate('/campania')}>Volver al mapa</button>
+      </div>
     </section>
   </main>;
 
