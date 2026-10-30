@@ -125,6 +125,7 @@ const CampaignMission: React.FC = () => {
     onExit={() => navigate('/campania')}
     onNewGame={retry}
     onStateChange={onStateChange}
+    opponentName={mission.opponent}
   />;
 };
 
