@@ -145,3 +145,24 @@
   .dc-story-scene { margin-top: 10px; }
   .dc-header h1 { font-size: 20px; }
 }
+
+/* DR-UX01: winding mission road, behind the accessible chapter nodes. */
+.dc-trail::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  border: 0;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20100%20100'%20preserveAspectRatio%3D'none'%3E%3Cpath%20d%3D'M8%2010%20C8%2018%2092%2024%2092%2035%20S8%2052%208%2061%20S92%2082%2092%2090'%20fill%3D'none'%20stroke%3D'%23e3bc7a'%20stroke-width%3D'1.5'%20stroke-linecap%3D'round'%20stroke-dasharray%3D'2.4%202.4'%2F%3E%3C%2Fsvg%3E");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  opacity: .75;
+  pointer-events: none;
+}
+.dc-node.boss .dc-node-info,
+.dc-node.final .dc-node-info { border-color: #d6ad68; background: linear-gradient(130deg, #44372e, #26364a); }
+.dc-node.boss .dc-stage-type,
+.dc-node.final .dc-stage-type { color: #ffde97 !important; }
