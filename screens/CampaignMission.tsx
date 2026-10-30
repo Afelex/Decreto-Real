@@ -7,6 +7,7 @@ import {
   getCampaignMission, isMissionUnlocked, loadCampaignProgress, saveCampaignProgress,
 } from '../campaign/campaign.ts';
 import { chapterForStage } from '../campaign/story.ts';
+import { missionStarGoals } from '../campaign/progressView.ts';
 import './campaign.css';
 
 type MissionOutcome = {
@@ -111,9 +112,8 @@ const CampaignMission: React.FC = () => {
         <p>{mission.openingLine.includes(':') ? mission.openingLine.substring(mission.openingLine.indexOf(':') + 1).trim() : mission.openingLine}</p>
       </div>
       <div className="dc-mission-card">
-        <div><span>★</span> Gana el duelo</div>
-        <div><span>★</span> Conserva al menos {mission.healthGoal} de vida</div>
-        <div><span>★</span> Vence hasta el turno {mission.turnGoal}</div>
+        {missionStarGoals(mission).map(goal =>
+          <div key={goal.id}><span>★</span> {goal.label}</div>)}
       </div>
       <p className="dc-note dc-briefing-note">Rival: {mission.opponent} · IA {mission.difficulty}. El duelo utiliza las cartas actuales.</p>
       <div className="dc-briefing-actions">
