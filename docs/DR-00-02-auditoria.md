@@ -1,6 +1,8 @@
 # Decreto Real — Auditoría DR-00 a DR-02
 
 **Actualización:** 30 de octubre de 2026. Rama: `codex/decreto-real-combate-v1`.
+Traspaso completo a Claude: `CLAUDE_HANDOFF.md` (estado, reglas, evidencias, riesgos y próximo encargo).
+
 Revisión de interfaz: `DR-02-qa-interfaz.md` separa pruebas ejecutadas de QA visual pendiente.
 
 Base de `main`: `48cc6386ab151e53ee3086216bec21ba94a6761d`. No se modificó ni fusionó `main` ni se abrió un PR.
@@ -34,7 +36,7 @@ Base de `main`: `48cc6386ab151e53ee3086216bec21ba94a6761d`. No se modificó ni f
 | `npm test` en Node 24.22.1 | 23 pruebas aprobadas: 9 reglas, 4 IA anterior, 10 motor |
 | `npm run test:ui` en Node 24.22.1 y 22.23.4 | 12 aprobadas: selección/uso, turnos, pausa/reanudación, diálogos, cancelación al salir, victoria y derrota completas |
 | `npm run test:e2e -- --list` | 20 casos preparados en cinco viewports; no equivale a ejecución |
-| E2E en Chromium 156 / GitHub Actions | 20/20 aprobadas: 320×568, 360×800, 390×844, 360×480 y 844×390. Evidencia: run 41084549868, commit 38b1602 |
+| E2E en Chromium 156 / GitHub Actions | 20/20 aprobadas: 320×568, 360×800, 390×844, 360×480 y 844×390. Evidencia final: run 41085102590, commit 5f48cfb; incluye capturas y límites horizontales de controles |
 | Primer E2E real | 12 aprobadas / 8 fallidas; corregidos controles pequeños y diálogos fuera del viewport, ver informe |
 | Mismas pruebas con Node 22.23.4 y `--experimental-strip-types` | 23 aprobadas |
 | TypeScript `tsc --noEmit` en Node 24 y Node 22 | Aprobado |
