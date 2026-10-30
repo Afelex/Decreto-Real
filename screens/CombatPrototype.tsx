@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './combat-prototype.css';
-import { CARD_LABELS, createDeck, type Card, type CardKind } from '../game/cards';
-import { drawFromPile, GAME_RULES, nextComboStreak, resolveAttack, resolveImpact } from '../game/rules';
+import { CARD_LABELS, type Card, type CardKind } from '../game/cards';
+import { applyCombatAction, createCombat, invalidAction, type CombatAction, type CombatState, type Difficulty } from '../game/combatEngine';
 
 type Kind = CardKind;
 
@@ -22,110 +22,49 @@ const Portrait: React.FC<{ rival?: boolean }> = ({ rival = false }) => rival
 
 const CombatPrototype: React.FC = () => {
   const navigate = useNavigate();
-  const [openingDeck] = useState<Card[]>(() => createDeck());
-  const [drawPile, setDrawPile] = useState<Card[]>(() => openingDeck.slice(4));
-  const [discard, setDiscard] = useState<Card[]>([]);
-  const [hand, setHand] = useState<Card[]>(() => openingDeck.slice(0, 4));
-  const [mana, setMana] = useState(GAME_RULES.startingMana);
-  const [playerHp, setPlayerHp] = useState(GAME_RULES.maxHealth);
-  const [enemyHp, setEnemyHp] = useState(GAME_RULES.maxHealth);
-  const [shield, setShield] = useState(0);
-  const [enemyShield, setEnemyShield] = useState(0);
-  const [seals, setSeals] = useState(0);
-  const [enemySeals, setEnemySeals] = useState(0);
+  const [combat, dispatch] = React.useReducer(
+    (state: CombatState, action: CombatAction) => applyCombatAction(state, action).state,
+    undefined,
+    () => {
+      const saved = localStorage.getItem('decreto-difficulty');
+      const difficulty = saved === 'Aprendiz' || saved === 'Maestro' ? saved : 'Estratega';
+      return createCombat(crypto.getRandomValues(new Uint32Array(1))[0], difficulty);
+    },
+  );
+  const { drawPile, discard, hand, mana, playerHp, enemyHp, shield, enemyShield,
+    seals, enemySeals, turn, message, lastPlay, difficulty, impactPlayed, streak } = combat;
+  const busy = combat.phase === 'rival';
+  const gameOver = combat.phase === 'finished';
+  const playerWon = combat.winner === 'player';
+  const showPause = combat.paused;
+  const setShowPause = (paused: boolean) => dispatch({ type: paused ? 'pause' : 'resume' });
+  const setDifficulty = (value: Difficulty) => dispatch({ type: 'difficulty', value });
   const [selected, setSelected] = useState<string | null>(null);
-  const [turn, setTurn] = useState(1);
-  const [message, setMessage] = useState('Elige una carta para comenzar tu jugada.');
-  const [history, setHistory] = useState<string[]>(['Turno 1: la partida comienza.']);
   const [showHistory, setShowHistory] = useState(false);
-  const [lastPlay, setLastPlay] = useState<{ side: 'player' | 'rival'; name: string; icon: string } | null>(null);
-  const [busy, setBusy] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
-  const [showPause, setShowPause] = useState(false);
   const [pileView, setPileView] = useState<'draw' | 'discard' | null>(null);
-  const [difficulty, setDifficulty] = useState<'Aprendiz' | 'Estratega' | 'Maestro'>(() => {
-    const saved = localStorage.getItem('decreto-difficulty');
-    return saved === 'Aprendiz' || saved === 'Maestro' ? saved : 'Estratega';
-  });
   const [showDifficulty, setShowDifficulty] = useState(false);
-  const [impactPlayed, setImpactPlayed] = useState(false);
-  const [streak, setStreak] = useState(0);
-  const [lastKind, setLastKind] = useState<Kind | null>(null);
-  const gameOver = playerHp <= 0 || enemyHp <= 0 || seals >= 4 || enemySeals >= 4;
-  const chosen = hand.find((card) => card.id === selected);
-  const playerWon = (enemyHp <= 0 || seals >= 4) && !(playerHp <= 0 || enemySeals >= 4);
+  const chosen = hand.find(card => card.id === selected);
   const label = CARD_LABELS;
+  const history = combat.journal.flatMap(entry => entry.events
+    .filter(event => event.message && entry.action.type !== 'end_turn')
+    .map(event => `Turno ${event.turn}: ${event.message}`)).reverse().slice(0, 12);
+  if (history.length === 0) history.push('Turno 1: la partida comienza.');
 
+  // Time and presentation belong to React; the response itself is an atomic engine action.
   React.useEffect(() => {
-    if (message === 'Elige una carta para comenzar tu jugada.' || message === 'El Virrey estratega prepara su respuesta…') return;
-    setHistory((items) => [`Turno ${turn}: ${message}`, ...items].slice(0, 12));
-  }, [message]);
-
-  const drawCards = (count: number, currentHand: Card[] = hand) => {
-    const result = drawFromPile(currentHand, drawPile, count, GAME_RULES.maxHand);
-    if (result.drawn.length === 0) return 0;
-    setDrawPile(result.drawPile);
-    setHand(result.hand);
-    return result.drawn.length;
-  };
+    if (!busy || showPause) return;
+    const timer = window.setTimeout(() => dispatch({ type: 'resolve_rival' }), 700);
+    return () => window.clearTimeout(timer);
+  }, [busy, showPause]);
 
   const play = (card: Card) => {
-    if (busy || gameOver || card.cost > mana || (card.effect.type === 'impact' && (impactPlayed || card.effect.rank !== seals + 1))) return;
-    setLastPlay({ side: 'player', name: card.name, icon: card.icon });
-    setMana((v) => v - card.cost);
-    const handAfterPlay = hand.filter((item) => item.id !== card.id);
-    setHand(handAfterPlay);
-    setDiscard((cards) => [...cards, card]);
-    const combo = nextComboStreak(lastKind, streak, card.kind);
-    const triggersCombo = combo.triggered;
-    setLastKind(card.kind); setStreak(combo.count);
+    dispatch({ type: 'play', cardId: card.id });
     setSelected(null);
-    if (card.effect.type === 'damage') {
-      const bonus = triggersCombo ? 2 : 0;
-      const attack = resolveAttack(card.effect.amount, enemyShield, bonus);
-      setEnemyHp((v) => Math.max(0, v - attack.damageDealt)); setEnemyShield(attack.remainingShield);
-      setMessage(`${card.name}: ${attack.damageDealt} de daño; el escudo rival bloquea ${attack.damageBlocked}.${bonus ? ' ¡Combo de ataque!' : ''}`);
-    } else if (card.effect.type === 'shield') {
-      const amount = card.effect.amount;
-      const bonus = triggersCombo ? 2 : 0;
-      setShield((v) => Math.min(GAME_RULES.maxShield, v + amount + bonus)); setMessage(`${card.name}: obtienes ${amount + bonus} de escudo.${bonus ? ' ¡Combo de defensa!' : ''}`);
-    } else if (card.effect.type === 'impact') {
-      setImpactPlayed(true);
-      const impact = resolveImpact(seals, playerHp);
-      if (impact.wins) { setSeals(impact.seals); setEnemyHp(0); setMessage('¡Decreto Final! Has sellado los cuatro decretos y ganado.'); }
-      else { setSeals(impact.seals); setEnemyHp((v) => Math.max(0, v - impact.damage)); setPlayerHp(impact.health); setMessage(`Impacto sellado: ${impact.seals} de 4. Recuperas ${impact.health - playerHp} de vida.`); }
-    } else {
-      const drawn = drawCards(card.effect.amount, handAfterPlay);
-      setMessage(drawn ? `Inspiración: robas ${drawn} carta${drawn===1?'':'s'}.` : 'Inspiración: no hay cartas para robar o tu mano está llena.');
-    }
   };
-
   const endTurn = () => {
-    if (busy || gameOver) return;
-    setBusy(true); setSelected(null); setMessage('El Virrey estratega prepara su respuesta…');
-    window.setTimeout(() => {
-      const danger = playerHp + shield;
-      const shouldAttack = difficulty === 'Aprendiz'
-        ? danger <= 5 || enemyHp <= 4 || Math.random() > 0.7
-        : difficulty === 'Maestro'
-          ? danger <= 12 || enemyHp <= 10 || enemyShield >= 3 || Math.random() > 0.2
-          : danger <= 8 || enemyHp <= 8 || enemyShield >= 5 || Math.random() > 0.45;
-      if (enemySeals >= GAME_RULES.impactCount - 1) {
-        setLastPlay({ side: 'rival', name: 'Decreto Final', icon: 'Ⅳ' });
-        setEnemySeals(4); setMessage('El Virrey ejecuta el Decreto Final.');
-      } else if (shouldAttack) {
-        setLastPlay({ side: 'rival', name: 'Ofensiva real', icon: '⚔' });
-        const incoming = 3 + (enemyHp <= 8 ? 1 : 0);
-        const blocked = Math.min(shield, incoming);
-        setShield((v) => v - blocked); setPlayerHp((v) => Math.max(0, v - (incoming - blocked)));
-        setMessage(`El rival ataca por ${incoming}. Tu escudo bloquea ${blocked}.`);
-      } else if (Math.random() < (difficulty === 'Aprendiz' ? 0.2 : difficulty === 'Maestro' ? 0.7 : 0.45)) {
-        setLastPlay({ side: 'rival', name: `Impacto ${enemySeals + 1}`, icon: '✦' });
-        setEnemySeals((v) => v + 1); setPlayerHp((v) => Math.max(0, v - 1)); setEnemyHp((v) => Math.min(20, v + 1));
-        setMessage(`El Virrey sella su Impacto ${enemySeals + 1}/4 y recupera 1 de vida.`);
-      } else { setLastPlay({ side: 'rival', name: 'Guardia del Virrey', icon: '⬟' }); setEnemyShield((v) => Math.min(10, v + 3)); setMessage('El Virrey se protege: obtiene 3 de escudo.'); }
-      setTurn((v) => v + 1); setMana(GAME_RULES.startingMana); setImpactPlayed(false); drawCards(1); setBusy(false);
-    }, 700);
+    dispatch({ type: 'end_turn' });
+    setSelected(null);
   };
 
   return <main className="dr-game">
@@ -134,12 +73,12 @@ const CombatPrototype: React.FC = () => {
     <section className="dr-arena"><div className="dr-map">✥<small>CAMPO DE BATALLA</small></div>{lastPlay&&<div key={`${lastPlay.side}-${lastPlay.name}-${turn}`} className={`dr-played ${lastPlay.side}`}><span>{lastPlay.icon}</span><b>{lastPlay.name}</b><small>{lastPlay.side==='player'?'Tu jugada':'Jugada del rival'}</small></div>}<button className="dr-log" onClick={()=>setShowHistory(true)} aria-label="Ver historial de jugadas">✦　{message} <small>· Historial</small></button></section>
     <section className="dr-player"><div className="dr-avatar"><Portrait/></div><div className="dr-person"><strong>Tu monarca</strong><small>Investigador de Peruanistas</small><div className="dr-health"><span style={{ width: `${playerHp * 5}%` }} /></div><b>♥ {playerHp}<i>/20</i>　🛡 {shield}</b></div><div className="dr-mana"><strong>{mana}<small>/3</small></strong><span>Mando</span><small className="dr-streak">Racha {streak}/3</small></div></section>
     {gameOver ? <section className="dr-result"><small>FIN DEL DUELO</small><h2>{playerWon?'¡Victoria!':'Derrota'}</h2><p>{seals>=4?'Completaste los cuatro Impactos.':enemySeals>=4?'El Virrey completó los cuatro Impactos.':enemyHp<=0?'El rival se quedó sin vida.':playerHp<=0?'Tu monarca se quedó sin vida.':playerWon?'El reino recuerda tu decreto.':'El Virrey ha prevalecido esta vez.'}</p><div className="dr-result-stats"><div><b>{turn}</b><small>Turno</small></div><div><b>{playerHp}</b><small>Tu vida</small></div><div><b>{seals}/4</b><small>Impactos</small></div></div><button onClick={()=>window.location.reload()}>Jugar otra vez</button><button className="dr-result-menu" onClick={()=>navigate('/')}>Volver al menú</button></section> : <>
-      <div className="dr-prompt">{chosen ? <><b>{chosen.name}</b> · {chosen.text}{chosen.cost>mana&&<span>Te faltan {chosen.cost-mana} de mando</span>}{chosen.effect.type==='impact'&&chosen.effect.rank!==seals+1&&<span>Primero debes sellar el Impacto {seals+1}</span>}{chosen.effect.type==='impact'&&impactPlayed&&<span>Ya jugaste un Impacto este turno</span>}<button onClick={()=>setSelected(null)}>Cancelar</button><button className="dr-confirm" disabled={chosen.cost>mana||(chosen.effect.type==='impact'&&(impactPlayed||chosen.effect.rank!==seals+1))} onClick={()=>play(chosen)}>Jugar carta</button></> : <>TU TURNO <b>· {mana} de mando</b><span>Selecciona una carta</span></>}</div>
-      <section className="dr-hand">{hand.map((card)=>{const locked=card.cost>mana||(card.effect.type==='impact'&&(impactPlayed||card.effect.rank!==seals+1));return <button key={card.id} type="button" className={`dr-card ${card.kind} ${selected===card.id?'active':''} ${locked?'disabled':''}`} aria-disabled={locked} aria-pressed={selected===card.id} aria-label={`${card.name}, coste ${card.cost}. ${card.text}${card.cost>mana?` Te faltan ${card.cost-mana} de mando.`:''}${card.effect.type==='impact'&&card.effect.rank!==seals+1?` Impacto fuera de orden; debes jugar el ${seals+1}.`:''}${impactPlayed&&card.effect.type==='impact'?' Ya jugaste un Impacto este turno.':''}`} onClick={()=>{if(!busy&&!locked)setSelected(card.id)}}><span className="dr-cost">{card.cost}</span><small>{label[card.kind]}{impactRank(card)?` · ${impactRank(card)}/4`:''}</small><span className="dr-art"><CardArt kind={card.kind} rank={impactRank(card)}/></span><strong>{card.name}</strong><p>{card.text}</p>{card.cost>mana&&<span className="dr-lock">Falta mando</span>}{card.effect.type==='impact'&&(impactPlayed||card.effect.rank!==seals+1)&&<span className="dr-lock">Juega en orden</span>}</button>})}</section>
+      <div className="dr-prompt">{chosen ? <><b>{chosen.name}</b> · {chosen.text}{chosen.cost>mana&&<span>Te faltan {chosen.cost-mana} de mando</span>}{chosen.effect.type==='impact'&&chosen.effect.rank!==seals+1&&<span>Primero debes sellar el Impacto {seals+1}</span>}{chosen.effect.type==='impact'&&impactPlayed&&<span>Ya jugaste un Impacto este turno</span>}<button onClick={()=>setSelected(null)}>Cancelar</button><button className="dr-confirm" disabled={!!invalidAction(combat,{type:'play',cardId:chosen.id})} onClick={()=>play(chosen)}>Jugar carta</button></> : <>TU TURNO <b>· {mana} de mando</b><span>Selecciona una carta</span></>}</div>
+      <section className="dr-hand">{hand.map((card)=>{const locked=!!invalidAction(combat,{type:'play',cardId:card.id});return <button key={card.id} type="button" className={`dr-card ${card.kind} ${selected===card.id?'active':''} ${locked?'disabled':''}`} aria-disabled={locked} aria-pressed={selected===card.id} aria-label={`${card.name}, coste ${card.cost}. ${card.text}${card.cost>mana?` Te faltan ${card.cost-mana} de mando.`:''}${card.effect.type==='impact'&&card.effect.rank!==seals+1?` Impacto fuera de orden; debes jugar el ${seals+1}.`:''}${impactPlayed&&card.effect.type==='impact'?' Ya jugaste un Impacto este turno.':''}`} onClick={()=>{if(!busy&&!locked)setSelected(card.id)}}><span className="dr-cost">{card.cost}</span><small>{label[card.kind]}{impactRank(card)?` · ${impactRank(card)}/4`:''}</small><span className="dr-art"><CardArt kind={card.kind} rank={impactRank(card)}/></span><strong>{card.name}</strong><p>{card.text}</p>{card.cost>mana&&<span className="dr-lock">Falta mando</span>}{card.effect.type==='impact'&&(impactPlayed||card.effect.rank!==seals+1)&&<span className="dr-lock">Juega en orden</span>}</button>})}</section>
       <footer className="dr-actions"><button onClick={()=>setPileView('draw')}>▤ <span>Mazo {drawPile.length}</span></button><button className="dr-end" onClick={endTurn} disabled={busy}>TERMINAR TURNO　→</button><button onClick={()=>setShowPause(true)} disabled={busy} aria-label="Pausar partida">Ⅱ <span>Pausa</span></button></footer>
     </>}
     {showHelp && <div className="dr-overlay" role="presentation" onClick={()=>setShowHelp(false)}><section className="dr-help" role="dialog" aria-modal="true" aria-labelledby="dr-help-title" onClick={(event)=>event.stopPropagation()}><button className="dr-help-close" onClick={()=>setShowHelp(false)} aria-label="Cerrar ayuda">×</button><small>GUÍA RÁPIDA</small><h2 id="dr-help-title">Cómo se juega</h2><ol><li><b>Usa tu mando.</b> Cada turno tienes 3 puntos. El coste aparece en la esquina de cada carta.</li><li><b>Ataca o protégete.</b> El escudo absorbe el daño antes que la vida.</li><li><b>Prepara los Impactos.</b> Juega I, II, III y Final en orden. Solo uno por turno.</li><li><b>Busca una racha.</b> Tres cartas seguidas de Ataque añaden daño; tres de Defensa añaden escudo.</li><li><b>Gana el duelo.</b> Reduce la vida rival a cero o completa los cuatro Impactos.</li></ol><p>La mano admite hasta seis cartas. La IA también puede avanzar sus Impactos.</p><button className="dr-help-ok" onClick={()=>setShowHelp(false)}>Entendido</button></section></div>}
-    {showDifficulty&&<div className="dr-overlay" role="presentation" onClick={()=>setShowDifficulty(false)}><section className="dr-help dr-difficulties" role="dialog" aria-modal="true" aria-labelledby="dr-difficulty-title" onClick={(event)=>event.stopPropagation()}><button className="dr-help-close" onClick={()=>setShowDifficulty(false)} aria-label="Cerrar dificultad">×</button><small>AJUSTA EL DESAFÍO</small><h2 id="dr-difficulty-title">Rival de IA</h2><p>La dificultad cambia la frecuencia con que ataca y prepara sus Impactos.</p>{(['Aprendiz','Estratega','Maestro'] as const).map((level)=><button key={level} className={`dr-level ${difficulty===level?'selected':''}`} onClick={()=>{setDifficulty(level);localStorage.setItem('decreto-difficulty',level);setShowDifficulty(false);setMessage(`Dificultad cambiada a ${level}.`)}}><b>{level}</b><small>{level==='Aprendiz'?'Da más oportunidades para aprender.':level==='Estratega'?'Combina ataque, defensa e Impactos.':'Presiona cuando detecta una posible victoria.'}</small></button>)}</section></div>}
+    {showDifficulty&&<div className="dr-overlay" role="presentation" onClick={()=>setShowDifficulty(false)}><section className="dr-help dr-difficulties" role="dialog" aria-modal="true" aria-labelledby="dr-difficulty-title" onClick={(event)=>event.stopPropagation()}><button className="dr-help-close" onClick={()=>setShowDifficulty(false)} aria-label="Cerrar dificultad">×</button><small>AJUSTA EL DESAFÍO</small><h2 id="dr-difficulty-title">Rival de IA</h2><p>La dificultad cambia la frecuencia con que ataca y prepara sus Impactos.</p>{(['Aprendiz','Estratega','Maestro'] as const).map((level)=><button key={level} className={`dr-level ${difficulty===level?'selected':''}`} onClick={()=>{setDifficulty(level);localStorage.setItem('decreto-difficulty',level);setShowDifficulty(false)}}><b>{level}</b><small>{level==='Aprendiz'?'Da más oportunidades para aprender.':level==='Estratega'?'Combina ataque, defensa e Impactos.':'Presiona cuando detecta una posible victoria.'}</small></button>)}</section></div>}
     {showPause&&<div className="dr-overlay" role="presentation" onClick={()=>setShowPause(false)}><section className="dr-help dr-pause" role="dialog" aria-modal="true" aria-labelledby="dr-pause-title" onClick={(event)=>event.stopPropagation()}><small>PARTIDA EN CURSO</small><h2 id="dr-pause-title">Pausa</h2><p>Turno {turn} · {playerHp} de vida · {seals}/4 Impactos</p><button className="dr-help-ok" onClick={()=>setShowPause(false)}>Continuar partida</button><button className="dr-pause-menu" onClick={()=>navigate('/')}>Salir al menú</button></section></div>}
     {pileView&&<div className="dr-overlay" role="presentation" onClick={()=>setPileView(null)}><section className="dr-pile" role="dialog" aria-modal="true" aria-labelledby="dr-pile-title" onClick={(event)=>event.stopPropagation()}><button className="dr-help-close" onClick={()=>setPileView(null)} aria-label="Cerrar mazo">×</button><small>INFORMACIÓN DE PARTIDA</small><h2 id="dr-pile-title">Tus cartas</h2><div className="dr-pile-tabs"><button className={pileView==='draw'?'selected':''} onClick={()=>setPileView('draw')}>Mazo · {drawPile.length}</button><button className={pileView==='discard'?'selected':''} onClick={()=>setPileView('discard')}>Descarte · {discard.length}</button></div><div className="dr-pile-list">{(pileView==='draw'?drawPile:discard).length===0?<p className="dr-empty">{pileView==='draw'?'No quedan cartas por robar.':'Aún no has jugado cartas.'}</p>:(pileView==='draw'?drawPile:discard).map((card)=><div className={`dr-pile-row ${card.kind}`} key={card.id}><span>{card.icon}</span><div><b>{card.name}</b><small>{label[card.kind]}{impactRank(card)?` · Impacto ${impactRank(card)}/4`:''}</small></div><strong>{card.cost} ◈</strong></div>)}</div><button className="dr-help-ok" onClick={()=>setPileView(null)}>Volver a la partida</button></section></div>}
     {showHistory&&<div className="dr-overlay" role="presentation" onClick={()=>setShowHistory(false)}><section className="dr-pile" role="dialog" aria-modal="true" aria-labelledby="dr-history-title" onClick={(event)=>event.stopPropagation()}><button className="dr-help-close" onClick={()=>setShowHistory(false)} aria-label="Cerrar historial">×</button><small>CRÓNICA DEL DUELO</small><h2 id="dr-history-title">Últimas jugadas</h2><ol className="dr-history">{history.map((entry,index)=><li key={`${entry}-${index}`}>{entry}</li>)}</ol><button className="dr-help-ok" onClick={()=>setShowHistory(false)}>Volver a la partida</button></section></div>}

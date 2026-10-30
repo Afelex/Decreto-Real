@@ -53,18 +53,20 @@ const CARD_POOL: Omit<Card, 'id'>[] = [
   })),
 ];
 
-const shuffle = <T,>(items: T[]): T[] => {
+const shuffle = <T,>(items: T[], random: () => number): T[] => {
   const shuffled = [...items];
   for (let index = shuffled.length - 1; index > 0; index -= 1) {
-    const swapIndex = Math.floor(Math.random() * (index + 1));
+    const swapIndex = Math.floor(random() * (index + 1));
     [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
   }
   return shuffled;
 };
 
-export const createDeck = (): Card[] => shuffle(
+export const createDeck = (random: () => number = Math.random): Card[] => shuffle(
   CARD_POOL.map((card, index) => ({
     ...card,
-    id: `carta-${index}-${Math.random().toString(36).slice(2)}`,
+    effect: { ...card.effect },
+    id: `carta-${index}`,
   })),
+  random,
 );
