@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { OPPONENT_IMG, PLAYER_IMG, BATTLE_BG_IMG } from '../constants';
 import { CardData, GamePhase, CardType } from '../types';
 import { useAudio } from '../contexts/AudioContext';
+import { AiTurnController, runOpponentTurn } from '../game/aiTurn';
 
 // --- GAME CONFIGURATION ---
 const MAX_HP = 10;
@@ -65,7 +66,7 @@ const GameBoard: React.FC = () => {
   const [whoStarted, setWhoStarted] = useState<'PLAYER' | 'OPPONENT' | null>(null);
   const [bannerText, setBannerText] = useState("");
   const gameOverRef = useRef(false);
-  const pausedRef = useRef(false);
+  const aiController = useRef<AiTurnController | null>(null);
 
   const [playerHP, setPlayerHP] = useState(MAX_HP);
   const [playerDeck, setPlayerDeck] = useState<CardData[]>([]);
@@ -92,7 +93,8 @@ const GameBoard: React.FC = () => {
   const [shakeScreen, setShakeScreen] = useState(false);
 
   const isMuted = !musicEnabled && !sfxEnabled;
-  pausedRef.current = isMenuOpen;
+  const latestOpponent = useRef({ hand: opponentHand, health: opponentHP, impactLevel: opponentImpactLevel, gauge: opponentGauge, lastType: opponentLastType });
+  latestOpponent.current = { hand: opponentHand, health: opponentHP, impactLevel: opponentImpactLevel, gauge: opponentGauge, lastType: opponentLastType };
   const handleGlobalAudioToggle = () => {
     playSound('CLICK');
     if (!isMuted) { if (musicEnabled) toggleMusic(); if (sfxEnabled) toggleSfx(); }
@@ -188,8 +190,8 @@ const GameBoard: React.FC = () => {
         if (newVal >= GAUGE_MAX) triggered = true;
       } else { setPlayerLastType(cardType); setPlayerGauge(1); }
     } else {
-      if (opponentLastType === cardType) {
-        const newVal = opponentGauge + 1; setOpponentGauge(newVal);
+      if (latestOpponent.current.lastType === cardType) {
+        const newVal = latestOpponent.current.gauge + 1; setOpponentGauge(newVal);
         if (newVal >= GAUGE_MAX) triggered = true;
       } else { setOpponentLastType(cardType); setOpponentGauge(1); }
     }
@@ -230,40 +232,38 @@ const GameBoard: React.FC = () => {
     const specialReady = updateGauge(isPlayer, card.type);
     if (specialReady) {
       if (isPlayer) setTimeout(() => setShowSpecialSelection(true), 600);
-      else setTimeout(() => triggerSpecialAbility('OPPONENT', opponentHP < 5 ? 'HEAL' : 'DAMAGE'), 800);
+      else {
+        const controller = aiController.current;
+        if (controller) void controller.wait(800).then(active => {
+          if (active && !gameOverRef.current) triggerSpecialAbility('OPPONENT', latestOpponent.current.health < 5 ? 'HEAL' : 'DAMAGE');
+        });
+      }
     }
   };
 
+  const latestPlayCard = useRef(playCard);
+  latestPlayCard.current = playCard;
+
   useEffect(() => {
-    if (phase === 'OPPONENT_TURN') {
-      let cancelled = false;
-      const sleep = (duration: number) => new Promise<void>(resolve => setTimeout(resolve, duration));
-      const waitUntilResumed = async () => {
-        while (pausedRef.current && !cancelled && !gameOverRef.current) await sleep(100);
-      };
-      const aiRoutine = async () => {
-        await sleep(1000);
-        await waitUntilResumed();
-        if (cancelled || gameOverRef.current) return;
-        let currentHand = [...opponentHand];
-        const playAiCard = async (c: CardData) => {
-          await waitUntilResumed();
-          if (cancelled || gameOverRef.current) return;
-          playCard(c, false); currentHand = currentHand.filter(x => x.id !== c.id);
-          await sleep(1500);
-          await waitUntilResumed();
-        };
-        const validImpact = currentHand.find(c => c.type === 'IMPACT' && c.rank === opponentImpactLevel + 1);
-        if (validImpact) await playAiCard(validImpact);
-        if (opponentHP < 5) { for (const d of currentHand.filter(x => x.type === 'DEFENSE')) await playAiCard(d); }
-        for (const a of currentHand.filter(x => x.type === 'ATTACK')) await playAiCard(a);
-        await waitUntilResumed();
-        if (!cancelled && !gameOverRef.current) { setTurnCount(p => p + 1); setPhase('TURN_BANNER'); }
-      };
-      void aiRoutine();
-      return () => { cancelled = true; };
-    }
+    if (phase !== 'OPPONENT_TURN') return;
+    const controller = new AiTurnController();
+    aiController.current = controller;
+    if (isMenuOpen) controller.pause();
+    void runOpponentTurn(controller, () => latestOpponent.current, card => {
+      if (!gameOverRef.current) latestPlayCard.current(card, false);
+    }, () => {
+      if (!gameOverRef.current) { setTurnCount(p => p + 1); setPhase('TURN_BANNER'); }
+    });
+    return () => {
+      controller.cancel();
+      if (aiController.current === controller) aiController.current = null;
+    };
   }, [phase]);
+
+  useEffect(() => {
+    if (isMenuOpen) aiController.current?.pause();
+    else aiController.current?.resume();
+  }, [isMenuOpen]);
 
   useEffect(() => {
     if (gameOverRef.current) return;

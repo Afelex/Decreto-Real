@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test:rules": "node --experimental-strip-types --test game/rules.test.ts"
+    "test:rules": "node --experimental-strip-types --test game/rules.test.ts",
+    "test:ai": "node --experimental-strip-types --test game/aiTurn.test.ts"
   },
   "dependencies": {
     "react": "^19.2.3",
