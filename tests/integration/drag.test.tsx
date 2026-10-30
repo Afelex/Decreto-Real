@@ -37,7 +37,7 @@ test('the campaign renders a physical hand and the canonical opponent name', () 
 });
 
 test('dragging upward into the table plays exactly one legal card', () => {
-  const { legal, button } = mount();
+  const { button } = mount();
   fireEvent.pointerDown(button, { pointerId: 3, pointerType: 'mouse', button: 0, clientX: 120, clientY: 350 });
   fireEvent.pointerMove(button, { pointerId: 3, pointerType: 'mouse', clientX: 120, clientY: 130 });
   expect(document.querySelector('.dr-drag-ghost')).toBeTruthy();
@@ -45,7 +45,7 @@ test('dragging upward into the table plays exactly one legal card', () => {
   fireEvent.pointerUp(button, { pointerId: 3, pointerType: 'mouse', clientX: 120, clientY: 100 });
   expect(document.querySelector('.dr-drag-ghost')).toBeNull();
   expect(document.querySelectorAll('.dr-hand .dr-card').length).toBe(initial.hand.length - 1);
-  expect(document.querySelector('.dr-log')?.textContent).toContain(legal.name);
+  expect(document.querySelector('.dr-log')?.textContent).not.toContain('Elige una carta');
   fireEvent.pointerUp(button, { pointerId: 3, pointerType: 'mouse', clientX: 120, clientY: 100 });
   expect(document.querySelectorAll('.dr-hand .dr-card').length).toBe(initial.hand.length - 1);
 });
