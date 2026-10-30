@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './combat-prototype.css';
 import { CARD_LABELS, type Card, type CardKind } from '../game/cards';
 import { applyCombatAction, createCombat, invalidAction, type CombatAction, type CombatState, type Difficulty } from '../game/combatEngine';
+import { currentMessage, historyLines } from '../game/combatText';
 
 type Kind = CardKind;
 
@@ -32,7 +33,7 @@ const CombatPrototype: React.FC = () => {
     },
   );
   const { drawPile, discard, hand, mana, playerHp, enemyHp, shield, enemyShield,
-    seals, enemySeals, turn, message, lastPlay, difficulty, impactPlayed, streak } = combat;
+    seals, enemySeals, turn, lastPlay, difficulty, impactPlayed, streak } = combat;
   const busy = combat.phase === 'rival';
   const gameOver = combat.phase === 'finished';
   const playerWon = combat.winner === 'player';
@@ -76,9 +77,8 @@ const CombatPrototype: React.FC = () => {
 
   const chosen = hand.find(card => card.id === selected);
   const label = CARD_LABELS;
-  const history = combat.journal.flatMap(entry => entry.events
-    .filter(event => event.message && entry.action.type !== 'end_turn')
-    .map(event => `Turno ${event.turn}: ${event.message}`)).reverse().slice(0, 12);
+  const message = currentMessage(combat);
+  const history = historyLines(combat);
   if (history.length === 0) history.push('Turno 1: la partida comienza.');
 
   // Time and presentation belong to React; the response itself is an atomic engine action.

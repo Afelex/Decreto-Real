@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { applyCombatAction, createCombat, exportCombat, invalidAction, replayCombat, type CombatAction, type CombatState } from './combatEngine.ts';
+import { readFileSync } from 'node:fs';
+import { applyCombatAction, canonicalAction, createCombat, ENGINE_VERSION, exportCombat, invalidAction, invalidRecord, playBlockReason, replayCombat, type CombatAction, type CombatRecord, type CombatState } from './combatEngine.ts';
+import { describeEntry, cardLookup, historyLines } from './combatText.ts';
 
 function act(state: CombatState, action: CombatAction) {
   const result = applyCombatAction(state, action);
@@ -145,4 +147,131 @@ test('JSON logs replay complete legal sequences with identical states and events
     }
     record.version = 'unknown'; assert.throws(() => replayCombat(record));
   }
+});
+
+const legacyRecord = (): CombatRecord => JSON.parse(readFileSync(new URL('./fixtures/dr-combat-1-record.json', import.meta.url), 'utf8'));
+
+test('defense at the shield cap reports the shield actually gained (regression: "obtienes 7" with gained 4)', () => {
+  const { state, card } = withCard('defense');
+  state.shield = 10;
+  const result = applyCombatAction(state, { type: 'play', cardId: card.id });
+  const amount = card.effect.type === 'shield' ? card.effect.amount : 0;
+  assert.equal(result.state.shield, 12);
+  const shield = result.events.find(e => e.type === 'shield')!;
+  assert.deepEqual(shield.data, { side: 'player', gained: 2, bonus: 0, amount, shield: 12 });
+  const [line] = describeEntry(result.state.journal[0], cardLookup(result.state));
+  assert.equal(line, `${card.name}: obtienes 2 de escudo (tope 12; ${amount - 2} sin efecto).`);
+});
+
+test('rival texts match capped shield, damage and healing actually applied', () => {
+  // Find real rival responses in the legacy fixture: shield at cap and Impacts with healing.
+  const state = replayCombat(legacyRecord());
+  const cards = cardLookup(state);
+  const capped = state.journal.find(e => e.events.some(ev => ev.type === 'shield' && ev.data.side === 'rival' && ev.data.gained === 0))!;
+  assert.ok(capped, 'fixture contains a rival shield at its cap');
+  assert.ok(describeEntry(capped, cards).includes('El Virrey intenta protegerse, pero su escudo ya está al máximo (10).'));
+  const rival = createCombat(3, 'Aprendiz');
+  Object.assign(rival, { phase: 'rival', enemyHp: 20, playerHp: 9, shield: 0, rng: 0 });
+  // Search an RNG value that makes Aprendiz choose an Impact at full health.
+  for (let rng = 0; rng < 500; rng++) {
+    const result = applyCombatAction({ ...rival, rng }, { type: 'resolve_rival' });
+    const impact = result.events.find(e => e.type === 'impact');
+    if (!impact) continue;
+    assert.deepEqual(impact.data, { side: 'rival', seals: 1, damage: 1, healing: 0 });
+    assert.equal(result.state.enemyHp, 20); assert.equal(result.state.playerHp, 8);
+    assert.match(describeEntry(result.state.journal[0], cards)[0], /pierdes 1 de vida y él recupera 0/);
+    return;
+  }
+  assert.fail('no Impact response found');
+});
+
+test('legacy dr-combat-1 records replay by projection, ignore old messages and upgrade to the current version', () => {
+  const legacy = legacyRecord();
+  assert.equal(legacy.version, 'dr-combat-1');
+  const state = replayCombat(legacy);
+  assert.equal(state.version, ENGINE_VERSION); assert.equal(state.phase, 'finished');
+  const upgraded = JSON.parse(JSON.stringify(exportCombat(state)));
+  assert.equal(upgraded.version, ENGINE_VERSION);
+  assert.deepEqual(replayCombat(upgraded), state);
+  assert.ok(upgraded.journal.every((e: { events: object[] }) => e.events.every(ev => !('message' in ev))));
+  const reworded = legacyRecord();
+  (reworded.journal[0].events[1] as { message?: string }).message = 'Texto distinto';
+  assert.deepEqual(replayCombat(reworded), state);
+  const tampered = legacyRecord();
+  (tampered.journal[0].events[1].data as Record<string, unknown>).gained = 99;
+  assert.throws(() => replayCombat(tampered), /divergent/);
+  const missing = legacyRecord();
+  (missing.journal[0].events as unknown[]).pop();
+  assert.throws(() => replayCombat(missing), /divergent/);
+});
+
+test('current records compare event data strictly, including unexpected fields', () => {
+  let state = act(createCombat(8), { type: 'end_turn' }); state = act(state, { type: 'resolve_rival' });
+  const record = JSON.parse(JSON.stringify(exportCombat(state)));
+  record.journal[1].events[0].message = 'añadido';
+  assert.throws(() => replayCombat(record), /divergent/);
+});
+
+test('journal stores canonical actions only and survives non-cloneable extra fields', () => {
+  const { state, card } = withCard('attack');
+  const noisy = { type: 'play', cardId: card.id, callback: () => 1, extra: { nested: true } } as unknown as CombatAction;
+  const next = act(state, noisy);
+  assert.deepEqual(next.journal[0].action, { type: 'play', cardId: card.id });
+  assert.deepEqual(canonicalAction({ type: 'difficulty', value: 'Maestro', x: 1 }), { type: 'difficulty', value: 'Maestro' });
+  assert.equal(canonicalAction({ type: 'play', cardId: 7 }), null);
+  assert.equal(canonicalAction(null), null);
+  rejected(state, { type: 'play', cardId: 7 } as unknown as CombatAction);
+  rejected(state, null as unknown as CombatAction);
+});
+
+test('journal entries are shared, frozen and never altered by later actions or exports', () => {
+  const first = act(createCombat(11), { type: 'end_turn' });
+  const second = act(first, { type: 'resolve_rival' });
+  assert.equal(first.journal.length, 1); assert.equal(second.journal.length, 2);
+  assert.strictEqual(second.journal[0], first.journal[0]);
+  assert.ok(Object.isFrozen(second.journal[1]) && Object.isFrozen(second.journal[1].events[0].data));
+  const record = exportCombat(second);
+  (record.journal[0].events[0].data as Record<string, unknown>).phase = 'x';
+  assert.equal(second.journal[0].events[0].data.phase, 'rival');
+});
+
+test('journal cost grows linearly: 5,000 actions build and replay quickly (was ~24 s each)', () => {
+  let state = createCombat(1);
+  const start = performance.now();
+  for (let i = 0; i < 5000; i++) state = applyCombatAction(state, { type: i % 2 ? 'resume' : 'pause' }).state;
+  const record = JSON.parse(JSON.stringify(exportCombat(state)));
+  assert.deepEqual(replayCombat(record), state);
+  assert.ok(performance.now() - start < 6000, `took ${performance.now() - start} ms`);
+});
+
+test('external records are shape-checked before replay', () => {
+  const good = JSON.parse(JSON.stringify(exportCombat(act(createCombat(2), { type: 'end_turn' }))));
+  assert.equal(invalidRecord(good), null);
+  for (const bad of [null, 'text', 3, [], { ...good, version: 'dr-combat-99' }, { ...good, seed: 1.5 }, { ...good, seed: -1 },
+    { ...good, difficulty: 'Dios' }, { ...good, journal: {} }, { ...good, journal: [null] },
+    { ...good, journal: [{ action: { type: 'hack' }, events: [] }] }, { ...good, journal: [{ action: { type: 'end_turn' }, events: [{ type: 'turn' }] }] }]) {
+    assert.ok(invalidRecord(bad), JSON.stringify(bad));
+    assert.throws(() => replayCombat(bad as CombatRecord));
+  }
+});
+
+test('play block reasons distinguish turn, pause, order, one Impact per turn and mando', () => {
+  const { state, card } = withCard('impact', 2);
+  assert.equal(playBlockReason(state, card.id), 'impact_order');
+  state.seals = 1; state.impactPlayed = true; assert.equal(playBlockReason(state, card.id), 'impact_used');
+  assert.equal(invalidAction(state, { type: 'play', cardId: card.id }), 'Ya jugaste un Impacto este turno.');
+  state.impactPlayed = false; state.mana = 1; assert.equal(playBlockReason(state, card.id), 'mana');
+  state.mana = 3; assert.equal(playBlockReason(state, card.id), null);
+  assert.equal(playBlockReason(state, 'otra'), 'not_in_hand');
+  assert.equal(playBlockReason({ ...state, paused: true }, card.id), 'paused');
+  assert.equal(playBlockReason({ ...state, phase: 'rival' }, card.id), 'not_your_turn');
+  assert.equal(playBlockReason({ ...state, phase: 'finished' }, card.id), 'finished');
+});
+
+test('history derives lines from events and skips the end-turn notice', () => {
+  let state = createCombat(0);
+  assert.deepEqual(historyLines(state), []);
+  state = act(state, { type: 'end_turn' }); state = act(state, { type: 'resolve_rival' });
+  const lines = historyLines(state);
+  assert.equal(lines.length, 1); assert.match(lines[0], /^Turno 1: El (rival|Virrey)/);
 });

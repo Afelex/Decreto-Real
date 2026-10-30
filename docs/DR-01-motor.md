@@ -1,6 +1,19 @@
 # DR-01 — Contrato del motor del prototipo
 
-Versión de reglas/registro: `dr-combat-1`. Implementación: `game/combatEngine.ts`.
+Versión de reglas/registro: `dr-combat-2` (lee también `dr-combat-1`). Implementación: `game/combatEngine.ts`; textos en `game/combatText.ts`.
+
+## Política de compatibilidad de registros
+
+Definida antes de cambiar el formato de eventos (octubre de 2026):
+
+1. **La versión identifica** reglas, catálogo, consumo de RNG, semántica de acciones y el esquema de los *datos* de eventos. Cambiar cualquiera de ellos exige una versión nueva.
+2. **Los textos no forman parte del registro.** Desde `dr-combat-2` los eventos solo contienen `type`, `turn` y `data`; los mensajes se derivan en `combatText.ts`. Corregir o traducir un texto no invalida registros ni exige versión.
+3. **Comparación estricta para la versión actual:** el replay exige eventos idénticos en JSON, incluidos campos inesperados.
+4. **Versiones anteriores admitidas** (`LEGACY_VERSIONS`): se reproducen con las reglas actuales y se comparan por proyección —mismo número de eventos, tipo, turno y cada campo de `data` que el registro antiguo guardó—. Se ignoran sus mensajes. Al exportar de nuevo, el registro sale en la versión actual. Esto solo es válido mientras reglas y RNG sean iguales; si cambian, la versión antigua se retira de `LEGACY_VERSIONS` y sus registros se rechazan con un mensaje de versión incompatible.
+5. **Campos nuevos solo se añaden.** `dr-combat-2` conserva todos los campos de `dr-combat-1` y añade: `amount` y `shield` en la defensa del jugador; `gained` en la del rival; `incoming` en el ataque rival; `damage` y `healing` en el Impacto rival.
+6. **Rechazo explícito:** versión desconocida, forma inválida (`invalidRecord`), acción ilegal o eventos divergentes lanzan error; nunca se acepta parcialmente un registro.
+
+Motivo del cambio: con `dr-combat-1` un texto erróneo era parte del registro. La defensa con el escudo cerca del tope mostraba «obtienes 7 de escudo» con `gained: 4`, y el rival «obtiene 3» con el escudo ya en 10. Corregirlo sin esta política habría invalidado todos los registros. El fixture `game/fixtures/dr-combat-1-record.json`, generado con el motor anterior, demuestra la lectura de registros antiguos; además se reprodujeron 600 registros v1 (200 semillas × 3 dificultades, tres estrategias de juego) con estado final idéntico al del motor anterior.
 Se aplica a `/duelo-v1`; `/game` conserva el combate anterior y su controlador de IA.
 
 ## Entrada, salida y reproducción
