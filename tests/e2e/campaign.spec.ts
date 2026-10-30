@@ -108,3 +108,38 @@ test('campaign retains drag-and-drop tactile battle', async ({ page }, testInfo)
   await expect(hand).toHaveCount(initialCount - 1);
   await expect(page.locator('.dr-drag-ghost')).toHaveCount(0);
 });
+
+test('star goals dialog is complete, keyboard-accessible and fits the phone', async ({ page }) => {
+  await page.goto(campaign);
+  await page.getByRole('button', { name: 'Ver objetivos del reto' }).click();
+  const dialog = page.getByRole('dialog', { name: 'El pregón alterado' });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByText('Gana el duelo')).toBeVisible();
+  await expect(dialog.getByText('Conserva al menos 12 de vida')).toBeVisible();
+  await expect(dialog.getByText('Vence hasta el turno 10')).toBeVisible();
+  const bounds = await dialog.boundingBox();
+  const viewport = page.viewportSize()!;
+  expect(bounds).not.toBeNull();
+  expect(bounds!.y).toBeGreaterThanOrEqual(-1);
+  expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(viewport.height + 1);
+  expect(bounds!.x).toBeGreaterThanOrEqual(-1);
+  expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(viewport.width + 1);
+  await page.keyboard.press('Escape');
+  await expect(dialog).toBeHidden();
+  await expect(page.getByRole('button', { name: 'Ver objetivos del reto' })).toBeFocused();
+});
+
+test('main-menu campaign CTA previews the latest verified stage', async ({ page }) => {
+  await page.goto(campaign);
+  await page.evaluate(() => localStorage.setItem('decreto-real.campania.v1', JSON.stringify({
+    version: 1, stars: { '01': 2, '38': 3 },
+  })));
+  await page.goto('/Decreto-Real/#/');
+  const campaignButton = page.getByRole('button', { name: 'Empezar campaña' });
+  await expect(campaignButton).toContainText('Reto 2/38');
+  await expect(campaignButton).toContainText('La orden sin sello');
+  await expect(campaignButton.locator('.dr-menu-progress-track span')).toHaveCSS('width', /[0-9.]+px/);
+  const menu = await page.locator('.dr-main-menu-footer').boundingBox();
+  expect(menu).not.toBeNull();
+  expect(menu!.y + menu!.height).toBeLessThanOrEqual(page.viewportSize()!.height + 2);
+});

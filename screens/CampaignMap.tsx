@@ -5,6 +5,7 @@ import {
   type CampaignMission, type CampaignProgress,
 } from '../campaign/campaign.ts';
 import { STORY_CHAPTERS, stagesForChapter } from '../campaign/story.ts';
+import { campaignOverview, missionStarGoals } from '../campaign/progressView.ts';
 const mapImage = '/Decreto-Real/virreinato-map.svg';
 import './campaign-map-fullscreen.css';
 
@@ -39,6 +40,11 @@ function MapStars({ count }: { count: number }) {
 const CampaignMap: React.FC = () => {
   const navigate = useNavigate();
   const [progress] = React.useState(() => loadCampaignProgress(storage()));
+  const journey = React.useMemo(() => campaignOverview(progress), [progress]);
+  const [objectivesOpen, setObjectivesOpen] = React.useState(false);
+  const objectivesButton = React.useRef<HTMLButtonElement>(null);
+  const closeObjectivesButton = React.useRef<HTMLButtonElement>(null);
+  const playObjectivesButton = React.useRef<HTMLButtonElement>(null);
   const firstIncomplete = CAMPAIGN_MISSIONS.find(mission => bestStars(progress, mission.id) === 0);
   const initialChapterIndex = firstIncomplete
     ? Math.max(0, STORY_CHAPTERS.findIndex(chapter => stagesForChapter(chapter.id).some(stage => stage.id === firstIncomplete.id)))
@@ -47,8 +53,7 @@ const CampaignMap: React.FC = () => {
   const chapter = STORY_CHAPTERS[chapterIndex];
   const missions = chapterMissions(chapter.id);
   const [selectedId, setSelectedId] = React.useState(() => initialSelection(progress, chapterMissions(STORY_CHAPTERS[initialChapterIndex].id)).id);
-  const completed = CAMPAIGN_MISSIONS.filter(mission => bestStars(progress, mission.id) > 0).length;
-  const earnedStars = CAMPAIGN_MISSIONS.reduce((sum, mission) => sum + bestStars(progress, mission.id), 0);
+  const earnedStars = journey.stars;
   const chapterCompleted = missions.filter(mission => bestStars(progress, mission.id) > 0).length;
   const selected = missions.find(mission => mission.id === selectedId && isMissionUnlocked(progress, mission.id))
     ?? initialSelection(progress, missions);
@@ -58,9 +63,35 @@ const CampaignMap: React.FC = () => {
   const linePoints = mapPositions.map(([x, y]) => `${x},${y}`).join(' ');
   const accent = { '--dcm-accent': chapter.color } as React.CSSProperties;
 
+  const closeObjectives = () => {
+    setObjectivesOpen(false);
+    objectivesButton.current?.focus();
+  };
+
+  React.useEffect(() => {
+    if (!objectivesOpen) return;
+    closeObjectivesButton.current?.focus();
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setObjectivesOpen(false);
+        objectivesButton.current?.focus();
+      }
+      if (event.key === 'Tab') {
+        const controls = [closeObjectivesButton.current, playObjectivesButton.current].filter((control): control is HTMLButtonElement => !!control);
+        const index = controls.indexOf(document.activeElement as HTMLButtonElement);
+        if (event.shiftKey && index === 0) { event.preventDefault(); controls[controls.length - 1]?.focus(); }
+        else if (!event.shiftKey && index === controls.length - 1) { event.preventDefault(); controls[0]?.focus(); }
+      }
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [objectivesOpen]);
+
   const switchChapter = (nextIndex: number) => {
     const target = STORY_CHAPTERS[nextIndex];
     if (!target || !chapterOpen(progress, target.id)) return;
+    setObjectivesOpen(false);
     setChapterIndex(nextIndex);
     setSelectedId(initialSelection(progress, chapterMissions(target.id)).id);
   };
@@ -88,7 +119,10 @@ const CampaignMap: React.FC = () => {
         <div className="dcm-chapter-title" aria-live="polite">
           <small>{chapterIndex === 0 ? 'PRÓLOGO' : chapterIndex === STORY_CHAPTERS.length - 1 ? 'CAPÍTULO FINAL' : `REGIÓN ${chapterIndex} DE 8`}</small>
           <strong>{chapter.title}</strong>
-          <span>{chapterCompleted}/{missions.length} retos · ★ {earnedStars}/114</span>
+          <span>{chapterCompleted}/{missions.length} retos · ★ {earnedStars}/{journey.maximumStars}</span>
+          <div className="dcm-journey-progress" role="progressbar" aria-label="Retos superados" aria-valuemin={0} aria-valuemax={journey.total} aria-valuenow={journey.completed}>
+            <span style={{ width: `${journey.percentage}%` }} />
+          </div>
         </div>
         <button type="button" onClick={() => switchChapter(chapterIndex + 1)} disabled={!canGoNext}
           aria-label={canGoNext ? 'Capítulo siguiente' : 'Capítulo siguiente bloqueado'}>›</button>
@@ -130,24 +164,47 @@ const CampaignMap: React.FC = () => {
 
       <section className="dcm-selected-card" aria-live="polite" aria-label="Reto seleccionado">
         <div className="dcm-selected-copy">
-          <span className="dcm-eyebrow">{selected.kind === 'boss' ? '♛ GENERAL' : selected.kind === 'subboss' ? '⚔ SUBJEFE' : selected.kind === 'final' ? '♛ FINAL' : '⚔ MISIÓN'} {Number(selected.id)} DE 38</span>
+          <span className="dcm-eyebrow">{selected.kind === 'boss' ? '♛ GENERAL' : selected.kind === 'subboss' ? '⚔ SUBJEFE' : selected.kind === 'final' ? '♛ FINAL' : '⚔ MISIÓN'} {Number(selected.id)} DE 38 · IA {selected.difficulty}</span>
           <h2>{selected.title}</h2>
           <p>{selected.description}</p>
         </div>
-        <div className="dcm-selected-score">
+        <button type="button" className="dcm-selected-score dcm-objectives-trigger" ref={objectivesButton}
+          aria-label="Ver objetivos del reto" onClick={() => setObjectivesOpen(true)}>
           <MapStars count={bestStars(progress, selected.id)} />
-          <small>{selected.difficulty}</small>
-        </div>
+          <small>Objetivos ›</small>
+        </button>
       </section>
 
       <footer className="dcm-footer">
-        <p className="dcm-lock-note" role="status">🔒 {canGoNext || chapterIndex === STORY_CHAPTERS.length - 1 && completed === CAMPAIGN_MISSIONS.length
-          ? 'Puedes repetir cualquier reto superado para mejorar tus estrellas.'
-          : 'Derrota el reto actual para desbloquear la siguiente fase.'}</p>
+        <p className="dcm-lock-note" role="status">{journey.completedCampaign
+          ? '★ ¡Campaña superada! Repite retos para mejorar tus estrellas.'
+          : chapterCompleted === missions.length && canGoNext
+            ? '★ Región superada. La siguiente ya está disponible.'
+            : bestStars(progress, selected.id) > 0
+              ? '★ Reto superado. Puedes repetirlo para mejorar tu marca.'
+              : '🔒 Derrota este reto para desbloquear el siguiente.'}</p>
         <button type="button" className="dcm-play" onClick={startSelected} disabled={!isMissionUnlocked(progress, selected.id)}>
           <span aria-hidden="true">⚔</span> Seleccionar reto <span aria-hidden="true">›</span>
         </button>
       </footer>
+      {objectivesOpen && <div className="dcm-objectives-overlay" role="presentation" onClick={event => { if (event.target === event.currentTarget) closeObjectives(); }}>
+        <section className="dcm-objectives-panel" role="dialog" aria-modal="true" aria-labelledby="dcm-objectives-title"
+          aria-describedby="dcm-objectives-description">
+          <button ref={closeObjectivesButton} className="dcm-objectives-close" type="button"
+            aria-label="Cerrar objetivos" onClick={closeObjectives}>×</button>
+          <small>⚔ RETO {Number(selected.id)} DE {journey.total}</small>
+          <h2 id="dcm-objectives-title">{selected.title}</h2>
+          <p id="dcm-objectives-description">Rival: {selected.opponent} · IA {selected.difficulty}</p>
+          <div className="dcm-objectives-list" aria-label="Tres objetivos para conseguir las estrellas">
+            {missionStarGoals(selected).map((goal, index) => <div key={goal.id}><span aria-hidden="true">★</span>
+              <span><strong>Estrella {index + 1}</strong><span>{goal.label}</span></span></div>)}
+          </div>
+          <p className="dcm-objectives-hint">Una victoria abre el siguiente reto. Las otras dos estrellas mejoran tu marca.</p>
+          <button ref={playObjectivesButton} type="button" className="dcm-objectives-play" onClick={startSelected}>
+            Seleccionar reto ⚔
+          </button>
+        </section>
+      </div>}
     </div>
   </main>;
 };

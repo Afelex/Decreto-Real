@@ -14,6 +14,7 @@ import CampaignEpilogue from './screens/CampaignEpilogue';
 import { AudioProvider } from './contexts/AudioContext';
 import './screens/one-screen-ui.css';
 import './screens/duel-viewport.css';
+import './screens/campaign-progress.css';
 
 const App: React.FC = () => {
   return (
