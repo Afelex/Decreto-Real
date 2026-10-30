@@ -105,3 +105,21 @@ test('chapters contain two prologue, four stages per general, and four finales',
   }
   assert.equal(STORY_STAGES.filter(stage => stage.chapterId === 'f').length, 4);
 });
+
+test('saved later stars cannot bypass any undefeated earlier challenge', () => {
+  const progress = { version: 1 as const, stars: { '02': 3, '05': 3 } };
+  assert.equal(isMissionUnlocked(progress, '03'), false);
+  assert.equal(isMissionUnlocked(progress, '06'), false);
+  assert.strictEqual(awardMissionStars(progress, '06', 3), progress);
+});
+
+test('unlocked challenge remains replayable and each later chapter still requires all previous wins', () => {
+  let progress = emptyCampaignProgress();
+  for (const mission of CAMPAIGN_MISSIONS.slice(0, 6)) {
+    assert.ok(isMissionUnlocked(progress, mission.id));
+    progress = awardMissionStars(progress, mission.id, 1);
+  }
+  assert.equal(isMissionUnlocked(progress, '07'), true);
+  assert.equal(isMissionUnlocked(progress, '08'), false);
+  assert.equal(isMissionUnlocked(progress, '01'), true);
+});

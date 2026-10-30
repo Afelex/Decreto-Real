@@ -1,48 +1,82 @@
 import { expect, test } from '@playwright/test';
 
-test('campaign map shows only unlocked stages and fits its viewport', async ({ page }) => {
-  await page.goto('/Decreto-Real/#/campania');
-  await expect(page.getByRole('heading', { name: 'El Sello y la Falsa Luz' })).toBeVisible();
+const campaign = '/Decreto-Real/#/campania';
+
+test('campaign map fits one viewport and locks future challenges', async ({ page }, testInfo) => {
+  await page.goto(campaign);
+  await expect(page.getByRole('heading', { name: 'Campaña' })).toBeVisible();
   await expect(page.getByRole('button', { name: /Misión 1:/ })).toBeEnabled();
   await expect(page.getByRole('button', { name: /Misión 2:/ })).toBeDisabled();
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+  await expect(page.getByRole('button', { name: 'Capítulo siguiente bloqueado' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: /Seleccionar reto/ })).toBeVisible();
+
+  const fit = await page.evaluate(() => {
+    const viewportHeight = window.innerHeight;
+    const footer = document.querySelector('.dcm-footer')?.getBoundingClientRect();
+    const map = document.querySelector('.dcm-map')?.getBoundingClientRect();
+    const body = document.documentElement;
+    return {
+      verticalOverflow: body.scrollHeight > viewportHeight + 1,
+      horizontalOverflow: body.scrollWidth > window.innerWidth + 1,
+      controlsVisible: !!footer && footer.bottom <= viewportHeight + 1,
+      mapVisible: !!map && map.height >= 100,
+    };
+  });
+  expect(fit).toEqual({ verticalOverflow: false, horizontalOverflow: false, controlsVisible: true, mapVisible: true });
+  await page.screenshot({ path: testInfo.outputPath('fullscreen-campaign-map.png'), fullPage: true });
 });
 
-test('mission preview shows the star goals and opens the existing duel', async ({ page }) => {
-  await page.goto('/Decreto-Real/#/campania');
-  await page.getByRole('button', { name: /Misión 1:/ }).click();
-  const dialog = page.getByRole('dialog');
-  await expect(dialog).toBeVisible();
-  await expect(dialog.getByText('Gana el duelo')).toBeVisible();
-  await expect(dialog.getByText('Conserva 12 de vida o más')).toBeVisible();
-  await dialog.getByRole('button', { name: 'Entrar en la misión' }).click();
+test('select challenge button opens the existing story mission and actual duel', async ({ page }) => {
+  await page.goto(campaign);
+  await page.getByRole('button', { name: /Seleccionar reto/ }).click();
   await expect(page.getByRole('heading', { name: 'El pregón alterado' })).toBeVisible();
+  await expect(page.getByText(/Una proclamación contradictoria/)).toBeVisible();
   await page.getByRole('button', { name: /Comenzar duelo/ }).click();
   await expect(page.getByRole('heading', { name: 'Decreto Real' })).toBeVisible();
   await expect(page.getByLabel('Tu mano:', { exact: false })).toBeVisible();
 });
 
-test('mission details can be dismissed without starting a duel', async ({ page }) => {
-  await page.goto('/Decreto-Real/#/campania');
+test('defeat requirement prevents advancing to another region', async ({ page }) => {
+  await page.goto(campaign);
+  await expect(page.getByRole('button', { name: 'Capítulo siguiente bloqueado' })).toBeDisabled();
   await page.getByRole('button', { name: /Misión 1:/ }).click();
-  await page.keyboard.press('Escape');
-  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'El pregón alterado' })).toBeVisible();
+
+  await page.evaluate(() => window.localStorage.setItem('decreto-real.campania.v1', JSON.stringify({
+    version: 1, stars: { '01': 1 },
+  })));
+  await page.reload();
+  await expect(page.getByRole('button', { name: /Misión 2:/ })).toBeEnabled();
+  await expect(page.getByRole('button', { name: 'Capítulo siguiente bloqueado' })).toBeDisabled();
 });
 
-test('story prologue introduces the main conflict and all eight generals', async ({ page }) => {
+test('defeating all missions in a region unlocks the next chapter', async ({ page }) => {
+  await page.goto(campaign);
+  await page.evaluate(() => window.localStorage.setItem('decreto-real.campania.v1', JSON.stringify({
+    version: 1, stars: { '01': 1, '02': 1 },
+  })));
+  await page.reload();
+  await expect(page.getByText('El puerto de hierro')).toBeVisible();
+  await page.getByRole('button', { name: 'Capítulo anterior' }).click();
+  await expect(page.getByText('El llamado del Sello')).toBeVisible();
+  await page.getByRole('button', { name: 'Capítulo siguiente' }).click();
+  await expect(page.getByRole('button', { name: /Misión 3:/ })).toBeEnabled();
+  await expect(page.getByRole('button', { name: /Misión 4:/ })).toBeDisabled();
+});
+
+test('the prologue introduces the conflict and all eight generals', async ({ page }) => {
   await page.goto('/Decreto-Real/#/campania/historia');
   await expect(page.getByRole('heading', { name: 'El reino escucha dos verdades' })).toBeVisible();
   await expect(page.locator('.dc-general-list > div')).toHaveCount(8);
-  await page.screenshot({ path: test.info().outputPath('story-prologue.png'), fullPage: true });
 });
 
-test('the epilogue is inaccessible until the last mission is won', async ({ page }) => {
+test('the epilogue is inaccessible until all 38 missions are won', async ({ page }) => {
   await page.goto('/Decreto-Real/#/campania/epilogo');
   await expect(page.getByRole('heading', { name: 'El epílogo sigue sellado' })).toBeVisible();
 });
 
-test('the named general is presented both in the briefing and on the real duel board', async ({ page }) => {
-  await page.goto('/Decreto-Real/#/campania');
+test('boss is presented in briefing and on the duel board', async ({ page }) => {
+  await page.goto(campaign);
   await page.evaluate(() => window.localStorage.setItem('decreto-real.campania.v1', JSON.stringify({
     version: 1, stars: { '01': 1, '02': 1, '03': 1, '04': 1, '05': 1 },
   })));
@@ -50,11 +84,10 @@ test('the named general is presented both in the briefing and on the real duel b
   await expect(page.getByRole('heading', { name: 'El Almirante de Hierro' })).toBeVisible();
   await page.getByRole('button', { name: /Comenzar duelo/ }).click();
   await expect(page.locator('.dr-rival').getByText('Almirante de Hierro')).toBeVisible();
-  await page.screenshot({ path: test.info().outputPath('campaign-boss-duel.png'), fullPage: true });
 });
 
-test('tactile campaign duel lets the player physically drag a card onto the table', async ({ page }, testInfo) => {
-  test.skip(testInfo.project.name !== 'mobile-390', 'Full drag motion is sampled at the taller phone viewport');
+test('campaign retains drag-and-drop tactile battle', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile-390', 'Full drag sampled on tall mobile viewport');
   await page.goto('/Decreto-Real/#/campania/mision/01');
   await page.getByRole('button', { name: /Comenzar duelo/ }).click();
   const hand = page.locator('.dr-hand .dr-card');
@@ -73,5 +106,4 @@ test('tactile campaign duel lets the player physically drag a card onto the tabl
   await page.mouse.up();
   await expect(hand).toHaveCount(initialCount - 1);
   await expect(page.locator('.dr-drag-ghost')).toHaveCount(0);
-  await page.screenshot({ path: testInfo.outputPath('duel-table-after-drag.png'), fullPage: true });
 });

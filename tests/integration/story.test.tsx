@@ -49,9 +49,15 @@ test('the final scene requires the final mission to be completed', () => {
 });
 
 test('the final mission victory reveals the canonical ending', () => {
-  window.localStorage.setItem(CAMPAIGN_STORAGE_KEY, JSON.stringify({ version: 1, stars: { '38': 1 } }));
+  window.localStorage.setItem(CAMPAIGN_STORAGE_KEY, JSON.stringify({ version: 1, stars: Object.fromEntries(Array.from({ length: 38 }, (_, i) => [String(i + 1).padStart(2, '0'), 1])) }));
   screenAt('/campania/epilogo');
   expect(screen.getByRole('heading', { name: 'El Sello permanece' })).toBeTruthy();
   expect(screen.getByText(/Sigma, que conocía parte del engaño/)).toBeTruthy();
   expect(screen.getByText(/Zero desapareció gravemente herido/)).toBeTruthy();
+});
+
+test('a forged final result without preceding victories cannot reveal the epilogue', () => {
+  window.localStorage.setItem(CAMPAIGN_STORAGE_KEY, JSON.stringify({ version: 1, stars: { '38': 1 } }));
+  screenAt('/campania/epilogo');
+  expect(screen.getByRole('heading', { name: 'El epílogo sigue sellado' })).toBeTruthy();
 });
