@@ -30,6 +30,7 @@ const CampaignMission: React.FC = () => {
   const mission = getCampaignMission(missionId);
   const [attempt, setAttempt] = React.useState(0);
   const [outcome, setOutcome] = React.useState<MissionOutcome | null>(null);
+  React.useEffect(() => { setOutcome(null); setAttempt(0); }, [missionId]);
   const storage = React.useMemo(getStorage, []);
   const initial = React.useMemo(
     () => createCombat(mission?.seed ?? 1, mission?.difficulty ?? 'Aprendiz'),
@@ -65,7 +66,7 @@ const CampaignMission: React.FC = () => {
   if (outcome) return <main className="dc-page dc-center">
     <div className="dc-result-card">
       <small>CAPÍTULO I · MISIÓN {mission.id}</small>
-      <h1>{outcome.won ? '¡Misión superada!' : 'El duelo continúa pendiente'}</h1>
+      <h1>{outcome.won ? '¡Misión superada!' : 'Misión fallida'}</h1>
       <h2>{mission.title}</h2>
       <p>{outcome.won ? 'Has abierto el siguiente tramo del camino.' : 'No has vencido al rival esta vez. Puedes volver a intentarlo.'}</p>
       <div className="dc-result-stars" role="img" aria-label={`${outcome.earned} de 3 estrellas`}>
