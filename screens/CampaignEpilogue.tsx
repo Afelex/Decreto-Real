@@ -1,12 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { bestStars, loadCampaignProgress } from '../campaign/campaign.ts';
+import { CAMPAIGN_MISSIONS, bestStars, loadCampaignProgress } from '../campaign/campaign.ts';
 import './campaign.css';
 
 const CampaignEpilogue: React.FC = () => {
   const navigate = useNavigate();
   const finished = React.useMemo(() => {
-    try { return bestStars(loadCampaignProgress(window.localStorage), '38') > 0; }
+    try { const progress = loadCampaignProgress(window.localStorage); return CAMPAIGN_MISSIONS.every(mission => bestStars(progress, mission.id) > 0); }
     catch { return false; }
   }, []);
   if (!finished) return <main className="dc-page dc-center">
