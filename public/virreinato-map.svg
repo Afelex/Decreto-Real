@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 760" role="img" aria-label="Mapa ilustrado del Virreinato del Perú con su costa, los Andes y el Mar del Sur">
+  <defs>
+    <radialGradient id="paper" cx="46%" cy="43%" r="78%"><stop stop-color="#f2dda6"/><stop offset=".68" stop-color="#e2c58f"/><stop offset="1" stop-color="#b48754"/></radialGradient>
+    <linearGradient id="land" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#bd8e51"/><stop offset=".12" stop-color="#ddba7b"/><stop offset=".75" stop-color="#e5ca94"/><stop offset="1" stop-color="#d2aa72"/></linearGradient>
+    <pattern id="grain" width="43" height="43" patternUnits="userSpaceOnUse"><path d="M4 8h1m18 23h1M29 5h1M6 36h1M39 20h1" stroke="#936e48" stroke-opacity=".17" stroke-width="1"/><path d="M1 27l3 2m23-11l2 1" stroke="#fff5cc" stroke-opacity=".28"/></pattern>
+    <pattern id="water" width="35" height="29" patternUnits="userSpaceOnUse"><path d="M2 9q8-5 15 0t16 0M11 22q8-5 16 0" fill="none" stroke="#9e794e" stroke-opacity=".14" stroke-width="1.1"/></pattern>
+    <path id="coast" d="M268-16 C259 4 245 17 252 42 C250 55 238 54 245 77 C239 99 224 107 226 130 C235 140 221 161 217 184 C209 200 190 218 199 242 C194 269 200 278 193 299 C186 322 205 349 211 365 C206 386 218 407 224 436 C228 460 253 483 254 510 C257 540 282 570 285 603 C291 631 315 668 323 690 C333 719 354 734 373 768" />
+  </defs>
+  <rect width="480" height="760" fill="url(#paper)"/>
+  <rect width="480" height="760" fill="url(#water)"/>
+  <path d="M268-16 C259 4 245 17 252 42 C250 55 238 54 245 77 C239 99 224 107 226 130 C235 140 221 161 217 184 C209 200 190 218 199 242 C194 269 200 278 193 299 C186 322 205 349 211 365 C206 386 218 407 224 436 C228 460 253 483 254 510 C257 540 282 570 285 603 C291 631 315 668 323 690 C333 719 354 734 373 768 L492 770 L492-18Z" fill="url(#land)" stroke="#714e34" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M260-9 C250 22 248 61 240 97 C222 143 225 170 206 205 C193 241 197 275 195 303 C208 370 212 401 225 450 C249 508 279 578 301 632 C326 700 352 745 373 768" stroke="#875d3c" stroke-opacity=".22" stroke-width="34" fill="none"/>
+  <path d="M267 9 C283 30 306 42 331 43 M242 97 C297 105 344 111 411 98 M224 174 C269 185 304 171 359 179 L489 199 M202 281 C245 275 311 294 345 278 L488 287 M218 383 C266 397 291 377 336 389 L480 372 M249 502 C293 497 333 516 380 492 L482 517 M285 604 C328 602 364 635 485 627" fill="none" stroke="#8b6441" stroke-width="1.6" stroke-dasharray="4 3" opacity=".65"/>
+  <g stroke="#8b6643" stroke-width="1.7" fill="none" opacity=".8">
+    <path d="M418 0 Q400 27 426 65 T405 135 T450 211"/>
+    <path d="M475 313 Q434 328 404 345 T328 374"/>
+    <path d="M479 445 Q428 434 399 453 T304 463"/>
+    <path d="M473 559 Q442 563 422 600 T355 630"/>
+    <path d="M475 700 Q432 682 415 726"/>
+  </g>
+  <g stroke="#77533b" stroke-width="1.1" fill="none" stroke-linecap="round" opacity=".65">
+    <path d="M249 52l-17 19 17-8 7 7 5-22M240 81l-10 20 15-8 9 12 6-17M234 109l-16 16 15-6 8 13 5-16M225 137l-18 18 16-7 9 12 5-17M218 165l-16 22 15-10 8 13 10-19M213 198l-17 20 18-9 10 14 7-17M207 231l-17 20 17-7 8 15 9-16M209 261l-20 20 17-8 9 16 9-18M207 295l-14 22 15-10 9 16 9-17M213 331l-14 23 15-10 12 20 7-22M216 369l-15 23 15-8 10 17 10-17M224 408l-14 24 18-8 8 17 7-19M231 451l-14 25 20-10 10 18 6-15M247 490l-13 26 19-8 8 16 7-16M260 531l-12 22 19-8 9 19 8-21M274 567l-12 24 18-8 9 17 10-17M290 607l-11 26 16-8 11 19 8-21M309 649l-11 22 20-10 12 18 7-18M331 693l-10 22 17-9 12 18 10-16M351 729l-5 17 16-8 11 17 9-10" />
+    <path d="M258 33l14-13 5 11 9-9M255 92l10-12 7 17 8-7 13 14M241 151l15-20 9 16 12-11 15 20M230 215l16-14 8 17 14-12M230 289l16-17 13 16 12-10M235 349l16-15 12 20 16-9M245 411l15-20 13 19 12-7M270 480l14-15 13 23 13-8M300 557l13-19 13 23 15-9M324 625l15-18 15 22 13-10M360 711l11-15 17 25"/>
+  </g>
+  <rect width="480" height="760" fill="url(#grain)"/>
+  <g font-family="Georgia,serif" fill="#62442e" opacity=".82">
+    <text x="55" y="268" font-size="21" letter-spacing="7" transform="rotate(-7 55 268)">MAR</text>
+    <text x="34" y="297" font-size="21" letter-spacing="5" transform="rotate(-7 34 297)">DEL SUR</text>
+    <text x="305" y="66" font-size="14" font-style="italic">Audiencia</text><text x="311" y="84" font-size="14" font-style="italic">de Panamá</text>
+    <text x="110" y="148" font-size="15" font-style="italic">Audiencia</text><text x="130" y="167" font-size="15" font-style="italic">de Quito</text>
+    <text x="89" y="367" font-size="16" font-style="italic">Audiencia</text><text x="109" y="387" font-size="16" font-style="italic">de Lima</text>
+    <text x="350" y="263" font-size="14" font-style="italic">Santa Fe</text><text x="353" y="280" font-size="14" font-style="italic">de Bogotá</text>
+    <text x="350" y="461" font-size="14" font-style="italic">Audiencia</text><text x="348" y="478" font-size="14" font-style="italic">de Charcas</text>
+    <text x="145" y="575" font-size="14" font-style="italic">Audiencia</text><text x="152" y="592" font-size="14" font-style="italic">de Chile</text>
+    <text x="347" y="682" font-size="13" font-style="italic">Buenos Aires</text>
+    <text x="258" y="257" transform="rotate(68 258 257)" font-size="17" letter-spacing="4" font-weight="bold">VIRREINATO DEL PERÚ</text>
+  </g>
+  <g transform="translate(82 612)" stroke="#68452b" fill="none" opacity=".72"><circle r="32"/><circle r="21"/><path d="M0-49V49M-49 0H49M-24-24L24 24M24-24L-24 24"/><path d="M0-35L5-5 0 35-5 5ZM-35 0L-5 5 35 0 5-5Z" fill="#987243"/><g font-family="Georgia" font-size="12" fill="#65432c" stroke="none"><text x="-4" y="-55">N</text><text x="-4" y="64">S</text><text x="52" y="4">E</text><text x="-60" y="4">O</text></g></g>
+  <g transform="translate(88 448)" stroke="#7a5234" fill="none" stroke-width="2" opacity=".62"><path d="M-44 19Q-3 31 44 19L29 30H-23Z" fill="#946e41"/><path d="M-3-70V22M-29-50V20M24-30V20"/><path d="M-6-67L-33-42H-6Z" fill="#d3aa71"/><path d="M0-61L32-30H0Z" fill="#d3aa71"/><path d="M-24-43L-43-18H-24Z" fill="#e4c08b"/><path d="M-41 35q13 4 23 0m12 2q12 4 24 0m8-2q13 4 25 0"/></g>
+  <rect x="9" y="9" width="462" height="742" rx="3" fill="none" stroke="#745137" stroke-width="2" opacity=".55"/>
+  <rect x="14" y="14" width="452" height="732" rx="3" fill="none" stroke="#b18a54" stroke-width="1.3" opacity=".72"/>
+  <g stroke="#77563d" fill="none" opacity=".72" stroke-width="2.5">
+    <path d="M14 74V15H72M466 74V15H409M14 689V745H72M466 689V745H409"/>
+    <path d="M27 25h35m-35 0v35M453 25h-35m35 0v35M27 735h35m-35 0v-35M453 735h-35m35 0v-35"/>
+  </g>
+</svg>
