@@ -65,6 +65,7 @@ const GameBoard: React.FC = () => {
   const [whoStarted, setWhoStarted] = useState<'PLAYER' | 'OPPONENT' | null>(null);
   const [bannerText, setBannerText] = useState("");
   const gameOverRef = useRef(false);
+  const pausedRef = useRef(false);
 
   const [playerHP, setPlayerHP] = useState(MAX_HP);
   const [playerDeck, setPlayerDeck] = useState<CardData[]>([]);
@@ -91,6 +92,7 @@ const GameBoard: React.FC = () => {
   const [shakeScreen, setShakeScreen] = useState(false);
 
   const isMuted = !musicEnabled && !sfxEnabled;
+  pausedRef.current = isMenuOpen;
   const handleGlobalAudioToggle = () => {
     playSound('CLICK');
     if (!isMuted) { if (musicEnabled) toggleMusic(); if (sfxEnabled) toggleSfx(); }
@@ -234,21 +236,32 @@ const GameBoard: React.FC = () => {
 
   useEffect(() => {
     if (phase === 'OPPONENT_TURN') {
+      let cancelled = false;
+      const sleep = (duration: number) => new Promise<void>(resolve => setTimeout(resolve, duration));
+      const waitUntilResumed = async () => {
+        while (pausedRef.current && !cancelled && !gameOverRef.current) await sleep(100);
+      };
       const aiRoutine = async () => {
-        await new Promise(r => setTimeout(r, 1000));
+        await sleep(1000);
+        await waitUntilResumed();
+        if (cancelled || gameOverRef.current) return;
         let currentHand = [...opponentHand];
         const playAiCard = async (c: CardData) => {
-          if (gameOverRef.current) return;
+          await waitUntilResumed();
+          if (cancelled || gameOverRef.current) return;
           playCard(c, false); currentHand = currentHand.filter(x => x.id !== c.id);
-          await new Promise(r => setTimeout(r, 1500));
+          await sleep(1500);
+          await waitUntilResumed();
         };
         const validImpact = currentHand.find(c => c.type === 'IMPACT' && c.rank === opponentImpactLevel + 1);
         if (validImpact) await playAiCard(validImpact);
         if (opponentHP < 5) { for (const d of currentHand.filter(x => x.type === 'DEFENSE')) await playAiCard(d); }
         for (const a of currentHand.filter(x => x.type === 'ATTACK')) await playAiCard(a);
-        if (!gameOverRef.current) { setTurnCount(p => p + 1); setPhase('TURN_BANNER'); }
+        await waitUntilResumed();
+        if (!cancelled && !gameOverRef.current) { setTurnCount(p => p + 1); setPhase('TURN_BANNER'); }
       };
-      aiRoutine();
+      void aiRoutine();
+      return () => { cancelled = true; };
     }
   }, [phase]);
 
