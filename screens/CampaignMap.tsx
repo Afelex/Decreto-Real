@@ -53,7 +53,6 @@ const CampaignMap: React.FC = () => {
   const chapter = STORY_CHAPTERS[chapterIndex];
   const missions = chapterMissions(chapter.id);
   const [selectedId, setSelectedId] = React.useState(() => initialSelection(progress, chapterMissions(STORY_CHAPTERS[initialChapterIndex].id)).id);
-  const completed = journey.completed;
   const earnedStars = journey.stars;
   const chapterCompleted = missions.filter(mission => bestStars(progress, mission.id) > 0).length;
   const selected = missions.find(mission => mission.id === selectedId && isMissionUnlocked(progress, mission.id))
