@@ -10,6 +10,9 @@
 }
 .dr-help {
   position:relative;
+  max-height:calc(100dvh - 36px);
+  overflow-y:auto;
+  overscroll-behavior:contain;
   width:min(100%,480px);
   padding:26px;
   border:1px solid #cba758;
@@ -80,6 +83,8 @@
   position:relative;
   width:min(100%,500px);
   max-height:min(86dvh,760px);
+  overflow-y:auto;
+  overscroll-behavior:contain;
   display:flex;
   flex-direction:column;
   gap:12px;
@@ -290,6 +295,15 @@
   gap:clamp(10px,2vh,20px);
   overflow:hidden
 }
+.dr-game button {
+  min-width:44px;
+  min-height:44px
+}
+.dr-mana .dr-streak {
+  display:block;
+  margin-top:4px;
+  font-size:11px
+}
 .dr-top {
   display:grid;
   grid-template-columns:1fr auto 1fr;
@@ -317,7 +331,7 @@
 }
 .dr-iconbtn {
   justify-self:end;
-  width:38px
+  width:44px
 }
 .dr-rival,.dr-player {
   display:flex;

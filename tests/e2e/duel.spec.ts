@@ -45,6 +45,12 @@ test('touch selection, confirmation, rival response, pause and dialogs fit the v
     expect(box!.x).toBeGreaterThanOrEqual(0); expect(box!.y).toBeGreaterThanOrEqual(0);
     expect(box!.x + box!.width).toBeLessThanOrEqual(viewport.width);
     expect(box!.y + box!.height).toBeLessThanOrEqual(viewport.height);
+    // A clipped panel can have a valid outer box: also reach its last action by scrolling.
+    const lastControl = dialog.getByRole('button').last();
+    await lastControl.scrollIntoViewIfNeeded();
+    const controlBox = await lastControl.boundingBox();
+    expect(controlBox!.y).toBeGreaterThanOrEqual(0);
+    expect(controlBox!.y + controlBox!.height).toBeLessThanOrEqual(viewport.height);
     await page.keyboard.press('Escape'); await expect(dialog).toBeHidden();
   }
   expect(errors).toEqual([]);
