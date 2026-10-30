@@ -44,7 +44,7 @@ const VictoryScreen: React.FC = () => {
     };
 
     return (
-        <div className="bg-background-light dark:bg-background-dark font-body min-h-screen flex flex-col items-center justify-center overflow-hidden relative">
+        <div className="dr-victory-screen bg-background-light dark:bg-background-dark font-body min-h-screen flex flex-col items-center justify-center overflow-hidden relative">
             <div className="absolute inset-0 bg-ornate-pattern opacity-10 dark:opacity-40 z-0 pointer-events-none"></div>
             <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/80 z-0 pointer-events-none"></div>
             
@@ -62,7 +62,7 @@ const VictoryScreen: React.FC = () => {
                 </svg>
             </div>
 
-            <main className="relative z-20 w-full max-w-md px-4 py-8 flex flex-col items-center gap-6 h-full justify-center">
+            <main className="dr-victory-content relative z-20 w-full max-w-md px-4 py-8 flex flex-col items-center gap-6 h-full justify-center">
                 <div className="text-center relative mb-4">
                     <div className={`absolute inset-0 ${theme.bgGlow} blur-3xl opacity-20 rounded-full`}></div>
                     <h1 className={`font-display text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-b ${theme.colorClass} drop-shadow-lg tracking-widest uppercase relative z-10 filter drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]`}>
@@ -72,7 +72,7 @@ const VictoryScreen: React.FC = () => {
                     <p className={`${theme.textClass}/80 font-display text-sm mt-1 tracking-[0.2em] uppercase`}>{theme.subtitle}</p>
                 </div>
 
-                <div className="relative w-48 h-64 md:w-56 md:h-72 group">
+                <div className="dr-victory-portrait relative w-48 h-64 md:w-56 md:h-72 group">
                     <div className={`absolute inset-0 ${theme.bgGlow} blur-xl opacity-40 animate-pulse rounded-xl`}></div>
                     <div className={`relative w-full h-full rounded-xl overflow-hidden border-2 ${theme.borderClass} shadow-2xl bg-gray-900 transform transition-transform duration-500 hover:scale-105 ${!isVictory ? 'grayscale' : ''}`}>
                         <img alt="Victorious anime warrior" className="w-full h-full object-cover opacity-90" src={VICTORY_IMG}/>
@@ -85,7 +85,7 @@ const VictoryScreen: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="w-full ornate-border rounded-lg p-6 mt-4 relative bg-[#121212]/90 backdrop-blur-sm">
+                <div className="dr-victory-stats w-full ornate-border rounded-lg p-6 mt-4 relative bg-[#121212]/90 backdrop-blur-sm">
                     <div className={`absolute -top-3 left-1/2 transform -translate-x-1/2 bg-black px-4 ${theme.textClass} font-display text-sm tracking-widest border ${theme.borderClass}/30`}>
                         Resultados
                     </div>
@@ -120,7 +120,7 @@ const VictoryScreen: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="w-full flex flex-col gap-3 mt-4">
+                <div className="dr-victory-actions w-full flex flex-col gap-3 mt-4">
                     <button 
                         onClick={handleRestart}
                         className="w-full btn-ornate py-4 rounded-md relative overflow-hidden group transition-all hover:brightness-110 active:scale-95"
