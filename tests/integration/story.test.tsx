@@ -36,7 +36,7 @@ test('the prologue introduces the four provisional characters and eight generals
 test('a reachable mission opens a story briefing before the battle', () => {
   screenAt('/campania/mision/01');
   expect(screen.getByRole('heading', { name: 'El pregón alterado' })).toBeTruthy();
-  expect(screen.getByText('Guardia del pregón.', { exact: false })).toBeTruthy();
+  expect(screen.getByText(/Rival: Guardia del pregón/)).toBeTruthy();
   expect(screen.getByRole('button', { name: /Comenzar duelo/ })).toBeTruthy();
 });
 
