@@ -56,9 +56,10 @@ test('defeating all missions in a region unlocks the next chapter', async ({ pag
     version: 1, stars: { '01': 1, '02': 1 },
   })));
   await page.reload();
-  await page.getByRole('button', { name: 'Capítulo anterior' }).click({ force: true }).catch(() => {});
-  await page.getByRole('button', { name: 'Capítulo siguiente' }).click();
   await expect(page.getByText('El puerto de hierro')).toBeVisible();
+  await page.getByRole('button', { name: 'Capítulo anterior' }).click();
+  await expect(page.getByText('El llamado del Sello')).toBeVisible();
+  await page.getByRole('button', { name: 'Capítulo siguiente' }).click();
   await expect(page.getByRole('button', { name: /Misión 3:/ })).toBeEnabled();
   await expect(page.getByRole('button', { name: /Misión 4:/ })).toBeDisabled();
 });
