@@ -84,7 +84,7 @@ const CampaignMission: React.FC = () => {
       {outcome.changedDifficulty && outcome.won && <p className="dc-warning">Cambiaste la dificultad del rival. Esta partida concede una estrella como máximo.</p>}
       {!outcome.saved && <p role="alert" className="dc-warning">No se pudo guardar tu progreso en este navegador.</p>}
       {outcome.won && !next && <button className="dc-primary" onClick={() => navigate('/campania/epilogo')}>Leer epílogo ✦</button>}
-      {outcome.won && next && outcome.saved && <button className="dc-primary" onClick={() => { setOutcome(null); setAttempt(0); navigate(`/campania/mision/${next.id}`); }}>Siguiente misión →</button>}
+      {outcome.won && next && outcome.saved && <button className="dc-primary" onClick={() => { setOutcome(null); setAttempt(0); setView('briefing'); navigate(`/campania/mision/${next.id}`); }}>Siguiente misión →</button>}
       <button className="dc-secondary" onClick={retry}>Repetir duelo</button>
       <button className="dc-secondary" onClick={() => navigate('/campania')}>Volver al mapa</button>
     </section>
