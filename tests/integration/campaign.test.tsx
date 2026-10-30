@@ -54,7 +54,9 @@ test('winning a single challenge unlocks exactly the next but not its region', (
 test('winning the second prologue battle opens the next region and its first challenge only', () => {
   save({ '01': 2, '02': 1 });
   openMap();
-  fireEvent.click(screen.getByRole('button', { name: 'Capítulo anterior' })); // disabled on first chapter
+  expect(screen.getByText('El puerto de hierro')).toBeTruthy();
+  fireEvent.click(screen.getByRole('button', { name: 'Capítulo anterior' }));
+  expect(screen.getByText('El llamado del Sello')).toBeTruthy();
   fireEvent.click(screen.getByRole('button', { name: 'Capítulo siguiente' }));
   expect(screen.getByText('El puerto de hierro')).toBeTruthy();
   expect(screen.getByRole('button', { name: /Misión 3:/ }).hasAttribute('disabled')).toBe(false);
