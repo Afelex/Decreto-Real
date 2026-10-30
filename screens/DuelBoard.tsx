@@ -57,12 +57,14 @@ type BoardProps = {
   opponentName?: string;
   /** Physical-card table presentation; campaign opts in, tutorial remains unchanged. */
   immersive?: boolean;
+  /** Small campaign marker displayed over the original duel title. */
+  missionLabel?: string;
 };
 
 type DragPosition = { card: Card; x: number; y: number; over: boolean };
 type DragStart = { id: string; pointer: number; x: number; y: number; active: boolean };
 
-export const DuelBoard: React.FC<BoardProps> = ({ initial, storage, restored = false, onNewGame, onExit, onStateChange, onSelect, guide, headerAction, opponentName = 'Virrey estratega', immersive = false }) => {
+export const DuelBoard: React.FC<BoardProps> = ({ initial, storage, restored = false, onNewGame, onExit, onStateChange, onSelect, guide, headerAction, opponentName = 'Virrey estratega', immersive = false, missionLabel }) => {
   const navigate = useNavigate();
   const exit = onExit ?? (() => navigate('/'));
   const [combat, dispatch] = React.useReducer((state: CombatState, action: CombatAction) => applyCombatAction(state, action).state, initial);
@@ -232,7 +234,7 @@ export const DuelBoard: React.FC<BoardProps> = ({ initial, storage, restored = f
   const saveWarning = (save === 'quota' || save === 'unavailable') && !saveWarningSeen;
 
   return <main className={`dr-game${guide ? ' tutorial' : ''}${immersive ? ' immersive' : ''}${drag ? ' dragging-card' : ''}`}>
-    <header className="dr-top"><button className="dr-back" onClick={exit}>‹ <span>{guide ? 'Salir' : 'Menú'}</span></button><div><small>{guide ? 'TUTORIAL' : 'DUELO DE PRUEBA'} · TURNO {turn}</small><h1>Decreto Real</h1>{SAVE_TEXT[save] && <span className={`dr-save ${save}`} title={SAVE_DETAIL[save]}>{SAVE_TEXT[save]}</span>}</div>{headerAction ?? <button className="dr-iconbtn" onClick={() => setShowHelp(true)} aria-label="Reglas del prototipo">?</button>}</header>
+    <header className="dr-top"><button className="dr-back" onClick={exit}>‹ <span>{guide ? 'Salir' : 'Menú'}</span></button><div><small>{guide ? 'TUTORIAL' : missionLabel ?? 'DUELO DE PRUEBA'} · TURNO {turn}</small><h1>Decreto Real</h1>{SAVE_TEXT[save] && <span className={`dr-save ${save}`} title={SAVE_DETAIL[save]}>{SAVE_TEXT[save]}</span>}</div>{headerAction ?? <button className="dr-iconbtn" onClick={() => setShowHelp(true)} aria-label="Reglas del prototipo">?</button>}</header>
     {saveWarning && <div className="dr-banner" role="status"><span>{SAVE_DETAIL[save]}</span><button onClick={() => setSaveWarningSeen(true)}>Entendido</button></div>}
     {restoredNotice && !saveWarning && <div className="dr-banner restored" role="status"><span>Partida recuperada en el turno {initial.turn}.</span><button onClick={() => setRestoredNotice(false)} aria-label="Cerrar aviso">×</button></div>}
     <section className="dr-rival" aria-label="Rival"><div className="dr-avatar rival"><Portrait rival/></div><div className="dr-person"><strong>{opponentName}</strong>{guide ? <small className="dr-difficulty-label">IA · {difficulty}</small> : <button className="dr-difficulty" onClick={() => setShowDifficulty(true)}>IA · {difficulty}　⌄</button>}<div className="dr-health"><span style={{ width: `${enemyHp * 5}%` }} /></div><b aria-label={`Vida del rival ${enemyHp} de 20, escudo ${enemyShield}`}>♥ {enemyHp}<i>/20</i>　🛡 {enemyShield}</b></div><div className="dr-seals" aria-label={`Impactos del rival: ${enemySeals} de 4`}>IMPACTOS <strong>{enemySeals}/4</strong>{pips(enemySeals)}</div></section>
