@@ -5,7 +5,7 @@ import {
   type CampaignMission, type CampaignProgress,
 } from '../campaign/campaign.ts';
 import { STORY_CHAPTERS, stagesForChapter } from '../campaign/story.ts';
-import mapImage from '../public/virreinato-map.svg';
+const mapImage = '/Decreto-Real/virreinato-map.svg';
 import './campaign-map-fullscreen.css';
 
 const storage = (): Storage | null => {
@@ -40,9 +40,9 @@ const CampaignMap: React.FC = () => {
   const navigate = useNavigate();
   const [progress] = React.useState(() => loadCampaignProgress(storage()));
   const firstIncomplete = CAMPAIGN_MISSIONS.find(mission => bestStars(progress, mission.id) === 0);
-  const initialChapterIndex = Math.max(0, STORY_CHAPTERS.findIndex(chapter =>
-    stagesForChapter(chapter.id).some(stage => stage.id === firstIncomplete?.id),
-  ));
+  const initialChapterIndex = firstIncomplete
+    ? Math.max(0, STORY_CHAPTERS.findIndex(chapter => stagesForChapter(chapter.id).some(stage => stage.id === firstIncomplete.id)))
+    : STORY_CHAPTERS.length - 1;
   const [chapterIndex, setChapterIndex] = React.useState(initialChapterIndex);
   const chapter = STORY_CHAPTERS[chapterIndex];
   const missions = chapterMissions(chapter.id);
