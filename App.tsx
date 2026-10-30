@@ -6,6 +6,7 @@ import VictoryScreen from './screens/VictoryScreen';
 import RulesScreen from './screens/RulesScreen';
 import OptionsScreen from './screens/OptionsScreen';
 import CombatPrototype from './screens/CombatPrototype';
+import TutorialScreen from './screens/TutorialScreen';
 import { AudioProvider } from './contexts/AudioContext';
 
 const App: React.FC = () => {
@@ -16,6 +17,7 @@ const App: React.FC = () => {
           <Route path="/" element={<MainMenu />} />
           <Route path="/game" element={<GameBoard />} />
           <Route path="/duelo-v1" element={<CombatPrototype />} />
+          <Route path="/duelo-v1/tutorial" element={<TutorialScreen />} />
           <Route path="/victory" element={<VictoryScreen />} />
           <Route path="/rules" element={<RulesScreen />} />
           <Route path="/options" element={<OptionsScreen />} />

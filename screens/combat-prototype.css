@@ -175,7 +175,7 @@
   font:700 13px Cinzel,serif
 }
 .dr-pile-row div small {
-  font-size:9px;
+  font-size:11px;
   color:#b8aa8d
 }
 .dr-pile-row>strong {
@@ -254,7 +254,7 @@
   font:700 13px Cinzel,serif
 }
 .dr-played small {
-  font-size:9px;
+  font-size:11px;
   color:#c9b991
 }
 .dr-arena {
@@ -317,7 +317,7 @@
   text-shadow:0 2px 14px #b38238
 }
 .dr-top small,.dr-person small,.dr-seals,.dr-prompt,.dr-card>small {
-  font-size:10px;
+  font-size:11px;
   letter-spacing:.12em;
   color:#c8b78f
 }
@@ -563,10 +563,19 @@
   border-color:#a593d5;
   background:linear-gradient(160deg,#59487f,#262038 78%)
 }
-.dr-card:hover,.dr-card.active {
+.dr-card.active {
   transform:translateY(-8px);
   border-color:#fff1bd;
   box-shadow:0 12px 24px #0008,0 0 18px #e9cf8355
+}
+@media(hover:hover) {
+  .dr-card:hover {
+    transform:translateY(-8px);
+    border-color:#fff1bd
+  }
+}
+.dr-card.dim {
+  opacity:.55
 }
 .dr-card.disabled {
   filter:saturate(.48);
@@ -588,7 +597,7 @@
 }
 .dr-card>small {
   align-self:flex-end;
-  font-size:8px
+  font-size:10px
 }
 .dr-art {
   font:clamp(29px,6vw,54px) Cinzel;
@@ -706,7 +715,7 @@
     gap:10px
   }
   .dr-top small {
-    font-size:8px
+    font-size:10px
   }
   .dr-rival,.dr-player {
     padding:9px;
@@ -721,7 +730,7 @@
     font-size:13px
   }
   .dr-seals {
-    font-size:8px
+    font-size:10px
   }
   .dr-arena {
     min-height:110px;
@@ -738,10 +747,10 @@
     height:23px
   }
   .dr-card p {
-    font-size:10px
+    font-size:11px
   }
   .dr-card>small {
-    font-size:7px
+    font-size:10px
   }
   .dr-actions button {
     padding:0 9px
@@ -758,10 +767,10 @@
     gap:4px
   }
   .dr-card strong {
-    font-size:10px
+    font-size:12px
   }
   .dr-card p {
-    font-size:9px
+    font-size:11px
   }
   .dr-actions {
     grid-template-columns:auto 1fr
@@ -773,6 +782,251 @@
     font-size:11px
   }
   .dr-seals {
+    font-size:0
+  }
+  .dr-seals strong {
+    font-size:15px
+  }
+  .dr-seals strong::before {
+    content:'✦ ';
+    font-size:12px
+  }
+  .dr-seals div {
     display:none
+  }
+  .dr-rival,.dr-player {
+    gap:7px;
+    padding:8px
+  }
+  .dr-avatar {
+    width:40px;
+    height:40px;
+    flex-basis:40px
+  }
+}
+
+.dr-lock {
+  position:absolute;
+  bottom:6px;
+  left:6px;
+  right:6px;
+  padding:3px 4px;
+  border-radius:6px;
+  background:#120d0ce6;
+  color:#ffd9a0;
+  font-size:11px;
+  font-weight:700
+}
+.dr-hand-meta {
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:-6px;
+  font-size:11px;
+  color:#c8b78f
+}
+.dr-notice {
+  color:#ffd9a0!important
+}
+.dr-save {
+  display:block;
+  margin-top:2px;
+  font-size:11px;
+  color:#a9cfc0
+}
+.dr-save.quota,.dr-save.unavailable {
+  color:#ffc27a
+}
+.dr-banner {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 12px;
+  border:1px solid #c98a3a;
+  border-radius:12px;
+  background:#2c2016;
+  color:#ffe0b0;
+  font-size:13px;
+  line-height:1.35
+}
+.dr-banner.restored {
+  border-color:#5f9aa6;
+  background:#13303a;
+  color:#d8f0ef
+}
+.dr-banner span {
+  flex:1
+}
+.dr-banner button {
+  flex:0 0 auto;
+  border:1px solid #c98a3a;
+  border-radius:9px;
+  background:#17263c;
+  color:#ffe0b0;
+  padding:0 12px
+}
+.dr-save-detail {
+  margin:0
+}
+.dr-difficulty-label {
+  color:#d8bb71!important
+}
+.dr-lobby {
+  width:min(100%,520px);
+  margin:auto;
+  display:grid;
+  gap:12px;
+  padding:24px;
+  border:1px solid #c8a454;
+  border-radius:18px;
+  background:#142237;
+  text-align:center
+}
+.dr-lobby>small {
+  color:#d8bb71;
+  letter-spacing:.16em
+}
+.dr-lobby h2 {
+  margin:0;
+  font:700 26px Cinzel,serif;
+  color:#f0d18a
+}
+.dr-lobby p {
+  margin:0;
+  color:#e2d3b3;
+  font-size:14px;
+  line-height:1.45
+}
+.dr-lobby .dr-lobby-note {
+  color:#b9ab8c;
+  font-size:12px
+}
+.dr-lobby-actions {
+  display:grid;
+  gap:8px
+}
+.dr-lobby-actions button,.dr-coach-actions button {
+  width:100%;
+  padding:12px;
+  border:1px solid #71624a;
+  border-radius:10px;
+  background:#17263c;
+  color:#eee0bf;
+  font-weight:700
+}
+.dr-lobby-actions .dr-lobby-primary,.dr-coach-actions .dr-coach-next {
+  border-color:#ffe3a0;
+  background:linear-gradient(#f5d787,#b98b38);
+  color:#1c1a14
+}
+.dr-skip {
+  justify-self:end;
+  background:#17263bcc;
+  color:#ead6a6;
+  border:1px solid #8d7041;
+  border-radius:12px;
+  padding:0 12px
+}
+.dr-arena.coaching {
+  align-items:stretch;
+  max-height:none;
+  overflow:auto
+}
+.dr-coach {
+  position:relative;
+  width:min(100%,560px);
+  margin:auto;
+  padding:14px 16px;
+  color:#2a1f12;
+  text-align:left
+}
+.dr-coach>small {
+  font-size:11px;
+  letter-spacing:.12em;
+  color:#6d5226;
+  font-weight:700
+}
+.dr-coach h2 {
+  margin:4px 0 6px;
+  font:700 19px Cinzel,serif;
+  color:#3d2a12
+}
+.dr-coach p {
+  margin:0 0 10px;
+  font-size:14px;
+  line-height:1.45
+}
+.dr-coach-actions {
+  display:flex;
+  gap:8px
+}
+.dr-guide-target {
+  outline:3px solid #ffe08b;
+  outline-offset:3px;
+  animation:dr-guide 1.2s ease-in-out infinite
+}
+@keyframes dr-guide {
+  50% {
+    outline-color:#ffe08b44
+  }
+}
+@media(prefers-reduced-motion:reduce) {
+  .dr-guide-target {
+    animation:none
+  }
+}
+:focus-visible {
+  outline:3px solid #9fd8e6;
+  outline-offset:2px
+}
+.dr-log small {
+  font-size:11px;
+  color:#d8bb71
+}
+.dr-back,.dr-skip {
+  white-space:nowrap
+}
+@media(max-width:520px) {
+  .dr-top {
+    gap:6px
+  }
+  .dr-top h1 {
+    margin:2px 0;
+    font-size:clamp(17px,5.6vw,22px);
+    letter-spacing:.06em
+  }
+  .dr-back,.dr-skip {
+    padding:0 9px
+  }
+}
+/* Keep the tutorial instruction on screen while the player scrolls to the hand, only where it fits. */
+@media(max-width:520px) and (min-height:560px) {
+  .dr-game.tutorial {
+    overflow:visible;
+    overflow-x:clip
+  }
+  .dr-game.tutorial .dr-arena {
+    position:sticky;
+    top:0;
+    z-index:5
+  }
+}
+/* Narrow screens: last play and message stack instead of overlapping inside the arena. */
+@media(max-width:520px) {
+  .dr-arena:not(.coaching) {
+    flex-direction:column;
+    gap:8px;
+    padding:14px 12px
+  }
+  .dr-arena:not(.coaching) .dr-map {
+    display:none
+  }
+  .dr-arena .dr-played,.dr-arena .dr-log {
+    position:relative;
+    top:auto;
+    bottom:auto;
+    left:auto;
+    transform:none;
+    max-width:100%
   }
 }

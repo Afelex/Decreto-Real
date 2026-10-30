@@ -2,7 +2,9 @@ import { defineConfig } from '@playwright/test';
 export default defineConfig({
   testDir: './tests/e2e',
   timeout: 60000,
-  use: { baseURL: 'http://127.0.0.1:4173', browserName: 'chromium', hasTouch: true, isMobile: true, trace: 'retain-on-failure', screenshot: 'only-on-failure' },
+  use: { baseURL: 'http://127.0.0.1:4173', browserName: 'chromium', hasTouch: true, isMobile: true, trace: 'retain-on-failure', screenshot: 'only-on-failure',
+    // Optional local override when the pinned browser build is unavailable; CI installs its own.
+    ...(process.env.PW_CHROMIUM_PATH ? { launchOptions: { executablePath: process.env.PW_CHROMIUM_PATH } } : {}) },
   projects: [
     { name: 'mobile-320', use: { viewport: { width: 320, height: 568 } } },
     { name: 'mobile-360', use: { viewport: { width: 360, height: 800 } } },
