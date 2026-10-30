@@ -44,6 +44,36 @@ const CombatPrototype: React.FC = () => {
   const [showHelp, setShowHelp] = useState(false);
   const [pileView, setPileView] = useState<'draw' | 'discard' | null>(null);
   const [showDifficulty, setShowDifficulty] = useState(false);
+  React.useEffect(() => {
+    const open = showHelp || showDifficulty || showPause || pileView || showHistory;
+    if (!open) return;
+    const previous = document.activeElement as HTMLElement | null;
+    const dialog = document.querySelector<HTMLElement>('.dr-overlay [role="dialog"]');
+    if (!dialog) return;
+    const controls = () => [...dialog.querySelectorAll<HTMLElement>('button:not(:disabled), [href], input, select, textarea, [tabindex="0"]')];
+    controls()[0]?.focus();
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        if (showHelp) setShowHelp(false);
+        if (showDifficulty) setShowDifficulty(false);
+        if (showPause) dispatch({ type: 'resume' });
+        if (pileView) setPileView(null);
+        if (showHistory) setShowHistory(false);
+      } else if (event.key === 'Tab') {
+        const items = controls();
+        const first = items[0], last = items[items.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      if (previous?.isConnected) previous.focus();
+    };
+  }, [showHelp, showDifficulty, showPause, pileView, showHistory]);
+
   const chosen = hand.find(card => card.id === selected);
   const label = CARD_LABELS;
   const history = combat.journal.flatMap(entry => entry.events
@@ -73,7 +103,7 @@ const CombatPrototype: React.FC = () => {
     <section className="dr-arena"><div className="dr-map">✥<small>CAMPO DE BATALLA</small></div>{lastPlay&&<div key={`${lastPlay.side}-${lastPlay.name}-${turn}`} className={`dr-played ${lastPlay.side}`}><span>{lastPlay.icon}</span><b>{lastPlay.name}</b><small>{lastPlay.side==='player'?'Tu jugada':'Jugada del rival'}</small></div>}<button className="dr-log" onClick={()=>setShowHistory(true)} aria-label="Ver historial de jugadas">✦　{message} <small>· Historial</small></button></section>
     <section className="dr-player"><div className="dr-avatar"><Portrait/></div><div className="dr-person"><strong>Tu monarca</strong><small>Investigador de Peruanistas</small><div className="dr-health"><span style={{ width: `${playerHp * 5}%` }} /></div><b>♥ {playerHp}<i>/20</i>　🛡 {shield}</b></div><div className="dr-mana"><strong>{mana}<small>/3</small></strong><span>Mando</span><small className="dr-streak">Racha {streak}/3</small></div></section>
     {gameOver ? <section className="dr-result"><small>FIN DEL DUELO</small><h2>{playerWon?'¡Victoria!':'Derrota'}</h2><p>{seals>=4?'Completaste los cuatro Impactos.':enemySeals>=4?'El Virrey completó los cuatro Impactos.':enemyHp<=0?'El rival se quedó sin vida.':playerHp<=0?'Tu monarca se quedó sin vida.':playerWon?'El reino recuerda tu decreto.':'El Virrey ha prevalecido esta vez.'}</p><div className="dr-result-stats"><div><b>{turn}</b><small>Turno</small></div><div><b>{playerHp}</b><small>Tu vida</small></div><div><b>{seals}/4</b><small>Impactos</small></div></div><button onClick={()=>window.location.reload()}>Jugar otra vez</button><button className="dr-result-menu" onClick={()=>navigate('/')}>Volver al menú</button></section> : <>
-      <div className="dr-prompt">{chosen ? <><b>{chosen.name}</b> · {chosen.text}{chosen.cost>mana&&<span>Te faltan {chosen.cost-mana} de mando</span>}{chosen.effect.type==='impact'&&chosen.effect.rank!==seals+1&&<span>Primero debes sellar el Impacto {seals+1}</span>}{chosen.effect.type==='impact'&&impactPlayed&&<span>Ya jugaste un Impacto este turno</span>}<button onClick={()=>setSelected(null)}>Cancelar</button><button className="dr-confirm" disabled={!!invalidAction(combat,{type:'play',cardId:chosen.id})} onClick={()=>play(chosen)}>Jugar carta</button></> : <>TU TURNO <b>· {mana} de mando</b><span>Selecciona una carta</span></>}</div>
+      <div className="dr-prompt" role="status" aria-live="polite">{chosen ? <><b>{chosen.name}</b> · {chosen.text}{chosen.cost>mana&&<span>Te faltan {chosen.cost-mana} de mando</span>}{chosen.effect.type==='impact'&&chosen.effect.rank!==seals+1&&<span>Primero debes sellar el Impacto {seals+1}</span>}{chosen.effect.type==='impact'&&impactPlayed&&<span>Ya jugaste un Impacto este turno</span>}<button onClick={()=>setSelected(null)}>Cancelar</button><button className="dr-confirm" disabled={!!invalidAction(combat,{type:'play',cardId:chosen.id})} onClick={()=>play(chosen)}>Jugar carta</button></> : busy ? <>TURNO DEL RIVAL<span>Preparando respuesta…</span></> : <>TU TURNO <b>· {mana} de mando</b><span>Selecciona una carta</span></>}</div>
       <section className="dr-hand">{hand.map((card)=>{const locked=!!invalidAction(combat,{type:'play',cardId:card.id});return <button key={card.id} type="button" className={`dr-card ${card.kind} ${selected===card.id?'active':''} ${locked?'disabled':''}`} aria-disabled={locked} aria-pressed={selected===card.id} aria-label={`${card.name}, coste ${card.cost}. ${card.text}${card.cost>mana?` Te faltan ${card.cost-mana} de mando.`:''}${card.effect.type==='impact'&&card.effect.rank!==seals+1?` Impacto fuera de orden; debes jugar el ${seals+1}.`:''}${impactPlayed&&card.effect.type==='impact'?' Ya jugaste un Impacto este turno.':''}`} onClick={()=>{if(!busy&&!locked)setSelected(card.id)}}><span className="dr-cost">{card.cost}</span><small>{label[card.kind]}{impactRank(card)?` · ${impactRank(card)}/4`:''}</small><span className="dr-art"><CardArt kind={card.kind} rank={impactRank(card)}/></span><strong>{card.name}</strong><p>{card.text}</p>{card.cost>mana&&<span className="dr-lock">Falta mando</span>}{card.effect.type==='impact'&&(impactPlayed||card.effect.rank!==seals+1)&&<span className="dr-lock">Juega en orden</span>}</button>})}</section>
       <footer className="dr-actions"><button onClick={()=>setPileView('draw')}>▤ <span>Mazo {drawPile.length}</span></button><button className="dr-end" onClick={endTurn} disabled={busy}>TERMINAR TURNO　→</button><button onClick={()=>setShowPause(true)} disabled={busy} aria-label="Pausar partida">Ⅱ <span>Pausa</span></button></footer>
     </>}
