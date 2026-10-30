@@ -142,6 +142,16 @@ const MainMenu: React.FC = () => {
             </span>
           </button>
 
+          <button
+            onClick={() => navigate('/reales-ideales')}
+            aria-label="Reales Ideales"
+            className="w-full max-w-[92%] h-[42px] sm:h-[44px] relative group transition-transform active:scale-95 bg-gradient-to-b from-[#4a4a4a] to-[#2b2b2b] flex items-center justify-center gap-2 hover:border-[#e5cfa5]"
+            style={{ border: '1px solid #d4af37', borderRadius: '4px' }}
+          >
+            <span className="opacity-80 group-hover:opacity-100">👑</span>
+            <span className="text-gold-light font-bold text-xs tracking-wider uppercase">Reales Ideales</span>
+          </button>
+
           <div className="flex items-center justify-center gap-3 w-full max-w-[92%]">
             <button
               onClick={() => navigate('/rules')}
