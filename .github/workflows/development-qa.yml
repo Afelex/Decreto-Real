@@ -2,7 +2,9 @@ name: Development QA
 
 on:
   push:
-    branches: [codex/decreto-real-combate-v1]
+    branches: [codex/decreto-real-combate-v1, feat/campania-ia-estrellas-v1, feat/campania-mesa-integrada-v1]
+  pull_request:
+    branches: [main]
 
 permissions:
   contents: read

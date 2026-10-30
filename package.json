@@ -10,7 +10,7 @@
     "test:rules": "node --experimental-strip-types --test game/rules.test.ts",
     "test:ai": "node --experimental-strip-types --test game/aiTurn.test.ts",
     "test:engine": "node --experimental-strip-types --test game/combatEngine.test.ts",
-    "test": "node --experimental-strip-types --test game/*.test.ts",
+    "test": "node --experimental-strip-types --test game/*.test.ts campaign/*.test.ts",
     "test:ui": "vitest run",
     "test:e2e": "playwright test"
   },

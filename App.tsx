@@ -7,6 +7,10 @@ import RulesScreen from './screens/RulesScreen';
 import OptionsScreen from './screens/OptionsScreen';
 import CombatPrototype from './screens/CombatPrototype';
 import TutorialScreen from './screens/TutorialScreen';
+import CampaignMap from './screens/CampaignMap';
+import CampaignMission from './screens/CampaignMission';
+import CampaignStory from './screens/CampaignStory';
+import CampaignEpilogue from './screens/CampaignEpilogue';
 import { AudioProvider } from './contexts/AudioContext';
 
 const App: React.FC = () => {
@@ -17,6 +21,10 @@ const App: React.FC = () => {
           <Route path="/" element={<MainMenu />} />
           <Route path="/game" element={<GameBoard />} />
           <Route path="/duelo-v1" element={<CombatPrototype />} />
+          <Route path="/campania" element={<CampaignMap />} />
+          <Route path="/campania/historia" element={<CampaignStory />} />
+          <Route path="/campania/epilogo" element={<CampaignEpilogue />} />
+          <Route path="/campania/mision/:missionId" element={<CampaignMission />} />
           <Route path="/duelo-v1/tutorial" element={<TutorialScreen />} />
           <Route path="/victory" element={<VictoryScreen />} />
           <Route path="/rules" element={<RulesScreen />} />
