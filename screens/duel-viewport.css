@@ -1,0 +1,180 @@
+/* DR-UX02: battle and tutorial fit in a single mobile viewport.
+ * The hand scrolls sideways only; a card's full effect remains readable
+ * after selection in the fixed prompt and the help modal.
+ */
+.dr-game {
+  height:100dvh;
+  max-height:100dvh;
+  min-height:0 !important;
+  overflow:hidden !important;
+  overscroll-behavior:none;
+  gap:clamp(3px,.7dvh,9px);
+  padding:max(6px,env(safe-area-inset-top)) 8px max(6px,env(safe-area-inset-bottom));
+}
+.dr-game>.dr-top {flex:0 0 auto;min-height:36px;}
+.dr-game>.dr-rival,.dr-game>.dr-player {
+  flex:0 0 clamp(48px,7.8dvh,78px);
+  min-height:0;
+  padding:clamp(4px,1dvh,9px) clamp(6px,1.7vw,12px);
+  gap:clamp(5px,1.6vw,12px);
+  overflow:hidden;
+}
+.dr-game .dr-avatar {width:clamp(31px,6dvh,52px);height:clamp(31px,6dvh,52px);flex:0 0 clamp(31px,6dvh,52px);}
+.dr-game .dr-person {gap:1px;}
+.dr-game .dr-person strong {font-size:clamp(11px,3vw,15px);}
+.dr-game .dr-person small,.dr-game .dr-difficulty {font-size:clamp(9px,2.4vw,11px);}
+.dr-game .dr-person b {font-size:clamp(10px,2.7vw,13px);}
+.dr-game .dr-health {height:5px;margin-top:0;}
+.dr-game .dr-seals {font-size:clamp(9px,2vw,11px);}
+.dr-game .dr-seals strong {font-size:clamp(14px,3.3vw,18px);}
+.dr-game .dr-seals div {gap:1px;}
+.dr-game .dr-mana strong {font-size:clamp(17px,4vw,24px);}
+.dr-game .dr-mana span,.dr-game .dr-mana .dr-streak {font-size:9px;margin:0;}
+.dr-game>.dr-arena {
+  flex:1 1 0 !important;
+  height:auto;
+  min-height:clamp(56px,10dvh,120px) !important;
+  max-height:none !important;
+  overflow:hidden !important;
+}
+.dr-game>.dr-arena.coaching {min-height:clamp(83px,16dvh,150px)!important;}
+.dr-game .dr-map {width:clamp(52px,9dvh,85px);height:clamp(52px,9dvh,85px);}
+.dr-game>.dr-prompt {
+  flex:0 0 auto;
+  min-height:clamp(30px,4.5dvh,45px);
+  max-height:clamp(37px,6dvh,54px);
+  overflow:hidden;
+  display:flex;
+  gap:5px;
+  padding:2px 4px;
+  font-size:clamp(10px,2.7vw,12px);
+  line-height:1.2;
+  flex-wrap:wrap;
+}
+.dr-game>.dr-prompt button {min-height:32px;padding:3px 7px;font-size:11px;}
+.dr-game>.dr-hand-meta {flex:0 0 auto;min-height:12px;max-height:18px;font-size:clamp(9px,2.5vw,11px);margin:0;overflow:hidden;}
+.dr-game>.dr-hand {
+  flex:0 1 clamp(115px,23dvh,205px) !important;
+  height:clamp(115px,23dvh,205px);
+  min-height:0 !important;
+  max-height:205px;
+  overflow-x:auto;
+  overflow-y:hidden;
+  align-items:flex-end;
+  padding:3px 4px 9px;
+  gap:5px;
+}
+.dr-game .dr-hand .dr-card {
+  min-height:0 !important;
+  height:100%;
+  max-height:100%;
+  flex-basis:clamp(106px,30vw,155px);
+  padding:clamp(5px,1dvh,9px);
+  gap:2px;
+  border-radius:10px;
+}
+.dr-game .dr-hand .dr-card .dr-cost {width:clamp(18px,3.4dvh,25px);height:clamp(18px,3.4dvh,25px);font-size:11px;top:4px;left:4px;}
+.dr-game .dr-hand .dr-card>small {font-size:9px;}
+.dr-game .dr-hand .dr-card strong {font-size:clamp(10px,2.5vw,13px);line-height:1.1;}
+.dr-game .dr-hand .dr-card p {
+  font-size:clamp(9px,2.35vw,11px);
+  line-height:1.2;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.dr-game .dr-hand .dr-art {min-height:0;}
+.dr-game .dr-hand .dr-art svg {height:clamp(34px,7dvh,77px);max-height:100%;}
+.dr-game>.dr-actions {
+  flex:0 0 clamp(40px,6dvh,50px);
+  min-height:0;
+  gap:5px;
+  grid-template-columns:minmax(55px,auto) minmax(0,1fr) minmax(47px,auto);
+}
+.dr-game>.dr-actions button {min-height:0;height:100%;padding:0 7px;font-size:clamp(10px,2.8vw,13px);}
+.dr-game>.dr-actions .dr-end {font-size:clamp(11px,2.85vw,14px);letter-spacing:0;}
+.dr-game.immersive {height:100dvh;min-height:0;overflow:hidden !important;padding-bottom:max(6px,env(safe-area-inset-bottom));}
+.dr-game.immersive>.dr-arena {
+  flex:1 1 0 !important;
+  min-height:clamp(56px,10dvh,120px)!important;
+  max-height:none!important;
+}
+.dr-game.immersive>.dr-hand {
+  flex:0 1 clamp(115px,23dvh,205px)!important;
+  height:clamp(115px,23dvh,205px)!important;
+  min-height:0!important;
+  max-height:205px!important;
+  padding:3px 16px 7px 5px;
+  justify-content:safe center;
+}
+.dr-game.immersive .dr-hand .dr-card {
+  flex-basis:clamp(103px,29vw,150px);
+  height:100%;
+  min-height:0!important;
+  margin-right:-13px;
+}
+.dr-game .dr-drag-ghost {height:clamp(115px,23dvh,205px);}
+.dr-game.tutorial {overflow:hidden !important;}
+.dr-game.tutorial .dr-arena {position:relative!important;top:auto!important;z-index:auto!important;}
+.dr-game.tutorial .dr-coach {padding:clamp(5px,1dvh,10px);max-width:100%;}
+.dr-game.tutorial .dr-coach h2 {margin:2px 0;font-size:clamp(13px,3.5vw,18px);}
+.dr-game.tutorial .dr-coach p {margin:2px 0;font-size:clamp(11px,3vw,13px);line-height:1.28;}
+.dr-game.tutorial .dr-coach-actions button {min-height:35px;padding:6px;}
+.dr-game .dr-result {
+  flex:1 1 0;
+  min-height:0;
+  padding:clamp(8px,2dvh,22px);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:clamp(4px,1dvh,11px);
+  overflow:hidden;
+}
+.dr-game .dr-result h2 {font-size:clamp(18px,5vw,28px);margin:0;}
+.dr-game .dr-result p {font-size:clamp(11px,3vw,14px);line-height:1.2;margin:0;}
+.dr-game .dr-result-stats {padding:clamp(4px,1dvh,11px) 0;margin:0;}
+.dr-game .dr-result button {min-height:38px;padding:6px 12px;}
+.dr-game .dr-lobby {padding:clamp(12px,3dvh,22px);gap:clamp(7px,1.7dvh,13px);max-height:calc(100dvh - 80px);overflow:hidden;}
+.dr-game .dr-lobby h2 {font-size:clamp(20px,5vw,26px);}
+.dr-game .dr-lobby p {font-size:clamp(11px,3vw,14px);line-height:1.3;}
+.dr-game .dr-lobby-actions button {min-height:42px;padding:7px;}
+.dr-game .dr-overlay {overscroll-behavior:none;}
+.dr-game .dr-help {max-height:calc(100dvh - 16px);padding:clamp(10px,2dvh,20px);}
+.dr-game .dr-help h2 {font-size:clamp(19px,5vw,25px);margin:3px 0 8px;}
+.dr-game .dr-help ol {gap:clamp(5px,1dvh,10px);font-size:clamp(11px,3vw,13px);line-height:1.3;}
+.dr-game .dr-help p {font-size:clamp(10px,2.8vw,12px);}
+.dr-game .dr-help .dr-help-ok {min-height:40px;padding:7px;}
+.dr-game .dr-pile {max-height:calc(100dvh - 18px);padding:clamp(10px,2dvh,18px);}
+.dr-game .dr-pile-list,.dr-game .dr-history {max-height:50dvh;}
+@media(max-height:550px) {
+  .dr-game {gap:3px;padding-top:max(4px,env(safe-area-inset-top));padding-bottom:max(4px,env(safe-area-inset-bottom));}
+  .dr-game>.dr-top {min-height:32px;}
+  .dr-game .dr-top h1 {font-size:16px;letter-spacing:0;margin:0;}
+  .dr-game .dr-top small {font-size:9px;}
+  .dr-game>.dr-rival,.dr-game>.dr-player {flex-basis:46px;padding:3px 5px;}
+  .dr-game .dr-avatar {width:29px;height:29px;flex-basis:29px;}
+  .dr-game .dr-seals div {display:none;}
+  .dr-game .dr-person small {display:none;}
+  .dr-game>.dr-prompt {min-height:29px;max-height:35px;}
+  .dr-game>.dr-hand-meta {min-height:10px;max-height:13px;font-size:9px;}
+  .dr-game>.dr-hand,.dr-game.immersive>.dr-hand {height:clamp(108px,24dvh,126px)!important;flex-basis:clamp(108px,24dvh,126px)!important;}
+  .dr-game>.dr-actions {flex-basis:39px;grid-template-columns:minmax(52px,auto) minmax(0,1fr) minmax(43px,auto);}
+  .dr-game .dr-hand .dr-art svg {height:clamp(27px,6dvh,46px);}
+  .dr-game .dr-hand .dr-card p {-webkit-line-clamp:2;}
+  .dr-game.immersive .dr-drop-label {font-size:9px;top:4px;padding:2px 6px;}
+  .dr-game .dr-log {font-size:10px;min-height:24px;padding:3px 7px;}
+  .dr-game .dr-played {padding:3px 7px;gap:4px;}
+  .dr-game .dr-played b,.dr-game .dr-played small {font-size:10px;}
+  .dr-game .dr-lobby {gap:5px;}
+}
+@media (max-width:370px) {
+  .dr-game>.dr-actions {grid-template-columns: minmax(50px,auto) minmax(0,1fr) minmax(44px,auto);}
+  .dr-game .dr-actions button:first-child {font-size:11px;}
+  .dr-game .dr-actions .dr-end {font-size:11px;}
+  .dr-game .dr-seals {font-size:10px;}
+  .dr-game .dr-seals strong {font-size:13px;}
+}
+@media (prefers-reduced-motion:reduce) {
+  .dr-game *,.dr-game *::before,.dr-game *::after {transition-duration:.01ms!important;animation-duration:.01ms!important;}
+}
