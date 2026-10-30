@@ -5,6 +5,7 @@ import GameBoard from './screens/GameBoard';
 import VictoryScreen from './screens/VictoryScreen';
 import RulesScreen from './screens/RulesScreen';
 import OptionsScreen from './screens/OptionsScreen';
+import RealesIdealesScreen from './reales-ideales/RealesIdealesScreen';
 import { AudioProvider } from './contexts/AudioContext';
 
 const App: React.FC = () => {
@@ -17,6 +18,7 @@ const App: React.FC = () => {
           <Route path="/victory" element={<VictoryScreen />} />
           <Route path="/rules" element={<RulesScreen />} />
           <Route path="/options" element={<OptionsScreen />} />
+          <Route path="/reales-ideales" element={<RealesIdealesScreen />} />
         </Routes>
       </HashRouter>
     </AudioProvider>
