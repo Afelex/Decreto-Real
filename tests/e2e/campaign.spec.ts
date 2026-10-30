@@ -40,3 +40,15 @@ test('the epilogue is inaccessible until the last mission is won', async ({ page
   await page.goto('/Decreto-Real/#/campania/epilogo');
   await expect(page.getByRole('heading', { name: 'El epílogo sigue sellado' })).toBeVisible();
 });
+
+test('the named general is presented both in the briefing and on the real duel board', async ({ page }) => {
+  await page.goto('/Decreto-Real/#/campania');
+  await page.evaluate(() => window.localStorage.setItem('decreto-real.campania.v1', JSON.stringify({
+    version: 1, stars: { '01': 1, '02': 1, '03': 1, '04': 1, '05': 1 },
+  })));
+  await page.goto('/Decreto-Real/#/campania/mision/06');
+  await expect(page.getByRole('heading', { name: 'El Almirante de Hierro' })).toBeVisible();
+  await page.getByRole('button', { name: /Comenzar duelo/ }).click();
+  await expect(page.locator('.dr-rival').getByText('Almirante de Hierro')).toBeVisible();
+  await page.screenshot({ path: test.info().outputPath('campaign-boss-duel.png'), fullPage: true });
+});
