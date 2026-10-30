@@ -12,6 +12,8 @@ import CampaignMission from './screens/CampaignMission';
 import CampaignStory from './screens/CampaignStory';
 import CampaignEpilogue from './screens/CampaignEpilogue';
 import { AudioProvider } from './contexts/AudioContext';
+import './screens/one-screen-ui.css';
+import './screens/duel-viewport.css';
 
 const App: React.FC = () => {
   return (

@@ -6,7 +6,7 @@ const MainMenu: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="relative w-full min-h-[100dvh] overflow-x-hidden bg-[radial-gradient(circle_at_center,_#2a2a2a_0%,_#000_100%)] text-gold-main font-rpg">
+    <div className="dr-main-menu-screen relative w-full min-h-[100dvh] overflow-x-hidden bg-[radial-gradient(circle_at_center,_#2a2a2a_0%,_#000_100%)] text-gold-main font-rpg">
       {/* Background texture (no bloquea clicks) */}
       <div className="absolute inset-0 pointer-events-none z-0 bg-texture" />
 
@@ -49,7 +49,7 @@ const MainMenu: React.FC = () => {
 
       {/* Main layout */}
       <main
-        className="relative z-20 mx-auto w-full max-w-md flex min-h-[100dvh] flex-col items-center px-4"
+        className="dr-main-menu-content relative z-20 mx-auto w-full max-w-md flex min-h-[100dvh] flex-col items-center px-4"
         // ✅ “safe areas” para móviles (evita choque con bordes / barra inferior)
         style={{
           paddingTop: 'max(18px, env(safe-area-inset-top))',
@@ -57,7 +57,7 @@ const MainMenu: React.FC = () => {
         }}
       >
         {/* Header: baja un poco y reduce tamaño en móvil */}
-        <header className="w-full text-center mt-8 sm:mt-10">
+        <header className="dr-main-menu-header w-full text-center mt-8 sm:mt-10">
           <div className="flex items-center justify-center gap-2 opacity-90">
             <span className="h-[1px] w-6 sm:w-8 bg-gold-dark" />
             <h2 className="text-[9px] sm:text-[10px] tracking-[0.18em] font-bold text-gold-dark uppercase">
@@ -82,13 +82,13 @@ const MainMenu: React.FC = () => {
         </header>
 
         {/* Hero Card: altura controlada por viewport para que TODO quepa */}
-        <section className="relative w-full flex-1 flex items-center justify-center">
+        <section className="dr-main-menu-hero relative w-full flex-1 flex items-center justify-center">
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 sm:w-72 sm:h-72 bg-gold-dark/20 rounded-full blur-3xl animate-pulse" />
 
           <div
             className="relative z-10 group perspective-1000"
             // ✅ clave: limita el tamaño de la carta según pantalla
-            style={{ height: 'clamp(300px, 44dvh, 470px)' }}
+            style={{ height: 'min(37dvh, 350px)' }}
           >
             <div className="h-full aspect-[2/3] relative transform transition-transform duration-500 group-hover:scale-[1.02] group-hover:rotate-y-12">
               <div className="absolute -inset-[3px] rounded-xl bg-gradient-to-tr from-gold-dark via-[#ffd700] to-gold-dark opacity-80 blur-sm group-hover:opacity-100 transition-opacity" />
@@ -121,7 +121,7 @@ const MainMenu: React.FC = () => {
         </section>
 
         {/* Footer: SUBE los botones para que no choquen con adornos */}
-        <footer className="w-full flex flex-col items-center gap-2 pb-12 sm:pb-8">
+        <footer className="dr-main-menu-footer w-full flex flex-col items-center gap-2 pb-12 sm:pb-8">
           <button
             onClick={() => navigate('/campania')}
             aria-label="Empezar campaña"

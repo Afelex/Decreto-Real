@@ -1,6 +1,6 @@
 import React from 'react';
 import { afterEach, beforeEach, expect, test } from 'vitest';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import CampaignStory from '../../screens/CampaignStory';
 import CampaignMission from '../../screens/CampaignMission';
@@ -24,17 +24,19 @@ function screenAt(path: string) {
 test('the prologue introduces the four provisional characters and eight generals', () => {
   screenAt('/campania/historia');
   expect(screen.getByRole('heading', { name: 'El reino escucha dos verdades' })).toBeTruthy();
+  fireEvent.click(screen.getByRole('button', { name: 'Protagonistas' }));
   expect(screen.getByText('Tu personaje (X)')).toBeTruthy();
   expect(screen.getByText('Zero')).toBeTruthy();
   expect(screen.getByText('Vile')).toBeTruthy();
   expect(screen.getByText('Sigma')).toBeTruthy();
+  fireEvent.click(screen.getByRole('button', { name: 'Ocho generales' }));
   expect(document.querySelectorAll('.dc-general-list > div').length).toBe(8);
 });
 
 test('a reachable mission opens a story briefing before the battle', () => {
   screenAt('/campania/mision/01');
   expect(screen.getByRole('heading', { name: 'El pregón alterado' })).toBeTruthy();
-  expect(screen.getByText('Guardia del pregón.', { exact: false })).toBeTruthy();
+  expect(screen.getByText(/Rival: Guardia del pregón/)).toBeTruthy();
   expect(screen.getByRole('button', { name: /Comenzar duelo/ })).toBeTruthy();
 });
 
@@ -53,6 +55,7 @@ test('the final mission victory reveals the canonical ending', () => {
   screenAt('/campania/epilogo');
   expect(screen.getByRole('heading', { name: 'El Sello permanece' })).toBeTruthy();
   expect(screen.getByText(/Sigma, que conocía parte del engaño/)).toBeTruthy();
+  fireEvent.click(screen.getByRole('button', { name: 'Siguiente ›' }));
   expect(screen.getByText(/Zero desapareció gravemente herido/)).toBeTruthy();
 });
 

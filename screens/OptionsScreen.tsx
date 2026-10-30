@@ -34,7 +34,7 @@ const OptionsScreen: React.FC = () => {
     );
 
     return (
-        <div className="bg-[radial-gradient(circle_at_center,_#1a1a1a_0%,_#000_100%)] min-h-screen w-full relative overflow-hidden flex flex-col items-center justify-center">
+        <div className="dr-options-screen bg-[radial-gradient(circle_at_center,_#1a1a1a_0%,_#000_100%)] min-h-screen w-full relative overflow-hidden flex flex-col items-center justify-center">
              {/* Corners */}
              <div className="absolute top-0 left-0 w-[100px] h-[100px] pointer-events-none z-20">
                 <img alt="Corner" className="w-full h-full object-contain transform scale-x-[-1]" src={CORNER_IMG}/>
@@ -50,15 +50,15 @@ const OptionsScreen: React.FC = () => {
             </div>
 
             <main className="relative z-10 w-full max-w-md px-6 flex flex-col items-center">
-                <div className="w-full ornate-border bg-[#0B0C10]/95 p-8 rounded-lg shadow-[0_0_50px_rgba(0,0,0,0.8)] backdrop-blur-sm">
-                    <div className="text-center mb-10">
+                <div className="dr-options-panel w-full ornate-border bg-[#0B0C10]/95 p-8 rounded-lg shadow-[0_0_50px_rgba(0,0,0,0.8)] backdrop-blur-sm">
+                    <div className="dr-options-title text-center mb-10">
                         <h1 className="font-decorative text-3xl text-primary drop-shadow-md">
                             Opciones
                         </h1>
                         <div className="h-[1px] w-16 bg-gold-dark mx-auto mt-2 opacity-50"></div>
                     </div>
 
-                    <div className="space-y-6 mb-10">
+                    <div className="dr-options-toggles space-y-6 mb-10">
                         <Toggle 
                             label="Música" 
                             icon="music_note" 
@@ -73,7 +73,7 @@ const OptionsScreen: React.FC = () => {
                         />
                     </div>
 
-                    <div className="pt-6 border-t border-white/5">
+                    <div className="dr-options-footer pt-6 border-t border-white/5">
                         <button 
                             onClick={handleSave}
                             className="w-full btn-ornate py-3 rounded relative overflow-hidden group active:scale-95 transition-transform"
