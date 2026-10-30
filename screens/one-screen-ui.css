@@ -353,3 +353,62 @@
 /* Classic route is preserved. Its absolute-position art is kept clipped
    inside the fitted viewport, never allowed to scroll the whole document. */
 .dr-classic-screen {height:100dvh !important;max-height:100dvh;max-width:100vw;overflow:hidden!important;margin:0 auto;}
+
+/* Legacy game: adapt large 430×932 composition without removing actions.
+   Its central zones may compress, while the end-turn control stays pinned. */
+.dr-classic-screen >div.flex-1 { min-height:0 !important; }
+.dr-classic-screen >div.flex-1:first-of-type {padding-top:clamp(2px,.6dvh,12px);}
+.dr-classic-screen >div.flex-1:first-of-type .w-28.h-32 {height:clamp(55px,13dvh,128px);width:clamp(63px,11dvh,112px);}
+.dr-classic-screen >div.flex-1:first-of-type .w-14.h-20 {height:clamp(40px,8dvh,80px);width:clamp(34px,6dvh,56px);}
+.dr-classic-screen >div.flex-1:first-of-type .h-24 {height:clamp(40px,8dvh,96px);}
+.dr-classic-screen >div.flex-1:first-of-type .w-16.h-24 {height:clamp(40px,8dvh,96px);width:clamp(33px,6dvh,64px);}
+.dr-classic-screen >div.flex-1:last-of-type {padding-bottom:clamp(5px,2dvh,30px);}
+.dr-classic-screen >div.flex-1:last-of-type .h-48 {height:clamp(92px,20dvh,180px);margin-bottom:clamp(5px,2dvh,32px);}
+.dr-classic-screen >div.flex-1:last-of-type .w-28.h-40 {width:clamp(62px,13dvh,112px);height:clamp(92px,19dvh,160px);}
+.dr-classic-screen >div.flex-1:last-of-type .w-28.h-32 {width:clamp(62px,11dvh,112px);height:clamp(64px,13dvh,128px);}
+.dr-classic-screen >div.flex-1:last-of-type .w-14.h-20 {width:clamp(34px,6dvh,56px);height:clamp(40px,8dvh,80px);}
+.dr-classic-screen .absolute.bottom-\\[4\\.5rem\\] {bottom:clamp(11px,4dvh,40px);}
+.dr-classic-screen .w-20.h-20 {width:clamp(48px,9dvh,80px);height:clamp(48px,9dvh,80px);}
+@media(max-height:530px) {
+  .dr-classic-screen .grid.grid-cols-4 {margin:2px 0;gap:4px;padding-left:14px;padding-right:14px;}
+  .dr-classic-screen >div.flex-1:first-of-type .h-24 {display:none;}
+  .dr-classic-screen >div.flex-1:last-of-type .h-48 {height:95px;margin-bottom:1px;}
+  .dr-classic-screen >div.flex-1:last-of-type {padding-bottom:6px;}
+  .dr-classic-screen .absolute.bottom-\\[4\\.5rem\\] {bottom:12px;right:7px;}
+}
+
+.dr-victory-screen {height:100dvh !important;min-height:0 !important;max-height:100dvh;overflow:hidden!important;}
+.dr-victory-content {
+  height:100%;
+  min-height:0;
+  overflow:hidden;
+  gap:clamp(6px,1.4dvh,16px) !important;
+  padding:max(8px,env(safe-area-inset-top)) 12px max(8px,env(safe-area-inset-bottom)) !important;
+  justify-content:space-around;
+}
+.dr-victory-content>div:first-child {margin:0;}
+.dr-victory-content h1 {font-size:clamp(28px,6dvh,52px);line-height:1;margin:0;}
+.dr-victory-portrait {
+  flex:1 1 0;
+  height:auto !important;
+  width:auto !important;
+  min-height:clamp(65px,13dvh,120px);
+  max-height:clamp(85px,25dvh,225px);
+  aspect-ratio:3/4;
+}
+.dr-victory-stats {flex:0 0 auto;padding:clamp(10px,2dvh,22px);margin-top:0 !important;}
+.dr-victory-stats .grid {gap:clamp(3px,1dvh,12px);margin-top:4px;}
+.dr-victory-stats .text-3xl {font-size:clamp(16px,4dvh,28px);}
+.dr-victory-stats .col-span-2 {margin-top:3px;padding-top:4px;}
+.dr-victory-stats .w-10.h-10 {width:clamp(25px,5dvh,38px);height:clamp(25px,5dvh,38px);}
+.dr-victory-actions {flex:0 0 auto;gap:clamp(5px,1dvh,11px)!important;margin-top:0!important;}
+.dr-victory-actions button {min-height:clamp(37px,6dvh,50px);padding:5px;}
+.dr-victory-actions button .text-lg {font-size:clamp(12px,3vw,16px);}
+@media(max-height:550px) {
+  .dr-victory-content {gap:4px!important;}
+  .dr-victory-portrait {min-height:50px;max-height:90px;}
+  .dr-victory-stats {padding:8px;}
+  .dr-victory-stats .col-span-2 {display:none;}
+  .dr-victory-actions button {min-height:35px;}
+  .dr-victory-screen>.absolute.bottom-4 {display:none;}
+}
