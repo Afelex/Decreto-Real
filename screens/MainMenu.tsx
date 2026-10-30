@@ -1,9 +1,22 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CORNER_IMG, SOVEREIGN_IMG } from '../constants';
+import { loadCampaignProgress } from '../campaign/campaign.ts';
+import { campaignOverview } from '../campaign/progressView.ts';
 
 const MainMenu: React.FC = () => {
   const navigate = useNavigate();
+  // The menu is remounted when returning from a duel; reread the latest
+  // locally saved mission result without writing any new data.
+  const journey = React.useMemo(() => {
+    try { return campaignOverview(loadCampaignProgress(window.localStorage)); }
+    catch { return campaignOverview(loadCampaignProgress(null)); }
+  }, []);
+  const nextMissionText = journey.completedCampaign
+    ? `Historia completada · ★ ${journey.stars}/${journey.maximumStars}`
+    : journey.completed === 0
+      ? `Inicia el recorrido · ${journey.total} retos`
+      : `Reto ${Number(journey.nextMission!.id)}/${journey.total} · ${journey.nextMission!.title}`;
 
   return (
     <div className="dr-main-menu-screen relative w-full min-h-[100dvh] overflow-x-hidden bg-[radial-gradient(circle_at_center,_#2a2a2a_0%,_#000_100%)] text-gold-main font-rpg">
@@ -134,12 +147,11 @@ const MainMenu: React.FC = () => {
           >
             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')] opacity-30" />
             <span className="text-xl sm:text-2xl drop-shadow-md relative z-10">⚔️</span>
-            <span
-              className="text-white font-bold font-rpg text-[16px] sm:text-xl tracking-[0.14em] relative z-10"
-              style={{ textShadow: '0 2px 4px black' }}
-            >
-              CAMPAÑA
+            <span className="dr-menu-campaign-label text-white relative z-10" style={{ textShadow: '0 2px 4px black' }}>
+              <strong>CAMPAÑA</strong>
+              <small title={nextMissionText}>{nextMissionText}</small>
             </span>
+            <span className="dr-menu-progress-track" aria-hidden="true"><span style={{ width: `${journey.percentage}%` }}/></span>
           </button>
 
           <div className="flex items-center justify-center gap-3 w-full max-w-[92%]">
