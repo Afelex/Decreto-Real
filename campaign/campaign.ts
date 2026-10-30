@@ -33,7 +33,9 @@ export function bestStars(progress: CampaignProgress, id: string): number {
 export function isMissionUnlocked(progress: CampaignProgress, id: string): boolean {
   const index = CAMPAIGN_MISSIONS.findIndex(mission => mission.id === id);
   if (index < 0) return false;
-  return index === 0 || bestStars(progress, CAMPAIGN_MISSIONS[index - 1].id) > 0;
+  // Every earlier challenge must be won: a malformed or nonsequential save
+  // cannot unlock a later region or skip the story.
+  return CAMPAIGN_MISSIONS.slice(0, index).every(mission => bestStars(progress, mission.id) > 0);
 }
 
 export function calculateMissionStars(mission: CampaignMission, result: { winner: 'player' | 'rival' | null; playerHp: number; turn: number }): number {
@@ -42,7 +44,7 @@ export function calculateMissionStars(mission: CampaignMission, result: { winner
 }
 
 export function awardMissionStars(progress: CampaignProgress, id: string, earned: number): CampaignProgress {
-  if (!getCampaignMission(id) || !Number.isInteger(earned) || earned < 0 || earned > 3) return progress;
+  if (!getCampaignMission(id) || !isMissionUnlocked(progress, id) || !Number.isInteger(earned) || earned < 0 || earned > 3) return progress;
   return { version: 1, stars: { ...progress.stars, [id]: Math.max(bestStars(progress, id), earned) } };
 }
 
