@@ -59,6 +59,8 @@ export function selectBossMove(id: BossId, state: BossSnapshot, sample: number):
   }
   if (state.difficulty === 'Aprendiz') { attack = Math.max(1, attack - 2); shield += 1; }
   if (state.difficulty === 'Maestro') { attack += 2; impact += 1; }
+  // Guard is a waste at the existing 10-point cap, irrespective of profile.
+  if (state.enemyShield >= 10) shield = 0;
   const total = attack + shield + impact;
   const pick = sample * total;
   return pick < attack ? 'attack' : pick < attack + shield ? 'shield' : 'impact';
