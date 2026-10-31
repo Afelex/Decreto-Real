@@ -275,3 +275,45 @@ test('history derives lines from events and skips the end-turn notice', () => {
   const lines = historyLines(state);
   assert.equal(lines.length, 1); assert.match(lines[0], /^Turno 1: El (rival|Virrey)/);
 });
+
+test('styled general response is accepted only for a valid boss ID and replayed bit-for-bit', () => {
+  for (const id of ['1','2','3','4','5','6','7','8'] as const) {
+    let state = createCombat(42);
+    state = act(state, { type: 'end_turn' });
+    state = act(state, { type: 'resolve_rival', bossId: id });
+    assert.equal(state.turn, 2);
+    assert.deepEqual(state.journal[1].action, { type:'resolve_rival', bossId:id });
+    assert.equal(state.journal[1].events.filter(e => ['attack','shield','impact'].includes(e.type)).length, 1);
+    assert.deepEqual(replayCombat(JSON.parse(JSON.stringify(exportCombat(state)))), state);
+    assert.ok(state.playerHp >= 0 && state.playerHp <= 20);
+    assert.ok(state.enemyShield >= 0 && state.enemyShield <= 10);
+  }
+  let state = act(createCombat(4), { type: 'end_turn' });
+  rejected(state, { type: 'resolve_rival', bossId: '9' } as unknown as CombatAction);
+  rejected(state, { type: 'resolve_rival', bossId: 8 } as unknown as CombatAction);
+});
+
+test('standard duel response is byte-identical when no boss ID is provided', () => {
+  for (let seed = 0; seed < 40; seed++) {
+    let state = act(createCombat(seed), { type: 'end_turn' });
+    const standard = act(state, { type: 'resolve_rival' });
+    const spoof = act(state, { type: 'resolve_rival', bossId: undefined });
+    assert.deepEqual(standard, spoof);
+    assert.deepEqual(standard.journal[1].action, { type: 'resolve_rival' });
+    const earlier = JSON.parse(JSON.stringify(exportCombat(standard)));
+    earlier.version = 'dr-combat-2';
+    assert.deepEqual(replayCombat(earlier), standard, 'v2 action data remains replayable');
+  }
+});
+
+test('the fourth Impact still wins by the existing rule for all eight generals', () => {
+  for (const bossId of ['1','2','3','4','5','6','7','8'] as const) {
+    const state = createCombat(7);
+    state.phase = 'rival'; state.enemySeals = 3;
+    const next = act(state, { type: 'resolve_rival', bossId });
+    assert.equal(next.winner, 'rival');
+    assert.equal(next.enemySeals, 4);
+    assert.equal(next.phase, 'finished');
+    assert.equal(next.journal[0].events.find(e => e.type === 'impact')?.data.seals, 4);
+  }
+});
