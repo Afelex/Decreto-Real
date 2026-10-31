@@ -162,8 +162,8 @@ test('original game has the coin ritual, real rival deck, artwork, and immediate
   await expect(page.getByText('24', { exact: true })).toHaveCount(2);
   await page.getByRole('button', { name: 'Lanzar Moneda' }).click();
   await expect(page.getByText('Ritual de Inicio')).toBeHidden({ timeout: 12000 });
-  await expect(page.locator('.dr-classic-screen .h-48 .cursor-pointer')).toHaveCount(4, { timeout: 18000 });
-  const cards = page.locator('.dr-classic-screen .h-48 .cursor-pointer');
+  await expect(page.locator('.dr-classic-screen .h-48 > .flex.items-end > .cursor-pointer')).toHaveCount(4, { timeout: 18000 });
+  const cards = page.locator('.dr-classic-screen .h-48 > .flex.items-end > .cursor-pointer');
   const before = await cards.count();
   const ordinary = cards.filter({ hasText: /Decreto de Ataque|Decreto de Defensa/ });
   const chosen = await ordinary.count() ? ordinary.first() : cards.filter({ hasText: 'Impacto I' }).first();
