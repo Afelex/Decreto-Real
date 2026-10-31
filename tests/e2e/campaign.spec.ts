@@ -154,7 +154,7 @@ test('bosses from different regions display their own landscape and heraldry', a
 
 test('original game has the coin ritual, real rival deck, artwork, and immediate one-touch cards', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'mobile-390', 'Full original turn flow sampled on the main phone');
-  await page.addInitScript(() => { Math.random = () => 0.42; });
+  await page.addInitScript(() => { Math.random = () => 0.6; });
   await page.goto('/Decreto-Real/#/campania/mision/01');
   await page.getByRole('button', { name: /Comenzar duelo/ }).click();
   await expect(page.getByText('Ritual de Inicio')).toBeVisible();
