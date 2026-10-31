@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1600" viewBox="0 0 900 1600" preserveAspectRatio="xMidYMid slice">
+<defs>
+ <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#4c9bd4"/><stop offset=".36" stop-color="#b8dce8"/><stop offset=".65" stop-color="#f4d2a1"/><stop offset="1" stop-color="#a78b70"/></linearGradient>
+ <linearGradient id="stone" x2=".3" y2="0" x1=".7" y1="1"><stop stop-color="#d8c199"/><stop offset=".45" stop-color="#987857"/><stop offset="1" stop-color="#534736"/></linearGradient>
+ <linearGradient id="wall" x2="0" y2="1"><stop stop-color="#ffe2b4"/><stop offset="1" stop-color="#af8961"/></linearGradient>
+ <linearGradient id="banners"><stop stop-color="#ad3436"/><stop offset="1" stop-color="#6b1827"/></linearGradient>
+ <linearGradient id="blue"><stop stop-color="#1b6095"/><stop offset="1" stop-color="#1b2d61"/></linearGradient>
+ <radialGradient id="sun"><stop stop-color="#fff9df" stop-opacity=".88"/><stop offset="1" stop-color="#fff3d2" stop-opacity="0"/></radialGradient>
+ <linearGradient id="mountain"><stop stop-color="#9da2b1"/><stop offset="1" stop-color="#527c8d"/></linearGradient>
+ <pattern id="cobbles" width="130" height="92" patternUnits="userSpaceOnUse" patternTransform="skewY(-3)">
+ <path d="M0 0H130V92H0Z M65 0V46 M0 46H130 M28 46V92 M96 46V92" stroke="#352f2e" stroke-width="3" fill="#b9a07e" opacity=".4"/>
+ <path d="M6 6H58M70 8H121M5 51H23M31 51H91" stroke="#ffe1a9" stroke-opacity=".32" stroke-width="2"/>
+ </pattern>
+ <pattern id="blocks" width="88" height="48" patternUnits="userSpaceOnUse"><path d="M0 0H88V48H0Z M44 0V24M0 24H88M22 24V48M66 24V48" stroke="#78583d" stroke-width="2" fill="#e0bb82"/></pattern>
+ <filter id="haze"><feGaussianBlur stdDeviation="18"/></filter>
+ <filter id="glow"><feGaussianBlur stdDeviation="8"/></filter>
+</defs>
+<!-- Pure scenic background: no interface, cards, health bars or controls. -->
+<path d="M0 0H900V1600H0Z" fill="url(#sky)"/>
+<circle cx="640" cy="250" r="370" fill="url(#sun)"/>
+<g fill="#f7e8d0" opacity=".8">
+ <path d="M15 211q48-55 89-15 56-77 122 9 63-15 76 31H3Z"/>
+ <path d="M555 161q30-57 74-26 49-71 105-17 54-19 107 47Z"/>
+</g>
+<!-- distant Andean peaks -->
+<path d="M-40 660L125 400 217 513 353 264 496 492 647 290 788 502 940 380V772H-40Z" fill="url(#mountain)"/>
+<path d="M278 365L353 264 421 376l-65-29-40 40Z M581 387L647 290 709 383l-60-22-26 22Z M88 455L125 400 159 455l-31-15-19 16Z" fill="#eef7f3"/>
+<path d="M-20 714Q120 572 267 676T550 602Q730 533 925 691V870H-20Z" fill="#61796d" opacity=".58"/>
+<path d="M0 775q121-106 219-55t220-14 219-1 242 47v221H0Z" fill="#678164" opacity=".75"/>
+<!-- city walls and towers -->
+<g stroke="#78543c" stroke-width="5">
+<path d="M-40 707V496l114-57 115 57v198Z" fill="url(#wall)"/>
+<path d="M28 487V349h67v143 M37 350v-35h50v35" fill="#ca9b6d"/>
+<path d="M21 345l40-64 40 64Z" fill="#784b35"/>
+<path d="M20 508V476h92v27Z" fill="#905f43"/>
+<path d="M72 620q-44-82-82 0v90H72Z" fill="#61503c"/>
+<path d="M718 720V455l102-68 100 54v273Z" fill="url(#wall)"/>
+<path d="M778 409V299h85v117 M788 301v-29h64v29" fill="#cda678"/>
+<path d="M763 291l57-70 55 70Z" fill="#80523a"/>
+<path d="M718 464h202v29H718Z" fill="#a6764e"/>
+<path d="M790 628q47-84 97 0v102h-97Z" fill="#695039"/>
+<path d="M206 796V601h104V489h112v105h101V489h115v299Z" fill="#cbb28f"/>
+<path d="M248 615V490h53v125 M540 615V489h59v126" fill="#a47e56"/>
+<path d="M258 491l20-51 23 51 M542 489l29-51 28 51" fill="#77543b"/>
+<path d="M325 660q0-79 79-79t79 79v136H325Z" fill="#524e49"/>
+<path d="M357 660q0-55 47-55t47 55v132H357Z" fill="#c9af88"/>
+</g>
+<g fill="#795c45" stroke="#efd2a8" stroke-width="3"><path d="M27 393h25v45H27ZM70 393h24v45H70ZM774 354h30v53h-30ZM821 354h32v53h-32Z"/></g>
+<g fill="#f8e7bc" stroke="#d4b07a" stroke-width="3" opacity=".85"><circle cx="278" cy="467" r="10"/><circle cx="571" cy="459" r="10"/><circle cx="60" cy="310" r="8"/><circle cx="821" cy="251" r="8"/></g>
+<!-- market awnings -->
+<path d="M-40 729L130 675 250 731V768H-40Z" fill="#9e3339" stroke="#efbd78" stroke-width="8"/>
+<path d="M650 732L782 673 945 724V771H650Z" fill="#1d5a93" stroke="#e5bd80" stroke-width="8"/>
+<!-- fountain: safe behind interactive board -->
+<ellipse cx="449" cy="842" rx="190" ry="30" fill="#7b9da4" stroke="#d7c1a0" stroke-width="12"/>
+<path d="M284 833l46 73h231l57-73Z" fill="#7aa2a6" stroke="#c3b59b" stroke-width="10"/>
+<ellipse cx="451" cy="830" rx="164" ry="26" fill="#b3cfd0" stroke="#7e6b55" stroke-width="9"/>
+<path d="M393 820l20-64h80l23 64Z" fill="#b5a48d" stroke="#806b53" stroke-width="9"/>
+<ellipse cx="451" cy="759" rx="95" ry="15" fill="#adc4c4" stroke="#bda480" stroke-width="9"/>
+<path d="M444 750V690q-35-15 0-27 32 11 0 27" fill="#b9a480" stroke="#715b48" stroke-width="8"/>
+<g fill="none" stroke="#d3f7ff" stroke-width="6" opacity=".7"><path d="M420 764q-68 30-103 93"/><path d="M479 762q67 31 102 94"/><path d="M445 685q-20 45-48 82"/><path d="M454 685q28 42 51 81"/></g>
+<!-- perspective paved plaza -->
+<path d="M0 910L900 910 900 1600H0Z" fill="url(#stone)"/>
+<path d="M0 920L900 920 900 1600H0Z" fill="url(#cobbles)"/>
+<g fill="none" stroke="#e7c69b" stroke-width="3" opacity=".5">
+ <path d="M0 930H900M0 1040H900M0 1178H900M0 1340H900M0 1540H900"/>
+ <path d="M449 927L-90 1600M449 927L80 1600M449 927L263 1600M449 927L649 1600M449 927L820 1600M449 927L1010 1600"/>
+</g>
+<!-- red and blue flags, consistent faction contrast -->
+<path d="M-6 273q58 23 103 47v341l-44-38-59 38Z" fill="url(#banners)" stroke="#d5a967" stroke-width="9"/>
+<path d="M900 277q-60 23-107 43v341l44-38 63 38Z" fill="url(#blue)" stroke="#d5a967" stroke-width="9"/>
+<path d="M45 314v309M841 315v309" stroke="#eac994" stroke-width="4"/>
+<g fill="none" stroke="#e1b86b" stroke-width="10" opacity=".7"><path d="M24 398q60-30 51 34t-30 66M872 395q-65-25-58 35t34 68"/></g>
+<!-- flower beds and stylized vegetation -->
+<g>
+<path d="M0 1170q65-95 154-60t118 59M635 1170q119-128 265-30" fill="none" stroke="#344e33" stroke-width="76"/>
+<g fill="#c33e47"><circle cx="54" cy="1141" r="15"/><circle cx="98" cy="1118" r="13"/><circle cx="165" cy="1155" r="20"/><circle cx="773" cy="1138" r="16"/><circle cx="835" cy="1118" r="16"/></g>
+<g fill="#f6daa0"><circle cx="28" cy="1178" r="10"/><circle cx="135" cy="1148" r="9"/><circle cx="710" cy="1157" r="10"/><circle cx="866" cy="1178" r="12"/></g>
+</g>
+<!-- warm lighting -->
+<ellipse cx="450" cy="1240" rx="445" ry="460" fill="#d7ab7b" opacity=".11"/>
+<path d="M0 0H900V1600H0Z" fill="none" stroke="#503a2d" stroke-width="18" opacity=".2"/>
+</svg>
