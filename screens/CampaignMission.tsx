@@ -1,9 +1,9 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { createCombat, type CombatState } from '../game/combatEngine.ts';
-import { DuelBoard } from './DuelBoard';
+import GameBoard, { type OriginalBattleOutcome } from './GameBoard';
+import { calculateClassicMissionStars } from '../campaign/classicScoring.ts';
 import {
-  CAMPAIGN_MISSIONS, awardMissionStars, bestStars, calculateMissionStars,
+  CAMPAIGN_MISSIONS, awardMissionStars, bestStars,
   getCampaignMission, isMissionUnlocked, loadCampaignProgress, saveCampaignProgress,
 } from '../campaign/campaign.ts';
 import { chapterForStage } from '../campaign/story.ts';
@@ -11,7 +11,6 @@ import { missionStarGoals } from '../campaign/progressView.ts';
 import { regionVisual } from '../campaign/regionVisuals.ts';
 import { RegionScene } from './RegionScene';
 import { GeneralPortrait } from './GeneralPortrait';
-import { BOSS_STYLES, isBossId } from '../game/bossTactics.ts';
 import './campaign.css';
 
 type MissionOutcome = {
@@ -24,7 +23,7 @@ const getStorage = (): Storage | null => {
   catch { return null; }
 };
 
-/** Story presentation wraps the existing game engine and never grants new abilities. */
+/** Story presentation connects the untouched original combat to existing mission progression. */
 const CampaignMission: React.FC = () => {
   const navigate = useNavigate();
   const { missionId } = useParams<{ missionId: string }>();
@@ -34,16 +33,11 @@ const CampaignMission: React.FC = () => {
   const [view, setView] = React.useState<'briefing' | 'duel'>('briefing');
   const [outcome, setOutcome] = React.useState<MissionOutcome | null>(null);
   const storage = React.useMemo(getStorage, []);
-  const initial = React.useMemo(
-    () => createCombat(mission?.seed ?? 1, mission?.difficulty ?? 'Aprendiz'),
-    [mission?.seed, mission?.difficulty, attempt],
-  );
   const unlocked = !!mission && isMissionUnlocked(loadCampaignProgress(storage), mission.id);
   const index = mission ? CAMPAIGN_MISSIONS.findIndex(item => item.id === mission.id) : -1;
   const next = CAMPAIGN_MISSIONS[index + 1];
   const nextRegion = next && next.chapterId !== mission?.chapterId ? chapterForStage(next.id) : null;
   const region = regionVisual(chapter?.id);
-  const boss = mission?.kind === 'boss' && isBossId(chapter?.id) ? BOSS_STYLES[chapter.id] : null;
   const accent = { '--dc-accent': chapter?.color ?? '#bfa374' } as React.CSSProperties;
 
   React.useEffect(() => {
@@ -54,19 +48,15 @@ const CampaignMission: React.FC = () => {
 
   const retry = () => { setAttempt(value => value + 1); setOutcome(null); setView('duel'); };
 
-  const onStateChange = (state: CombatState) => {
-    if (!mission || state.phase !== 'finished' || outcome || view !== 'duel') return;
-    const won = state.winner === 'player';
-    const changedDifficulty = state.journal.some(entry =>
-      entry.action.type === 'difficulty' && entry.action.value !== mission.difficulty,
-    );
-    const earned = won ? (changedDifficulty ? 1 : calculateMissionStars(mission, state)) : 0;
+  const onClassicOutcome = (result: OriginalBattleOutcome) => {
+    if (!mission || outcome || view !== 'duel') return;
+    const earned = calculateClassicMissionStars(mission, result);
     const oldProgress = loadCampaignProgress(storage);
-    const newProgress = won ? awardMissionStars(oldProgress, mission.id, earned) : oldProgress;
-    const saved = won ? saveCampaignProgress(storage, newProgress) : true;
+    const newProgress = result.won ? awardMissionStars(oldProgress, mission.id, earned) : oldProgress;
+    const saved = result.won ? saveCampaignProgress(storage, newProgress) : true;
     setOutcome({
-      won, earned, best: bestStars(newProgress, mission.id), saved, changedDifficulty,
-      turns: state.turn, health: state.playerHp,
+      won: result.won, earned, best: bestStars(newProgress, mission.id), saved,
+      changedDifficulty: false, turns: result.turns, health: result.health,
     });
   };
 
@@ -90,7 +80,7 @@ const CampaignMission: React.FC = () => {
       <p>{outcome.won ? `Mejor marca: ${outcome.best}/3 estrellas` : 'Consigue una victoria para continuar la historia.'}</p>
       <div className="dc-result-stats"><span>Turno <b>{outcome.turns}</b></span><span>Vida restante <b>{outcome.health}</b></span></div>
       {chapter?.specialCard && mission.kind === 'boss' && outcome.won && <p className="dc-note">Carta del general en la historia: <b>{chapter.specialCard}</b>. Todavía no es una recompensa jugable.</p>}
-      {outcome.changedDifficulty && outcome.won && <p className="dc-warning">Cambiaste la dificultad del rival. Esta partida concede una estrella como máximo.</p>}
+      
       {!outcome.saved && <p role="alert" className="dc-warning">No se pudo guardar tu progreso en este navegador.</p>}
       {outcome.won && !next && <button className="dc-primary" onClick={() => navigate('/campania/epilogo')}>Leer epílogo ✦</button>}
       {outcome.won && next && outcome.saved && <button className="dc-primary" onClick={() => { setOutcome(null); setAttempt(0); setView('briefing'); navigate(`/campania/mision/${next.id}`); }}>{nextRegion ? 'Entrar en la nueva región →' : 'Siguiente misión →'}</button>}
@@ -108,7 +98,7 @@ const CampaignMission: React.FC = () => {
     </header>
     <section className="dc-story-scene dc-briefing-scene" aria-labelledby="dc-scene-title">
       <RegionScene chapterId={chapter?.id} formidable={mission.kind === 'boss' || mission.kind === 'final'}/>
-      {mission.kind === 'boss' && <span className="dc-general-banner"><GeneralPortrait chapterId={chapter?.id ?? ''} className="dc-mini-general"/><span>♛ GENERAL DE LA REGIÓN · {mission.title}{boss && <small> · {boss.title}</small>}</span></span>}
+      {mission.kind === 'boss' && <span className="dc-general-banner"><GeneralPortrait chapterId={chapter?.id ?? ''} className="dc-mini-general"/><span>♛ GENERAL DE LA REGIÓN · {mission.title}</span></span>}
       <span className="dc-scene-label">{mission.kind === 'boss' ? 'ENCUENTRO CON GENERAL' : mission.kind === 'subboss' ? 'ENCUENTRO CON SUBJEFE' : mission.kind === 'final' ? 'ENFRENTAMIENTO FINAL' : 'NUEVA MISIÓN'} · {mission.id}/38</span>
       <h2 id="dc-scene-title">{mission.title}</h2>
       <p className="dc-scene-location">⌖ {chapter?.region}</p>
@@ -121,7 +111,7 @@ const CampaignMission: React.FC = () => {
         {missionStarGoals(mission).map(goal =>
           <div key={goal.id}><span>★</span> {goal.label}</div>)}
       </div>
-      <p className="dc-note dc-briefing-note">{boss ? `Táctica: ${boss.hint} Carta legendaria: ${chapter?.specialCard ?? ''} (no jugable).` : `Rival: ${mission.opponent} · IA ${mission.difficulty}.`} Se mantienen las cartas y las reglas actuales.</p>
+      <p className="dc-note dc-briefing-note">Combate original: 10 de vida, 10 ataques, 10 defensas, 4 Impactos, sin Mando. El ritual de moneda, las cartas, la IA y los efectos se conservan íntegros.</p>
       <div className="dc-briefing-actions">
         <button className="dc-primary" onClick={() => setView('duel')}>¡Comenzar duelo! ⚔</button>
         <button className="dc-secondary" onClick={() => navigate('/campania')}>Volver al mapa</button>
@@ -129,16 +119,10 @@ const CampaignMission: React.FC = () => {
     </section>
   </main>;
 
-  return <DuelBoard
+  return <GameBoard
     key={`${mission.id}-${attempt}`}
-    initial={initial}
-    onExit={() => navigate('/campania')}
-    onNewGame={retry}
-    onStateChange={onStateChange}
-    opponentName={mission.opponent}
-    generalChapterId={mission.kind === 'boss' ? chapter?.id : undefined}
-    missionLabel={`MISIÓN ${mission.id}/38`}
-    immersive
+    onOutcome={onClassicOutcome}
+    onReturn={() => navigate('/campania')}
   />;
 };
 

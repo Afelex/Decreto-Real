@@ -32,8 +32,10 @@ test('select challenge button opens the existing story mission and actual duel',
   await expect(page.getByRole('heading', { name: 'El pregón alterado' })).toBeVisible();
   await expect(page.getByText(/Una proclamación contradictoria/)).toBeVisible();
   await page.getByRole('button', { name: /Comenzar duelo/ }).click();
-  await expect(page.getByRole('heading', { name: 'Decreto Real' })).toBeVisible();
-  await expect(page.getByLabel('Tu mano:', { exact: false })).toBeVisible();
+  await expect(page.locator('.dr-classic-screen')).toBeVisible();
+  await expect(page.getByText('Ritual de Inicio')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Lanzar Moneda' })).toBeVisible();
+  await expect(page.locator('.dr-game')).toHaveCount(0);
 });
 
 test('defeat requirement prevents advancing to another region', async ({ page }) => {
@@ -84,29 +86,8 @@ test('boss is presented in briefing and on the duel board', async ({ page }) => 
   await page.goto('/Decreto-Real/#/campania/mision/06');
   await expect(page.getByRole('heading', { name: 'El Almirante de Hierro' })).toBeVisible();
   await page.getByRole('button', { name: /Comenzar duelo/ }).click();
-  await expect(page.locator('.dr-rival').getByText('Almirante de Hierro')).toBeVisible();
-});
-
-test('campaign retains drag-and-drop tactile battle', async ({ page }, testInfo) => {
-  test.skip(testInfo.project.name !== 'mobile-390', 'Full drag sampled on tall mobile viewport');
-  await page.goto('/Decreto-Real/#/campania/mision/01');
-  await page.getByRole('button', { name: /Comenzar duelo/ }).click();
-  const hand = page.locator('.dr-hand .dr-card');
-  const initialCount = await hand.count();
-  const card = page.locator('.dr-hand .dr-card:not(.disabled)').first();
-  const cardBox = await card.boundingBox();
-  const tableBox = await page.locator('.dr-arena').boundingBox();
-  expect(cardBox).not.toBeNull();
-  expect(tableBox).not.toBeNull();
-  const from = { x: cardBox!.x + cardBox!.width / 2, y: cardBox!.y + cardBox!.height / 2 };
-  const to = { x: tableBox!.x + tableBox!.width / 2, y: tableBox!.y + tableBox!.height / 2 };
-  await page.mouse.move(from.x, from.y);
-  await page.mouse.down();
-  await page.mouse.move(to.x, to.y, { steps: 12 });
-  await expect(page.locator('.dr-arena.drop-ready')).toBeVisible();
-  await page.mouse.up();
-  await expect(hand).toHaveCount(initialCount - 1);
-  await expect(page.locator('.dr-drag-ghost')).toHaveCount(0);
+  await expect(page.locator('.dr-classic-screen')).toBeVisible();
+  await expect(page.getByText('Ritual de Inicio')).toBeVisible();
 });
 
 test('star goals dialog is complete, keyboard-accessible and fits the phone', async ({ page }) => {
@@ -115,8 +96,8 @@ test('star goals dialog is complete, keyboard-accessible and fits the phone', as
   const dialog = page.getByRole('dialog', { name: 'El pregón alterado' });
   await expect(dialog).toBeVisible();
   await expect(dialog.getByText('Gana el duelo')).toBeVisible();
-  await expect(dialog.getByText('Conserva al menos 12 de vida')).toBeVisible();
-  await expect(dialog.getByText('Vence hasta el turno 10')).toBeVisible();
+  await expect(dialog.getByText('Conserva al menos 6 de vida')).toBeVisible();
+  await expect(dialog.getByText('Gana en 10 rondas o menos')).toBeVisible();
   const bounds = await dialog.boundingBox();
   const viewport = page.viewportSize()!;
   expect(bounds).not.toBeNull();
@@ -170,90 +151,50 @@ test('bosses from different regions display their own landscape and heraldry', a
   }
 });
 
-test('general portrait and recorded card effect stay within the tactile battle screen', async ({ page }, testInfo) => {
-  await page.goto(campaign);
-  await page.evaluate(() => localStorage.setItem('decreto-real.campania.v1', JSON.stringify({
-    version: 1, stars: Object.fromEntries(Array.from({ length: 5 }, (_, i) => [String(i + 1).padStart(2, '0'), 1])),
-  })));
-  await page.goto('/Decreto-Real/#/campania/mision/06');
-  if (page.viewportSize()!.height <= 570) {
-    await expect(page.locator('.dc-general-banner svg[data-general-portrait="1"]')).toBeVisible();
-  } else {
-    await expect(page.locator('.dc-general-portrait-seal svg[data-general-portrait="1"]')).toBeVisible();
-  }
+
+test('original game has the coin ritual, real rival deck, artwork, and immediate one-touch cards', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile-390', 'Full original turn flow sampled on the main phone');
+  await page.addInitScript(() => { Math.random = () => 0.6; });
+  await page.goto('/Decreto-Real/#/campania/mision/01');
   await page.getByRole('button', { name: /Comenzar duelo/ }).click();
-  await expect(page.locator('.dr-rival svg[data-general-portrait="1"]')).toBeVisible();
-  const playable = page.locator('.dr-hand .dr-card:not(.disabled)').first();
-  await playable.tap();
-  await page.getByRole('button', { name: 'Jugar carta' }).tap();
-  const cue = page.locator('.dr-battle-cue');
-  await expect(cue).toBeVisible();
-  const bounds = await cue.boundingBox();
-  const viewport = page.viewportSize()!;
-  expect(bounds).not.toBeNull();
-  expect(bounds!.x).toBeGreaterThanOrEqual(-1);
-  expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(viewport.width + 1);
-  expect(bounds!.y).toBeGreaterThanOrEqual(-1);
-  expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(viewport.height + 1);
-  if (testInfo.project.name === 'mobile-390') {
-    await page.screenshot({ path: testInfo.outputPath('commander-and-card-effect.png'), fullPage: true });
-  }
-  await page.getByRole('button', { name: /TERMINAR TURNO/ }).click();
-  await expect(cue).toHaveCount(0);
+  await expect(page.getByText('Ritual de Inicio')).toBeVisible();
+  await expect(page.locator('.dr-classic-screen img[src*="imgur.com"]').first()).toBeVisible();
+  await expect(page.getByText('24', { exact: true })).toHaveCount(2);
+  await page.getByRole('button', { name: 'Lanzar Moneda' }).click();
+  await expect(page.getByText('Ritual de Inicio')).toBeHidden({ timeout: 12000 });
+  await expect(page.locator('.dr-classic-screen .h-48 > .flex.items-end > .cursor-pointer')).toHaveCount(4, { timeout: 18000 });
+  const cards = page.locator('.dr-classic-screen .h-48 > .flex.items-end > .cursor-pointer');
+  const before = await cards.count();
+  const ordinary = cards.filter({ hasText: /Decreto de Ataque|Decreto de Defensa/ });
+  const chosen = await ordinary.count() ? ordinary.first() : cards.filter({ hasText: 'Impacto I' }).first();
+  await chosen.click();
+  await expect(cards).toHaveCount(before - 1);
+  await expect(page.getByRole('button', { name: 'Jugar carta' })).toHaveCount(0);
+  await expect(page.locator('.dr-mana')).toHaveCount(0);
+  await page.screenshot({ path: testInfo.outputPath('original-board-restored.png'), fullPage: true });
 });
 
-test('reduced-motion setting preserves the textual effect while disabling flourish animation', async ({ page }) => {
-  test.skip(!['mobile-390', 'short-360'].includes(test.info().project.name), 'Sample low-motion behaviour in portrait and short viewports');
-  await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.goto(campaign);
-  await page.getByRole('button', { name: /Seleccionar reto/ }).click();
-  await page.getByRole('button', { name: /Comenzar duelo/ }).click();
-  await page.locator('.dr-hand .dr-card:not(.disabled)').first().tap();
-  await page.getByRole('button', { name: 'Jugar carta' }).tap();
-  const cue = page.locator('.dr-battle-cue');
-  await expect(cue).toBeVisible();
-  await expect(cue).not.toBeEmpty();
-  await expect(cue).toHaveCSS('animation-name', 'none');
-});
-
-test('restored classic tabletop fits the phone and boss has a distinct tactical response', async ({ page }, testInfo) => {
-  test.skip(!['mobile-390', 'short-360', 'landscape'].includes(testInfo.project.name), 'Sample different aspect ratios; broader layout is covered by viewport.spec');
-  await page.goto(campaign);
-  await page.evaluate(() => localStorage.setItem('decreto-real.campania.v1', JSON.stringify({
-    version: 1,
-    stars: Object.fromEntries(Array.from({ length: 5 }, (_, i) => [String(i + 1).padStart(2, '0'), 1])),
-  })));
-  await page.goto('/Decreto-Real/#/campania/mision/06');
-  await expect(page.getByText(/Baluarte naval/)).toBeVisible();
-  await page.getByRole('button', { name: /Comenzar duelo/ }).click();
-  await expect(page.locator('.dr-game.dr-original-table')).toBeVisible();
-  await expect(page.locator('.dr-classic-table')).toBeVisible();
-  await expect(page.locator('.dr-table-impact-rail')).toHaveCount(2);
-  await expect(page.locator('.dr-table-open-field .dr-table-empty-slot')).toHaveCount(2);
-  await expect(page.locator('.dr-rival svg[data-general-portrait="1"]')).toBeVisible();
-  const hand = page.locator('.dr-hand');
-  const actions = page.locator('.dr-actions');
-  for (const element of [hand, actions]) {
-    const bounds = await element.boundingBox();
-    expect(bounds).not.toBeNull();
-    expect(bounds!.y).toBeGreaterThanOrEqual(-1);
-    expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(page.viewportSize()!.height + 1);
-  }
-  expect(await page.evaluate(() => document.documentElement.scrollHeight <= innerHeight + 1)).toBe(true);
-  await page.getByRole('button', { name: /TERMINAR TURNO/ }).click();
-  await expect(page.locator('.dr-top small')).toContainText('TURNO 2');
-  const update = page.locator('.dr-played.rival');
-  await expect(update).toBeVisible();
-  if (testInfo.project.name === 'mobile-390') {
-    await page.screenshot({ path: testInfo.outputPath('classic-inspired-boss-table.png'), fullPage:true });
-  }
-});
-
-test('the original /game and standalone duel remain distinct routes', async ({ page }) => {
-  test.skip(test.info().project.name !== 'mobile-390', 'One smoke test for preserved routes');
+test('original game and campaign use the same physical-looking board and audio controls', async ({ page }) => {
+  test.skip(test.info().project.name !== 'mobile-390', 'One shared-component smoke test');
   await page.goto('/Decreto-Real/#/game');
+  await expect(page.getByText('Ritual de Inicio')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Lanzar Moneda' })).toBeVisible();
+  await page.goto('/Decreto-Real/#/campania/mision/01');
+  await page.getByRole('button', { name: /Comenzar duelo/ }).click();
   await expect(page.locator('.dr-classic-screen')).toBeVisible();
-  await expect(page.locator('.dr-classic-table')).toHaveCount(0);
-  await page.goto('/Decreto-Real/#/duelo-v1');
-  await expect(page.locator('.dr-classic-table')).toHaveCount(0);
+  await expect(page.getByText('Ritual de Inicio')).toBeVisible();
+  await expect(page.locator('.dr-classic-screen .gold-leaf-frame')).toHaveCount(2);
+  await expect(page.locator('.dr-game.dr-original-table')).toHaveCount(0);
+  const box = await page.locator('.dr-classic-screen').boundingBox();
+  expect(box).not.toBeNull();
+  expect(box!.y + box!.height).toBeLessThanOrEqual(page.viewportSize()!.height + 2);
+});
+
+test('updated rules describe the restored original instead of Mando and shield', async ({ page }) => {
+  await page.goto('/Decreto-Real/#/rules');
+  await page.getByRole('button', { name: 'Cartas' }).click();
+  await expect(page.getByText(/10 Decretos de Ataque, 10 Decretos de Defensa/)).toBeVisible();
+  await expect(page.getByText(/No hay costes de Mando/)).toBeVisible();
+  await page.getByRole('button', { name: 'Ataque' }).click();
+  await expect(page.getByText(/quita 2 puntos de vida/)).toBeVisible();
 });
