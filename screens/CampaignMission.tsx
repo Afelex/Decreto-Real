@@ -105,7 +105,7 @@ const CampaignMission: React.FC = () => {
     </header>
     <section className="dc-story-scene dc-briefing-scene" aria-labelledby="dc-scene-title">
       <RegionScene chapterId={chapter?.id} formidable={mission.kind === 'boss' || mission.kind === 'final'}/>
-      {mission.kind === 'boss' && <span className="dc-general-banner">♛ GENERAL DE LA REGIÓN · {chapter?.general}</span>}
+      {mission.kind === 'boss' && <span className="dc-general-banner">♛ GENERAL DE LA REGIÓN · {mission.title}</span>}
       <span className="dc-scene-label">{mission.kind === 'boss' ? 'ENCUENTRO CON GENERAL' : mission.kind === 'subboss' ? 'ENCUENTRO CON SUBJEFE' : mission.kind === 'final' ? 'ENFRENTAMIENTO FINAL' : 'NUEVA MISIÓN'} · {mission.id}/38</span>
       <h2 id="dc-scene-title">{mission.title}</h2>
       <p className="dc-scene-location">⌖ {chapter?.region}</p>
