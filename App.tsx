@@ -17,6 +17,7 @@ import './screens/duel-viewport.css';
 import './screens/campaign-progress.css';
 import './screens/region-scenes.css';
 import './screens/boss-combat-effects.css';
+import './screens/table-original-revival.css';
 
 const App: React.FC = () => {
   return (
