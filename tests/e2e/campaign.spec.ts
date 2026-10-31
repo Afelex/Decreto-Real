@@ -143,3 +143,29 @@ test('main-menu campaign CTA previews the latest verified stage', async ({ page 
   expect(menu).not.toBeNull();
   expect(menu!.y + menu!.height).toBeLessThanOrEqual(page.viewportSize()!.height + 2);
 });
+
+test('bosses from different regions display their own landscape and heraldry', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile-390', 'Visual comparison sampled in the main phone viewport');
+  await page.goto(campaign);
+  await page.evaluate(() => localStorage.setItem('decreto-real.campania.v1', JSON.stringify({
+    version: 1,
+    stars: Object.fromEntries(Array.from({length: 29}, (_, i) => [String(i + 1).padStart(2, '0'), 1])),
+  })));
+  for (const example of [
+    { id: '06', chapter: '1', name: 'El Almirante de Hierro', caption: 'El puerto de hierro' },
+    { id: '30', chapter: '7', name: 'El Cóndor de los Andes', caption: 'La fortaleza andina' },
+  ]) {
+    await page.goto('/Decreto-Real/#/campania/mision/' + example.id);
+    await expect(page.getByRole('heading', { name: example.name })).toBeVisible();
+    await expect(page.locator('.dc-general-banner')).toContainText(example.name);
+    await expect(page.locator('.dc-region-scene')).toHaveAttribute('data-region', example.chapter);
+    await expect(page.locator('.dc-region-scene-caption')).toContainText(example.caption);
+    await expect(page.locator('.dc-region-scene svg path').first()).toBeAttached();
+    const scene = await page.locator('.dc-region-scene').boundingBox();
+    const actions = await page.locator('.dc-briefing-actions').boundingBox();
+    expect(scene).not.toBeNull();
+    expect(actions).not.toBeNull();
+    expect(actions!.y + actions!.height).toBeLessThanOrEqual(page.viewportSize()!.height + 1);
+    await page.screenshot({ path: testInfo.outputPath('region-' + example.id + '.png'), fullPage: true });
+  }
+});
