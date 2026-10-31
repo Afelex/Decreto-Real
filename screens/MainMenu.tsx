@@ -181,17 +181,10 @@ const MainMenu: React.FC = () => {
           </div>
 
           <button
-            onClick={() => navigate('/duelo-v1')}
-            className="w-full max-w-[92%] h-[42px] border border-[#cda952] rounded bg-gradient-to-r from-[#263d52] to-[#152638] text-[#f1d891] font-bold text-xs tracking-[0.12em] uppercase active:scale-95 transition-transform"
-          >
-            ✦ Duelo libre contra IA
-          </button>
-
-          <button
             onClick={() => navigate('/game')}
-            className="w-full max-w-[92%] min-h-[44px] border border-[#66594a] rounded bg-[#2c2b30] text-[#d7c6a1] font-semibold text-xs tracking-[0.08em] uppercase active:scale-95 transition-transform"
+            className="w-full max-w-[92%] min-h-[44px] border border-[#cda952] rounded bg-gradient-to-r from-[#263d52] to-[#152638] text-[#f1d891] font-bold text-xs tracking-[0.12em] uppercase active:scale-95 transition-transform"
           >
-            Juego original
+            ✦ Duelo original contra IA
           </button>
         </footer>
       </main>
