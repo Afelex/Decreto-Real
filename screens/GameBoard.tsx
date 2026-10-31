@@ -613,6 +613,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
         </section>
 
         <section className={`dr-royal-field${selectedCard ? ' is-guiding' : ''}${dragAt ? ' is-dragging' : ''}`}
+          style={{ '--arrow-left': selectedCard?.type === 'IMPACT' ? `${((selectedCard.rank ?? 1) - .5) * 25}%` : '50%' } as React.CSSProperties}
           data-card-drop="field" aria-label="Campo central de activación">
           <button type="button" className="dr-royal-activation-target" onClick={() => placeSelected('field')}
             disabled={!selectedCard || !canHandleCards || selectedCard.type === 'IMPACT'}
