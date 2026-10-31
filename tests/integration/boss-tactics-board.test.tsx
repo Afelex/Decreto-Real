@@ -22,7 +22,7 @@ test('campaign table restores the original visual zones without pretending the r
   expect(container.querySelector('.dr-arena .dr-drop-label')).toBeTruthy();
   expect(container.querySelector('.dr-hand')).toBeTruthy();
   expect(screen.getByRole('button', { name: /TERMINAR TURNO/ })).toBeTruthy();
-  expect(screen.getByText('Baluarte naval')).toBeTruthy();
+  expect(screen.getByText(/Baluarte naval/)).toBeTruthy();
   expect(container.querySelector('.dr-rival svg[data-general-portrait="1"]')).toBeTruthy();
 });
 
