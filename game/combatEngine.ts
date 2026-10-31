@@ -77,8 +77,8 @@ export function canonicalAction(action: unknown): CombatAction | null {
   if (type === 'play') return typeof cardId === 'string' ? { type, cardId } : null;
   if (type === 'difficulty') return isDifficulty(value) ? { type, value } : null;
   if (type === 'resolve_rival') {
-    if (bossId !== undefined && !isBossId(bossId)) return null;
-    return bossId === undefined ? { type } : { type, bossId };
+    if (bossId === undefined) return { type };
+    return isBossId(bossId) ? { type, bossId } : null;
   }
   if (type === 'end_turn' || type === 'pause' || type === 'resume') return { type };
   return null;
