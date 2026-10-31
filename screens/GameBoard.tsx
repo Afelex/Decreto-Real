@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { OPPONENT_IMG, PLAYER_IMG, BATTLE_BG_IMG } from '../constants';
+import { OPPONENT_IMG, PLAYER_IMG } from '../constants';
 import { CardData, GamePhase, CardType } from '../types';
 import { useAudio } from '../contexts/AudioContext';
 import { AiTurnController, runOpponentTurn } from '../game/aiTurn';
+import { cardPlacementPrompt, checkCardPlacement, type CardDropZone } from '../game/cardPlacement.ts';
 
 // --- GAME CONFIGURATION ---
 const MAX_HP = 10;
@@ -59,11 +60,20 @@ function useFitScale(baseW = 430, baseH = 932) {
 /** Original game, unchanged in free play. The optional bridge only reports a
  * finished match to the campaign; cards, coin, AI, visuals and SFX stay original. */
 export type OriginalBattleOutcome = Readonly<{ won: boolean; turns: number; health: number }>;
+export type BattlePresentation = Readonly<{
+  background?: string;
+  playerPortrait?: string;
+  opponentPortrait?: string;
+}>;
 type GameBoardProps = {
   onOutcome?: (result: OriginalBattleOutcome) => void;
   onReturn?: () => void;
+  presentation?: BattlePresentation;
 };
-const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn }) => {
+const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation }) => {
+  const scenicBackground = presentation?.background ?? '/Decreto-Real/escenarios/plaza-virreinal.svg';
+  const playerPortrait = presentation?.playerPortrait ?? PLAYER_IMG;
+  const rivalPortrait = presentation?.opponentPortrait ?? OPPONENT_IMG;
   const navigate = useNavigate();
   const { playSound, sfxEnabled, musicEnabled, toggleSfx, toggleMusic } = useAudio();
 
@@ -100,6 +110,11 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn }) => {
   const [showSurrenderConfirm, setShowSurrenderConfirm] = useState(false);
   const [visualEffect, setVisualEffect] = useState<{ type: EffectType, target: EffectTarget }>({ type: null, target: null });
   const [shakeScreen, setShakeScreen] = useState(false);
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+  const [playHint, setPlayHint] = useState<string | null>(null);
+  const [dragAt, setDragAt] = useState<{ id: string; x: number; y: number } | null>(null);
+  const gesture = useRef<{ id: string; pointerId: number; startX: number; startY: number; moved: boolean } | null>(null);
+  const spentIds = useRef(new Set<string>());
 
   const isMuted = !musicEnabled && !sfxEnabled;
   const latestOpponent = useRef({ hand: opponentHand, health: opponentHP, impactLevel: opponentImpactLevel, gauge: opponentGauge, lastType: opponentLastType });
@@ -301,14 +316,86 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn }) => {
     }
   }, [phase]);
 
-  const handlePlayerCardClick = (card: CardData) => {
-    if (phase !== 'PLAYER_TURN' || showSpecialSelection || gameOverRef.current) return;
-    if (card.type === 'IMPACT' && (playerImpactPlayedThisTurn || card.rank !== playerImpactLevel + 1)) return;
+  const canHandleCards = phase === 'PLAYER_TURN' && !showSpecialSelection && !isMenuOpen && !gameOverRef.current;
+  const selectedCard = playerHand.find(card => card.id === selectedCardId) ?? null;
+
+  const selectCard = (card: CardData) => {
+    if (!canHandleCards || spentIds.current.has(card.id)) return;
+    setSelectedCardId(card.id);
+    setPlayHint(null);
+    playSound('CLICK');
+  };
+
+  const placeCard = (card: CardData, zone: CardDropZone) => {
+    if (!canHandleCards || spentIds.current.has(card.id) || !playerHand.some(item => item.id === card.id)) return;
+    const check = checkCardPlacement(card, zone, playerImpactLevel, playerImpactPlayedThisTurn);
+    if ('message' in check) { setPlayHint(check.message); return; }
+    spentIds.current.add(card.id);
+    setSelectedCardId(null);
+    setPlayHint(null);
+    setDragAt(null);
     playCard(card, true);
   };
 
+  const placeSelected = (zone: CardDropZone) => {
+    if (selectedCard) placeCard(selectedCard, zone);
+  };
+
+  const getZoneAt = (clientX: number, clientY: number): CardDropZone | null => {
+    const field = document.querySelector<HTMLElement>('[data-card-drop="field"]');
+    if (!field) return null;
+    const bounds = field.getBoundingClientRect();
+    if (clientX < bounds.left || clientX > bounds.right || clientY < bounds.top || clientY > bounds.bottom) return null;
+    for (const element of Array.from(field.querySelectorAll<HTMLElement>('[data-card-drop^="impact-"]'))) {
+      const slot = element.getBoundingClientRect();
+      if (clientX >= slot.left && clientX <= slot.right && clientY >= slot.top && clientY <= slot.bottom) {
+        return element.dataset.cardDrop as CardDropZone;
+      }
+    }
+    return 'field';
+  };
+
+  const onCardPointerDown = (event: React.PointerEvent<HTMLButtonElement>, card: CardData) => {
+    if (!canHandleCards || (event.pointerType === 'mouse' && event.button !== 0)) return;
+    selectCard(card);
+    gesture.current = { id: card.id, pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, moved: false };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const onCardPointerMove = (event: React.PointerEvent<HTMLButtonElement>, card: CardData) => {
+    const current = gesture.current;
+    if (!current || current.pointerId !== event.pointerId || current.id !== card.id) return;
+    if (Math.hypot(event.clientX - current.startX, event.clientY - current.startY) >= 9) current.moved = true;
+    if (current.moved) setDragAt({ id: card.id, x: event.clientX, y: event.clientY });
+  };
+
+  const onCardPointerUp = (event: React.PointerEvent<HTMLButtonElement>, card: CardData) => {
+    const current = gesture.current;
+    if (!current || current.pointerId !== event.pointerId || current.id !== card.id) return;
+    gesture.current = null;
+    setDragAt(null);
+    if (!current.moved) return; // Tap selects; it never spends a card.
+    const zone = getZoneAt(event.clientX, event.clientY);
+    if (zone) placeCard(card, zone);
+    else setPlayHint('Suelta la carta sobre el centro del tablero.');
+  };
+
+  const onCardPointerCancel = () => { gesture.current = null; setDragAt(null); };
+
+  // Turn changes and modals discard any pending selection or drag.
+  useEffect(() => {
+    if (phase !== 'PLAYER_TURN' || showSpecialSelection || isMenuOpen) {
+      setSelectedCardId(null);
+      setDragAt(null);
+      gesture.current = null;
+    }
+  }, [phase, showSpecialSelection, isMenuOpen]);
+
+  const helpText = playHint ?? cardPlacementPrompt(selectedCard, playerImpactLevel);
+
   const handleEndTurn = () => {
     if (phase !== 'PLAYER_TURN' || showSpecialSelection || gameOverRef.current) return;
+    setSelectedCardId(null); setPlayHint(null);
     playSound('CLICK'); setTurnCount(p => p + 1); setPhase('TURN_BANNER');
   };
 
@@ -339,7 +426,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn }) => {
   );
 
   const Board = (
-    <div className={`dr-classic-screen bg-[#050505] font-body w-full overflow-hidden select-none flex flex-col relative text-white ${shakeScreen ? 'animate-shake' : ''}`} style={{ width: 'min(100vw, 430px)', height: '100dvh' }}>
+    <div className={`dr-classic-screen dr-royal-screen bg-[#050505] font-body w-full overflow-hidden select-none flex flex-col relative text-white ${shakeScreen ? 'animate-shake' : ''}`} style={{ width: 'min(100vw, 430px)', height: '100dvh' }}>
       <style>{`
         /* Animaciones para el botón de fuego */
         @keyframes fire-glow { 0%, 100% { box-shadow: 0 0 15px #f59e0b, 0 0 30px #f97316; } 50% { box-shadow: 0 0 25px #fbbf24, 0 0 50px #ef4444; } }
@@ -367,8 +454,8 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn }) => {
 
       {/* BACKGROUND */}
       <div className="absolute inset-0 z-0">
-        <img src={BATTLE_BG_IMG} className="w-full h-full object-cover opacity-100" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/90 via-black/20 to-black/90"></div>
+        <img src={scenicBackground} alt="" className="dr-royal-background w-full h-full object-cover opacity-100" />
+        <div className="absolute inset-0 dr-royal-vignette"></div>
       </div>
 
       {/* --- VISUAL EFFECTS LAYER --- */}
@@ -415,11 +502,6 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn }) => {
           )}
         </div>
       )}
-
-      {/* --- MENU BUTTON (ARRIBA A LA DERECHA) --- */}
-      <button onClick={handleMenuToggle} className="absolute top-6 right-6 z-50 w-12 h-12 rounded-full bg-black/50 border border-gold-dark/50 text-gold-main flex items-center justify-center hover:bg-black/80 transition-all shadow-lg hover:scale-110">
-        <span className="material-icons">menu</span>
-      </button>
 
       {/* --- MENU MODAL --- */}
       {isMenuOpen && (
@@ -495,130 +577,121 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn }) => {
         </div>
       )}
 
-      {/* TOP: OPPONENT AREA */}
-      <div className="flex-1 flex flex-col items-center pt-4 w-full max-w-md mx-auto relative z-10">
-        <div className="flex justify-between items-start w-full px-4 mb-2">
-          {/* OPPONENT DECK (RESTORED) */}
-          <div className="flex flex-col items-center">
-            <div className="relative w-14 h-20 bg-stone-800 border-2 border-stone-600 shadow-lg flex items-center justify-center rounded-sm">
-              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/black-scales.png')] opacity-50"></div>
-              <div className="relative z-10 bg-black/60 w-8 h-8 flex items-center justify-center border border-gold-dark/30 rounded-full">
-                <span className="text-sm text-gold-main font-bold font-display">{opponentDeck.length}</span>
-              </div>
-            </div>
+      {/* DR-C08 — Scenic playfield. Portraits and the backdrop are independent assets. */}
+      <div className="dr-royal-layout">
+        <header className="dr-royal-rival-area" aria-label="Estado del rival">
+          <div className="dr-royal-deck dr-royal-rival-deck">
+            <div className="dr-royal-deck-back"><span>{opponentDeck.length}</span><small>MAZO</small></div>
           </div>
-
-          {/* OPPONENT PORTRAIT + GAUGE + IMPACTS */}
-          <div className="flex flex-col items-center flex-1 mx-4">
-             {/* Portrait */}
-            <div className="relative p-[3px] gold-leaf-frame transition-all duration-500 mb-2" style={{ clipPath: 'polygon(0 0, 100% 0, 85% 100%, 15% 100%)' }}>
-              <div className="relative w-28 h-32 bg-black overflow-hidden" style={{ clipPath: 'polygon(0 0, 100% 0, 85% 100%, 15% 100%)' }}>
-                <img src={OPPONENT_IMG} className="w-full h-full object-cover" />
-                <div className="absolute bottom-0 w-full h-5 bg-black/60 backdrop-blur-md flex items-center justify-center">
-                  <div className="absolute left-0 h-full bg-red-600 transition-all duration-700" style={{ width: `${(opponentHP/MAX_HP)*100}%` }}></div>
-                  <span className="relative z-10 text-[10px] font-bold">HP: {opponentHP}/{MAX_HP}</span>
-                </div>
-              </div>
+          <div className="dr-royal-character">
+            <div className="dr-royal-character-frame gold-leaf-frame">
+              <img src={rivalPortrait} alt="Retrato del rival"/>
+              <div className="dr-royal-hp red" aria-label={`Vida del rival: ${opponentHP} de ${MAX_HP}`}>HP: {opponentHP}/{MAX_HP}</div>
             </div>
-            {/* Gauge */}
             {renderGauge(opponentGauge)}
-            {/* Impact Slots (RESTORED) */}
-            {renderImpactSlots(opponentImpactLevel)}
-          </div>
-
-          <div className="w-14"></div>
-        </div>
-
-        {/* OPPONENT HAND (RESTORED - CARD BACKS) */}
-        <div className="flex justify-center -space-x-4 mb-2 scale-75 h-24 opacity-80">
-          {opponentHand.map((c, i) => (
-            <div key={c.id} className="w-16 h-24 bg-gradient-to-b from-stone-800 to-black border border-stone-600 rounded-sm shadow-black shadow-lg relative overflow-hidden" style={{ transform: `translateY(${i % 2 * 4}px)` }}>
-              <div className="w-full h-full opacity-30 bg-[url('https://www.transparenttextures.com/patterns/diagmonds-light.png')]"></div>
-              <div className="absolute inset-0 border border-white/5"></div>
+            <div className="dr-royal-rival-impact" aria-label={`Impactos del rival: ${opponentImpactLevel} de 4`}>
+              {renderImpactSlots(opponentImpactLevel)}
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* CENTER: PROGRESS */}
-      <div className="grid grid-cols-4 gap-4 w-full px-12 my-4 relative z-10">
-        {[1, 2, 3, 4].map(lvl => (
-          <div key={lvl} className={`h-6 border-b-2 transition-all duration-700 flex items-center justify-center ${playerImpactLevel >= lvl ? 'border-gold-main text-gold-main' : 'border-stone-800 text-stone-700'}`}>
-            <span className="text-[10px] font-bold italic">{lvl === 4 ? 'VICTORIA' : `Fase ${romanize(lvl)}`}</span>
           </div>
-        ))}
-      </div>
+          <button className="dr-royal-menu-button" type="button" onClick={handleMenuToggle} aria-label="Abrir menú de pausa">
+            <span className="material-icons" aria-hidden="true">menu</span>
+          </button>
+        </header>
 
-      {/* BOTTOM: PLAYER */}
-      <div className="flex-1 flex flex-col justify-end pb-12 relative z-10">
-        {/* CARDS HAND */}
-        <div className="h-48 relative flex justify-center items-end mb-8">
-          <div className="flex items-end -space-x-8">
-            {playerHand.map((card, i) => {
-              const rot = (i - (playerHand.length-1)/2) * 6;
-              const ty = Math.pow(Math.abs(i - (playerHand.length-1)/2), 2) * 5;
-              const isImpact = card.type === 'IMPACT';
-              const isPlayable = isImpact ? (card.rank === playerImpactLevel + 1 && !playerImpactPlayedThisTurn) : true;
-              
-              const opacityClass = isImpact ? 'opacity-100' : (!isPlayable || phase !== 'PLAYER_TURN' ? 'opacity-40 grayscale' : 'opacity-100');
-
-              return (
-                <div key={card.id} onClick={() => handlePlayerCardClick(card)} style={{ transform: `rotate(${rot}deg) translateY(${ty}px)` }}
-                     className={`w-28 h-40 bg-stone-900 rounded-lg border-2 transition-all hover:z-50 hover:-translate-y-12 hover:scale-110 shadow-xl cursor-pointer overflow-hidden
-                                ${card.type === 'IMPACT' ? 'border-gold-main' : 'border-stone-700'} ${opacityClass}`}>
-                  <img src={card.img} className="w-full h-3/5 object-cover" />
-                  <div className="p-2 text-center bg-black/80 h-2/5 border-t border-white/10">
-                    <div className="text-[9px] font-bold text-gold-main">{card.name}</div>
-                    <div className="text-[7px] text-gray-400">{card.description}</div>
-                  </div>
-                </div>
-              );
+        <section className="dr-royal-rival-hand" aria-label={`Mano del rival: ${opponentHand.length} cartas ocultas`}>
+          <div className="dr-royal-rival-fan" aria-hidden="true">
+            {opponentHand.map((card, i) => {
+              const distance = i - (opponentHand.length - 1) / 2;
+              const step = Math.min(15, 68 / Math.max(1, opponentHand.length - 1));
+              return <div key={card.id} className="dr-royal-facedown" style={{
+                left: `${50 + distance * step}%`,
+                transform: `translateX(-50%) translateY(${Math.abs(distance) * 3}px) rotate(${distance * 7}deg)`,
+              }}><span className="dr-royal-card-crest">✥</span></div>;
             })}
           </div>
-        </div>
+          <output className="dr-royal-hand-count rival" aria-label={`El rival tiene ${opponentHand.length} cartas`}>MANO {opponentHand.length}</output>
+        </section>
 
-        {/* PLAYER STATS & DECK */}
-        <div className="flex justify-between items-end px-8">
-          {/* DECK + AUDIO (IZQUIERDA) */}
-          <div className="flex flex-col items-center relative group">
-            <button onClick={handleGlobalAudioToggle} className="absolute -top-10 w-8 h-8 rounded-full bg-black/60 border border-gold-dark/40 text-gold-main flex items-center justify-center hover:bg-gold-main hover:text-black transition-all">
-              <span className="material-icons text-lg">{isMuted ? 'volume_off' : 'volume_up'}</span>
-            </button>
-            <div className="w-14 h-20 bg-stone-800 border-2 border-stone-600 rounded-sm flex items-center justify-center relative shadow-lg">
-              <div className="absolute inset-0 bg-black/40"></div>
-              <span className="relative z-10 text-gold-main font-bold">{playerDeck.length}</span>
-            </div>
-            <span className="text-[8px] text-stone-500 mt-1 uppercase">Mazo</span>
+        <section className={`dr-royal-field${selectedCard ? ' is-guiding' : ''}${dragAt ? ' is-dragging' : ''}`}
+          style={{ '--arrow-left': selectedCard?.type === 'IMPACT' ? `${((selectedCard.rank ?? 1) - .5) * 25}%` : '50%' } as React.CSSProperties}
+          data-card-drop="field" aria-label="Campo central de activación">
+          <button type="button" className="dr-royal-activation-target" onClick={() => placeSelected('field')}
+            disabled={!selectedCard || !canHandleCards || selectedCard.type === 'IMPACT'}
+            aria-label="Campo para activar Ataque o Defensa">
+            <span className="dr-royal-activation-icon" aria-hidden="true">✦</span>
+            <span id="dr-royal-help" className="dr-royal-field-prompt" aria-live="polite">{helpText}</span>
+          </button>
+          <div className="dr-royal-impact-track" role="group" aria-label="Las cuatro posiciones de Impacto">
+            {[1,2,3,4].map(lvl => {
+              const completed = playerImpactLevel >= lvl;
+              const available = canHandleCards && selectedCard?.type === 'IMPACT' && selectedCard.rank === lvl && lvl === playerImpactLevel + 1 && !playerImpactPlayedThisTurn;
+              const label = lvl === 4 ? 'Final' : ['I','II','III'][lvl - 1];
+              return <button key={lvl} type="button" data-card-drop={`impact-${lvl}`}
+                className={`dr-royal-impact-slot${completed ? ' completed' : ''}${available ? ' available' : ''}`}
+                onClick={event => { event.stopPropagation(); placeSelected(`impact-${lvl}` as CardDropZone); }}
+                aria-label={`Casilla Impacto ${label}${completed ? ', completado' : ''}`}
+                aria-disabled={!available}>
+                {completed ? <img src={IMG_IMPACT} alt=""/> : <span className="dr-royal-impact-numeral">{label}</span>}
+              </button>;
+            })}
           </div>
+          {playerGauge >= 2 && phase === 'PLAYER_TURN' && <div key={playerGauge} className={`dr-royal-combo combo-${playerGauge}`}
+            aria-label={`Combo por ${playerGauge}`} role="status"><strong>COMBO</strong><b>×{playerGauge}</b></div>}
+        </section>
 
-          {/* PORTRAIT + HP (CENTRO) */}
-          <div className="flex flex-col items-center flex-1 mx-4">
-            <div className="relative p-[3px] gold-leaf-frame transition-all" style={{ clipPath: 'polygon(15% 0, 85% 0, 100% 100%, 0% 100%)' }}>
-              <div className="relative w-28 h-32 bg-black overflow-hidden" style={{ clipPath: 'polygon(15% 0, 85% 0, 100% 100%, 0% 100%)' }}>
-                <img src={PLAYER_IMG} className="w-full h-full object-cover" />
-                <div className="absolute bottom-0 w-full h-5 bg-black/60 backdrop-blur-md flex items-center justify-center">
-                  <div className="absolute left-0 h-full bg-emerald-600 transition-all duration-700" style={{ width: `${(playerHP/MAX_HP)*100}%` }}></div>
-                  <span className="relative z-10 text-[10px] font-bold">HP: {playerHP}/{MAX_HP}</span>
-                </div>
-              </div>
+        <section className="dr-royal-player-hand" aria-label={`Tu mano: ${playerHand.length} cartas`}>
+          <output className="dr-royal-hand-count player" aria-label={`Tienes ${playerHand.length} cartas en la mano`}>MANO {playerHand.length}</output>
+          <div className="dr-royal-player-fan">
+            {playerHand.map((card, i) => {
+              const distance = i - (playerHand.length - 1) / 2;
+              const step = Math.min(18, 68 / Math.max(1, playerHand.length - 1));
+              const selected = selectedCardId === card.id;
+              const canUse = canHandleCards && (card.type !== 'IMPACT' ||
+                (!playerImpactPlayedThisTurn && card.rank === playerImpactLevel + 1));
+              return <button key={card.id} type="button"
+                className={`dr-royal-hand-card ${card.type.toLowerCase()}${selected ? ' selected' : ''}${!canUse ? ' unavailable' : ''}`}
+                style={{ left: `${50 + distance * step}%`, '--fan-rotate': `${distance * 7}deg`,
+                  '--fan-rise': `${Math.abs(distance) * 5}px`, zIndex: selected ? 20 : i + 1 } as React.CSSProperties}
+                aria-label={`${card.name}: ${card.description}`} aria-pressed={selected}
+                aria-describedby="dr-royal-help"
+                onPointerDown={event => onCardPointerDown(event, card)}
+                onPointerMove={event => onCardPointerMove(event, card)}
+                onPointerUp={event => onCardPointerUp(event, card)}
+                onPointerCancel={onCardPointerCancel}
+                onClick={event => { if (event.detail === 0) selectCard(card); }}>
+                <img src={card.img} alt="" draggable={false}/>
+                <span className="dr-royal-card-kind">{card.type === 'ATTACK' ? 'ATAQUE' : card.type === 'DEFENSE' ? 'DEFENSA' : 'IMPACTO'}</span>
+                <span className="dr-royal-card-title">{card.name}</span>
+                <span className="dr-royal-card-effect">{card.description}</span>
+              </button>;
+            })}
+          </div>
+        </section>
+
+        <footer className="dr-royal-player-area" aria-label="Tus estadísticas y controles">
+          <div className="dr-royal-player-deck">
+            <button className="dr-royal-audio" type="button" onClick={handleGlobalAudioToggle}
+              aria-label={isMuted ? 'Activar sonido' : 'Silenciar sonido'}><span className="material-icons" aria-hidden="true">{isMuted ? 'volume_off' : 'volume_up'}</span></button>
+            <div className="dr-royal-deck-back blue"><span>{playerDeck.length}</span><small>MAZO</small></div>
+          </div>
+          <div className="dr-royal-character player">
+            <div className="dr-royal-character-frame gold-leaf-frame">
+              <img src={playerPortrait} alt="Retrato de tu personaje"/>
+              <div className="dr-royal-hp blue" aria-label={`Tu vida: ${playerHP} de ${MAX_HP}`}>HP: {playerHP}/{MAX_HP}</div>
             </div>
             {renderGauge(playerGauge)}
           </div>
-          
-          <div className="w-14"></div>
-        </div>
+          <button className="dr-royal-finish" type="button" onClick={handleEndTurn}
+            disabled={phase !== 'PLAYER_TURN' || showSpecialSelection || isMenuOpen}
+            aria-label="Terminar turno">
+            <span aria-hidden="true">➜</span><strong>FIN<br/>TURNO</strong>
+          </button>
+        </footer>
       </div>
-
-      {/* END TURN BUTTON (FIRE) - SUBIDO (bottom-[4.5rem]) */}
-      <div className="absolute bottom-[4.5rem] right-6 z-40">
-        <button onClick={handleEndTurn} disabled={phase !== 'PLAYER_TURN' || showSpecialSelection}
-                className={`w-20 h-20 rounded-full flex flex-col items-center justify-center transition-all relative
-                           ${phase === 'PLAYER_TURN' ? 'fire-button scale-110' : 'bg-stone-900 border-stone-700 opacity-50 grayscale'}`}>
-          {phase === 'PLAYER_TURN' && <div className="fire-layer animate-pulse"></div>}
-          <span className="material-icons-round text-3xl text-gold-main relative z-10">east</span>
-          <span className="text-[10px] font-bold text-gold-light relative z-10 uppercase tracking-widest">Fin</span>
-        </button>
-      </div>
+      {dragAt && <div className="dr-royal-drag-ghost" aria-hidden="true"
+        style={{ left: dragAt.x, top: dragAt.y }}>
+        <img src={playerHand.find(card => card.id === dragAt.id)?.img ?? IMG_ATTACK} alt=""/>
+      </div>}
 
       {/* OVERLAYS */}
       {(phase === 'START_BANNER' || phase === 'TURN_BANNER') && (
