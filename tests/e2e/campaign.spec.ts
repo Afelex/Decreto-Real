@@ -168,9 +168,9 @@ test('original game keeps its rules but activates cards by selection plus target
   await expect(page.locator('.dr-royal-hand-count.rival')).toContainText('MANO 4');
   await expect(page.locator('.dr-royal-hand-count.player')).toContainText('MANO 4');
   const ordinary = cards.filter({ hasText: /Decreto de Ataque|Decreto de Defensa/ });
-  const chosen = ordinary.first();
+  const chosen = ordinary.last();
   const before = await cards.count();
-  await chosen.click();
+  await chosen.click({ position: { x: 12, y: 26 } });
   await expect(chosen).toHaveAttribute('aria-pressed', 'true');
   await expect(cards).toHaveCount(before); // A tap only selects, it never spends a card.
   await page.getByRole('button', { name: 'Campo para activar Ataque o Defensa' }).click();
@@ -212,12 +212,12 @@ test('an attack cannot be wasted by touching it: actual pointer drag activates o
   await page.getByRole('button', { name: 'Lanzar Moneda' }).click();
   await expect(page.locator('.dr-royal-hand-card')).toHaveCount(4, { timeout: 19000 });
   const cards = page.locator('.dr-royal-hand-card');
-  const ordinary = cards.filter({ hasText: /Decreto de Ataque|Decreto de Defensa/ }).first();
+  const ordinary = cards.filter({ hasText: /Decreto de Ataque|Decreto de Defensa/ }).last();
   const bounds = await ordinary.boundingBox();
   const target = await page.locator('.dr-royal-activation-target').boundingBox();
   expect(bounds).not.toBeNull(); expect(target).not.toBeNull();
   const before = await cards.count();
-  const startX = bounds!.x + bounds!.width / 2, startY = bounds!.y + bounds!.height / 2;
+  const startX = bounds!.x + 12, startY = bounds!.y + 26;
   await page.mouse.move(startX, startY);
   await page.mouse.down();
   await page.mouse.move(target!.x + target!.width/2, target!.y + target!.height/2, {steps: 9});
