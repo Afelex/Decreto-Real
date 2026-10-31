@@ -169,3 +169,45 @@ test('bosses from different regions display their own landscape and heraldry', a
     await page.screenshot({ path: testInfo.outputPath('region-' + example.id + '.png'), fullPage: true });
   }
 });
+
+test('general portrait and recorded card effect stay within the tactile battle screen', async ({ page }, testInfo) => {
+  await page.goto(campaign);
+  await page.evaluate(() => localStorage.setItem('decreto-real.campania.v1', JSON.stringify({
+    version: 1, stars: Object.fromEntries(Array.from({ length: 5 }, (_, i) => [String(i + 1).padStart(2, '0'), 1])),
+  })));
+  await page.goto('/Decreto-Real/#/campania/mision/06');
+  await expect(page.locator('.dc-general-portrait-seal svg[data-general-portrait="1"]')).toBeVisible();
+  await page.getByRole('button', { name: /Comenzar duelo/ }).click();
+  await expect(page.locator('.dr-rival svg[data-general-portrait="1"]')).toBeVisible();
+  const playable = page.locator('.dr-hand .dr-card:not(.disabled)').first();
+  await playable.tap();
+  await page.getByRole('button', { name: 'Jugar carta' }).tap();
+  const cue = page.locator('.dr-battle-cue');
+  await expect(cue).toBeVisible();
+  const bounds = await cue.boundingBox();
+  const viewport = page.viewportSize()!;
+  expect(bounds).not.toBeNull();
+  expect(bounds!.x).toBeGreaterThanOrEqual(-1);
+  expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(viewport.width + 1);
+  expect(bounds!.y).toBeGreaterThanOrEqual(-1);
+  expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(viewport.height + 1);
+  if (testInfo.project.name === 'mobile-390') {
+    await page.screenshot({ path: testInfo.outputPath('commander-and-card-effect.png'), fullPage: true });
+  }
+  await page.getByRole('button', { name: /TERMINAR TURNO/ }).click();
+  await expect(cue).toHaveCount(0);
+});
+
+test('reduced-motion setting preserves the textual effect while disabling flourish animation', async ({ page }) => {
+  test.skip(!['mobile-390', 'short-360'].includes(test.info().project.name), 'Sample low-motion behaviour in portrait and short viewports');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto(campaign);
+  await page.getByRole('button', { name: /Seleccionar reto/ }).click();
+  await page.getByRole('button', { name: /Comenzar duelo/ }).click();
+  await page.locator('.dr-hand .dr-card:not(.disabled)').first().tap();
+  await page.getByRole('button', { name: 'Jugar carta' }).tap();
+  const cue = page.locator('.dr-battle-cue');
+  await expect(cue).toBeVisible();
+  await expect(cue).not.toBeEmpty();
+  await expect(cue).toHaveCSS('animation-name', 'none');
+});
