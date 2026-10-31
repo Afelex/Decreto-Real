@@ -123,3 +123,16 @@ test('map progress bar counts verified wins, not forged later stars', () => {
   expect(bar.getAttribute('aria-valuemax')).toBe('38');
   expect(screen.getByText(/1\/2 retos · ★ 1\/114/)).toBeTruthy();
 });
+
+test('map atmosphere changes when the next region becomes available', () => {
+  save({ '01': 1, '02': 1 });
+  openMap();
+  const map = document.querySelector<HTMLElement>('.dcm-region-map');
+  expect(map?.getAttribute('data-region')).toBe('1');
+  expect(document.querySelector('.dcm-region-watermark')).toBeTruthy();
+  fireEvent.click(screen.getByRole('button', { name: 'Capítulo anterior' }));
+  expect(map?.getAttribute('data-region')).toBe('p');
+  fireEvent.click(screen.getByRole('button', { name: 'Capítulo siguiente' }));
+  expect(map?.getAttribute('data-region')).toBe('1');
+  expect(screen.getByRole('button', { name: /Misión 4:/ }).hasAttribute('disabled')).toBe(true);
+});
