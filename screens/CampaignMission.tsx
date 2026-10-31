@@ -133,6 +133,7 @@ const CampaignMission: React.FC = () => {
     onNewGame={retry}
     onStateChange={onStateChange}
     opponentName={mission.opponent}
+    generalChapterId={mission.kind === 'boss' ? chapter?.id : undefined}
     missionLabel={`MISIÓN ${mission.id}/38`}
     immersive
   />;
