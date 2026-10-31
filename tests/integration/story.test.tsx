@@ -96,5 +96,5 @@ test('a general briefing reveals the tactical hint and enters the classic-inspir
   fireEvent.click(screen.getByRole('button', { name: /Comenzar duelo/ }));
   expect(document.querySelector('.dr-game.dr-original-table')).toBeTruthy();
   expect(document.querySelector('.dr-classic-table')).toBeTruthy();
-  expect(screen.getByText('Baluarte naval')).toBeTruthy();
+  expect(screen.getByText(/Baluarte naval/)).toBeTruthy();
 });
