@@ -152,7 +152,7 @@ test('bosses from different regions display their own landscape and heraldry', a
 });
 
 
-test('original game has the coin ritual, real rival deck, artwork, and immediate one-touch cards', async ({ page }, testInfo) => {
+test('original game keeps its rules but activates cards by selection plus target', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'mobile-390', 'Full original turn flow sampled on the main phone');
   await page.addInitScript(() => { Math.random = () => 0.6; });
   await page.goto('/Decreto-Real/#/campania/mision/01');
@@ -162,16 +162,22 @@ test('original game has the coin ritual, real rival deck, artwork, and immediate
   await expect(page.getByText('24', { exact: true })).toHaveCount(2);
   await page.getByRole('button', { name: 'Lanzar Moneda' }).click();
   await expect(page.getByText('Ritual de Inicio')).toBeHidden({ timeout: 12000 });
-  await expect(page.locator('.dr-classic-screen .h-48 > .flex.items-end > .cursor-pointer')).toHaveCount(4, { timeout: 18000 });
-  const cards = page.locator('.dr-classic-screen .h-48 > .flex.items-end > .cursor-pointer');
-  const before = await cards.count();
+  const cards = page.locator('.dr-royal-hand-card');
+  await expect(cards).toHaveCount(4, { timeout: 18000 });
+  await expect(page.locator('.dr-royal-facedown')).toHaveCount(4);
+  await expect(page.locator('.dr-royal-hand-count.rival')).toContainText('MANO 4');
+  await expect(page.locator('.dr-royal-hand-count.player')).toContainText('MANO 4');
   const ordinary = cards.filter({ hasText: /Decreto de Ataque|Decreto de Defensa/ });
-  const chosen = await ordinary.count() ? ordinary.first() : cards.filter({ hasText: 'Impacto I' }).first();
+  const chosen = ordinary.first();
+  const before = await cards.count();
   await chosen.click();
+  await expect(chosen).toHaveAttribute('aria-pressed', 'true');
+  await expect(cards).toHaveCount(before); // A tap only selects, it never spends a card.
+  await page.getByRole('button', { name: 'Campo para activar Ataque o Defensa' }).click();
   await expect(cards).toHaveCount(before - 1);
   await expect(page.getByRole('button', { name: 'Jugar carta' })).toHaveCount(0);
   await expect(page.locator('.dr-mana')).toHaveCount(0);
-  await page.screenshot({ path: testInfo.outputPath('original-board-restored.png'), fullPage: true });
+  await page.screenshot({ path: testInfo.outputPath('royal-board-selected-and-activated.png'), fullPage: true });
 });
 
 test('original game and campaign use the same physical-looking board and audio controls', async ({ page }) => {
@@ -197,4 +203,51 @@ test('updated rules describe the restored original instead of Mando and shield',
   await expect(page.getByText(/No hay costes de Mando/)).toBeVisible();
   await page.getByRole('button', { name: 'Ataque' }).click();
   await expect(page.getByText(/quita 2 puntos de vida/)).toBeVisible();
+});
+
+test('an attack cannot be wasted by touching it: actual pointer drag activates only on a valid drop', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile-390', 'Pointer-drag flow sampled on main phone');
+  await page.addInitScript(() => { Math.random = () => 0.6; });
+  await page.goto('/Decreto-Real/#/game');
+  await page.getByRole('button', { name: 'Lanzar Moneda' }).click();
+  await expect(page.locator('.dr-royal-hand-card')).toHaveCount(4, { timeout: 19000 });
+  const cards = page.locator('.dr-royal-hand-card');
+  const ordinary = cards.filter({ hasText: /Decreto de Ataque|Decreto de Defensa/ }).first();
+  const bounds = await ordinary.boundingBox();
+  const target = await page.locator('.dr-royal-activation-target').boundingBox();
+  expect(bounds).not.toBeNull(); expect(target).not.toBeNull();
+  const before = await cards.count();
+  const startX = bounds!.x + bounds!.width / 2, startY = bounds!.y + bounds!.height / 2;
+  await page.mouse.move(startX, startY);
+  await page.mouse.down();
+  await page.mouse.move(target!.x + target!.width/2, target!.y + target!.height/2, {steps: 9});
+  await page.mouse.up();
+  await expect(cards).toHaveCount(before - 1);
+  await expect(page.locator('.dr-royal-field-prompt')).toContainText('Selecciona una carta');
+});
+
+test('four Impact placements are ordered, and player/rival hands show real counts', async ({ page }, testInfo) => {
+  await page.goto('/Decreto-Real/#/game');
+  await expect(page.locator('.dr-royal-impact-slot')).toHaveCount(4);
+  await expect(page.locator('.dr-royal-impact-slot').nth(0)).toHaveAttribute('aria-label', 'Casilla Impacto I');
+  await expect(page.locator('.dr-royal-impact-slot').nth(1)).toHaveAttribute('aria-label', 'Casilla Impacto II');
+  await expect(page.locator('.dr-royal-impact-slot').nth(2)).toHaveAttribute('aria-label', 'Casilla Impacto III');
+  await expect(page.locator('.dr-royal-impact-slot').nth(3)).toHaveAttribute('aria-label', 'Casilla Impacto Final');
+  await expect(page.locator('.dr-royal-hand-count.rival')).toHaveText('MANO 0');
+  await expect(page.locator('.dr-royal-hand-count.player')).toHaveText('MANO 0');
+  await expect(page.locator('.dr-royal-combo')).toHaveCount(0);
+  await expect(page.locator('.dr-royal-facedown')).toHaveCount(0);
+  const viewport = page.viewportSize()!;
+  for (const selector of ['.dr-royal-rival-area','.dr-royal-rival-hand','.dr-royal-field','.dr-royal-player-hand','.dr-royal-player-area']) {
+    const rect = await page.locator(selector).boundingBox();
+    expect(rect, selector).not.toBeNull();
+    expect(rect!.y, selector).toBeGreaterThanOrEqual(-1);
+    expect(rect!.y + rect!.height, selector).toBeLessThanOrEqual(viewport.height+1);
+    expect(rect!.x, selector).toBeGreaterThanOrEqual(-1);
+    expect(rect!.x + rect!.width, selector).toBeLessThanOrEqual(viewport.width+1);
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollHeight <= window.innerHeight+1)).toBe(true);
+  if (testInfo.project.name === 'mobile-390') {
+    await page.screenshot({ path: testInfo.outputPath('new-royal-board-layout.png'), fullPage:true });
+  }
 });
