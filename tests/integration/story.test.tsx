@@ -85,3 +85,16 @@ test('a reachable general receives the matching illustrated region and identific
   expect(screen.getByText(/GENERAL DE LA REGIÓN/)).toBeTruthy();
   expect(screen.getByText(/Bombardeo naval \(no jugable\)/)).toBeTruthy();
 });
+
+test('a general briefing reveals the tactical hint and enters the classic-inspired table', () => {
+  window.localStorage.setItem(CAMPAIGN_STORAGE_KEY, JSON.stringify({
+    version: 1, stars: Object.fromEntries([1,2,3,4,5].map(i => [String(i).padStart(2, '0'), 1])),
+  }));
+  screenAt('/campania/mision/06');
+  expect(screen.getByText(/Baluarte naval/)).toBeTruthy();
+  expect(screen.getByText(/Refuerza su escudo antes de contraatacar/)).toBeTruthy();
+  fireEvent.click(screen.getByRole('button', { name: /Comenzar duelo/ }));
+  expect(document.querySelector('.dr-game.dr-original-table')).toBeTruthy();
+  expect(document.querySelector('.dr-classic-table')).toBeTruthy();
+  expect(screen.getByText('Baluarte naval')).toBeTruthy();
+});
