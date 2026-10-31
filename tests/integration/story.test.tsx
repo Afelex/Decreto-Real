@@ -1,11 +1,20 @@
 import React from 'react';
-import { afterEach, beforeEach, expect, test } from 'vitest';
+import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import CampaignStory from '../../screens/CampaignStory';
 import CampaignMission from '../../screens/CampaignMission';
 import CampaignEpilogue from '../../screens/CampaignEpilogue';
 import { CAMPAIGN_STORAGE_KEY } from '../../campaign/campaign.ts';
+
+vi.mock('../../screens/GameBoard', () => ({
+  default: ({ onOutcome }: { onOutcome?: (result: { won: boolean; turns: number; health: number }) => void }) =>
+    <section data-testid="original-board">
+      <h2>Ritual de Inicio</h2>
+      <button type="button" onClick={() => onOutcome?.({ won: true, turns: 7, health: 8 })}>Victoria original de prueba</button>
+      <button type="button" onClick={() => onOutcome?.({ won: false, turns: 7, health: 0 })}>Derrota original de prueba</button>
+    </section>,
+}));
 
 beforeEach(() => window.localStorage.clear());
 afterEach(() => cleanup());
@@ -86,15 +95,32 @@ test('a reachable general receives the matching illustrated region and identific
   expect(screen.getByText(/Bombardeo naval \(no jugable\)/)).toBeTruthy();
 });
 
-test('a general briefing reveals the tactical hint and enters the classic-inspired table', () => {
+test('the campaign opens the original game, not the newly created DuelBoard', () => {
   window.localStorage.setItem(CAMPAIGN_STORAGE_KEY, JSON.stringify({
     version: 1, stars: Object.fromEntries([1,2,3,4,5].map(i => [String(i).padStart(2, '0'), 1])),
   }));
   screenAt('/campania/mision/06');
-  expect(screen.getByText(/Baluarte naval/)).toBeTruthy();
-  expect(screen.getByText(/Refuerza su escudo antes de contraatacar/)).toBeTruthy();
+  expect(screen.getByRole('heading', { name: 'El Almirante de Hierro' })).toBeTruthy();
+  expect(screen.getByText(/10 de vida, 10 ataques, 10 defensas, 4 Impactos, sin Mando/)).toBeTruthy();
   fireEvent.click(screen.getByRole('button', { name: /Comenzar duelo/ }));
-  expect(document.querySelector('.dr-game.dr-original-table')).toBeTruthy();
-  expect(document.querySelector('.dr-classic-table')).toBeTruthy();
-  expect(screen.getByText(/Baluarte naval/)).toBeTruthy();
+  expect(screen.getByTestId('original-board')).toBeTruthy();
+  expect(screen.getByRole('heading', { name: 'Ritual de Inicio' })).toBeTruthy();
+});
+
+test('a real original-game victory unlocks the next mission and gives achievable stars', () => {
+  screenAt('/campania/mision/01');
+  fireEvent.click(screen.getByRole('button', { name: /Comenzar duelo/ }));
+  fireEvent.click(screen.getByRole('button', { name: 'Victoria original de prueba' }));
+  expect(screen.getByRole('heading', { name: '¡Misión superada!' })).toBeTruthy();
+  const saved = JSON.parse(window.localStorage.getItem(CAMPAIGN_STORAGE_KEY)!);
+  expect(saved.stars['01']).toBe(3);
+  expect(screen.getByRole('button', { name: 'Siguiente misión →' })).toBeTruthy();
+});
+
+test('a defeat with the original game cannot unlock the next challenge', () => {
+  screenAt('/campania/mision/01');
+  fireEvent.click(screen.getByRole('button', { name: /Comenzar duelo/ }));
+  fireEvent.click(screen.getByRole('button', { name: 'Derrota original de prueba' }));
+  expect(screen.getByRole('heading', { name: 'Misión fallida' })).toBeTruthy();
+  expect(window.localStorage.getItem(CAMPAIGN_STORAGE_KEY)).toBeNull();
 });
