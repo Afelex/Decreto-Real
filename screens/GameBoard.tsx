@@ -77,6 +77,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn }) => {
 
   const [playerHP, setPlayerHP] = useState(MAX_HP);
   const [playerDeck, setPlayerDeck] = useState<CardData[]>([]);
+  const playerDeckRef = useRef<CardData[]>([]);
   const [playerHand, setPlayerHand] = useState<CardData[]>([]);
   const [playerImpactLevel, setPlayerImpactLevel] = useState(0);
   const [playerImpactPlayedThisTurn, setPlayerImpactPlayedThisTurn] = useState(false);
@@ -86,6 +87,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn }) => {
 
   const [opponentHP, setOpponentHP] = useState(MAX_HP);
   const [opponentDeck, setOpponentDeck] = useState<CardData[]>([]);
+  const opponentDeckRef = useRef<CardData[]>([]);
   const [opponentHand, setOpponentHand] = useState<CardData[]>([]);
   const [opponentImpactLevel, setOpponentImpactLevel] = useState(0);
   const [opponentImpactPlayedThisTurn, setOpponentImpactPlayedThisTurn] = useState(false);
@@ -109,8 +111,12 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn }) => {
   };
 
   useEffect(() => {
-    setPlayerDeck(generateDeck('p1'));
-    setOpponentDeck(generateDeck('ai'));
+    const playerCards = generateDeck('p1');
+    const rivalCards = generateDeck('ai');
+    playerDeckRef.current = playerCards;
+    opponentDeckRef.current = rivalCards;
+    setPlayerDeck(playerCards);
+    setOpponentDeck(rivalCards);
     setPhase('COIN_TOSS');
   }, []);
 
@@ -206,16 +212,19 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn }) => {
   };
 
   const drawCards = (target: 'PLAYER' | 'OPPONENT', amount: number) => {
+    // Pure state updates: React StrictMode may call updater functions twice.
+    // Avoid triggering setHand inside setDeck's updater, which previously
+    // duplicated cards despite removing only one copy from the deck.
     if (target === 'PLAYER') {
-      setPlayerDeck(prev => {
-        const newDeck = [...prev]; const drawn = newDeck.splice(0, amount);
-        setPlayerHand(h => [...h, ...drawn]); return newDeck;
-      });
+      const drawn = playerDeckRef.current.slice(0, amount);
+      playerDeckRef.current = playerDeckRef.current.slice(amount);
+      setPlayerDeck(playerDeckRef.current);
+      if (drawn.length) setPlayerHand(hand => [...hand, ...drawn]);
     } else {
-      setOpponentDeck(prev => {
-        const newDeck = [...prev]; const drawn = newDeck.splice(0, amount);
-        setOpponentHand(h => [...h, ...drawn]); return newDeck;
-      });
+      const drawn = opponentDeckRef.current.slice(0, amount);
+      opponentDeckRef.current = opponentDeckRef.current.slice(amount);
+      setOpponentDeck(opponentDeckRef.current);
+      if (drawn.length) setOpponentHand(hand => [...hand, ...drawn]);
     }
   };
 
