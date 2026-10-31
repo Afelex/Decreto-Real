@@ -6,13 +6,13 @@ const RULE_PAGES = [
   { name: 'Inicio', icon: '♛', title: 'La partida original',
     lines: ['Ambos jugadores empiezan con 10 puntos de vida y un mazo propio de 24 cartas.', 'Lanza la moneda del ritual para decidir quién juega primero.', 'Gana al reducir la vida rival a cero o al completar cuatro Impactos.'] },
   { name: 'Cartas', icon: '◈', title: '10 ataques, 10 defensas y 4 Impactos',
-    lines: ['Cada mazo contiene 10 Decretos de Ataque, 10 Decretos de Defensa y los cuatro Impactos.', 'Comienzas con tres cartas en la mano y robas una al iniciar cada turno propio.', 'Toca una carta para jugarla inmediatamente. No hay costes de Mando.'] },
+    lines: ['Cada mazo contiene 10 Decretos de Ataque, 10 Decretos de Defensa y los cuatro Impactos.', 'Comienzas con tres cartas en la mano y robas una al iniciar cada turno propio.', 'Toca una carta para seleccionarla; arrástrala al centro para activarla. Sin Mando.'] },
   { name: 'Ataque', icon: '⚔', title: 'Actúa sin esperar',
-    lines: ['Cada Decreto de Ataque quita 2 puntos de vida al rival.', 'Cada Decreto de Defensa recupera 1 punto de vida, sin superar los 10 iniciales.', 'Puedes jugar varias cartas de tu mano y terminar cuando quieras con «Fin».'] },
+    lines: ['Cada Decreto de Ataque quita 2 puntos de vida al rival.', 'Cada Decreto de Defensa recupera 1 punto de vida, sin superar los 10 iniciales.', 'Para Ataque o Defensa, suéltala en el campo central. También puedes seleccionar y tocar la zona.'] },
   { name: 'Impactos', icon: '✦', title: 'Los cuatro sellos',
-    lines: ['Debes jugar Impacto I, II, III y Final, en ese orden.', 'Solo puedes jugar un Impacto por turno.', 'Los primeros Impactos dañan al rival y recuperan vida. El cuarto termina el combate.'] },
+    lines: ['Coloca Impacto I, II, III y Final en las cuatro casillas, de izquierda a derecha.', 'Solo puedes jugar un Impacto por turno.', 'Los primeros Impactos dañan al rival y recuperan vida. El cuarto termina el combate.'] },
   { name: 'Combos', icon: '♜', title: 'Habilidades especiales',
-    lines: ['Juega tres ataques o tres defensas seguidos para cargar la habilidad especial.', 'Cuando se active, escoge entre infligir daño adicional o recuperar vida.', 'Tu rival también tiene mazo, mano, combinaciones y efectos.'] },
+    lines: ['Encadena cartas del mismo tipo: COMBO ×2 anuncia progreso y ×3 activa la habilidad.', 'Cuando se active, escoge entre infligir daño adicional o recuperar vida.', 'Tu rival también tiene mazo, mano, combinaciones y efectos.'] },
 ] as const;
 
 /** Short readable pages rather than a tall scrollable manual. */
