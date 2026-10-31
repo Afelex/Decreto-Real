@@ -106,3 +106,12 @@
   .dr-game.immersive .dr-battle-cue-flash {animation:none!important;transition:none!important;filter:none!important;}
   .dr-game.immersive .dr-battle-cue-flash {display:none;}
 }
+
+/* The short-viewport layout deliberately hides the scenic panel. Keep the
+ * general recognizable in the name banner without increasing page height. */
+.dc-mission-briefing .dc-general-banner {display:flex;align-items:center;gap:7px;}
+.dc-mission-briefing .dc-general-banner>span {min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.dc-mission-briefing .dc-general-banner svg.dc-mini-general {display:none;flex:0 0 22px;width:22px;height:22px;}
+@media(max-height:570px) {
+  .dc-mission-briefing .dc-general-banner svg.dc-mini-general {display:block;}
+}
