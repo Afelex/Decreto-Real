@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { OPPONENT_IMG, PLAYER_IMG, BATTLE_BG_IMG } from '../constants';
+import { OPPONENT_IMG, PLAYER_IMG } from '../constants';
 import { CardData, GamePhase, CardType } from '../types';
 import { useAudio } from '../contexts/AudioContext';
 import { AiTurnController, runOpponentTurn } from '../game/aiTurn';
@@ -71,7 +71,7 @@ type GameBoardProps = {
   presentation?: BattlePresentation;
 };
 const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation }) => {
-  const scenicBackground = presentation?.background ?? `${import.meta.env.BASE_URL}escenarios/plaza-virreinal.svg`;
+  const scenicBackground = presentation?.background ?? '/Decreto-Real/escenarios/plaza-virreinal.svg';
   const playerPortrait = presentation?.playerPortrait ?? PLAYER_IMG;
   const rivalPortrait = presentation?.opponentPortrait ?? OPPONENT_IMG;
   const navigate = useNavigate();
@@ -329,7 +329,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   const placeCard = (card: CardData, zone: CardDropZone) => {
     if (!canHandleCards || spentIds.current.has(card.id) || !playerHand.some(item => item.id === card.id)) return;
     const check = checkCardPlacement(card, zone, playerImpactLevel, playerImpactPlayedThisTurn);
-    if (!check.valid) { setPlayHint(check.message); return; }
+    if ('message' in check) { setPlayHint(check.message); return; }
     spentIds.current.add(card.id);
     setSelectedCardId(null);
     setPlayHint(null);
