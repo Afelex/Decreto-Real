@@ -8,6 +8,8 @@ import {
 } from '../campaign/campaign.ts';
 import { chapterForStage } from '../campaign/story.ts';
 import { missionStarGoals } from '../campaign/progressView.ts';
+import { regionVisual } from '../campaign/regionVisuals.ts';
+import { RegionScene } from './RegionScene';
 import './campaign.css';
 
 type MissionOutcome = {
@@ -37,6 +39,8 @@ const CampaignMission: React.FC = () => {
   const unlocked = !!mission && isMissionUnlocked(loadCampaignProgress(storage), mission.id);
   const index = mission ? CAMPAIGN_MISSIONS.findIndex(item => item.id === mission.id) : -1;
   const next = CAMPAIGN_MISSIONS[index + 1];
+  const nextRegion = next && next.chapterId !== mission?.chapterId ? chapterForStage(next.id) : null;
+  const region = regionVisual(chapter?.id);
   const accent = { '--dc-accent': chapter?.color ?? '#bfa374' } as React.CSSProperties;
 
   React.useEffect(() => {
@@ -72,9 +76,10 @@ const CampaignMission: React.FC = () => {
   if (outcome) return <main className="dc-page dc-center dc-full-page dc-mission-result" style={accent}>
     <section className="dc-result-card dc-story-result" aria-label="Resultado y crónica de la misión">
       <small>DECRETO REAL I · MISIÓN {mission.id}/38</small>
-      <span className="dc-story-emblem" aria-hidden="true">{outcome.won ? '✦' : '✧'}</span>
+      <span className="dc-story-emblem dc-region-result-emblem" aria-hidden="true">{outcome.won ? region.symbol : '✧'}</span>
       <h1>{outcome.won ? mission.kind === 'boss' ? '¡General derrotado!' : mission.kind === 'final' ? '¡La Falsa Luz cae!' : '¡Misión superada!' : 'Misión fallida'}</h1>
       <h2>{mission.title}</h2>
+      {outcome.won && outcome.saved && nextRegion && <p className="dc-new-region">✥ Nueva región: <b>{nextRegion.region}</b></p>}
       <p className="dc-scene-narration">{outcome.won ? mission.victoryLine : mission.defeatLine}</p>
       <div className="dc-result-stars" role="img" aria-label={`${outcome.earned} de 3 estrellas`}>
         {[0, 1, 2].map(i => <span key={i} className={i < outcome.earned ? 'earned' : ''}>★</span>)}
@@ -85,7 +90,7 @@ const CampaignMission: React.FC = () => {
       {outcome.changedDifficulty && outcome.won && <p className="dc-warning">Cambiaste la dificultad del rival. Esta partida concede una estrella como máximo.</p>}
       {!outcome.saved && <p role="alert" className="dc-warning">No se pudo guardar tu progreso en este navegador.</p>}
       {outcome.won && !next && <button className="dc-primary" onClick={() => navigate('/campania/epilogo')}>Leer epílogo ✦</button>}
-      {outcome.won && next && outcome.saved && <button className="dc-primary" onClick={() => { setOutcome(null); setAttempt(0); setView('briefing'); navigate(`/campania/mision/${next.id}`); }}>Siguiente misión →</button>}
+      {outcome.won && next && outcome.saved && <button className="dc-primary" onClick={() => { setOutcome(null); setAttempt(0); setView('briefing'); navigate(`/campania/mision/${next.id}`); }}>{nextRegion ? 'Entrar en la nueva región →' : 'Siguiente misión →'}</button>}
       <div className="dc-result-actions">
         <button className="dc-secondary" onClick={retry}>Repetir duelo</button>
         <button className="dc-secondary" onClick={() => navigate('/campania')}>Volver al mapa</button>
@@ -99,10 +104,8 @@ const CampaignMission: React.FC = () => {
       <div><small>DECRETO REAL I · HISTORIA</small><h1>{chapter?.title ?? 'Camino de campaña'}</h1></div>
     </header>
     <section className="dc-story-scene dc-briefing-scene" aria-labelledby="dc-scene-title">
-      <div className="dc-story-art" aria-hidden="true">
-        <div className="dc-story-sun">✥</div>
-        <span>{mission.kind === 'boss' || mission.kind === 'final' ? '♛' : '⚔'}</span>
-      </div>
+      <RegionScene chapterId={chapter?.id} formidable={mission.kind === 'boss' || mission.kind === 'final'}/>
+      {mission.kind === 'boss' && <span className="dc-general-banner">♛ GENERAL DE LA REGIÓN · {chapter?.general}</span>}
       <span className="dc-scene-label">{mission.kind === 'boss' ? 'ENCUENTRO CON GENERAL' : mission.kind === 'subboss' ? 'ENCUENTRO CON SUBJEFE' : mission.kind === 'final' ? 'ENFRENTAMIENTO FINAL' : 'NUEVA MISIÓN'} · {mission.id}/38</span>
       <h2 id="dc-scene-title">{mission.title}</h2>
       <p className="dc-scene-location">⌖ {chapter?.region}</p>
@@ -115,7 +118,7 @@ const CampaignMission: React.FC = () => {
         {missionStarGoals(mission).map(goal =>
           <div key={goal.id}><span>★</span> {goal.label}</div>)}
       </div>
-      <p className="dc-note dc-briefing-note">Rival: {mission.opponent} · IA {mission.difficulty}. El duelo utiliza las cartas actuales.</p>
+      <p className="dc-note dc-briefing-note">Rival: {mission.opponent} · IA {mission.difficulty}{mission.kind === 'boss' && chapter?.specialCard ? ` · Leyenda: ${chapter.specialCard} (no jugable)` : ''}. El duelo utiliza las cartas actuales.</p>
       <div className="dc-briefing-actions">
         <button className="dc-primary" onClick={() => setView('duel')}>¡Comenzar duelo! ⚔</button>
         <button className="dc-secondary" onClick={() => navigate('/campania')}>Volver al mapa</button>
