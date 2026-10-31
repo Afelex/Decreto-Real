@@ -164,8 +164,8 @@ test('original game keeps its rules but activates cards by selection plus target
   await expect(page.getByText('Ritual de Inicio')).toBeHidden({ timeout: 12000 });
   const cards = page.locator('.dr-royal-hand-card');
   await expect(cards).toHaveCount(4, { timeout: 18000 });
-  await expect(page.locator('.dr-royal-facedown')).toHaveCount(4);
-  await expect(page.locator('.dr-royal-hand-count.rival')).toContainText('MANO 4');
+  await expect(page.locator('.dr-royal-facedown')).toHaveCount(3);
+  await expect(page.locator('.dr-royal-hand-count.rival')).toContainText('MANO 3');
   await expect(page.locator('.dr-royal-hand-count.player')).toContainText('MANO 4');
   const ordinary = cards.filter({ hasText: /Decreto de Ataque|Decreto de Defensa/ });
   const chosen = ordinary.last();
@@ -200,7 +200,7 @@ test('updated rules describe the restored original instead of Mando and shield',
   await page.goto('/Decreto-Real/#/rules');
   await page.getByRole('button', { name: 'Cartas' }).click();
   await expect(page.getByText(/10 Decretos de Ataque, 10 Decretos de Defensa/)).toBeVisible();
-  await expect(page.getByText(/No hay costes de Mando/)).toBeVisible();
+  await expect(page.getByText(/Sin Mando/)).toBeVisible();
   await page.getByRole('button', { name: 'Ataque' }).click();
   await expect(page.getByText(/quita 2 puntos de vida/)).toBeVisible();
 });
