@@ -45,7 +45,7 @@ test('the prologue introduces the four provisional characters and eight generals
 test('a reachable mission opens a story briefing before the battle', () => {
   screenAt('/campania/mision/01');
   expect(screen.getByRole('heading', { name: 'El pregón alterado' })).toBeTruthy();
-  expect(screen.getByText(/Rival: Guardia del pregón/)).toBeTruthy();
+  expect(screen.getByText(/Combate original: 10 de vida/)).toBeTruthy();
   expect(screen.getByRole('button', { name: /Comenzar duelo/ })).toBeTruthy();
 });
 
@@ -92,7 +92,7 @@ test('a reachable general receives the matching illustrated region and identific
   expect(scene?.getAttribute('data-region')).toBe('1');
   expect(scene?.querySelector('svg')).toBeTruthy();
   expect(screen.getByText(/GENERAL DE LA REGIÓN/)).toBeTruthy();
-  expect(screen.getByText(/Bombardeo naval \(no jugable\)/)).toBeTruthy();
+  expect(screen.getByText(/sin Mando/)).toBeTruthy();
 });
 
 test('the campaign opens the original game, not the newly created DuelBoard', () => {
