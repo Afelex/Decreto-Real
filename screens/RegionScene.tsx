@@ -1,5 +1,6 @@
 import React from 'react';
 import { regionVisual } from '../campaign/regionVisuals.ts';
+import { GeneralPortrait, GENERAL_PORTRAIT_IDS } from './GeneralPortrait';
 
 /** Small original vector landscape reused by the campaign briefings.
  * All paths are decorative. Opponent stats still come from the combat engine. */
@@ -97,6 +98,7 @@ export const RegionScene: React.FC<{ chapterId?: string; formidable?: boolean }>
         <path d="M235-4v17m0 59v20m-48-50h19m59 0h21m-87-33 13 14m46 41 13 14m-2-69-14 14m-45 42-14 14" stroke="#ffdaa0" strokeWidth="5" opacity=".8"/>
       </g>}
     </svg>
+    {formidable && GENERAL_PORTRAIT_IDS.some(general => general === id) && <div className="dc-general-portrait-seal"><GeneralPortrait chapterId={id}/></div>}
     <span className="dc-region-scene-caption"><b>{visual.symbol}</b> {visual.landmark}</span>
   </div>;
 };
