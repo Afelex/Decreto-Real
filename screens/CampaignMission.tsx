@@ -10,6 +10,7 @@ import { chapterForStage } from '../campaign/story.ts';
 import { missionStarGoals } from '../campaign/progressView.ts';
 import { regionVisual } from '../campaign/regionVisuals.ts';
 import { RegionScene } from './RegionScene';
+import { GeneralPortrait } from './GeneralPortrait';
 import './campaign.css';
 
 type MissionOutcome = {
@@ -105,7 +106,7 @@ const CampaignMission: React.FC = () => {
     </header>
     <section className="dc-story-scene dc-briefing-scene" aria-labelledby="dc-scene-title">
       <RegionScene chapterId={chapter?.id} formidable={mission.kind === 'boss' || mission.kind === 'final'}/>
-      {mission.kind === 'boss' && <span className="dc-general-banner">♛ GENERAL DE LA REGIÓN · {mission.title}</span>}
+      {mission.kind === 'boss' && <span className="dc-general-banner"><GeneralPortrait chapterId={chapter?.id ?? ''} className="dc-mini-general"/><span>♛ GENERAL DE LA REGIÓN · {mission.title}</span></span>}
       <span className="dc-scene-label">{mission.kind === 'boss' ? 'ENCUENTRO CON GENERAL' : mission.kind === 'subboss' ? 'ENCUENTRO CON SUBJEFE' : mission.kind === 'final' ? 'ENFRENTAMIENTO FINAL' : 'NUEVA MISIÓN'} · {mission.id}/38</span>
       <h2 id="dc-scene-title">{mission.title}</h2>
       <p className="dc-scene-location">⌖ {chapter?.region}</p>
