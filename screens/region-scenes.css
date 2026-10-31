@@ -1,0 +1,147 @@
+/* DR-C04: Regional atmospheres. Original vector scenery, no remote assets.
+ * Scopes are deliberately narrow: the one-screen layout is unchanged. */
+.dc-region-scene {
+  --rv-sky:#67798c;
+  --rv-earth:#73604e;
+  --rv-horizon:#2e3949;
+  isolation:isolate;
+  flex:0 1 clamp(52px,15dvh,120px);
+  width:100%;
+  min-height:0;
+  position:relative;
+  overflow:hidden;
+  background:
+    radial-gradient(ellipse at 72% 21%,#ffddad66,transparent 30%),
+    linear-gradient(165deg,var(--rv-sky) 0%,var(--rv-sky) 45%,var(--rv-earth) 66%,var(--rv-horizon) 100%);
+  border:1px solid #d9c18b99;
+  box-shadow:inset 0 0 0 2px #ecdbb722,inset 0 -14px 22px #09162655;
+}
+.dc-region-scene::before {
+  content:'';
+  position:absolute;
+  inset:0;
+  opacity:.4;
+  background:
+    repeating-linear-gradient(9deg,transparent 0 26px,#fff7d908 27px 28px),
+    repeating-linear-gradient(90deg,transparent 0 34px,#100e1208 35px 36px);
+  pointer-events:none;
+  z-index:2;
+}
+.dc-region-scene::after {display:none!important;}
+.dc-region-scene .dc-region-sun {
+  display:block;
+  position:absolute;
+  width:clamp(45px,13dvh,90px);
+  height:clamp(45px,13dvh,90px);
+  left:57%;
+  top:-12%;
+  border:1px solid #fff0c288;
+  border-radius:50%;
+  background:radial-gradient(circle,#fff3bf9c,transparent 73%);
+  box-shadow:0 0 32px #ffe6a34f;
+  pointer-events:none;
+}
+.dc-region-scene svg {
+  display:block;
+  width:100%;
+  height:100%;
+  position:absolute;
+  inset:0;
+  z-index:1;
+  filter:drop-shadow(0 2px 6px #0e192666);
+}
+.dc-region-scene>.dc-region-scene-caption {
+  position:absolute;
+  z-index:3;
+  bottom:5px;
+  left:8px;
+  max-width:calc(100% - 16px);
+  padding:3px 7px;
+  border:1px solid #ecd39c87;
+  border-radius:5px;
+  background:#132530bb;
+  color:#fff0ce;
+  font:700 clamp(9px,2.5vw,11px)/1.1 Georgia,serif!important;
+  letter-spacing:.04em;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  text-shadow:0 1px #000;
+}
+.dc-region-scene-caption b {font-size:12px;color:#ffda9f;}
+.dc-region-formidable {border:2px solid #f2ca80;box-shadow:0 0 0 1px #fff1b333,inset 0 0 30px #e7b46b2d;}
+.dc-region-formidable .dc-region-sun {box-shadow:0 0 35px #ffdfa19c;}
+.dc-general-banner {
+  flex:0 0 auto;
+  display:block;
+  padding:4px 8px;
+  border:1px solid #f1cb7d;
+  border-radius:7px;
+  background:linear-gradient(110deg,#593729,#2a3041);
+  color:#ffdf9d;
+  font:700 clamp(10px,2.8vw,12px)/1.1 'Cinzel',Georgia,serif;
+  letter-spacing:.05em;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.dc-mission-result .dc-region-result-emblem {
+  border-color:var(--dc-accent,#dcb778);
+  background:radial-gradient(circle at 35% 30%,#8b644c,#383b44);
+  box-shadow:0 0 20px #f0cb8f25;
+}
+.dc-mission-result .dc-new-region {
+  margin:0;
+  max-width:100%;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  padding:4px 9px;
+  border:1px solid #b19a69;
+  border-radius:7px;
+  background:#374c4c;
+  color:#ffde9e!important;
+  font:600 clamp(10px,2.8vw,12px)/1.15 system-ui,sans-serif!important;
+}
+.dc-mission-result .dc-new-region b {color:#fff0c9;}
+.dcm-region-map .dcm-region-wash {
+  position:absolute;
+  z-index:1;
+  inset:0;
+  background:
+    radial-gradient(ellipse at 70% 58%,var(--rv-sky) 0%,transparent 60%),
+    linear-gradient(130deg,transparent 10%,var(--rv-earth) 90%);
+  opacity:.16;
+  mix-blend-mode:multiply;
+  pointer-events:none;
+}
+.dcm-region-map .dcm-region-watermark {
+  position:absolute;
+  z-index:1;
+  top:28%;
+  left:67%;
+  transform:translate(-50%,-50%) rotate(-15deg);
+  font:700 clamp(62px,17dvh,133px)/1 Georgia,serif;
+  color:var(--rv-horizon);
+  text-shadow:0 2px #f6deae;
+  opacity:.2;
+  user-select:none;
+  pointer-events:none;
+}
+.dcm-region-map[data-region="1"] .dcm-map-art,
+.dcm-region-map[data-region="7"] .dcm-map-art {filter:sepia(.14) saturate(1.1);}
+.dcm-region-map[data-region="5"] .dcm-map-art {filter:sepia(.18) hue-rotate(11deg);}
+.dcm-region-map[data-region="f"] .dcm-map-art {filter:sepia(.35) saturate(.73);}
+.dcm-region-map .dcm-map-label {
+  color:#5a3525;
+  border-color:var(--rv-earth);
+  box-shadow:0 2px 6px #33221944;
+}
+@media(max-height:570px) {
+  .dc-general-banner {padding:2px 6px;font-size:10px;}
+  .dc-mission-result .dc-new-region {font-size:10px!important;padding:2px 6px;}
+  .dc-region-scene>.dc-region-scene-caption {font-size:9px!important;padding:2px 5px;}
+}
+@media(prefers-reduced-motion:reduce) {
+  .dc-region-scene *,.dcm-region-map * {animation:none!important;transition:none!important;}
+}

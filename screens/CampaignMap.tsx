@@ -6,6 +6,7 @@ import {
 } from '../campaign/campaign.ts';
 import { STORY_CHAPTERS, stagesForChapter } from '../campaign/story.ts';
 import { campaignOverview, missionStarGoals } from '../campaign/progressView.ts';
+import { regionVisual } from '../campaign/regionVisuals.ts';
 const mapImage = '/Decreto-Real/virreinato-map.svg';
 import './campaign-map-fullscreen.css';
 
@@ -51,6 +52,7 @@ const CampaignMap: React.FC = () => {
     : STORY_CHAPTERS.length - 1;
   const [chapterIndex, setChapterIndex] = React.useState(initialChapterIndex);
   const chapter = STORY_CHAPTERS[chapterIndex];
+  const region = regionVisual(chapter.id);
   const missions = chapterMissions(chapter.id);
   const [selectedId, setSelectedId] = React.useState(() => initialSelection(progress, chapterMissions(STORY_CHAPTERS[initialChapterIndex].id)).id);
   const earnedStars = journey.stars;
@@ -61,7 +63,12 @@ const CampaignMap: React.FC = () => {
   const canGoNext = !!nextChapter && chapterOpen(progress, nextChapter.id);
   const mapPositions = POSITIONS[missions.length] ?? POSITIONS[4];
   const linePoints = mapPositions.map(([x, y]) => `${x},${y}`).join(' ');
-  const accent = { '--dcm-accent': chapter.color } as React.CSSProperties;
+  const accent = {
+    '--dcm-accent': chapter.color,
+    '--rv-sky': region.sky,
+    '--rv-earth': region.earth,
+    '--rv-horizon': region.horizon,
+  } as React.CSSProperties;
 
   const closeObjectives = () => {
     setObjectivesOpen(false);
@@ -128,14 +135,16 @@ const CampaignMap: React.FC = () => {
           aria-label={canGoNext ? 'Capítulo siguiente' : 'Capítulo siguiente bloqueado'}>›</button>
       </nav>
 
-      <section className="dcm-map" aria-label={`Mapa de retos de ${chapter.title}`}>
+      <section className="dcm-map dcm-region-map" data-region={chapter.id} aria-label={`Mapa de retos de ${chapter.title}`}>
         <img src={mapImage} alt="Mapa antiguo ilustrado del Virreinato del Perú" draggable={false} className="dcm-map-art"/>
         <div className="dcm-map-wash" aria-hidden="true" />
+        <div className="dcm-region-wash" aria-hidden="true"/>
+        <div className="dcm-region-watermark" aria-hidden="true">{region.symbol}</div>
         <svg className="dcm-route" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
           <polyline points={linePoints} fill="none" stroke="#674322" strokeWidth="1.65" strokeDasharray="2.3 2.4" strokeLinecap="round" strokeLinejoin="round"/>
           <polyline points={linePoints} fill="none" stroke="#f9dea5" strokeWidth=".45" strokeDasharray="2.3 2.4" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
-        <span className="dcm-map-label" aria-hidden="true">✥ &nbsp; {chapter.region}</span>
+        <span className="dcm-map-label" aria-hidden="true">{region.symbol} &nbsp; {chapter.region}</span>
         {missions.map((mission, index) => {
           const unlocked = isMissionUnlocked(progress, mission.id);
           const won = bestStars(progress, mission.id);

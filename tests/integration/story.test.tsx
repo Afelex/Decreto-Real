@@ -64,3 +64,24 @@ test('a forged final result without preceding victories cannot reveal the epilog
   screenAt('/campania/epilogo');
   expect(screen.getByRole('heading', { name: 'El epílogo sigue sellado' })).toBeTruthy();
 });
+
+test('the prologue encounter shows its own illustrated guard-post scenery', () => {
+  screenAt('/campania/mision/01');
+  const scene = document.querySelector<HTMLElement>('.dc-region-scene');
+  expect(scene?.getAttribute('data-region')).toBe('p');
+  expect(scene?.querySelector('svg')).toBeTruthy();
+  expect(screen.getByText(/El puesto de guardia/)).toBeTruthy();
+});
+
+test('a reachable general receives the matching illustrated region and identification', () => {
+  window.localStorage.setItem(CAMPAIGN_STORAGE_KEY, JSON.stringify({
+    version: 1, stars: Object.fromEntries([1, 2, 3, 4, 5].map(i => [String(i).padStart(2, '0'), 1])),
+  }));
+  screenAt('/campania/mision/06');
+  expect(screen.getByRole('heading', { name: 'El Almirante de Hierro' })).toBeTruthy();
+  const scene = document.querySelector<HTMLElement>('.dc-region-scene');
+  expect(scene?.getAttribute('data-region')).toBe('1');
+  expect(scene?.querySelector('svg')).toBeTruthy();
+  expect(screen.getByText(/GENERAL DE LA REGIÓN/)).toBeTruthy();
+  expect(screen.getByText(/Bombardeo naval \(no jugable\)/)).toBeTruthy();
+});

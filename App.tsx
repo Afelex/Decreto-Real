@@ -15,6 +15,7 @@ import { AudioProvider } from './contexts/AudioContext';
 import './screens/one-screen-ui.css';
 import './screens/duel-viewport.css';
 import './screens/campaign-progress.css';
+import './screens/region-scenes.css';
 
 const App: React.FC = () => {
   return (
