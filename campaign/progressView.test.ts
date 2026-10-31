@@ -55,7 +55,7 @@ test('objectives reflect the current rules for all stage types', () => {
     const objectives = missionStarGoals(mission);
     assert.deepEqual(objectives.map(goal => goal.id), ['victory','health','turns']);
     assert.equal(objectives[0].label, 'Gana el duelo');
-    assert.equal(objectives[1].label, `Conserva al menos ${mission.healthGoal} de vida`);
-    assert.equal(objectives[2].label, `Vence hasta el turno ${mission.turnGoal}`);
+    assert.equal(objectives[1].label, `Conserva al menos ${Math.ceil(mission.healthGoal / 2)} de vida`);
+    assert.equal(objectives[2].label, `Gana en ${mission.turnGoal} rondas o menos`);
   }
 });
