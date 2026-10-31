@@ -14,7 +14,7 @@ export const RegionScene: React.FC<{ chapterId?: string; formidable?: boolean }>
     '--rv-horizon': visual.horizon,
   } as React.CSSProperties;
 
-  return <div className={`dc-region-scene${formidable ? ' dc-region-formidable' : ''}`}
+  return <div className={`dc-story-art dc-region-scene${formidable ? ' dc-region-formidable' : ''}`}
       data-region={id} style={style} aria-hidden="true">
     <span className="dc-region-sun" />
     <svg viewBox="0 0 480 160" preserveAspectRatio="xMidYMid slice" fill="none" aria-hidden="true">
