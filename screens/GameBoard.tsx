@@ -56,7 +56,14 @@ function useFitScale(baseW = 430, baseH = 932) {
   return useMemo(() => Math.max(0.62, Math.min(1, Math.min(vw / baseW, vh / baseH))), [vw, vh, baseW, baseH]);
 }
 
-const GameBoard: React.FC = () => {
+/** Original game, unchanged in free play. The optional bridge only reports a
+ * finished match to the campaign; cards, coin, AI, visuals and SFX stay original. */
+export type OriginalBattleOutcome = Readonly<{ won: boolean; turns: number; health: number }>;
+type GameBoardProps = {
+  onOutcome?: (result: OriginalBattleOutcome) => void;
+  onReturn?: () => void;
+};
+const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn }) => {
   const navigate = useNavigate();
   const { playSound, sfxEnabled, musicEnabled, toggleSfx, toggleMusic } = useAudio();
 
@@ -65,6 +72,7 @@ const GameBoard: React.FC = () => {
   const [whoStarted, setWhoStarted] = useState<'PLAYER' | 'OPPONENT' | null>(null);
   const [bannerText, setBannerText] = useState("");
   const gameOverRef = useRef(false);
+  const campaignOutcomeReported = useRef(false);
   const aiController = useRef<AiTurnController | null>(null);
 
   const [playerHP, setPlayerHP] = useState(MAX_HP);
@@ -272,7 +280,14 @@ const GameBoard: React.FC = () => {
 
   useEffect(() => {
     if (phase === 'VICTORY' || phase === 'DEFEAT') {
-      const timer = setTimeout(() => navigate('/victory', { state: { outcome: phase, turnCount } }), 3000);
+      const timer = setTimeout(() => {
+        if (onOutcome) {
+          if (campaignOutcomeReported.current) return;
+          campaignOutcomeReported.current = true;
+          playSound(phase === 'VICTORY' ? 'VICTORY' : 'DEFEAT');
+          onOutcome({ won: phase === 'VICTORY', turns: turnCount, health: playerHP });
+        } else navigate('/victory', { state: { outcome: phase, turnCount } });
+      }, 3000);
       return () => clearTimeout(timer);
     }
   }, [phase]);
@@ -290,7 +305,7 @@ const GameBoard: React.FC = () => {
 
   const handleMenuToggle = () => { playSound('CLICK'); setIsMenuOpen(!isMenuOpen); setShowSurrenderConfirm(false); };
   const handleSurrenderRequest = () => { playSound('CLICK'); setShowSurrenderConfirm(true); };
-  const handleSurrenderConfirm = () => { playSound('CLICK'); navigate('/'); };
+  const handleSurrenderConfirm = () => { playSound('CLICK'); if (onReturn) onReturn(); else navigate('/'); };
   const handleSurrenderCancel = () => { playSound('CLICK'); setShowSurrenderConfirm(false); };
 
   const renderGauge = (val: number) => (
