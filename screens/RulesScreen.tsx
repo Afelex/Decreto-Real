@@ -3,16 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import './one-screen-ui.css';
 
 const RULE_PAGES = [
-  { name: 'Objetivo', icon: '♛', title: 'Cómo ganar',
-    lines: ['Comienza con 20 puntos de vida. Tu rival también tiene 20.', 'Gana reduciendo la vida rival a cero o completando los cuatro Impactos.', 'Cada decisión cuenta. No necesitas dados para resolver los ataques.'] },
-  { name: 'Turnos', icon: '◈', title: 'Tres puntos de mando',
-    lines: ['Al comienzo de cada turno dispones de 3 puntos de mando.', 'Cada carta tiene un coste indicado en su esquina.', 'Puedes jugar varias cartas legales y después pulsar «Terminar turno».'] },
-  { name: 'Cartas', icon: '⚔', title: 'Tu mano',
-    lines: ['Empiezas con 4 cartas de un mazo de 24; tu mano admite un máximo de 6.', 'Ataques dañan al rival. Defensas aumentan tu escudo. Apoyos aportan otros efectos.', 'Toca una carta para leerla; en campaña puedes arrastrarla hasta la mesa.'] },
+  { name: 'Inicio', icon: '♛', title: 'La partida original',
+    lines: ['Ambos jugadores empiezan con 10 puntos de vida y un mazo propio de 24 cartas.', 'Lanza la moneda del ritual para decidir quién juega primero.', 'Gana al reducir la vida rival a cero o al completar cuatro Impactos.'] },
+  { name: 'Cartas', icon: '◈', title: '10 ataques, 10 defensas y 4 Impactos',
+    lines: ['Cada mazo contiene 10 Decretos de Ataque, 10 Decretos de Defensa y los cuatro Impactos.', 'Comienzas con tres cartas en la mano y robas una al iniciar cada turno propio.', 'Toca una carta para jugarla inmediatamente. No hay costes de Mando.'] },
+  { name: 'Ataque', icon: '⚔', title: 'Actúa sin esperar',
+    lines: ['Cada Decreto de Ataque quita 2 puntos de vida al rival.', 'Cada Decreto de Defensa recupera 1 punto de vida, sin superar los 10 iniciales.', 'Puedes jugar varias cartas de tu mano y terminar cuando quieras con «Fin».'] },
   { name: 'Impactos', icon: '✦', title: 'Los cuatro sellos',
-    lines: ['Debes jugar Impacto I, II, III y Final, en ese orden.', 'Solo puedes completar un Impacto por turno.', 'Al conseguir el cuarto Impacto ganas de inmediato. La IA puede ganar de la misma manera.'] },
-  { name: 'Estrategia', icon: '♜', title: 'Defiende el reino',
-    lines: ['El escudo absorbe el daño antes que la vida.', 'Tres ataques o tres defensas en una misma racha pueden generar un combo.', 'Si una carta aparece bloqueada, revisa el mando disponible y el orden de los Impactos.'] },
+    lines: ['Debes jugar Impacto I, II, III y Final, en ese orden.', 'Solo puedes jugar un Impacto por turno.', 'Los primeros Impactos dañan al rival y recuperan vida. El cuarto termina el combate.'] },
+  { name: 'Combos', icon: '♜', title: 'Habilidades especiales',
+    lines: ['Juega tres ataques o tres defensas seguidos para cargar la habilidad especial.', 'Cuando se active, escoge entre infligir daño adicional o recuperar vida.', 'Tu rival también tiene mazo, mano, combinaciones y efectos.'] },
 ] as const;
 
 /** Short readable pages rather than a tall scrollable manual. */
@@ -43,7 +43,7 @@ const RulesScreen: React.FC = () => {
         <span>{page + 1} de {RULE_PAGES.length}</span>
         <button type="button" disabled={page === RULE_PAGES.length - 1} onClick={() => setPage(p => p + 1)}>Siguiente ›</button>
       </div>
-      <button type="button" className="dr-guide-cta" onClick={() => navigate('/duelo-v1/tutorial')}>Aprender jugando ⚔</button>
+      <button type="button" className="dr-guide-cta" onClick={() => navigate('/game')}>Jugar el original ⚔</button>
     </footer>
   </main>;
 };
