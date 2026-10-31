@@ -1,0 +1,246 @@
+/* DR-C08 — playful, illustrated viceregal duel.
+ * This styles ONLY the restored original GameBoard. The original 10/10 HP,
+ * 24 cards, turn order, combo choice, sound and AI remain unchanged.
+ * No baked UI in the separate scenic background image. */
+.dr-classic-screen.dr-royal-screen {
+  position:relative; isolation:isolate;
+  width:min(100%,430px)!important;
+  height:100dvh!important; min-height:0!important;
+  background:#152d3d;
+  color:#fff0d5;
+  overscroll-behavior:none;
+  touch-action:pan-x;
+}
+.dr-royal-screen .dr-royal-background {filter:saturate(1.1) contrast(1.03);}
+.dr-royal-screen .dr-royal-vignette {
+  background:linear-gradient(180deg,#050f2573 0%,#090f1c25 23%,#060b1555 52%,#080a13a9 100%);
+  pointer-events:none;
+}
+.dr-royal-layout {
+  position:relative; z-index:2;
+  display:grid;
+  grid-template-rows:minmax(0,23fr) minmax(0,17fr) minmax(0,22fr) minmax(0,22fr) minmax(0,16fr);
+  width:100%;height:100%;min-width:0;min-height:0;
+  padding:max(2px,env(safe-area-inset-top)) 4px max(3px,env(safe-area-inset-bottom));
+  overflow:hidden;
+  user-select:none;
+}
+.dr-royal-layout button {touch-action:none;cursor:pointer;}
+.dr-royal-layout button:focus-visible {outline:3px solid #fff5be;outline-offset:3px;}
+.dr-royal-layout .dr-royal-character {display:flex;flex-direction:column;align-items:center;height:100%;min-height:0;gap:2px;}
+.dr-royal-layout .dr-royal-character .flex.gap-1.mt-1 {margin-top:0;flex:0 0 auto;gap:5px;}
+.dr-royal-layout .dr-royal-character .w-3.h-3 {width:clamp(6px,1.4dvh,12px);height:clamp(6px,1.4dvh,12px);}
+.dr-royal-character-frame {
+  position:relative;display:block;
+  width:clamp(76px,21vw,143px);
+  max-height:calc(100% - 15px);
+  height:100%;min-height:0;
+  padding:3px;overflow:hidden;
+  border:1px solid #fff0ba; border-radius:4px;
+  clip-path:polygon(7% 0,93% 0,100% 16%,100% 94%,92% 100%,8% 100%,0 94%,0 16%);
+  box-shadow:0 5px 17px #080a1c99;
+}
+.dr-royal-character-frame>img {
+  display:block; width:100%; height:100%; object-fit:cover;
+  object-position:center 20%; border-radius:3px;
+}
+.dr-royal-hp {
+  position:absolute;left:2px;right:2px;bottom:2px;z-index:1;
+  min-height:clamp(19px,3.7dvh,32px);
+  display:grid;place-items:center;
+  font:800 clamp(12px,2.9dvh,19px)/1 Cinzel,Georgia,serif;
+  letter-spacing:.02em;
+  color:#fff8dd;text-shadow:0 2px 2px #200a09;
+  border:1px solid #f7d49b;
+  box-shadow:inset 0 1px #ffdf99a8,0 0 8px #0005;
+}
+.dr-royal-hp.red {background:linear-gradient(#b83835,#7a151e);}
+.dr-royal-hp.blue {background:linear-gradient(#1e83bb,#15426e);}
+.dr-royal-rival-area,.dr-royal-player-area {position:relative;min-height:0;}
+.dr-royal-rival-area .dr-royal-character {position:absolute;top:0;left:50%;transform:translateX(-50%);width:clamp(98px,28vw,158px);}
+.dr-royal-player-area .dr-royal-character {position:absolute;top:0;left:50%;transform:translateX(-50%);width:clamp(98px,28vw,158px);}
+.dr-royal-rival-area .dr-royal-character-frame {flex:1 1 0;}
+.dr-royal-player-area .dr-royal-character-frame {flex:1 1 0;}
+.dr-royal-rival-impact {flex:0 0 auto;}
+.dr-royal-rival-impact .flex.gap-2.p-1 {gap:clamp(4px,1vw,8px);margin-top:0;padding:2px 6px;}
+.dr-royal-rival-impact .w-4.h-4 {width:clamp(8px,1.75dvh,16px);height:clamp(8px,1.75dvh,16px);}
+.dr-royal-rival-impact .absolute.inset-0 {border-color:#b8a27e;}
+.dr-royal-deck,.dr-royal-player-deck {position:absolute;z-index:2;left:8px;top:clamp(7px,1.2dvh,15px);}
+.dr-royal-deck-back {
+  position:relative;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  width:clamp(43px,11vw,69px);height:clamp(60px,13dvh,98px);
+  border:2px solid #e3b967;border-radius:5px;
+  background:radial-gradient(ellipse at 50% 35%,#3a3030,#101015 75%);
+  box-shadow:-3px 3px 0 #131721,-6px 5px 0 #c69c59,0 6px 16px #0009,inset 0 0 0 2px #181823;
+  color:#f9df9a;text-shadow:0 2px #090b12;
+}
+.dr-royal-deck-back::before {content:'✥';position:absolute;top:5px;left:50%;transform:translateX(-50%);font:13px Georgia,serif;color:#f6d9a1;opacity:.85;}
+.dr-royal-deck-back.blue {background:radial-gradient(ellipse at 50% 35%,#143d63,#071c39 75%);}
+.dr-royal-deck-back span {font:800 clamp(17px,4dvh,29px)/1 Cinzel,Georgia,serif;}
+.dr-royal-deck-back small {margin-top:5px;font:800 clamp(9px,2dvh,12px)/1 system-ui,sans-serif;letter-spacing:.06em;}
+.dr-royal-menu-button {
+  position:absolute;z-index:4;right:7px;top:7px;
+  display:grid;place-items:center;
+  width:clamp(42px,8dvh,63px);height:clamp(42px,8dvh,63px);
+  border:2px solid #e1b66b;border-radius:50%;
+  color:#ffe0a1;background:radial-gradient(circle,#1a1b20,#080b11);
+  box-shadow:0 0 0 2px #04080991,0 5px 14px #0008;
+}
+.dr-royal-menu-button .material-icons {font-size:clamp(25px,5dvh,36px);}
+.dr-royal-rival-hand {position:relative;min-height:0;pointer-events:none;}
+.dr-royal-rival-fan {position:absolute;inset:0 4px 5px;}
+.dr-royal-facedown {
+  position:absolute;top:3px;
+  width:clamp(40px,16vw,84px);height:min(90%,145px);
+  border:2px solid #e4b46e;
+  border-radius:5px;
+  background:
+    radial-gradient(circle at 50% 42%,#bf8e4d17 0 28%,transparent 29%),
+    repeating-linear-gradient(45deg,transparent 0 7px,#ffdea508 8px 9px),
+    linear-gradient(140deg,#6b1e27,#320a18 70%);
+  box-shadow:0 5px 9px #000b,inset 0 0 0 3px #280b1b,inset 0 0 0 4px #ad7e40;
+  display:grid;place-items:center;
+}
+.dr-royal-card-crest {display:grid;place-items:center;width:65%;height:59%;border:2px solid #d7ab65;border-radius:50%;color:#f3cc78;font:700 clamp(17px,4dvh,32px)/1 Georgia,serif;text-shadow:0 0 10px #b88337;}
+.dr-royal-hand-count {
+  position:absolute;z-index:6;
+  display:block;padding:2px 6px;border:1px solid #e4c181a5;border-radius:7px;
+  background:#11141cd9;color:#ffdfa1;
+  font:800 clamp(9px,2.2dvh,12px)/1.1 system-ui,sans-serif;
+  text-align:center;letter-spacing:.03em;
+}
+.dr-royal-hand-count.rival {right:7px;bottom:3px;}
+.dr-royal-hand-count.player {left:7px;top:1px;}
+.dr-royal-field {
+  position:relative;min-height:0;
+  margin:0 clamp(5px,2vw,16px);
+  border:2px solid #dcb47599;border-radius:10px;
+  background:
+    repeating-linear-gradient(90deg,transparent 0 27px,#ffe8bb0b 28px 30px),
+    linear-gradient(180deg,#584f4099,#241e1cb3);
+  box-shadow:inset 0 0 0 2px #42311a7d,inset 0 12px 20px #0003,0 5px 12px #120d0ea8;
+  display:flex;flex-direction:column;
+  align-items:stretch;justify-content:space-between;
+  overflow:visible;
+  transition:border-color .15s,box-shadow .15s;
+}
+.dr-royal-field.is-guiding {border-color:#f8d997;}
+.dr-royal-field.is-dragging {box-shadow:0 0 12px #ffdb8cb3,inset 0 0 20px #f7d8922b;}
+.dr-royal-activation-target {
+  flex:0 0 45%;
+  min-height:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  margin:2px 5px 0;
+  border:1px dashed #efd2a08a;border-radius:7px;
+  background:linear-gradient(#172d30b8,#192b2ea0);
+  color:#ffe0a1;
+  cursor:pointer;
+  text-align:center;
+}
+.dr-royal-activation-target:disabled {cursor:default;opacity:1;}
+.dr-royal-activation-target:not(:disabled) {
+  box-shadow:0 0 12px #ffd4749c,inset 0 0 9px #f1d18552;
+  border-style:solid;
+}
+.dr-royal-activation-icon {font:700 clamp(12px,3dvh,25px)/1 Georgia,serif;}
+.dr-royal-field-prompt {font:700 clamp(9px,2.4vw,12px)/1.15 system-ui,sans-serif;text-shadow:0 2px #030c13;max-width:95%;}
+.dr-royal-impact-track {flex:1 1 0;min-height:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(2px,.8vw,6px);padding:4px 6px 5px;}
+.dr-royal-impact-slot {
+  min-height:0;min-width:0;
+  display:grid;place-items:center;position:relative;
+  border:2px ridge #b79561;border-radius:5px;
+  background:radial-gradient(circle,#8d7e6552,#1c2626ae 70%);
+  color:#f4dda7;
+  box-shadow:inset 0 0 0 1px #b49a6357,inset 0 3px 8px #0d141ac7;
+  transform:perspective(360px) rotateX(10deg);
+  overflow:hidden;
+}
+.dr-royal-impact-slot.completed {border-color:#f7cf7e;background:#574522;box-shadow:0 0 9px #ffdb897d;}
+.dr-royal-impact-slot.available {border-color:#ffe69a;box-shadow:0 0 14px #fff0ad,inset 0 0 8px #f1d090a8;animation:dr-royal-slot-pulse 1.15s ease-in-out infinite alternate;}
+.dr-royal-impact-slot img {width:100%;height:100%;object-fit:cover;}
+.dr-royal-impact-numeral {font:700 clamp(11px,3dvh,21px)/1 Cinzel,Georgia,serif;text-shadow:0 2px #080e12;}
+.dr-royal-combo {
+  position:absolute;right:0;top:0;z-index:6;pointer-events:none;
+  transform:translate(3%,-20%) rotate(-8deg);
+  display:flex;flex-direction:column;align-items:center;line-height:.9;
+  color:#ffe7a1;
+  filter:drop-shadow(3px 5px #501622) drop-shadow(0 0 8px #ffae62);
+  text-shadow:2px 2px #811f31,-2px -2px #8b1738,0 0 8px #ff664b;
+  animation:dr-royal-combo-pop .36s ease-out both;
+}
+.dr-royal-combo strong {font:900 clamp(17px,5dvh,34px)/1 Cinzel,Georgia,serif;letter-spacing:-.04em;}
+.dr-royal-combo b {font:900 clamp(20px,6dvh,42px)/.9 Cinzel,Georgia,serif;}
+.dr-royal-combo.combo-3 {color:#fff2b9;filter:drop-shadow(3px 4px #7e1c2f) drop-shadow(0 0 13px #fff06b);}
+.dr-royal-player-hand {position:relative;min-height:0;}
+.dr-royal-player-fan {position:absolute;inset:5px 0 0;}
+.dr-royal-hand-card {
+  position:absolute;top:4px;
+  width:clamp(63px,27vw,125px);height:calc(100% - 8px);
+  min-height:0;
+  display:flex;flex-direction:column;align-items:stretch;
+  transform:translateX(-50%) translateY(var(--fan-rise)) rotate(var(--fan-rotate));
+  transform-origin:50% 90%;
+  padding:2px;
+  border:2px solid #deb373;border-radius:7px;
+  background:linear-gradient(160deg,#2b1a1a,#0d0c12);
+  box-shadow:0 5px 11px #050813c7,inset 0 0 0 1px #f4d39a7d;
+  color:#fff6de;overflow:hidden;
+  transition:transform .18s ease,box-shadow .18s ease,border-color .15s ease;
+}
+.dr-royal-hand-card img {width:100%;height:57%;min-height:0;object-fit:cover;border-radius:3px 3px 0 0;}
+.dr-royal-card-kind {display:block;padding:2px 1px;margin-top:-1px;font:800 clamp(10px,2.5vw,14px)/1.05 Cinzel,Georgia,serif;text-align:center;white-space:nowrap;text-shadow:0 1px #08101a;}
+.dr-royal-hand-card.attack .dr-royal-card-kind {background:linear-gradient(#a73b31,#57151c);}
+.dr-royal-hand-card.defense .dr-royal-card-kind {background:linear-gradient(#1e79ac,#173b74);}
+.dr-royal-hand-card.impact .dr-royal-card-kind {background:linear-gradient(#b99143,#604220);}
+.dr-royal-card-title {margin:2px 1px 0;font:600 clamp(8px,2vw,11px)/1.05 system-ui,sans-serif;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.dr-royal-card-effect {margin:2px 0 0;font:600 clamp(8px,2vw,11px)/1.08 system-ui,sans-serif;text-align:center;color:#eedfca;white-space:normal;}
+.dr-royal-hand-card.selected {border-color:#ffe995;transform:translateX(-50%) translateY(calc(var(--fan-rise) - 13px)) rotate(var(--fan-rotate)) scale(1.04);box-shadow:0 0 0 2px #fff1b991,0 0 20px #ffc96d,0 10px 16px #000b;}
+.dr-royal-hand-card.unavailable {filter:saturate(.66) brightness(.84);}
+.dr-royal-player-area {display:block;}
+.dr-royal-player-deck {top:auto;bottom:clamp(4px,1.8dvh,15px);}
+.dr-royal-audio {position:absolute;bottom:100%;left:10px;z-index:2;width:clamp(29px,5dvh,38px);height:clamp(29px,5dvh,38px);display:grid;place-items:center;border:1px solid #e7bd77;border-radius:50%;background:#141b22d9;color:#ffdeb2;}
+.dr-royal-audio .material-icons {font-size:clamp(15px,3dvh,22px);}
+.dr-royal-finish {
+  position:absolute;right:4px;bottom:clamp(2px,1.6dvh,12px);
+  z-index:2;width:clamp(52px,12dvh,90px);height:clamp(52px,12dvh,90px);
+  border:3px solid #fff0aa;border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:radial-gradient(circle,#574027,#181218 75%);
+  box-shadow:0 0 0 3px #a77b31,0 0 19px #ffc268,inset 0 0 0 2px #75532b;
+  color:#ffebbb;text-shadow:0 2px #150b0b;
+}
+.dr-royal-finish>span {font-size:clamp(18px,4dvh,34px);line-height:1;}
+.dr-royal-finish strong {font:800 clamp(9px,2dvh,13px)/1.06 system-ui,sans-serif;letter-spacing:.04em;}
+.dr-royal-finish:disabled {opacity:.58;filter:grayscale(.45);box-shadow:0 0 0 2px #756651;}
+.dr-royal-drag-ghost {position:fixed;z-index:80;width:clamp(60px,18vw,96px);height:clamp(83px,19dvh,128px);transform:translate(-50%,-60%) rotate(-6deg);pointer-events:none;border:2px solid #ffe7a0;border-radius:7px;overflow:hidden;box-shadow:0 0 24px #ffda87;background:#1a1922;}
+.dr-royal-drag-ghost img {width:100%;height:100%;object-fit:cover;opacity:.95;}
+@keyframes dr-royal-combo-pop {0%{opacity:0;scale:.6}65%{opacity:1;scale:1.2}100%{opacity:1;scale:1}}
+@keyframes dr-royal-slot-pulse {0%{box-shadow:0 0 5px #ffd473}100%{box-shadow:0 0 20px #fff2b7,inset 0 0 15px #fff1a566}}
+@media(max-height:570px){
+  .dr-royal-layout {grid-template-rows:minmax(0,23fr) minmax(0,17fr) minmax(0,22fr) minmax(0,22fr) minmax(0,16fr);}
+  .dr-royal-character-frame {max-height:calc(100% - 8px);}
+  .dr-royal-layout .dr-royal-character .flex.gap-1.mt-1 {gap:3px;}
+  .dr-royal-rival-impact {display:none;}
+  .dr-royal-hand-card img {height:50%;}
+  .dr-royal-card-kind {padding:1px 0;font-size:10px;}
+  .dr-royal-card-title,.dr-royal-card-effect {font-size:8px;margin-top:1px;}
+  .dr-royal-impact-track {padding:2px 4px 3px;}
+  .dr-royal-activation-target {flex-basis:40%;}
+  .dr-royal-activation-icon {display:none;}
+  .dr-royal-field-prompt {font-size:9px;}
+  .dr-royal-combo strong {font-size:16px;}
+  .dr-royal-combo b {font-size:20px;}
+  .dr-royal-hand-count {font-size:9px;}
+  .dr-royal-finish strong {font-size:9px;}
+}
+@media (min-width:650px) and (max-height:500px) {
+  .dr-royal-layout {grid-template-rows:minmax(0,25fr) minmax(0,15fr) minmax(0,20fr) minmax(0,23fr) minmax(0,17fr);}
+  .dr-royal-deck-back {width:42px;height:49px;}
+  .dr-royal-character-frame {width:76px;}
+  .dr-royal-hand-card {width:75px;}
+}
+@media(prefers-reduced-motion:reduce){
+  .dr-royal-combo,.dr-royal-impact-slot.available {animation:none!important;}
+  .dr-royal-hand-card,.dr-royal-field {transition:none!important;}
+}
