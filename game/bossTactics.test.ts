@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { BOSS_IDS, BOSS_STYLES, isBossId, selectBossMove, type BossSnapshot } from './bossTactics.ts';
+import { BOSS_IDS, BOSS_MOVE_NAMES, BOSS_STYLES, isBossId, selectBossMove, type BossSnapshot } from './bossTactics.ts';
 
 const sample: BossSnapshot = {
   turn: 3, playerHp: 17, shield: 2, enemyHp: 15, enemyShield: 2, enemySeals: 1, difficulty: 'Estratega',
@@ -38,4 +38,15 @@ test('tactics react to battle conditions using existing effects only', () => {
   assert.ok(count('7', {...sample, playerHp: 5}, 'attack') > count('7', {...sample, playerHp: 20}, 'attack'));
   assert.ok(count('8', {...sample, enemyHp: 5}, 'shield') > count('8', {...sample, enemyHp: 20}, 'shield'));
   assert.notEqual(selectBossMove('6', { ...sample, enemyShield: 10 }, .5), 'shield', 'guard at shield cap must not waste a move');
+});
+
+test('every general narrates a distinct move without adding a fourth action type', () => {
+  for (const id of BOSS_IDS) {
+    const names = BOSS_MOVE_NAMES[id];
+    assert.ok(names.attack.length >= 6 && names.shield.length >= 6 && names.impact.length >= 6);
+    assert.deepEqual(Object.keys(names).sort(), ['attack','impact','shield']);
+  }
+  for (const type of ['attack','shield','impact'] as const) {
+    assert.equal(new Set(BOSS_IDS.map(id => BOSS_MOVE_NAMES[id][type])).size, 8);
+  }
 });
