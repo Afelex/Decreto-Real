@@ -25,6 +25,18 @@ export const BOSS_STYLES: Readonly<Record<BossId, BossStyle>> = {
   '8': {id:'8',name:'Caballero del Juramento',title:'Juramento final',hint:'Equilibra ataque y sellos; se protege cuando peligra.',weights:{attack:3,shield:3,impact:4}},
 };
 
+/** Narrative names shown on the table, not additional playable cards. */
+export const BOSS_MOVE_NAMES: Readonly<Record<BossId, Readonly<Record<BossMove, string>>>> = {
+  '1': {attack:'Salva del Callao', shield:'Muralla de proa', impact:'Sello del almirantazgo'},
+  '2': {attack:'Carga escarlata', shield:'Repliegue veloz', impact:'Orden del mensajero'},
+  '3': {attack:'Golpe de azogue', shield:'Bóveda de plata', impact:'Pacto de plata'},
+  '4': {attack:'Descarga del bastión', shield:'Cobertura del obús', impact:'Sello de artillería'},
+  '5': {attack:'Emboscada de la selva', shield:'Camuflaje del sendero', impact:'Marca del fantasma'},
+  '6': {attack:'Orden del estandarte', shield:'Guardia de bandera', impact:'Juramento de la dama'},
+  '7': {attack:'Picado del cóndor', shield:'Nido de roca', impact:'Marca de las cumbres'},
+  '8': {attack:'Espada jurada', shield:'Escudo del juramento', impact:'Sello del caballero'},
+};
+
 export function isBossId(input: unknown): input is BossId {
   return typeof input === 'string' && BOSS_IDS.some(id => id === input);
 }
