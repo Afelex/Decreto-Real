@@ -8,6 +8,7 @@ import { BLOCK_LABELS, blockText, currentMessage, historyLines } from '../game/c
 import { clearSave, writePreference, writeSave, type StorageLike } from '../game/combatSave';
 import { battleCue } from '../game/combatPresentation.ts';
 import { GeneralPortrait } from './GeneralPortrait';
+import { BOSS_STYLES, isBossId } from '../game/bossTactics.ts';
 
 type Kind = CardKind;
 
@@ -76,6 +77,7 @@ export const DuelBoard: React.FC<BoardProps> = ({ initial, storage, restored = f
     seals, enemySeals, turn, lastPlay, difficulty, streak } = combat;
   const persist = storage !== undefined;
   const busy = combat.phase === 'rival';
+  const boss = isBossId(generalChapterId) ? BOSS_STYLES[generalChapterId] : null;
   const gameOver = combat.phase === 'finished';
   const playerWon = combat.winner === 'player';
   const showPause = combat.paused;
@@ -155,9 +157,9 @@ export const DuelBoard: React.FC<BoardProps> = ({ initial, storage, restored = f
   // Time and presentation belong to React; the response itself is an atomic engine action.
   React.useEffect(() => {
     if (!busy || showPause) return;
-    const timer = window.setTimeout(() => dispatch({ type: 'resolve_rival' }), 700);
+    const timer = window.setTimeout(() => dispatch(boss ? { type: 'resolve_rival', bossId: boss.id } : { type: 'resolve_rival' }), 700);
     return () => window.clearTimeout(timer);
-  }, [busy, showPause]);
+  }, [busy, showPause, boss?.id]);
 
   const chosen = hand.find(card => card.id === selected);
   const label = CARD_LABELS;
@@ -238,12 +240,16 @@ export const DuelBoard: React.FC<BoardProps> = ({ initial, storage, restored = f
   const pips = (count: number) => <div aria-hidden="true">{[0, 1, 2, 3].map(i => <span className={i < count ? 'filled' : ''} key={i}>✦</span>)}</div>;
   const saveWarning = (save === 'quota' || save === 'unavailable') && !saveWarningSeen;
 
-  return <main className={`dr-game${guide ? ' tutorial' : ''}${immersive ? ' immersive' : ''}${drag ? ' dragging-card' : ''}`}>
+  return <main className={`dr-game${guide ? ' tutorial' : ''}${immersive ? ' immersive dr-original-table' : ''}${drag ? ' dragging-card' : ''}`}>
     <header className="dr-top"><button className="dr-back" onClick={exit}>‹ <span>{guide ? 'Salir' : 'Menú'}</span></button><div><small>{guide ? 'TUTORIAL' : missionLabel ?? 'DUELO DE PRUEBA'} · TURNO {turn}</small><h1>Decreto Real</h1>{SAVE_TEXT[save] && <span className={`dr-save ${save}`} title={SAVE_DETAIL[save]}>{SAVE_TEXT[save]}</span>}</div>{headerAction ?? <button className="dr-iconbtn" onClick={() => setShowHelp(true)} aria-label="Reglas del prototipo">?</button>}</header>
     {saveWarning && <div className="dr-banner" role="status"><span>{SAVE_DETAIL[save]}</span><button onClick={() => setSaveWarningSeen(true)}>Entendido</button></div>}
     {restoredNotice && !saveWarning && <div className="dr-banner restored" role="status"><span>Partida recuperada en el turno {initial.turn}.</span><button onClick={() => setRestoredNotice(false)} aria-label="Cerrar aviso">×</button></div>}
-    <section className="dr-rival" aria-label="Rival"><div className="dr-avatar rival">{generalChapterId ? <GeneralPortrait chapterId={generalChapterId}/> : <Portrait rival/>}</div><div className="dr-person"><strong>{opponentName}</strong>{guide ? <small className="dr-difficulty-label">IA · {difficulty}</small> : <button className="dr-difficulty" onClick={() => setShowDifficulty(true)}>IA · {difficulty}　⌄</button>}<div className="dr-health"><span style={{ width: `${enemyHp * 5}%` }} /></div><b aria-label={`Vida del rival ${enemyHp} de 20, escudo ${enemyShield}`}>♥ {enemyHp}<i>/20</i>　🛡 {enemyShield}</b></div><div className="dr-seals" aria-label={`Impactos del rival: ${enemySeals} de 4`}>IMPACTOS <strong>{enemySeals}/4</strong>{pips(enemySeals)}</div></section>
-    <section ref={arenaRef} className={`dr-arena${guide ? ' coaching' : ''}${drag?.over ? ' drop-ready' : ''}`}>{guide ? guide.panel : <><div className="dr-map" aria-hidden="true">✥<small>CAMPO DE BATALLA</small></div>{immersive && <div className="dr-drop-label" aria-hidden="true">{drag ? drag.over ? "Suelta para jugar" : "Desliza hasta la mesa" : "Arrastra una carta aquí"}</div>}{cue && <div key={`cue-${journalLength}`} className={`dr-battle-cue ${cue.kind} ${cue.side}`} aria-hidden="true"><span className="dr-battle-cue-flash"/><strong>{cue.label}</strong></div>}{lastPlay && <div key={`${lastPlay.side}-${lastPlay.name}-${journalLength}`} className={`dr-played ${lastPlay.side}`}><span aria-hidden="true">{lastPlay.icon}</span><b>{lastPlay.name}</b><small>{lastPlay.side === 'player' ? 'Tu jugada' : 'Jugada del rival'}</small></div>}<button className="dr-log" onClick={() => setShowHistory(true)} aria-label="Ver historial de jugadas">✦　{message} <small>· Historial</small></button></>}</section>
+    <section className="dr-rival" aria-label="Rival"><div className="dr-avatar rival">{generalChapterId ? <GeneralPortrait chapterId={generalChapterId}/> : <Portrait rival/>}</div><div className="dr-person"><strong>{opponentName}</strong>{boss && <small className="dr-boss-tactic" title={boss.hint} aria-label={`Táctica: ${boss.title}. ${boss.hint}`}>♜ {boss.title}</small>}{guide ? <small className="dr-difficulty-label">IA · {difficulty}</small> : <button className="dr-difficulty" onClick={() => setShowDifficulty(true)}>IA · {difficulty}　⌄</button>}<div className="dr-health"><span style={{ width: `${enemyHp * 5}%` }} /></div><b aria-label={`Vida del rival ${enemyHp} de 20, escudo ${enemyShield}`}>♥ {enemyHp}<i>/20</i>　🛡 {enemyShield}</b></div><div className="dr-seals" aria-label={`Impactos del rival: ${enemySeals} de 4`}>IMPACTOS <strong>{enemySeals}/4</strong>{pips(enemySeals)}</div></section>
+    <section ref={arenaRef} className={`dr-arena${guide ? ' coaching' : ''}${drag?.over ? ' drop-ready' : ''}`}>{guide ? guide.panel : <>{immersive && <div className="dr-classic-table" aria-hidden="true">
+      <div className="dr-table-impact-rail rival"><span>SELLOS RIVALES</span>{[0,1,2,3].map(i => <i key={i} className={i < enemySeals ? 'charged' : ''}>✦</i>)}</div>
+      <div className="dr-table-open-field"><span className="dr-table-empty-slot"/><span className="dr-table-crest">✥</span><span className="dr-table-empty-slot"/></div>
+      <div className="dr-table-impact-rail player"><span>TUS SELLOS</span>{[0,1,2,3].map(i => <i key={i} className={i < seals ? 'charged' : ''}>✦</i>)}</div>
+    </div>}<div className="dr-map" aria-hidden="true">✥<small>CAMPO DE BATALLA</small></div>{immersive && <div className="dr-drop-label" aria-hidden="true">{drag ? drag.over ? "Suelta para jugar" : "Desliza hasta la mesa" : "Arrastra una carta aquí"}</div>}{cue && <div key={`cue-${journalLength}`} className={`dr-battle-cue ${cue.kind} ${cue.side}`} aria-hidden="true"><span className="dr-battle-cue-flash"/><strong>{cue.label}</strong></div>}{lastPlay && <div key={`${lastPlay.side}-${lastPlay.name}-${journalLength}`} className={`dr-played ${lastPlay.side}`}><span aria-hidden="true">{lastPlay.icon}</span><b>{lastPlay.name}</b><small>{lastPlay.side === 'player' ? 'Tu jugada' : 'Jugada del rival'}</small></div>}<button className="dr-log" onClick={() => setShowHistory(true)} aria-label="Ver historial de jugadas">✦　{message} <small>· Historial</small></button></>}</section>
     <section className="dr-player" aria-label="Tu monarca"><div className="dr-avatar"><Portrait/></div><div className="dr-person"><strong>Tu monarca</strong><small>Investigador de Peruanistas</small><div className="dr-health"><span style={{ width: `${playerHp * 5}%` }} /></div><b aria-label={`Tu vida ${playerHp} de 20, escudo ${shield}`}>♥ {playerHp}<i>/20</i>　🛡 {shield}</b></div><div className="dr-seals player" aria-label={`Tus Impactos: ${seals} de 4`}>IMPACTOS <strong>{seals}/4</strong>{pips(seals)}</div><div className="dr-mana"><strong>{mana}<small>/3</small></strong><span>Mando</span><small className="dr-streak">Racha {streak}/3</small></div></section>
     {gameOver ? <section className="dr-result" aria-labelledby="dr-result-title"><small>FIN DEL DUELO</small><h2 id="dr-result-title" ref={resultRef} tabIndex={-1}>{playerWon ? '¡Victoria!' : 'Derrota'}</h2><p>{seals >= 4 ? 'Completaste los cuatro Impactos.' : enemySeals >= 4 ? `${opponentName} completó los cuatro Impactos.` : enemyHp <= 0 ? 'El rival se quedó sin vida.' : playerHp <= 0 ? 'Tu monarca se quedó sin vida.' : playerWon ? 'El reino recuerda tu decreto.' :  `${opponentName} ha prevalecido esta vez.`}</p><div className="dr-result-stats"><div><b>{turn}</b><small>Turno</small></div><div><b>{playerHp}</b><small>Tu vida</small></div><div><b>{seals}/4</b><small>Impactos</small></div></div><button onClick={onNewGame ?? (() => window.location.reload())}>Jugar otra vez</button><button className="dr-result-menu" onClick={() => navigate('/')}>Volver al menú</button></section> : <>
       <div className="dr-prompt" role="status" aria-live="polite">{chosen ? <><b>{chosen.name}</b> · {chosen.text}<button onClick={() => setSelected(null)}>Cancelar</button><button className={`dr-confirm${guide?.target === 'confirm' ? ' dr-guide-target' : ''}`} disabled={!!invalidAction(combat, { type: 'play', cardId: chosen.id })} onClick={() => play(chosen)}>Jugar carta</button></> : notice ? <span className="dr-notice">{notice}</span> : busy ? <>TURNO DEL RIVAL<span>Preparando respuesta…</span></> : <>TU TURNO <b>· {mana} de mando</b><span>Selecciona una carta</span></>}</div>

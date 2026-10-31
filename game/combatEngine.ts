@@ -1,5 +1,6 @@
 import { createDeck, type Card, type CardKind } from './cards.ts';
 import { drawFromPile, GAME_RULES, nextComboStreak, resolveAttack, resolveImpact } from './rules.ts';
+import { BOSS_MOVE_NAMES, isBossId, selectBossMove, type BossId } from './bossTactics.ts';
 
 /**
  * Record compatibility policy (see docs/DR-01-motor.md):
@@ -8,13 +9,13 @@ import { drawFromPile, GAME_RULES, nextComboStreak, resolveAttack, resolveImpact
  * - Older versions listed in LEGACY_VERSIONS are replayed with the current rules and checked by projection:
  *   same event count, type, turn and every legacy data field. Their stored messages are ignored.
  */
-export const ENGINE_VERSION = 'dr-combat-2';
-export const LEGACY_VERSIONS = ['dr-combat-1'] as const;
+export const ENGINE_VERSION = 'dr-combat-3';
+export const LEGACY_VERSIONS = ['dr-combat-1', 'dr-combat-2'] as const;
 export type Difficulty = 'Aprendiz' | 'Estratega' | 'Maestro';
 export type CombatAction =
   | { type: 'play'; cardId: string }
   | { type: 'end_turn' }
-  | { type: 'resolve_rival' }
+  | { type: 'resolve_rival'; bossId?: BossId }
   | { type: 'pause' }
   | { type: 'resume' }
   | { type: 'difficulty'; value: Difficulty };
@@ -72,10 +73,14 @@ export function createCombat(seed: number, difficulty: Difficulty = 'Estratega')
 /** Copies only the fields each action defines; anything else in an external object is dropped. */
 export function canonicalAction(action: unknown): CombatAction | null {
   if (!action || typeof action !== 'object') return null;
-  const { type, cardId, value } = action as Record<string, unknown>;
+  const { type, cardId, value, bossId } = action as Record<string, unknown>;
   if (type === 'play') return typeof cardId === 'string' ? { type, cardId } : null;
   if (type === 'difficulty') return isDifficulty(value) ? { type, value } : null;
-  if (type === 'end_turn' || type === 'resolve_rival' || type === 'pause' || type === 'resume') return { type };
+  if (type === 'resolve_rival') {
+    if (bossId === undefined) return { type };
+    return isBossId(bossId) ? { type, bossId } : null;
+  }
+  if (type === 'end_turn' || type === 'pause' || type === 'resume') return { type };
   return null;
 }
 
@@ -163,8 +168,12 @@ export function applyCombatAction(state: CombatState, input: CombatAction): { st
       draw(card.effect.amount);
     }
   } else if (action.type === 'resolve_rival') {
+    // The optional boss style is carried by the canonical action. Saved records
+    // and replays reproduce exactly the same decision with the seeded RNG.
+    // Unstyled duels still execute their original decision tree unchanged.
+    const bossMove = action.bossId ? selectBossMove(action.bossId, next, random()) : null;
     const danger = next.playerHp + next.shield;
-    const shouldAttack = next.difficulty === 'Aprendiz'
+    const shouldAttack = bossMove ? bossMove === 'attack' : next.difficulty === 'Aprendiz'
       ? danger <= 5 || next.enemyHp <= 4 || random() > 0.7
       : next.difficulty === 'Maestro'
         ? danger <= 12 || next.enemyHp <= 10 || next.enemyShield >= 3 || random() > 0.2
@@ -173,18 +182,18 @@ export function applyCombatAction(state: CombatState, input: CombatAction): { st
       next.lastPlay = { side: 'rival', name: 'Decreto Final', icon: 'Ⅳ' }; next.enemySeals = 4;
       emit('impact', { side: 'rival', seals: 4 });
     } else if (shouldAttack) {
-      next.lastPlay = { side: 'rival', name: 'Ofensiva real', icon: '⚔' };
+      next.lastPlay = { side: 'rival', name: action.bossId ? BOSS_MOVE_NAMES[action.bossId].attack : 'Ofensiva real', icon: '⚔' };
       const incoming = 3 + (next.enemyHp <= 8 ? 1 : 0);
       const result = resolveAttack(incoming, next.shield);
       next.shield = result.remainingShield; next.playerHp = Math.max(0, next.playerHp - result.damageDealt);
       emit('attack', { side: 'rival', ...result, incoming });
-    } else if (random() < (next.difficulty === 'Aprendiz' ? 0.2 : next.difficulty === 'Maestro' ? 0.7 : 0.45)) {
-      next.lastPlay = { side: 'rival', name: `Impacto ${next.enemySeals + 1}`, icon: '✦' };
+    } else if (bossMove === 'impact' || (bossMove === null && random() < (next.difficulty === 'Aprendiz' ? 0.2 : next.difficulty === 'Maestro' ? 0.7 : 0.45))) {
+      next.lastPlay = { side: 'rival', name: action.bossId ? BOSS_MOVE_NAMES[action.bossId].impact : `Impacto ${next.enemySeals + 1}`, icon: '✦' };
       const hp = next.playerHp, enemyHp = next.enemyHp;
       next.enemySeals++; next.playerHp = Math.max(0, next.playerHp - 1); next.enemyHp = Math.min(20, next.enemyHp + 1);
       emit('impact', { side: 'rival', seals: next.enemySeals, damage: hp - next.playerHp, healing: next.enemyHp - enemyHp });
     } else {
-      next.lastPlay = { side: 'rival', name: 'Guardia del Virrey', icon: '⬟' };
+      next.lastPlay = { side: 'rival', name: action.bossId ? BOSS_MOVE_NAMES[action.bossId].shield : 'Guardia del Virrey', icon: '⬟' };
       const before = next.enemyShield; next.enemyShield = Math.min(10, next.enemyShield + 3);
       emit('shield', { side: 'rival', shield: next.enemyShield, gained: next.enemyShield - before });
     }

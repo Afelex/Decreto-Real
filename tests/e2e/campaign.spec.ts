@@ -215,3 +215,45 @@ test('reduced-motion setting preserves the textual effect while disabling flouri
   await expect(cue).not.toBeEmpty();
   await expect(cue).toHaveCSS('animation-name', 'none');
 });
+
+test('restored classic tabletop fits the phone and boss has a distinct tactical response', async ({ page }, testInfo) => {
+  test.skip(!['mobile-390', 'short-360', 'landscape'].includes(testInfo.project.name), 'Sample different aspect ratios; broader layout is covered by viewport.spec');
+  await page.goto(campaign);
+  await page.evaluate(() => localStorage.setItem('decreto-real.campania.v1', JSON.stringify({
+    version: 1,
+    stars: Object.fromEntries(Array.from({ length: 5 }, (_, i) => [String(i + 1).padStart(2, '0'), 1])),
+  })));
+  await page.goto('/Decreto-Real/#/campania/mision/06');
+  await expect(page.getByText(/Baluarte naval/)).toBeVisible();
+  await page.getByRole('button', { name: /Comenzar duelo/ }).click();
+  await expect(page.locator('.dr-game.dr-original-table')).toBeVisible();
+  await expect(page.locator('.dr-classic-table')).toBeVisible();
+  await expect(page.locator('.dr-table-impact-rail')).toHaveCount(2);
+  await expect(page.locator('.dr-table-open-field .dr-table-empty-slot')).toHaveCount(2);
+  await expect(page.locator('.dr-rival svg[data-general-portrait="1"]')).toBeVisible();
+  const hand = page.locator('.dr-hand');
+  const actions = page.locator('.dr-actions');
+  for (const element of [hand, actions]) {
+    const bounds = await element.boundingBox();
+    expect(bounds).not.toBeNull();
+    expect(bounds!.y).toBeGreaterThanOrEqual(-1);
+    expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(page.viewportSize()!.height + 1);
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollHeight <= innerHeight + 1)).toBe(true);
+  await page.getByRole('button', { name: /TERMINAR TURNO/ }).click();
+  await expect(page.locator('.dr-top small')).toContainText('TURNO 2');
+  const update = page.locator('.dr-played.rival');
+  await expect(update).toBeVisible();
+  if (testInfo.project.name === 'mobile-390') {
+    await page.screenshot({ path: testInfo.outputPath('classic-inspired-boss-table.png'), fullPage:true });
+  }
+});
+
+test('the original /game and standalone duel remain distinct routes', async ({ page }) => {
+  test.skip(test.info().project.name !== 'mobile-390', 'One smoke test for preserved routes');
+  await page.goto('/Decreto-Real/#/game');
+  await expect(page.locator('.dr-classic-screen')).toBeVisible();
+  await expect(page.locator('.dr-classic-table')).toHaveCount(0);
+  await page.goto('/Decreto-Real/#/duelo-v1');
+  await expect(page.locator('.dr-classic-table')).toHaveCount(0);
+});

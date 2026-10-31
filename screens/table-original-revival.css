@@ -1,0 +1,229 @@
+/* DR-C06: Return to the original tactile/ornamental board without reusing
+ * its obsolete absolute 430×932 layout. Campaign only: free duel and tutorial
+ * retain their tested presentation. The full canvas still fits 100dvh. */
+.dr-game.immersive.dr-original-table {
+  background:
+    radial-gradient(ellipse at 50% 40%,#6f66552a,transparent 70%),
+    linear-gradient(160deg,#15191e 0%,#201d1d 35%,#101c25 72%,#181419 100%);
+}
+.dr-original-table .dr-top {
+  border-bottom:1px solid #d1a86a68;
+  background:linear-gradient(90deg,#191c27dc,#30261de8,#191b27df);
+  border-radius:9px;
+  box-shadow:inset 0 1px 0 #e1bb8555;
+}
+.dr-original-table .dr-top h1 {color:#f6d9a1;text-shadow:0 2px 3px #0d0b11;}
+.dr-original-table .dr-rival,
+.dr-original-table .dr-player {
+  border-width:2px;
+  border-radius:11px;
+  background:
+    linear-gradient(90deg,#6b423725,#101c27c9 35%,#253039e9),
+    linear-gradient(#24313a,#151e28);
+  box-shadow:inset 0 0 0 1px #f0d69e24,0 4px 9px #0006;
+}
+.dr-original-table .dr-rival {border-color:#b8875c;}
+.dr-original-table .dr-player {border-color:#82adac;}
+.dr-original-table .dr-avatar {
+  border-width:2px;
+  border-color:#e6c98f;
+  box-shadow:0 0 0 2px #ceb27f3c,0 3px 7px #060b11a8;
+}
+.dr-original-table .dr-boss-tactic {
+  display:block;
+  color:#f7d593;
+  font:700 10px/1.1 system-ui,sans-serif;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  max-width:100%;
+}
+.dr-original-table .dr-arena {
+  isolation:isolate;
+  border:6px ridge #bf9960;
+  outline:1px solid #e4c18a;
+  outline-offset:-4px;
+  border-radius:12px;
+  background:
+    radial-gradient(ellipse at 50% 48%,#346254,#1a3d35 57%,#112a29 100%);
+  box-shadow:inset 0 0 25px #040f128e,inset 0 0 0 1px #d8bc8f66,0 7px 15px #0007;
+}
+.dr-original-table .dr-arena::before {
+  inset:7px;
+  border:1px solid #e5c58f64;
+  border-radius:6px;
+  background:
+    repeating-linear-gradient(0deg,transparent 0 26px,#fff4c906 26px 27px),
+    repeating-linear-gradient(90deg,transparent 0 31px,#fff4c908 31px 32px);
+}
+.dr-original-table .dr-arena.drop-ready {
+  border-color:#ffe7a5;
+  box-shadow:inset 0 0 24px #ead48e74,0 0 18px #f1df9c99;
+}
+.dr-original-table .dr-classic-table {
+  position:absolute;
+  inset:3px;
+  z-index:1;
+  pointer-events:none;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:space-between;
+  overflow:hidden;
+}
+.dr-original-table .dr-table-impact-rail {
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:clamp(3px,1vw,8px);
+  padding:2px 6px;
+  border:1px solid #bbab8370;
+  border-radius:0 0 7px 7px;
+  background:#111d23a8;
+  color:#dcc19b;
+}
+.dr-original-table .dr-table-impact-rail.player {border-radius:7px 7px 0 0;background:#0d272abd;}
+.dr-original-table .dr-table-impact-rail span {
+  font:700 clamp(8px,2.1vw,10px)/1 Georgia,serif;
+  letter-spacing:.04em;
+}
+.dr-original-table .dr-table-impact-rail i {
+  display:grid;place-items:center;
+  width:clamp(14px,3.6dvh,25px);
+  height:clamp(14px,3.6dvh,25px);
+  border:1px solid #ac9367;
+  border-radius:4px;
+  transform:rotate(45deg);
+  font:normal 11px/1 Georgia,serif;
+  color:#7e887a;
+  background:#15292a;
+  box-shadow:inset 0 0 4px #0008;
+}
+.dr-original-table .dr-table-impact-rail i.charged {
+  background:linear-gradient(#ffe6aa,#ab782e);
+  border-color:#fff1b7;
+  color:#6c421b;
+  text-shadow:0 1px #fff0cb;
+}
+.dr-original-table .dr-table-open-field {
+  flex:1 1 0;
+  min-height:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:clamp(28px,11vw,80px);
+  opacity:.65;
+}
+.dr-original-table .dr-table-empty-slot {
+  width:clamp(35px,9vw,60px);
+  height:clamp(42px,9dvh,86px);
+  border:1px solid #e3c49c6e;
+  border-radius:7px;
+  background:radial-gradient(ellipse at 50% 50%,#8bb0941a,#051e1b75);
+  box-shadow:inset 0 1px 8px #021413c4,0 1px 2px #f2dba626;
+  transform:rotate(-6deg);
+}
+.dr-original-table .dr-table-empty-slot:last-child {transform:rotate(6deg);}
+.dr-original-table .dr-table-crest {color:#c3a26a;font:700 clamp(19px,4dvh,36px)/1 Georgia,serif;text-shadow:0 2px #031b1b;}
+.dr-original-table .dr-map {
+  z-index:1;
+  width:clamp(46px,10dvh,77px);
+  height:clamp(46px,10dvh,77px);
+  border:2px solid #c2a05f;
+  background:radial-gradient(circle,#a5a16e,#67664d);
+  color:#eee0b3;
+  opacity:.6;
+  box-shadow:0 0 0 4px #c5aa7261,0 0 16px #0b1918;
+  font-size:26px;
+}
+.dr-original-table .dr-drop-label {z-index:4;top:clamp(6px,1.5dvh,13px);font-size:10px;}
+.dr-original-table .dr-played {
+  z-index:5;
+  top:50%;
+  transform:translate(-50%,-50%);
+  padding:6px 10px;
+  border:2px solid #e0bd76;
+  border-radius:9px;
+  background:linear-gradient(135deg,#432c27f2,#162b30f2);
+  box-shadow:0 6px 12px #0016,inset 0 0 0 1px #ffe4a22c;
+}
+.dr-original-table .dr-played.rival {border-color:#cb7d64;}
+.dr-original-table .dr-played span {font-size:22px;}
+.dr-original-table .dr-played b {font-size:12px;}
+.dr-original-table .dr-played small {font-size:10px;}
+.dr-original-table .dr-log {
+  z-index:5;
+  bottom:3px;
+  max-width:95%;
+  min-height:27px;
+  padding:3px 7px;
+  border:1px solid #bb9964;
+  border-radius:6px;
+  background:#0e2020ed;
+  color:#f9e2b9;
+  font:600 clamp(10px,2.8vw,12px)/1.15 system-ui,sans-serif;
+}
+.dr-original-table .dr-prompt {
+  border:1px solid #c6a26b;
+  border-radius:8px;
+  background:linear-gradient(100deg,#e6d1a7,#c7b080);
+  color:#382a23;
+  box-shadow:0 2px 7px #0007;
+}
+.dr-original-table .dr-hand {
+  background:radial-gradient(ellipse at 50% 100%,#94734a24,transparent 70%);
+  border-bottom:1px solid #b99a6355;
+}
+.dr-original-table .dr-hand .dr-card {
+  border:2px solid #bf9d65;
+  border-radius:9px;
+  box-shadow:inset 0 0 0 1px #f9e4b56b,0 4px 13px #000a;
+}
+.dr-original-table .dr-hand .dr-card .dr-art {
+  border:1px solid #ae926599;
+  border-radius:6px;
+  box-shadow:inset 0 0 7px #0004;
+}
+.dr-original-table .dr-hand .dr-card.attack {border-color:#ca886e;}
+.dr-original-table .dr-hand .dr-card.defense {border-color:#8cb8b6;}
+.dr-original-table .dr-hand .dr-card.impact {border-color:#e4c780;}
+.dr-original-table .dr-hand .dr-card.active {
+  border-color:#ffe4a3;
+  box-shadow:0 0 0 2px #e7c67b55,0 10px 18px #000b;
+}
+.dr-original-table .dr-actions {
+  border-top:1px solid #d1ac7555;
+  padding-top:2px;
+}
+.dr-original-table .dr-actions .dr-end {
+  border:2px solid #ebc88c;
+  border-radius:10px;
+  background:linear-gradient(#a73535,#781e24 68%,#4c1520);
+  color:#ffeed4;
+  text-shadow:0 2px #44171b;
+  box-shadow:inset 0 1px 0 #ffdb9e80,0 2px 0 #25131a;
+  font-weight:800;
+  letter-spacing:.04em;
+}
+.dr-original-table .dr-actions .dr-end:active:not(:disabled) {
+  box-shadow:inset 0 1px 0 #ffdb9e80,0 0 0 #25131a;
+}
+@media(max-height:600px) {
+  .dr-original-table .dr-boss-tactic {display:none;}
+  .dr-original-table .dr-table-impact-rail {display:none;}
+  .dr-original-table .dr-table-open-field {opacity:.5;gap:clamp(12px,5vw,30px);}
+  .dr-original-table .dr-table-empty-slot {width:30px;height:40px;}
+  .dr-original-table .dr-table-crest {font-size:18px;}
+  .dr-original-table .dr-map {height:clamp(38px,8dvh,53px);width:clamp(38px,8dvh,53px);}
+  .dr-original-table .dr-played {padding:3px 5px;top:47%;}
+  .dr-original-table .dr-played span {font-size:17px;}
+  .dr-original-table .dr-played small {display:none;}
+  .dr-original-table .dr-log {bottom:2px;min-height:22px;padding:2px 5px;font-size:10px;}
+  .dr-original-table .dr-drop-label {display:none;}
+}
+@media(prefers-reduced-motion:reduce) {
+  .dr-original-table .dr-hand .dr-card,
+  .dr-original-table .dr-played,
+  .dr-original-table .dr-actions .dr-end {transition:none!important;animation:none!important;}
+}
