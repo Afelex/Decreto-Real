@@ -1,6 +1,7 @@
 import {
   CAMPAIGN_MISSIONS, bestStars, type CampaignMission, type CampaignProgress,
 } from './campaign.ts';
+import { classicHealthGoal } from './classicScoring.ts';
 
 export type CampaignOverview = {
   completed: number;
@@ -45,7 +46,7 @@ export type MissionStarGoal = {
 export function missionStarGoals(mission: CampaignMission): readonly MissionStarGoal[] {
   return [
     { id: 'victory', label: 'Gana el duelo' },
-    { id: 'health', label: `Conserva al menos ${mission.healthGoal} de vida` },
-    { id: 'turns', label: `Vence hasta el turno ${mission.turnGoal}` },
+    { id: 'health', label: `Conserva al menos ${classicHealthGoal(mission)} de vida` },
+    { id: 'turns', label: `Gana en ${mission.turnGoal} rondas o menos` },
   ];
 }
