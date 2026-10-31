@@ -1,6 +1,6 @@
 import { createDeck, type Card, type CardKind } from './cards.ts';
 import { drawFromPile, GAME_RULES, nextComboStreak, resolveAttack, resolveImpact } from './rules.ts';
-import { isBossId, selectBossMove, type BossId } from './bossTactics.ts';
+import { BOSS_MOVE_NAMES, isBossId, selectBossMove, type BossId } from './bossTactics.ts';
 
 /**
  * Record compatibility policy (see docs/DR-01-motor.md):
@@ -182,18 +182,18 @@ export function applyCombatAction(state: CombatState, input: CombatAction): { st
       next.lastPlay = { side: 'rival', name: 'Decreto Final', icon: 'Ⅳ' }; next.enemySeals = 4;
       emit('impact', { side: 'rival', seals: 4 });
     } else if (shouldAttack) {
-      next.lastPlay = { side: 'rival', name: 'Ofensiva real', icon: '⚔' };
+      next.lastPlay = { side: 'rival', name: action.bossId ? BOSS_MOVE_NAMES[action.bossId].attack : 'Ofensiva real', icon: '⚔' };
       const incoming = 3 + (next.enemyHp <= 8 ? 1 : 0);
       const result = resolveAttack(incoming, next.shield);
       next.shield = result.remainingShield; next.playerHp = Math.max(0, next.playerHp - result.damageDealt);
       emit('attack', { side: 'rival', ...result, incoming });
     } else if (bossMove === 'impact' || (bossMove === null && random() < (next.difficulty === 'Aprendiz' ? 0.2 : next.difficulty === 'Maestro' ? 0.7 : 0.45))) {
-      next.lastPlay = { side: 'rival', name: `Impacto ${next.enemySeals + 1}`, icon: '✦' };
+      next.lastPlay = { side: 'rival', name: action.bossId ? BOSS_MOVE_NAMES[action.bossId].impact : `Impacto ${next.enemySeals + 1}`, icon: '✦' };
       const hp = next.playerHp, enemyHp = next.enemyHp;
       next.enemySeals++; next.playerHp = Math.max(0, next.playerHp - 1); next.enemyHp = Math.min(20, next.enemyHp + 1);
       emit('impact', { side: 'rival', seals: next.enemySeals, damage: hp - next.playerHp, healing: next.enemyHp - enemyHp });
     } else {
-      next.lastPlay = { side: 'rival', name: 'Guardia del Virrey', icon: '⬟' };
+      next.lastPlay = { side: 'rival', name: action.bossId ? BOSS_MOVE_NAMES[action.bossId].shield : 'Guardia del Virrey', icon: '⬟' };
       const before = next.enemyShield; next.enemyShield = Math.min(10, next.enemyShield + 3);
       emit('shield', { side: 'rival', shield: next.enemyShield, gained: next.enemyShield - before });
     }
