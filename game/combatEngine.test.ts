@@ -3,6 +3,7 @@ import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import { applyCombatAction, canonicalAction, createCombat, ENGINE_VERSION, exportCombat, invalidAction, invalidRecord, playBlockReason, replayCombat, type CombatAction, type CombatRecord, type CombatState } from './combatEngine.ts';
 import { describeEntry, cardLookup, historyLines } from './combatText.ts';
+import { BOSS_MOVE_NAMES } from './bossTactics.ts';
 
 function act(state: CombatState, action: CombatAction) {
   const result = applyCombatAction(state, action);
@@ -284,6 +285,9 @@ test('styled general response is accepted only for a valid boss ID and replayed 
     assert.equal(state.turn, 2);
     assert.deepEqual(state.journal[1].action, { type:'resolve_rival', bossId:id });
     assert.equal(state.journal[1].events.filter(e => ['attack','shield','impact'].includes(e.type)).length, 1);
+    const effect = state.journal[1].events.find(e => ['attack','shield','impact'].includes(e.type))!;
+    const kind = effect.type === 'attack' ? 'attack' : effect.type === 'shield' ? 'shield' : 'impact';
+    assert.equal(state.lastPlay?.name, BOSS_MOVE_NAMES[id][kind]);
     assert.deepEqual(replayCombat(JSON.parse(JSON.stringify(exportCombat(state)))), state);
     assert.ok(state.playerHp >= 0 && state.playerHp <= 20);
     assert.ok(state.enemyShield >= 0 && state.enemyShield <= 10);
