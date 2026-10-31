@@ -176,7 +176,11 @@ test('general portrait and recorded card effect stay within the tactile battle s
     version: 1, stars: Object.fromEntries(Array.from({ length: 5 }, (_, i) => [String(i + 1).padStart(2, '0'), 1])),
   })));
   await page.goto('/Decreto-Real/#/campania/mision/06');
-  await expect(page.locator('.dc-general-portrait-seal svg[data-general-portrait="1"]')).toBeVisible();
+  if (page.viewportSize()!.height <= 570) {
+    await expect(page.locator('.dc-general-banner svg[data-general-portrait="1"]')).toBeVisible();
+  } else {
+    await expect(page.locator('.dc-general-portrait-seal svg[data-general-portrait="1"]')).toBeVisible();
+  }
   await page.getByRole('button', { name: /Comenzar duelo/ }).click();
   await expect(page.locator('.dr-rival svg[data-general-portrait="1"]')).toBeVisible();
   const playable = page.locator('.dr-hand .dr-card:not(.disabled)').first();
