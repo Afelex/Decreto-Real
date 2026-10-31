@@ -77,3 +77,11 @@ El robo de mazo vacío permanece sin efecto. No hay fatiga, reciclaje, límite d
 ## Verificaciones
 
 `npm test`: 42 pruebas (9 reglas, 4 controlador anterior de IA, 20 motor y textos, 6 guardado y 3 del guion del tutorial). Cubren ilegalidades, atomicidad, turnos, pausa, victoria/derrota, 40 semillas reproducidas, compatibilidad `dr-combat-1`, textos de escudo y respuesta rival, acciones canónicas, registro compartido y congelado, coste lineal, validación de registros externos y motivos de bloqueo. Aprobadas en Node 22.22.0 y 24.22.2 locales y en los trabajos Node 22/24 de CI.
+
+## Extensión DR-C06 (motor `dr-combat-3`, octubre de 2026)
+
+La campaña incorpora respuestas opcionales de ocho generales con la acción canónica `resolve_rival` y el campo `bossId` (de `'1'` a `'8'`). Se usan únicamente los efectos actuales de ataque, escudo e Impacto; cambian las ponderaciones y prioridades situacionales en `game/bossTactics.ts`. Una decisión consume una muestra reproducible del RNG. El diario registra el ID para repetir la misma partida, incluso tras exportar y reproducir el combate.
+
+El cambio de semántica requiere `ENGINE_VERSION = 'dr-combat-3'`. Se mantienen legibles `dr-combat-1` y `dr-combat-2` como versiones heredadas: su acción `resolve_rival` sin `bossId` conserva el árbol de decisión y el consumo del RNG original. Las partidas de `/duelo-v1` y del tutorial no incorporan `bossId`. Los diarios nuevos usan comparación estricta de eventos, y los antiguos siguen la política de proyección documentada arriba.
+
+**Limitaciones:** la IA de generales sigue sin mazo ni mano propios; no se introducen cartas especiales ni agotamiento. Estas tácticas permiten encuentros reconocibles dentro de las reglas actuales, pero requieren una evaluación de balance antes de considerarse definitivas.
