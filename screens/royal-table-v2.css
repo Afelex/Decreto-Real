@@ -107,7 +107,7 @@
   top:clamp(4px,1dvh,10px);
   transform:translateX(-50%) translateY(var(--rival-card-rise,0px)) rotate(var(--rival-card-rotate,0deg)) scale(var(--drv2-card-scale));
   transform-origin:50% 82%;
-  width:clamp(72px,24cqw,116px);
+  width:clamp(64px,18cqw,84px);
   height:min(87%,153px);
   border: 3px solid #e7ba6a;
   border-radius: 8px;
@@ -138,7 +138,8 @@
  * I / II / III / Final are stone buttons with their own hit boxes. */
 .dr-royal-screen .dr-royal-field {
   min-width:0;
-  width:calc(100% - 2 * clamp(4px,1.5cqw,12px));
+  width:auto;
+  justify-self:stretch;
   margin:0 clamp(4px,1.5cqw,12px);
   border:0;
   border-radius:0;
@@ -146,6 +147,7 @@
   box-shadow:none;
   overflow:visible;
   display:grid;
+  grid-template-columns:minmax(0,1fr);
   grid-template-rows:minmax(0,1fr) auto minmax(0,1fr);
   gap:6px;
   perspective:480px;
@@ -266,7 +268,7 @@
 .dr-royal-screen .dr-royal-player-fan { inset:0; }
 .dr-royal-screen .dr-royal-hand-card {
   top:clamp(4px,1dvh,12px);
-  width:clamp(94px,29cqw,130px);
+  width:clamp(78px,23cqw,102px);
   transform:translateX(-50%) translateY(var(--fan-rise)) rotate(var(--fan-rotate)) scale(var(--drv2-card-scale));
   height:calc(100% - clamp(8px,1.2dvh,16px));
   padding:3px;
@@ -354,7 +356,7 @@
   .dr-royal-screen .dr-royal-card-effect {font-size:9px;}
 }
 @media (max-width:350px) {
-  .dr-royal-screen .dr-royal-hand-card {width:clamp(94px,29cqw,105px);}
+  .dr-royal-screen .dr-royal-hand-card {width:clamp(75px,23cqw,90px);}
   .dr-royal-screen .dr-royal-card-kind {font-size:10px;}
   .dr-royal-screen .dr-royal-card-title,
   .dr-royal-screen .dr-royal-card-effect {font-size:9px;}
