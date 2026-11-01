@@ -122,6 +122,7 @@ const CampaignMission: React.FC = () => {
   return <GameBoard
     key={`${mission.id}-${attempt}`}
     onOutcome={onClassicOutcome}
+    presentation={{ background: '/Decreto-Real/escenarios/plaza-virreinal-v2.svg' }}
     onReturn={() => navigate('/campania')}
   />;
 };
