@@ -4,6 +4,7 @@
  * Replace the standalone scenery/portrait art independently as it is approved.
  */
 .dr-royal-screen {
+  --drv2-card-scale: .35;
   --drv2-gold: #e9bd68;
   --drv2-cream: #fff1ca;
   --drv2-ink: #160e19;
@@ -22,7 +23,7 @@
     linear-gradient(180deg,#06142580 0%,#07152e1e 23%,#16121b19 47%,#0c0b1693 100%);
 }
 .dr-royal-screen .dr-royal-layout {
-  grid-template-rows: minmax(0,22fr) minmax(0,17fr) minmax(0,20fr) minmax(0,23fr) minmax(0,18fr);
+  grid-template-rows: minmax(0,22fr) minmax(0,13fr) minmax(0,28fr) minmax(0,19fr) minmax(0,18fr);
   padding: max(4px,env(safe-area-inset-top)) 3px max(5px,env(safe-area-inset-bottom));
   gap: 0;
   overflow: hidden;
@@ -31,12 +32,12 @@
 .dr-royal-screen .dr-royal-player-area { isolation: isolate; }
 .dr-royal-screen .dr-royal-rival-area .dr-royal-character,
 .dr-royal-screen .dr-royal-player-area .dr-royal-character {
-  width: clamp(115px,33cqw,165px);
+  width: clamp(138px,37cqw,190px);
   gap: clamp(1px,.35dvh,4px);
   z-index: 3;
 }
 .dr-royal-screen .dr-royal-character-frame {
-  width: clamp(99px,29cqw,158px);
+  width: clamp(118px,32cqw,182px);
   max-height: calc(100% - 15px);
   border: 3px ridge #ffe3a4;
   border-radius: 13px 13px 7px 7px;
@@ -102,8 +103,10 @@
 .dr-royal-screen .dr-royal-finish:active:not(:disabled) { scale:.96; }
 .dr-royal-screen .dr-royal-rival-fan { inset:0 0 0; }
 .dr-royal-screen .dr-royal-facedown {
-  top:clamp(5px,1.1dvh,12px);
-  width:clamp(53px,22cqw,104px);
+  top:clamp(4px,1dvh,10px);
+  transform:translateX(-50%) translateY(var(--rival-card-rise,0px)) rotate(var(--rival-card-rotate,0deg)) scale(var(--drv2-card-scale));
+  transform-origin:50% 82%;
+  width:clamp(72px,24cqw,116px);
   height:min(87%,153px);
   border: 3px solid #e7ba6a;
   border-radius: 8px;
@@ -139,19 +142,22 @@
   background:transparent;
   box-shadow:none;
   overflow:visible;
-  justify-content:space-between;
+  display:grid;
+  grid-template-rows:minmax(0,1fr) auto minmax(0,1fr);
+  gap:6px;
+  perspective:1200px;
 }
 .dr-royal-screen .dr-royal-field.is-guiding { border:0; }
 .dr-royal-screen .dr-royal-field.is-dragging {
   box-shadow: inset 0 0 38px #ffd37128;
 }
 .dr-royal-screen .dr-royal-activation-target {
-  flex:0 0 26%;
+  flex:0 0 16%;
   margin:0 auto 1px;
   padding:2px 8px;
-  width:min(88%,340px);
+  width:min(72%,280px);
   min-height:30px;
-  max-height:50px;
+  max-height:46px;
   border:1px solid #bd884eaf;
   border-radius:22px;
   background:linear-gradient(110deg,#34171ecf,#541f2dd6,#31151dce);
@@ -165,20 +171,30 @@
 }
 .dr-royal-screen .dr-royal-activation-icon { display:none; }
 .dr-royal-screen .dr-royal-field-prompt {
-  font:700 clamp(9px,2.65cqw,13px)/1.2 Georgia,serif;
+  font:700 clamp(9px,2.3cqw,12px)/1.15 Georgia,serif;
   text-shadow:0 2px 2px #0d0712;
 }
+.dr-royal-screen .dr-royal-rival-progress,
 .dr-royal-screen .dr-royal-impact-track {
+  display:grid;
+  grid-template-rows:minmax(0,1fr);
+  transform:rotateX(24deg);
+  transform-origin:center top;
   flex:1 1 auto;
   min-height:0;
   grid-template-columns:repeat(4,minmax(0,1fr));
   gap:clamp(3px,1cqw,9px);
   padding:2px 2px 2px;
 }
+.dr-royal-screen .dr-royal-rival-progress {transform-origin:center bottom;}
+.dr-royal-screen .dr-royal-rival-progress-slot,
 .dr-royal-screen .dr-royal-impact-slot {
+  position:relative;
+  min-width:0;min-height:0;
+  display:grid;place-items:center;overflow:hidden;
   border:2px ridge #d6ae69;
   border-radius:6px;
-  transform:perspective(500px) rotateX(6deg);
+  transform:none;
   background:
     radial-gradient(circle at 44% 20%,#e3cda12e,transparent 53%),
     repeating-linear-gradient(132deg,transparent 0 10px,#18151814 11px 12px),
@@ -189,24 +205,28 @@
     inset 0 12px 13px #f4dba115;
   color:#fff1c6;
 }
+.dr-royal-screen .dr-royal-rival-progress-slot::before,
 .dr-royal-screen .dr-royal-impact-slot::before {
   content:'';
   position:absolute;inset:5px;
   border:1px solid #ead4a350;border-radius:3px;
   pointer-events:none;
 }
+.dr-royal-screen .dr-royal-rival-progress-slot img {width:100%;height:100%;object-fit:cover;}
+.dr-royal-screen .dr-royal-rival-progress-numeral,
 .dr-royal-screen .dr-royal-impact-numeral {
   position:absolute;bottom:clamp(4px,1dvh,11px);left:10%;right:10%;
-  font:900 clamp(12px,3dvh,20px)/1 Cinzel,Georgia,serif;
+  font:900 clamp(11px,2.6dvh,18px)/1 Cinzel,Georgia,serif;
   background:linear-gradient(#412820,#15131a);
   border:1px solid #e3b66b;
   border-radius:3px;
-  padding:3px 0;
+  padding:2px 0;
   text-align:center;
   text-shadow:0 2px #06070b;
 }
 .dr-royal-screen .dr-royal-impact-slot.available,
 .dr-royal-screen .dr-royal-field.is-regular .dr-royal-impact-slot:first-child,
+.dr-royal-screen .dr-royal-rival-progress-slot.completed,
 .dr-royal-screen .dr-royal-impact-slot.completed {
   border-color:#fff2a5;
   box-shadow:0 0 16px #ffc94f,0 4px 0 #533824,inset 0 0 21px #ffe2a346;
@@ -224,8 +244,8 @@
   text-shadow:0 0 6px #fff7a8,0 0 21px #edaa34;
 }
 .dr-royal-screen .dr-royal-combo {
-  top:-3px;right:2px;
-  transform:translate(0,-50%) rotate(-8deg);
+  top:8px;right:-2px;
+  transform:translate(0,-18%) rotate(-8deg);
   z-index:11;
   text-shadow:2px 3px #811726,0 0 14px #ea3b48;
   filter:drop-shadow(2px 3px #370914) drop-shadow(0 0 9px #ff9d4d);
@@ -235,10 +255,11 @@
 
 /* Tactile fan; only the chosen card rises, without shifting the entire hand.
  * The same button continues to receive the existing pointer events. */
-.dr-royal-screen .dr-royal-player-fan { inset:4px 0 0; }
+.dr-royal-screen .dr-royal-player-fan { inset:0; }
 .dr-royal-screen .dr-royal-hand-card {
   top:clamp(4px,1dvh,12px);
-  width:clamp(75px,29cqw,129px);
+  width:clamp(92px,31cqw,145px);
+  transform:translateX(-50%) translateY(var(--fan-rise)) rotate(var(--fan-rotate)) scale(var(--drv2-card-scale));
   height:calc(100% - clamp(8px,1.2dvh,16px));
   padding:3px;
   border:2px solid #f0c981;
@@ -277,7 +298,7 @@
 }
 .dr-royal-screen .dr-royal-hand-card.selected {
   z-index:25!important;
-  transform:translateX(-50%) translateY(calc(var(--fan-rise) - 18px)) rotate(0deg) scale(1.045);
+  transform:translateX(-50%) translateY(calc(var(--fan-rise) - 10px)) rotate(0deg) scale(calc(var(--drv2-card-scale) + .12));
   border-color:#ffeeb5;
   box-shadow:0 0 0 2px #ffe3a59a,0 0 23px #ffcd69,0 13px 24px #000c;
 }
@@ -316,7 +337,7 @@
   box-shadow:0 0 25px #fcd681,0 10px 25px #000c;
 }
 @media(max-height:690px) {
-  .dr-royal-screen .dr-royal-layout {grid-template-rows:minmax(0,22fr) minmax(0,16fr) minmax(0,20fr) minmax(0,24fr) minmax(0,18fr);}
+  .dr-royal-screen .dr-royal-layout {grid-template-rows:minmax(0,22fr) minmax(0,13fr) minmax(0,28fr) minmax(0,19fr) minmax(0,18fr);}
   .dr-royal-screen .dr-royal-character-frame {max-height:calc(100% - 10px);}
   .dr-royal-screen .dr-royal-impact-track {padding:1px;}
   .dr-royal-screen .dr-royal-hand-card img {height:48%;flex-basis:48%;}

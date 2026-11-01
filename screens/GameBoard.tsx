@@ -604,11 +604,12 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
           <div className="dr-royal-rival-fan" aria-hidden="true">
             {opponentHand.map((card, i) => {
               const distance = i - (opponentHand.length - 1) / 2;
-              const step = Math.min(15, 68 / Math.max(1, opponentHand.length - 1));
+              const step = Math.min(7, 30 / Math.max(1, opponentHand.length - 1));
               return <div key={card.id} className="dr-royal-facedown" style={{
                 left: `${50 + distance * step}%`,
-                transform: `translateX(-50%) translateY(${Math.abs(distance) * 3}px) rotate(${distance * 7}deg)`,
-              }}><span className="dr-royal-card-crest">✥</span></div>;
+                '--rival-card-rotate': `${distance * 7}deg`,
+                '--rival-card-rise': `${Math.abs(distance) * 2}px`,
+              } as React.CSSProperties}><span className="dr-royal-card-crest">✥</span></div>;
             })}
           </div>
           <output className="dr-royal-hand-count rival" aria-label={`El rival tiene ${opponentHand.length} cartas`}>MANO {opponentHand.length}</output>
@@ -617,6 +618,17 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
         <section className={`dr-royal-field${selectedCard ? ' is-guiding' : ''}${dragAt ? ' is-dragging' : ''}${selectedCard && selectedCard.type !== 'IMPACT' ? ' is-regular' : ''}`}
           style={{ '--arrow-left': selectedCard?.type === 'IMPACT' ? `${((selectedCard.rank ?? 1) - .5) * 25}%` : '50%' } as React.CSSProperties}
           data-card-drop="field" aria-label="Campo central de activación">
+          <div className="dr-royal-rival-progress" role="group"
+            aria-label={`Progreso de impactos del rival: ${opponentImpactLevel} de 4`}>
+            {[1, 2, 3, 4].map(lvl => {
+              const completed = opponentImpactLevel >= lvl;
+              const label = lvl === 4 ? 'FINAL' : ['I', 'II', 'III'][lvl - 1];
+              return <div key={lvl} className={`dr-royal-rival-progress-slot${completed ? ' completed' : ''}`}
+                role="img" aria-label={`Impacto rival ${label}${completed ? ', completado' : ', pendiente'}`}>
+                {completed ? <img src={IMG_IMPACT} alt=""/> : <span className="dr-royal-rival-progress-numeral">{label}</span>}
+              </div>;
+            })}
+          </div>
           <button type="button" className="dr-royal-activation-target" onClick={() => placeSelected('field')}
             disabled={!selectedCard || !canHandleCards || selectedCard.type === 'IMPACT'}
             aria-label="Campo para activar Ataque o Defensa">
@@ -646,14 +658,14 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
           <div className="dr-royal-player-fan">
             {playerHand.map((card, i) => {
               const distance = i - (playerHand.length - 1) / 2;
-              const step = Math.min(18, 68 / Math.max(1, playerHand.length - 1));
+              const step = Math.min(9, 34 / Math.max(1, playerHand.length - 1));
               const selected = selectedCardId === card.id;
               const canUse = canHandleCards && (card.type !== 'IMPACT' ||
                 (!playerImpactPlayedThisTurn && card.rank === playerImpactLevel + 1));
               return <button key={card.id} type="button"
                 className={`dr-royal-hand-card ${card.type.toLowerCase()}${selected ? ' selected' : ''}${!canUse ? ' unavailable' : ''}`}
                 style={{ left: `${50 + distance * step}%`, '--fan-rotate': `${distance * 7}deg`,
-                  '--fan-rise': `${Math.abs(distance) * 5}px`, zIndex: selected ? 20 : i + 1 } as React.CSSProperties}
+                  '--fan-rise': `${Math.abs(distance) * 4}px`, zIndex: selected ? 20 : i + 1 } as React.CSSProperties}
                 aria-label={`${card.name}: ${card.description}`} aria-pressed={selected}
                 aria-describedby="dr-royal-help"
                 onPointerDown={event => onCardPointerDown(event, card)}
