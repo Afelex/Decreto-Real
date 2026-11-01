@@ -1,0 +1,166 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1600" viewBox="0 0 900 1600" preserveAspectRatio="xMidYMid slice">
+<defs>
+ <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#4c9bd4"/><stop offset=".36" stop-color="#b8dce8"/><stop offset=".65" stop-color="#f4d2a1"/><stop offset="1" stop-color="#a78b70"/></linearGradient>
+ <linearGradient id="stone" x2=".3" y2="0" x1=".7" y1="1"><stop stop-color="#d8c199"/><stop offset=".45" stop-color="#987857"/><stop offset="1" stop-color="#534736"/></linearGradient>
+ <linearGradient id="wall" x2="0" y2="1"><stop stop-color="#ffe2b4"/><stop offset="1" stop-color="#af8961"/></linearGradient>
+ <linearGradient id="banners"><stop stop-color="#ad3436"/><stop offset="1" stop-color="#6b1827"/></linearGradient>
+ <linearGradient id="blue"><stop stop-color="#1b6095"/><stop offset="1" stop-color="#1b2d61"/></linearGradient>
+ <radialGradient id="sun"><stop stop-color="#fff9df" stop-opacity=".88"/><stop offset="1" stop-color="#fff3d2" stop-opacity="0"/></radialGradient>
+ <linearGradient id="mountain"><stop stop-color="#9da2b1"/><stop offset="1" stop-color="#527c8d"/></linearGradient>
+ <pattern id="cobbles" width="130" height="92" patternUnits="userSpaceOnUse" patternTransform="skewY(-3)">
+ <path d="M0 0H130V92H0Z M65 0V46 M0 46H130 M28 46V92 M96 46V92" stroke="#352f2e" stroke-width="3" fill="#b9a07e" opacity=".4"/>
+ <path d="M6 6H58M70 8H121M5 51H23M31 51H91" stroke="#ffe1a9" stroke-opacity=".32" stroke-width="2"/>
+ </pattern>
+ <pattern id="blocks" width="88" height="48" patternUnits="userSpaceOnUse"><path d="M0 0H88V48H0Z M44 0V24M0 24H88M22 24V48M66 24V48" stroke="#78583d" stroke-width="2" fill="#e0bb82"/></pattern>
+ <filter id="haze"><feGaussianBlur stdDeviation="18"/></filter>
+ <filter id="glow"><feGaussianBlur stdDeviation="8"/></filter>
+
+ <linearGradient id="curtain2" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#6d0924"/><stop offset=".5" stop-color="#b92035"/><stop offset="1" stop-color="#4d0b20"/></linearGradient>
+ <linearGradient id="flame2" x1="0" y1="1" x2="0" y2="0"><stop stop-color="#fc6e20"/><stop offset=".48" stop-color="#ffce55"/><stop offset="1" stop-color="#ffffd2"/></linearGradient>
+ <linearGradient id="facade2" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f3d19b"/><stop offset=".52" stop-color="#ad8564"/><stop offset="1" stop-color="#74513c"/></linearGradient>
+ <filter id="soft2"><feGaussianBlur stdDeviation="3"/></filter>
+ <radialGradient id="lamp2"><stop stop-color="#ffdea7" stop-opacity=".65"/><stop offset="1" stop-color="#ffe0a7" stop-opacity="0"/></radialGradient>
+</defs>
+<!-- Pure scenic background: no interface, cards, health bars or controls. -->
+<path d="M0 0H900V1600H0Z" fill="url(#sky)"/>
+<circle cx="640" cy="250" r="370" fill="url(#sun)"/>
+<g fill="#f7e8d0" opacity=".8">
+ <path d="M15 211q48-55 89-15 56-77 122 9 63-15 76 31H3Z"/>
+ <path d="M555 161q30-57 74-26 49-71 105-17 54-19 107 47Z"/>
+</g>
+<!-- distant Andean peaks -->
+<path d="M-40 660L125 400 217 513 353 264 496 492 647 290 788 502 940 380V772H-40Z" fill="url(#mountain)"/>
+<path d="M278 365L353 264 421 376l-65-29-40 40Z M581 387L647 290 709 383l-60-22-26 22Z M88 455L125 400 159 455l-31-15-19 16Z" fill="#eef7f3"/>
+<path d="M-20 714Q120 572 267 676T550 602Q730 533 925 691V870H-20Z" fill="#61796d" opacity=".58"/>
+<path d="M0 775q121-106 219-55t220-14 219-1 242 47v221H0Z" fill="#678164" opacity=".75"/>
+<!-- city walls and towers -->
+<g stroke="#78543c" stroke-width="5">
+<path d="M-40 707V496l114-57 115 57v198Z" fill="url(#wall)"/>
+<path d="M28 487V349h67v143 M37 350v-35h50v35" fill="#ca9b6d"/>
+<path d="M21 345l40-64 40 64Z" fill="#784b35"/>
+<path d="M20 508V476h92v27Z" fill="#905f43"/>
+<path d="M72 620q-44-82-82 0v90H72Z" fill="#61503c"/>
+<path d="M718 720V455l102-68 100 54v273Z" fill="url(#wall)"/>
+<path d="M778 409V299h85v117 M788 301v-29h64v29" fill="#cda678"/>
+<path d="M763 291l57-70 55 70Z" fill="#80523a"/>
+<path d="M718 464h202v29H718Z" fill="#a6764e"/>
+<path d="M790 628q47-84 97 0v102h-97Z" fill="#695039"/>
+<path d="M206 796V601h104V489h112v105h101V489h115v299Z" fill="#cbb28f"/>
+<path d="M248 615V490h53v125 M540 615V489h59v126" fill="#a47e56"/>
+<path d="M258 491l20-51 23 51 M542 489l29-51 28 51" fill="#77543b"/>
+<path d="M325 660q0-79 79-79t79 79v136H325Z" fill="#524e49"/>
+<path d="M357 660q0-55 47-55t47 55v132H357Z" fill="#c9af88"/>
+</g>
+<g fill="#795c45" stroke="#efd2a8" stroke-width="3"><path d="M27 393h25v45H27ZM70 393h24v45H70ZM774 354h30v53h-30ZM821 354h32v53h-32Z"/></g>
+<g fill="#f8e7bc" stroke="#d4b07a" stroke-width="3" opacity=".85"><circle cx="278" cy="467" r="10"/><circle cx="571" cy="459" r="10"/><circle cx="60" cy="310" r="8"/><circle cx="821" cy="251" r="8"/></g>
+
+<!-- DR-UI-V2 richer colonial silhouettes and architectural rhythm -->
+<g stroke="#62432f" stroke-width="3" fill="url(#facade2)" opacity=".93">
+ <path d="M91 737V560l47-31 50 28v204H91ZM697 756V549l55-32 50 39v208H697Z"/>
+ <path d="M154 762V596h49v-58h43v226ZM643 765V539h42v-55h46v279Z"/>
+ <path d="M0 835V771h240v62H0ZM662 840v-70h238v70H662Z"/>
+</g>
+<g stroke="#714d34" stroke-width="4" fill="#392e2e">
+ <path d="M119 652v-42q20-30 40 0v42ZM721 644v-44q17-30 37 0v44Z"/>
+ <path d="M171 680v-43q15-23 31 0v43ZM672 674v-43q15-23 31 0v43Z"/>
+</g>
+<g stroke="#e7be81" stroke-width="3" fill="none" opacity=".8">
+ <path d="M92 566h96M700 563h101M161 600h86M644 603h85"/>
+ <path d="M105 703h82M713 701h74M222 653h97M581 654h104"/>
+</g>
+<g stroke="#7e573d" stroke-width="4" fill="#d0b18a">
+ <path d="M246 572l39-75 39 75Z M572 570l40-72 39 72Z"/>
+ <path d="M274 510v-74h23v74M601 511v-75h22v75"/>
+ <path d="M276 435l9-21 11 21ZM602 435l9-22 10 22Z" fill="#90673a"/>
+</g>
+<g stroke="#e7c594" stroke-width="4" fill="#47342e">
+ <path d="M264 622v-35q21-31 42 0v35Z M590 624v-35q20-29 43 0v35Z"/>
+ <path d="M267 693v-40q18-26 38 0v40Z M589 693v-40q19-26 40 0v40Z"/>
+</g>
+<!-- ornate market strings and flowering planters -->
+<g fill="none" stroke="#e3b478" stroke-width="5" opacity=".9">
+ <path d="M0 689q85-45 172-5t171 12M900 681q-95-47-192 0t-159 7"/>
+</g>
+<g stroke="#4a552f" stroke-width="14" stroke-linecap="round">
+ <path d="M0 835q66-60 119-23M900 835q-72-60-132-21"/>
+</g>
+<g fill="#bb3343" opacity=".9"><circle cx="42" cy="801" r="13"/><circle cx="83" cy="824" r="12"/><circle cx="835" cy="822" r="14"/><circle cx="869" cy="791" r="13"/></g>
+
+<!-- market awnings -->
+<path d="M-40 729L130 675 250 731V768H-40Z" fill="#9e3339" stroke="#efbd78" stroke-width="8"/>
+<path d="M650 732L782 673 945 724V771H650Z" fill="#1d5a93" stroke="#e5bd80" stroke-width="8"/>
+<!-- fountain: safe behind interactive board -->
+<ellipse cx="449" cy="842" rx="190" ry="30" fill="#7b9da4" stroke="#d7c1a0" stroke-width="12"/>
+<path d="M284 833l46 73h231l57-73Z" fill="#7aa2a6" stroke="#c3b59b" stroke-width="10"/>
+<ellipse cx="451" cy="830" rx="164" ry="26" fill="#b3cfd0" stroke="#7e6b55" stroke-width="9"/>
+<path d="M393 820l20-64h80l23 64Z" fill="#b5a48d" stroke="#806b53" stroke-width="9"/>
+<ellipse cx="451" cy="759" rx="95" ry="15" fill="#adc4c4" stroke="#bda480" stroke-width="9"/>
+<path d="M444 750V690q-35-15 0-27 32 11 0 27" fill="#b9a480" stroke="#715b48" stroke-width="8"/>
+<g fill="none" stroke="#d3f7ff" stroke-width="6" opacity=".7"><path d="M420 764q-68 30-103 93"/><path d="M479 762q67 31 102 94"/><path d="M445 685q-20 45-48 82"/><path d="M454 685q28 42 51 81"/></g>
+<!-- perspective paved plaza -->
+<path d="M0 910L900 910 900 1600H0Z" fill="url(#stone)"/>
+<path d="M0 920L900 920 900 1600H0Z" fill="url(#cobbles)"/>
+<g fill="none" stroke="#e7c69b" stroke-width="3" opacity=".5">
+ <path d="M0 930H900M0 1040H900M0 1178H900M0 1340H900M0 1540H900"/>
+ <path d="M449 927L-90 1600M449 927L80 1600M449 927L263 1600M449 927L649 1600M449 927L820 1600M449 927L1010 1600"/>
+</g>
+<!-- red and blue flags, consistent faction contrast -->
+<path d="M-6 273q58 23 103 47v341l-44-38-59 38Z" fill="url(#banners)" stroke="#d5a967" stroke-width="9"/>
+<path d="M900 277q-60 23-107 43v341l44-38 63 38Z" fill="url(#blue)" stroke="#d5a967" stroke-width="9"/>
+<path d="M45 314v309M841 315v309" stroke="#eac994" stroke-width="4"/>
+<g fill="none" stroke="#e1b86b" stroke-width="10" opacity=".7"><path d="M24 398q60-30 51 34t-30 66M872 395q-65-25-58 35t34 68"/></g>
+<!-- flower beds and stylized vegetation -->
+<g>
+<path d="M0 1170q65-95 154-60t118 59M635 1170q119-128 265-30" fill="none" stroke="#344e33" stroke-width="76"/>
+<g fill="#c33e47"><circle cx="54" cy="1141" r="15"/><circle cx="98" cy="1118" r="13"/><circle cx="165" cy="1155" r="20"/><circle cx="773" cy="1138" r="16"/><circle cx="835" cy="1118" r="16"/></g>
+<g fill="#f6daa0"><circle cx="28" cy="1178" r="10"/><circle cx="135" cy="1148" r="9"/><circle cx="710" cy="1157" r="10"/><circle cx="866" cy="1178" r="12"/></g>
+</g>
+
+<!-- masonry framing; intentionally left/right of the card interaction zone -->
+<g stroke="#6a4733" stroke-width="8">
+ <path d="M0 0h28v940H0ZM872 0h28v940h-28Z" fill="url(#facade2)"/>
+ <path d="M0 40L115 0h62L33 94ZM900 40L790 0h-65l144 94Z" fill="#c49b6f"/>
+ <path d="M0 490h48v36H0ZM852 490h48v36h-48Z" fill="#b98f64"/>
+</g>
+<g stroke="#ffe0a5" stroke-width="2" opacity=".45">
+ <path d="M8 55v840M889 55v840"/>
+</g>
+<!-- hanging imperial canopy (decorative, no game symbols) -->
+<path d="M0 0H900V48q-143 126-298 56Q450 151 309 103 165 162 0 42Z" fill="url(#curtain2)" stroke="#df9d56" stroke-width="10"/>
+<path d="M13 18q117 91 259 93M630 112q153-7 256-90" fill="none" stroke="#eab86f" stroke-width="5" stroke-dasharray="3 9"/>
+<g fill="#e4a746" stroke="#995d30" stroke-width="3">
+ <path d="M236 85v55l-11 19 23 0-11-19v-55Z"/>
+ <path d="M665 84v55l-11 19 23 0-11-19v-55Z"/>
+ <circle cx="237" cy="85" r="10"/><circle cx="665" cy="85" r="10"/>
+</g>
+<!-- fire braziers on the sides of the battlefield, above the pavement -->
+<g>
+ <ellipse cx="45" cy="956" rx="68" ry="72" fill="url(#lamp2)"/>
+ <ellipse cx="850" cy="956" rx="68" ry="72" fill="url(#lamp2)"/>
+ <g fill="url(#flame2)" stroke="#f3b34d" stroke-width="3">
+  <path d="M20 986q-24-42 5-89-6 40 18 41 15-36 2-63 41 27 19 72 20-8 16-33 24 51-8 74Z"/>
+  <path d="M820 986q-24-42 5-89-6 40 18 41 15-36 2-63 41 27 19 72 20-8 16-33 24 51-8 74Z"/>
+ </g>
+ <g fill="#50382e" stroke="#d3a46d" stroke-width="7">
+  <path d="M-4 984h101l-13 20H11Z M23 1003h49l-8 48H30Z M10 1054h78v13H10Z"/>
+  <path d="M802 984h101l-13 20h-74Z M829 1003h49l-8 48h-34Z M816 1054h78v13h-78Z"/>
+ </g>
+</g>
+<!-- clustered foreground flowers and shrubbery -->
+<g stroke="#284d2e" stroke-width="20" stroke-linecap="round" fill="none">
+ <path d="M-25 1575q32-109 80-84t87-36M910 1575q-51-120-102-89t-69-35"/>
+ <path d="M12 1380q53-40 112 15M891 1381q-48-48-109 15"/>
+</g>
+<g fill="#cf374b" stroke="#9e253c" stroke-width="3">
+ <circle cx="25" cy="1513" r="28"/><circle cx="96" cy="1465" r="21"/><circle cx="147" cy="1542" r="25"/>
+ <circle cx="858" cy="1520" r="30"/><circle cx="780" cy="1463" r="23"/><circle cx="737" cy="1540" r="19"/>
+</g>
+<g fill="#ffdb86">
+ <circle cx="25" cy="1513" r="7"/><circle cx="96" cy="1465" r="6"/><circle cx="147" cy="1542" r="7"/>
+ <circle cx="858" cy="1520" r="8"/><circle cx="780" cy="1463" r="6"/><circle cx="737" cy="1540" r="5"/>
+</g>
+
+<!-- warm lighting -->
+<ellipse cx="450" cy="1240" rx="445" ry="460" fill="#d7ab7b" opacity=".11"/>
+<path d="M0 0H900V1600H0Z" fill="none" stroke="#503a2d" stroke-width="18" opacity=".2"/>
+</svg>

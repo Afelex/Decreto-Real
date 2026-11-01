@@ -19,6 +19,7 @@ import './screens/region-scenes.css';
 import './screens/boss-combat-effects.css';
 import './screens/table-original-revival.css';
 import './screens/royal-table.css';
+import './screens/royal-table-v2.css';
 
 const App: React.FC = () => {
   return (

@@ -27,6 +27,15 @@ export function checkCardPlacement(
   return { valid: true };
 }
 
+/** The stone tiles double as visual activation targets for regular cards.
+ * This only normalizes the UI hit target; it never changes Impact rank rules. */
+export function resolveVisualDropZone(
+  card: Pick<CardData, 'type'>,
+  zone: CardDropZone,
+): CardDropZone {
+  return card.type === 'IMPACT' ? zone : 'field';
+}
+
 export function cardPlacementPrompt(
   card: Pick<CardData, 'type' | 'name' | 'rank'> | null,
   impactLevel: number,

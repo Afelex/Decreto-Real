@@ -1,0 +1,342 @@
+/* DR-UI-V2 / Plaza virreinal — presentation-only layer.
+ * Source of truth: GameBoard.tsx and game/cardPlacement.ts.
+ * Never use the full mockup as background: that image contains fake cards/HP.
+ * Replace the standalone scenery/portrait art independently as it is approved.
+ */
+.dr-royal-screen {
+  --drv2-gold: #e9bd68;
+  --drv2-cream: #fff1ca;
+  --drv2-ink: #160e19;
+  --drv2-red: #8e1c29;
+  --drv2-blue: #13518a;
+  container-type: inline-size;
+}
+.dr-royal-screen .dr-royal-background {
+  filter: saturate(1.2) contrast(1.055) brightness(1.055);
+  transform: scale(1.018);
+  transform-origin: center;
+}
+.dr-royal-screen .dr-royal-vignette {
+  background:
+    radial-gradient(ellipse 90% 48% at 50% 44%, transparent 42%, #120c143d 100%),
+    linear-gradient(180deg,#06142580 0%,#07152e1e 23%,#16121b19 47%,#0c0b1693 100%);
+}
+.dr-royal-screen .dr-royal-layout {
+  grid-template-rows: minmax(0,22fr) minmax(0,17fr) minmax(0,20fr) minmax(0,23fr) minmax(0,18fr);
+  padding: max(4px,env(safe-area-inset-top)) 3px max(5px,env(safe-area-inset-bottom));
+  gap: 0;
+  overflow: hidden;
+}
+.dr-royal-screen .dr-royal-rival-area,
+.dr-royal-screen .dr-royal-player-area { isolation: isolate; }
+.dr-royal-screen .dr-royal-rival-area .dr-royal-character,
+.dr-royal-screen .dr-royal-player-area .dr-royal-character {
+  width: clamp(115px,33cqw,165px);
+  gap: clamp(1px,.35dvh,4px);
+  z-index: 3;
+}
+.dr-royal-screen .dr-royal-character-frame {
+  width: clamp(99px,29cqw,158px);
+  max-height: calc(100% - 15px);
+  border: 3px ridge #ffe3a4;
+  border-radius: 13px 13px 7px 7px;
+  clip-path: polygon(12% 0,88% 0,100% 13%,100% 89%,92% 100%,8% 100%,0 89%,0 13%);
+  padding: 3px;
+  background: linear-gradient(125deg,#8b551e,#ffe5a0 26%,#bb873e 51%,#fff0b8 72%,#9d5d21);
+  box-shadow: 0 6px 18px #090612a8,0 0 0 1px #fff7c2b5;
+}
+.dr-royal-screen .dr-royal-character-frame > img {
+  object-position: center 18%;
+  border-radius: 8px 8px 3px 3px;
+}
+.dr-royal-screen .dr-royal-hp {
+  min-height: clamp(23px,3.6dvh,34px);
+  left: 0; right: 0; bottom: 0;
+  font: 900 clamp(12px,2.7dvh,20px)/1.12 Cinzel,Georgia,serif;
+  border: 2px solid #f5cf7c;
+  border-radius: 0 0 5px 5px;
+  letter-spacing: -.02em;
+  text-shadow: 0 2px 3px #200b12;
+}
+.dr-royal-screen .dr-royal-hp.red { background: linear-gradient(#b3373c,#74101d); }
+.dr-royal-screen .dr-royal-hp.blue { background: linear-gradient(#2f96c2,#0e4278); }
+.dr-royal-screen .dr-royal-rival-impact { margin-top: 0; }
+.dr-royal-screen .dr-royal-rival-impact .flex.gap-2.p-1 {
+  background: linear-gradient(110deg,#08080bdc,#272028f0,#090c14dd);
+  border: 1px solid #c59d59;
+  border-radius: 99px;
+  margin: 1px 0 0;
+  padding: 3px 7px;
+  box-shadow: 0 2px 8px #0009;
+}
+.dr-royal-screen .dr-royal-layout .dr-royal-character .w-3.h-3 {
+  width: clamp(7px,1.55dvh,13px);
+  height: clamp(7px,1.55dvh,13px);
+}
+.dr-royal-screen .dr-royal-deck,
+.dr-royal-screen .dr-royal-player-deck { left: clamp(7px,2cqw,14px); top: clamp(8px,1.4dvh,17px); }
+.dr-royal-screen .dr-royal-deck-back {
+  width: clamp(49px,14cqw,74px);
+  height: clamp(70px,13dvh,107px);
+  border: 2px solid #f3cd81;
+  border-radius: 7px;
+  background: radial-gradient(ellipse at 50% 45%,#2e2625,#0d0d15 74%);
+  box-shadow:
+    -3px 3px 0 #16111a,-6px 6px 0 #b58742,
+    -9px 8px 0 #1e1821,0 7px 15px #0009,
+    inset 0 0 0 2px #251923,inset 0 0 0 4px #a27741;
+}
+.dr-royal-screen .dr-royal-deck-back.blue { background: radial-gradient(ellipse at 50% 42%,#184771,#071a34 78%); }
+.dr-royal-screen .dr-royal-deck-back::before { content:'✦';color:#fae1a2;top:3px; }
+.dr-royal-screen .dr-royal-deck-back span { font:900 clamp(21px,4.2dvh,33px)/1 Cinzel,Georgia,serif; }
+.dr-royal-screen .dr-royal-deck-back small { font-size:clamp(9px,1.9dvh,12px); }
+.dr-royal-screen .dr-royal-menu-button {
+  width: clamp(46px,12cqw,66px);
+  height: clamp(46px,12cqw,66px);
+  right: clamp(6px,2cqw,12px);
+  top: clamp(6px,1dvh,12px);
+  border: 3px solid #f4d18d;
+  box-shadow: 0 0 0 3px #24191e99,0 7px 13px #000b,inset 0 0 0 2px #885b2c;
+}
+.dr-royal-screen .dr-royal-menu-button:active,
+.dr-royal-screen .dr-royal-finish:active:not(:disabled) { scale:.96; }
+.dr-royal-screen .dr-royal-rival-fan { inset:0 0 0; }
+.dr-royal-screen .dr-royal-facedown {
+  top:clamp(5px,1.1dvh,12px);
+  width:clamp(53px,22cqw,104px);
+  height:min(87%,153px);
+  border: 3px solid #e7ba6a;
+  border-radius: 8px;
+  background:
+    radial-gradient(ellipse at 50% 45%,#b6864d43 0 23%,transparent 26%),
+    repeating-linear-gradient(45deg,#ffda9c09 0 2px,transparent 2px 12px),
+    linear-gradient(145deg,#691b30,#340a20 76%);
+  box-shadow:0 8px 12px #0b0616b8,inset 0 0 0 3px #2d0d19,inset 0 0 0 5px #9e703d;
+}
+.dr-royal-screen .dr-royal-card-crest {
+  width:74%;height:67%;
+  border:2px solid #cda25b;
+  border-radius: 50%;
+  box-shadow:inset 0 0 0 2px #f0ca8457,0 0 8px #0006;
+  font-size:clamp(23px,5dvh,37px);
+}
+.dr-royal-screen .dr-royal-hand-count {
+  background:#17111bde;
+  border:1px solid #f0c67b;
+  border-radius:99px;
+  padding:3px 9px;
+  box-shadow:0 3px 8px #0009;
+  font-size:clamp(9px,1.85dvh,12px);
+}
+.dr-royal-screen .dr-royal-hand-count.rival { bottom:2px;right:12px; }
+
+/* The original field remains a real drop zone, but loses its large dark panel.
+ * I / II / III / Final are stone buttons with their own hit boxes. */
+.dr-royal-screen .dr-royal-field {
+  margin:0 clamp(4px,1.5cqw,12px);
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  overflow:visible;
+  justify-content:space-between;
+}
+.dr-royal-screen .dr-royal-field.is-guiding { border:0; }
+.dr-royal-screen .dr-royal-field.is-dragging {
+  box-shadow: inset 0 0 38px #ffd37128;
+}
+.dr-royal-screen .dr-royal-activation-target {
+  flex:0 0 26%;
+  margin:0 auto 1px;
+  padding:2px 8px;
+  width:min(88%,340px);
+  min-height:30px;
+  max-height:50px;
+  border:1px solid #bd884eaf;
+  border-radius:22px;
+  background:linear-gradient(110deg,#34171ecf,#541f2dd6,#31151dce);
+  box-shadow:0 3px 9px #0007,inset 0 1px 0 #ffe7a73b;
+  color:var(--drv2-cream);
+}
+.dr-royal-screen .dr-royal-activation-target:not(:disabled) {
+  background:linear-gradient(110deg,#79351f,#5d222a,#813d21);
+  border-color:#ffdf99;
+  box-shadow:0 0 11px #fcca7480,inset 0 1px 0 #fff4b388;
+}
+.dr-royal-screen .dr-royal-activation-icon { display:none; }
+.dr-royal-screen .dr-royal-field-prompt {
+  font:700 clamp(9px,2.65cqw,13px)/1.2 Georgia,serif;
+  text-shadow:0 2px 2px #0d0712;
+}
+.dr-royal-screen .dr-royal-impact-track {
+  flex:1 1 auto;
+  min-height:0;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:clamp(3px,1cqw,9px);
+  padding:2px 2px 2px;
+}
+.dr-royal-screen .dr-royal-impact-slot {
+  border:2px ridge #d6ae69;
+  border-radius:6px;
+  transform:perspective(500px) rotateX(6deg);
+  background:
+    radial-gradient(circle at 44% 20%,#e3cda12e,transparent 53%),
+    repeating-linear-gradient(132deg,transparent 0 10px,#18151814 11px 12px),
+    linear-gradient(145deg,#776653bf,#52483dc9 50%,#261f20d9);
+  box-shadow:
+    0 5px 0 #302725e8,0 8px 12px #0008,
+    inset 0 0 0 2px #cdb17b52,
+    inset 0 12px 13px #f4dba115;
+  color:#fff1c6;
+}
+.dr-royal-screen .dr-royal-impact-slot::before {
+  content:'';
+  position:absolute;inset:5px;
+  border:1px solid #ead4a350;border-radius:3px;
+  pointer-events:none;
+}
+.dr-royal-screen .dr-royal-impact-numeral {
+  position:absolute;bottom:clamp(4px,1dvh,11px);left:10%;right:10%;
+  font:900 clamp(12px,3dvh,20px)/1 Cinzel,Georgia,serif;
+  background:linear-gradient(#412820,#15131a);
+  border:1px solid #e3b66b;
+  border-radius:3px;
+  padding:3px 0;
+  text-align:center;
+  text-shadow:0 2px #06070b;
+}
+.dr-royal-screen .dr-royal-impact-slot.available,
+.dr-royal-screen .dr-royal-field.is-regular .dr-royal-impact-slot:first-child,
+.dr-royal-screen .dr-royal-impact-slot.completed {
+  border-color:#fff2a5;
+  box-shadow:0 0 16px #ffc94f,0 4px 0 #533824,inset 0 0 21px #ffe2a346;
+}
+.dr-royal-screen .dr-royal-impact-slot.available,
+.dr-royal-screen .dr-royal-field.is-regular .dr-royal-impact-slot:first-child {
+  animation:dr-royal-slot-pulse 1.15s ease-in-out infinite alternate;
+}
+.dr-royal-screen .dr-royal-field.is-guiding::after {
+  content:'➤';
+  left:var(--arrow-left,50%);
+  bottom:clamp(16px,3.5dvh,35px);
+  z-index:10;
+  font-size:clamp(23px,6dvh,44px);
+  text-shadow:0 0 6px #fff7a8,0 0 21px #edaa34;
+}
+.dr-royal-screen .dr-royal-combo {
+  top:-3px;right:2px;
+  transform:translate(0,-50%) rotate(-8deg);
+  z-index:11;
+  text-shadow:2px 3px #811726,0 0 14px #ea3b48;
+  filter:drop-shadow(2px 3px #370914) drop-shadow(0 0 9px #ff9d4d);
+}
+.dr-royal-screen .dr-royal-combo strong { font-style:italic;font-size:clamp(16px,4dvh,31px); }
+.dr-royal-screen .dr-royal-combo b { font-size:clamp(22px,5dvh,42px); }
+
+/* Tactile fan; only the chosen card rises, without shifting the entire hand.
+ * The same button continues to receive the existing pointer events. */
+.dr-royal-screen .dr-royal-player-fan { inset:4px 0 0; }
+.dr-royal-screen .dr-royal-hand-card {
+  top:clamp(4px,1dvh,12px);
+  width:clamp(75px,29cqw,129px);
+  height:calc(100% - clamp(8px,1.2dvh,16px));
+  padding:3px;
+  border:2px solid #f0c981;
+  border-radius:8px;
+  background:linear-gradient(155deg,#352127,#080e18);
+  box-shadow:0 8px 16px #0b0b15d1,inset 0 0 0 2px #a67d41;
+  transform-origin:50% 88%;
+}
+.dr-royal-screen .dr-royal-hand-card img {
+  height:55%;
+  flex:0 1 55%;
+  object-fit:cover;
+  border:1px solid #a87d46;
+  border-radius:3px 3px 0 0;
+}
+.dr-royal-screen .dr-royal-card-kind {
+  font:900 clamp(10px,2.7cqw,15px)/1.1 Cinzel,Georgia,serif;
+  padding:clamp(2px,.4dvh,5px) 0;
+  border-top:1px solid #ffe2a682;
+  border-bottom:1px solid #bb8d4d;
+}
+.dr-royal-screen .dr-royal-card-title {
+  font:700 clamp(9px,2.45cqw,12px)/1.14 Georgia,serif;
+  color:#fff2ce;
+  white-space:normal;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.dr-royal-screen .dr-royal-card-effect {
+  font:600 clamp(9px,2.5cqw,12px)/1.16 Georgia,serif;
+  color:#fff0d3;
+  padding:0 2px;
+  overflow:hidden;
+}
+.dr-royal-screen .dr-royal-hand-card.selected {
+  z-index:25!important;
+  transform:translateX(-50%) translateY(calc(var(--fan-rise) - 18px)) rotate(0deg) scale(1.045);
+  border-color:#ffeeb5;
+  box-shadow:0 0 0 2px #ffe3a59a,0 0 23px #ffcd69,0 13px 24px #000c;
+}
+.dr-royal-screen .dr-royal-hand-card:focus-visible {outline:3px solid #fff9bd;outline-offset:2px;}
+.dr-royal-screen .dr-royal-hand-card.unavailable:not(.selected) {filter:saturate(.75) brightness(.82);}
+.dr-royal-screen .dr-royal-hand-count.player {top:0;left:10px;}
+
+/* Larger portrait + luminous end-turn control with real enabled/disabled states. */
+.dr-royal-screen .dr-royal-player-deck {top:auto;bottom:clamp(4px,1dvh,10px);}
+.dr-royal-screen .dr-royal-audio {
+  width:clamp(34px,8.5cqw,44px);height:clamp(34px,8.5cqw,44px);
+  left:clamp(6px,2cqw,15px);bottom:calc(100% + 5px);
+  border:2px solid #f4c985;
+  box-shadow:0 3px 9px #0008;
+}
+.dr-royal-screen .dr-royal-finish {
+  right:clamp(5px,2cqw,12px);
+  bottom:clamp(5px,1.2dvh,13px);
+  width:clamp(68px,22cqw,101px);
+  height:clamp(68px,22cqw,101px);
+  border:3px solid #ffe3a4;
+  background:radial-gradient(circle at 42% 28%,#694620,#271419 75%);
+  box-shadow:0 0 0 3px #ba853c,0 0 21px #ffd47f,inset 0 0 0 3px #6a4522;
+  color:#fff0be;
+}
+.dr-royal-screen .dr-royal-finish > span {font-size:clamp(17px,4dvh,31px);}
+.dr-royal-screen .dr-royal-finish strong {font:900 clamp(10px,2.5cqw,15px)/1.04 Cinzel,Georgia,serif;}
+.dr-royal-screen .dr-royal-finish:disabled {
+  opacity:.64;filter:grayscale(.45) brightness(.8);
+  box-shadow:0 0 0 2px #746248,inset 0 0 0 2px #6e5b3e;
+}
+.dr-royal-screen .dr-royal-drag-ghost {
+  width:clamp(75px,22cqw,120px);
+  height:clamp(104px,24dvh,165px);
+  border:3px solid #ffe4a0;
+  box-shadow:0 0 25px #fcd681,0 10px 25px #000c;
+}
+@media(max-height:690px) {
+  .dr-royal-screen .dr-royal-layout {grid-template-rows:minmax(0,22fr) minmax(0,16fr) minmax(0,20fr) minmax(0,24fr) minmax(0,18fr);}
+  .dr-royal-screen .dr-royal-character-frame {max-height:calc(100% - 10px);}
+  .dr-royal-screen .dr-royal-impact-track {padding:1px;}
+  .dr-royal-screen .dr-royal-hand-card img {height:48%;flex-basis:48%;}
+  .dr-royal-screen .dr-royal-hp {min-height:21px;}
+  .dr-royal-screen .dr-royal-rival-impact {display:none;}
+  .dr-royal-screen .dr-royal-card-effect {font-size:9px;}
+}
+@media (max-width:350px) {
+  .dr-royal-screen .dr-royal-hand-card {width:clamp(68px,28cqw,96px);}
+  .dr-royal-screen .dr-royal-card-kind {font-size:10px;}
+  .dr-royal-screen .dr-royal-card-title,
+  .dr-royal-screen .dr-royal-card-effect {font-size:9px;}
+  .dr-royal-screen .dr-royal-hand-count {font-size:9px;}
+}
+@media (prefers-reduced-motion:reduce) {
+  .dr-royal-screen .dr-royal-hand-card,
+  .dr-royal-screen .dr-royal-impact-slot,
+  .dr-royal-screen .dr-royal-finish {transition:none!important;}
+  .dr-royal-screen .dr-royal-impact-slot.available,
+  .dr-royal-screen .dr-royal-field.is-regular .dr-royal-impact-slot:first-child,
+  .dr-royal-screen .dr-royal-field.is-guiding::after,
+  .dr-royal-screen .dr-royal-combo {animation:none!important;}
+}

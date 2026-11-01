@@ -4,7 +4,7 @@ import { OPPONENT_IMG, PLAYER_IMG } from '../constants';
 import { CardData, GamePhase, CardType } from '../types';
 import { useAudio } from '../contexts/AudioContext';
 import { AiTurnController, runOpponentTurn } from '../game/aiTurn';
-import { cardPlacementPrompt, checkCardPlacement, type CardDropZone } from '../game/cardPlacement.ts';
+import { cardPlacementPrompt, checkCardPlacement, resolveVisualDropZone, type CardDropZone } from '../game/cardPlacement.ts';
 
 // --- GAME CONFIGURATION ---
 const MAX_HP = 10;
@@ -71,7 +71,7 @@ type GameBoardProps = {
   presentation?: BattlePresentation;
 };
 const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation }) => {
-  const scenicBackground = presentation?.background ?? '/Decreto-Real/escenarios/plaza-virreinal.svg';
+  const scenicBackground = presentation?.background ?? '/Decreto-Real/escenarios/plaza-virreinal-v2.svg';
   const playerPortrait = presentation?.playerPortrait ?? PLAYER_IMG;
   const rivalPortrait = presentation?.opponentPortrait ?? OPPONENT_IMG;
   const navigate = useNavigate();
@@ -328,7 +328,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
 
   const placeCard = (card: CardData, zone: CardDropZone) => {
     if (!canHandleCards || spentIds.current.has(card.id) || !playerHand.some(item => item.id === card.id)) return;
-    const check = checkCardPlacement(card, zone, playerImpactLevel, playerImpactPlayedThisTurn);
+    const check = checkCardPlacement(card, resolveVisualDropZone(card, zone), playerImpactLevel, playerImpactPlayedThisTurn);
     if ('message' in check) { setPlayHint(check.message); return; }
     spentIds.current.add(card.id);
     setSelectedCardId(null);
@@ -391,7 +391,9 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     }
   }, [phase, showSpecialSelection, isMenuOpen]);
 
-  const helpText = playHint ?? cardPlacementPrompt(selectedCard, playerImpactLevel);
+  const helpText = playHint ?? (selectedCard && selectedCard.type !== 'IMPACT'
+    ? `Arrastra ${selectedCard.name} al campo o a una losa.`
+    : cardPlacementPrompt(selectedCard, playerImpactLevel));
 
   const handleEndTurn = () => {
     if (phase !== 'PLAYER_TURN' || showSpecialSelection || gameOverRef.current) return;
@@ -612,7 +614,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
           <output className="dr-royal-hand-count rival" aria-label={`El rival tiene ${opponentHand.length} cartas`}>MANO {opponentHand.length}</output>
         </section>
 
-        <section className={`dr-royal-field${selectedCard ? ' is-guiding' : ''}${dragAt ? ' is-dragging' : ''}`}
+        <section className={`dr-royal-field${selectedCard ? ' is-guiding' : ''}${dragAt ? ' is-dragging' : ''}${selectedCard && selectedCard.type !== 'IMPACT' ? ' is-regular' : ''}`}
           style={{ '--arrow-left': selectedCard?.type === 'IMPACT' ? `${((selectedCard.rank ?? 1) - .5) * 25}%` : '50%' } as React.CSSProperties}
           data-card-drop="field" aria-label="Campo central de activación">
           <button type="button" className="dr-royal-activation-target" onClick={() => placeSelected('field')}
@@ -630,7 +632,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
                 className={`dr-royal-impact-slot${completed ? ' completed' : ''}${available ? ' available' : ''}`}
                 onClick={event => { event.stopPropagation(); placeSelected(`impact-${lvl}` as CardDropZone); }}
                 aria-label={`Casilla Impacto ${label}${completed ? ', completado' : ''}`}
-                aria-disabled={!available}>
+                aria-disabled={!available && !(canHandleCards && selectedCard && selectedCard.type !== 'IMPACT')}>
                 {completed ? <img src={IMG_IMPACT} alt=""/> : <span className="dr-royal-impact-numeral">{label}</span>}
               </button>;
             })}
