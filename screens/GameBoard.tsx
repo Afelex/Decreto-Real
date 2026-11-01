@@ -604,7 +604,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
           <div className="dr-royal-rival-fan" aria-hidden="true">
             {opponentHand.map((card, i) => {
               const distance = i - (opponentHand.length - 1) / 2;
-              const step = Math.min(7, 30 / Math.max(1, opponentHand.length - 1));
+              const step = Math.min(14, 54 / Math.max(1, opponentHand.length - 1));
               return <div key={card.id} className="dr-royal-facedown" style={{
                 left: `${50 + distance * step}%`,
                 '--rival-card-rotate': `${distance * 7}deg`,
@@ -658,7 +658,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
           <div className="dr-royal-player-fan">
             {playerHand.map((card, i) => {
               const distance = i - (playerHand.length - 1) / 2;
-              const step = Math.min(9, 34 / Math.max(1, playerHand.length - 1));
+              const step = Math.min(15, 60 / Math.max(1, playerHand.length - 1));
               const selected = selectedCardId === card.id;
               const canUse = canHandleCards && (card.type !== 'IMPACT' ||
                 (!playerImpactPlayedThisTurn && card.rank === playerImpactLevel + 1));
