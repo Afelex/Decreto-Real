@@ -71,7 +71,7 @@ type GameBoardProps = {
   presentation?: BattlePresentation;
 };
 const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation }) => {
-  const scenicBackground = presentation?.background ?? '/Decreto-Real/escenarios/plaza-virreinal.svg';
+  const scenicBackground = presentation?.background ?? '/Decreto-Real/escenarios/plaza-virreinal-v2.svg';
   const playerPortrait = presentation?.playerPortrait ?? PLAYER_IMG;
   const rivalPortrait = presentation?.opponentPortrait ?? OPPONENT_IMG;
   const navigate = useNavigate();
