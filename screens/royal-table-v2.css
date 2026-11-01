@@ -188,7 +188,8 @@
   left:50%;
   display:grid;
   grid-template-rows:minmax(0,1fr);
-  width:calc(100% - 12px);
+  width:90%;
+  max-width:390px;
   height:clamp(62px,10dvh,96px);
   transform:translateX(-50%) perspective(350px) rotateX(48deg);
   transform-origin:center top;
@@ -347,8 +348,9 @@
   box-shadow:0 0 0 2px #746248,inset 0 0 0 2px #6e5b3e;
 }
 .dr-royal-screen .dr-royal-drag-ghost {
-  width:clamp(75px,22cqw,120px);
-  height:clamp(104px,24dvh,165px);
+  width:clamp(92px,24cqw,112px);
+  height:auto;
+  aspect-ratio:2 / 3;
   border:3px solid #ffe4a0;
   box-shadow:0 0 25px #fcd681,0 10px 25px #000c;
 }
