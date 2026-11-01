@@ -107,8 +107,10 @@
   top:clamp(4px,1dvh,10px);
   transform:translateX(-50%) translateY(var(--rival-card-rise,0px)) rotate(var(--rival-card-rotate,0deg)) scale(var(--drv2-card-scale));
   transform-origin:50% 82%;
-  width:clamp(64px,18cqw,84px);
-  height:min(87%,153px);
+  width:clamp(56px,16cqw,72px);
+  aspect-ratio:2 / 3;
+  height:auto;
+  max-height:100%;
   border: 3px solid #e7ba6a;
   border-radius: 8px;
   background:
@@ -138,27 +140,28 @@
  * I / II / III / Final are stone buttons with their own hit boxes. */
 .dr-royal-screen .dr-royal-field {
   min-width:0;
-  width:auto;
+  width:100%;
+  max-width:100%;
   justify-self:stretch;
-  margin:0 clamp(4px,1.5cqw,12px);
+  grid-column:1;
+  margin:0;
   border:0;
   border-radius:0;
   background:transparent;
   box-shadow:none;
   overflow:visible;
-  display:grid;
-  grid-template-columns:minmax(0,1fr);
-  grid-template-rows:minmax(0,1fr) auto minmax(0,1fr);
-  gap:6px;
-  perspective:480px;
+  display:block;
 }
 .dr-royal-screen .dr-royal-field.is-guiding { border:0; }
 .dr-royal-screen .dr-royal-field.is-dragging {
   box-shadow: inset 0 0 38px #ffd37128;
 }
 .dr-royal-screen .dr-royal-activation-target {
-  flex:0 0 16%;
-  margin:0 auto 1px;
+  position:absolute;
+  z-index:2;
+  left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  margin:0;
   padding:2px 8px;
   width:min(72%,280px);
   min-height:30px;
@@ -181,20 +184,21 @@
 }
 .dr-royal-screen .dr-royal-rival-progress,
 .dr-royal-screen .dr-royal-impact-track {
+  position:absolute;
+  left:50%;
   display:grid;
   grid-template-rows:minmax(0,1fr);
-  width:100%;
+  width:calc(100% - 12px);
   height:clamp(62px,10dvh,96px);
-  align-self:center;
-  transform:perspective(350px) rotateX(48deg);
+  transform:translateX(-50%) perspective(350px) rotateX(48deg);
   transform-origin:center top;
-  flex:1 1 auto;
   min-height:0;
   grid-template-columns:repeat(4,minmax(0,1fr));
   gap:clamp(3px,1cqw,9px);
   padding:2px 2px 2px;
 }
-.dr-royal-screen .dr-royal-rival-progress {transform-origin:center bottom;}
+.dr-royal-screen .dr-royal-rival-progress {top:0;transform-origin:center bottom;}
+.dr-royal-screen .dr-royal-impact-track {bottom:0;}
 .dr-royal-screen .dr-royal-rival-progress-slot,
 .dr-royal-screen .dr-royal-impact-slot {
   position:relative;
@@ -270,7 +274,9 @@
   top:clamp(4px,1dvh,12px);
   width:clamp(78px,23cqw,102px);
   transform:translateX(-50%) translateY(var(--fan-rise)) rotate(var(--fan-rotate)) scale(var(--drv2-card-scale));
-  height:calc(100% - clamp(8px,1.2dvh,16px));
+  aspect-ratio:2 / 3;
+  height:auto;
+  max-height:calc(100% - 8px);
   padding:3px;
   border:2px solid #f0c981;
   border-radius:8px;
