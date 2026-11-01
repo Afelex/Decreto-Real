@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { cardPlacementPrompt, checkCardPlacement } from './cardPlacement.ts';
+import { cardPlacementPrompt, checkCardPlacement, resolveVisualDropZone } from './cardPlacement.ts';
 
 const attack = { type: 'ATTACK' as const, name: 'Decreto de Ataque' };
 const defense = { type: 'DEFENSE' as const, name: 'Decreto de Defensa' };
@@ -34,4 +34,15 @@ test('prompts reflect the selected card without spending it', () => {
   assert.match(cardPlacementPrompt(attack,0), /arrastra/i);
   assert.match(cardPlacementPrompt(impact(2),1), /casilla 2/);
   assert.match(cardPlacementPrompt(impact(3),0), /Necesitas Impacto I primero/);
+});
+
+test('regular cards may be released on a stone tile, while Impact must hit its exact tile', () => {
+  for (const zone of ['field','impact-1','impact-2','impact-3','impact-4'] as const) {
+    assert.equal(resolveVisualDropZone(attack, zone), 'field');
+    assert.equal(resolveVisualDropZone(defense, zone), 'field');
+    assert.equal(resolveVisualDropZone(impact(2), zone), zone);
+  }
+  assert.deepEqual(checkCardPlacement(attack, resolveVisualDropZone(attack,'impact-1'), 0, false), { valid:true });
+  assert.equal(checkCardPlacement(impact(2), resolveVisualDropZone(impact(2),'impact-1'), 1, false).valid,false);
+  assert.equal(checkCardPlacement(impact(2), resolveVisualDropZone(impact(2),'impact-2'), 1, false).valid,true);
 });
