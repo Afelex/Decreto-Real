@@ -22,7 +22,7 @@ export function checkCardPlacement(
     return { valid: true };
   }
   if (zone !== 'field') {
-    return { valid: false, message: 'Arrastra Ataque o Defensa al centro del campo.' };
+    return { valid: false, message: 'Arrastra Ataque, Defensa u Orden al centro del campo.' };
   }
   return { valid: true };
 }

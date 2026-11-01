@@ -111,7 +111,7 @@ const CampaignMission: React.FC = () => {
         {missionStarGoals(mission).map(goal =>
           <div key={goal.id}><span>★</span> {goal.label}</div>)}
       </div>
-      <p className="dc-note dc-briefing-note">Combate original: 10 de vida, 10 ataques, 10 defensas, 4 Impactos, sin Mando. El ritual de moneda, las cartas, la IA y los efectos se conservan íntegros.</p>
+      <p className="dc-note dc-briefing-note">Combate original: 20 de vida, 10 ataques, 10 defensas, 4 Impactos y 4 Órdenes. Los combos x2 y x3 permiten causar daño o curar vida.</p>
       <div className="dc-briefing-actions">
         <button className="dc-primary" onClick={() => setView('duel')}>¡Comenzar duelo! ⚔</button>
         <button className="dc-secondary" onClick={() => navigate('/campania')}>Volver al mapa</button>

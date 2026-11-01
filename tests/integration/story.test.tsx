@@ -11,7 +11,7 @@ vi.mock('../../screens/GameBoard', () => ({
   default: ({ onOutcome }: { onOutcome?: (result: { won: boolean; turns: number; health: number }) => void }) =>
     <section data-testid="original-board">
       <h2>Ritual de Inicio</h2>
-      <button type="button" onClick={() => onOutcome?.({ won: true, turns: 7, health: 8 })}>Victoria original de prueba</button>
+      <button type="button" onClick={() => onOutcome?.({ won: true, turns: 7, health: 16 })}>Victoria original de prueba</button>
       <button type="button" onClick={() => onOutcome?.({ won: false, turns: 7, health: 0 })}>Derrota original de prueba</button>
     </section>,
 }));
@@ -45,7 +45,7 @@ test('the prologue introduces the four provisional characters and eight generals
 test('a reachable mission opens a story briefing before the battle', () => {
   screenAt('/campania/mision/01');
   expect(screen.getByRole('heading', { name: 'El pregón alterado' })).toBeTruthy();
-  expect(screen.getByText(/Combate original: 10 de vida/)).toBeTruthy();
+  expect(screen.getByText(/Combate original: 20 de vida/)).toBeTruthy();
   expect(screen.getByRole('button', { name: /Comenzar duelo/ })).toBeTruthy();
 });
 
@@ -92,7 +92,7 @@ test('a reachable general receives the matching illustrated region and identific
   expect(scene?.getAttribute('data-region')).toBe('1');
   expect(scene?.querySelector('svg')).toBeTruthy();
   expect(screen.getByText(/GENERAL DE LA REGIÓN/)).toBeTruthy();
-  expect(screen.getByText(/sin Mando/)).toBeTruthy();
+  expect(screen.getByText(/4 Órdenes/)).toBeTruthy();
 });
 
 test('the campaign opens the original game, not the newly created DuelBoard', () => {
@@ -101,7 +101,7 @@ test('the campaign opens the original game, not the newly created DuelBoard', ()
   }));
   screenAt('/campania/mision/06');
   expect(screen.getByRole('heading', { name: 'El Almirante de Hierro' })).toBeTruthy();
-  expect(screen.getByText(/10 de vida, 10 ataques, 10 defensas, 4 Impactos, sin Mando/)).toBeTruthy();
+  expect(screen.getByText(/20 de vida, 10 ataques, 10 defensas, 4 Impactos y 4 Órdenes/)).toBeTruthy();
   fireEvent.click(screen.getByRole('button', { name: /Comenzar duelo/ }));
   expect(screen.getByTestId('original-board')).toBeTruthy();
   expect(screen.getByRole('heading', { name: 'Ritual de Inicio' })).toBeTruthy();

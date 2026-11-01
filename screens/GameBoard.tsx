@@ -7,7 +7,7 @@ import { AiTurnController, runOpponentTurn } from '../game/aiTurn';
 import { cardPlacementPrompt, checkCardPlacement, resolveVisualDropZone, type CardDropZone } from '../game/cardPlacement.ts';
 
 // --- GAME CONFIGURATION ---
-const MAX_HP = 10;
+const MAX_HP = 20;
 const INITIAL_HAND_SIZE = 3;
 const ATTACK_DAMAGE = 2;
 const GAUGE_MAX = 3;
@@ -17,6 +17,7 @@ const SPECIAL_VALUE = 3;
 const IMG_ATTACK = 'https://i.imgur.com/x9iHqkK.png';
 const IMG_DEFEND = 'https://i.imgur.com/z9KyWGL_d.webp?maxwidth=760&fidelity=grand';
 const IMG_IMPACT = 'https://i.imgur.com/l0ZwqZN_d.webp?maxwidth=760&fidelity=grand';
+const IMG_ORDER = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 360"><defs><linearGradient id="g" x2="1" y2="1"><stop stop-color="#e9c976"/><stop offset="1" stop-color="#75452c"/></linearGradient></defs><rect width="240" height="360" fill="#30202d"/><path d="M48 42h144v270H48z" fill="url(#g)" stroke="#fff1c0" stroke-width="5"/><path d="M70 82h100M70 106h100M70 130h82M70 218h100M70 243h100M70 268h68" stroke="#53382c" stroke-width="7"/><circle cx="120" cy="175" r="23" fill="#923f42" stroke="#f9e2a6" stroke-width="5"/></svg>')}`;
 
 // --- DECK GENERATION & UTILS ---
 const generateDeck = (playerIdPrefix: string): CardData[] => {
@@ -30,6 +31,7 @@ const generateDeck = (playerIdPrefix: string): CardData[] => {
     deck.push({ id: `${playerIdPrefix}-atk-${i}`, type: 'ATTACK', name: 'Decreto de Ataque', description: `-${ATTACK_DAMAGE} HP al Rival`, cost: 0, img: IMG_ATTACK });
     deck.push({ id: `${playerIdPrefix}-def-${i}`, type: 'DEFENSE', name: 'Decreto de Defensa', description: '+1 HP Propio', cost: 0, img: IMG_DEFEND });
   }
+  for (let i = 0; i < 4; i++) deck.push({ id: `${playerIdPrefix}-ord-${i}`, type: 'ORDER', name: 'Decreto de Orden', description: 'Roba 1 carta extra', cost: 0, img: IMG_ORDER });
   return shuffleArray(deck);
 };
 
@@ -94,6 +96,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   const [playerGauge, setPlayerGauge] = useState(0);
   const [playerLastType, setPlayerLastType] = useState<CardType | null>(null);
   const [showSpecialSelection, setShowSpecialSelection] = useState(false);
+  const [comboChoice, setComboChoice] = useState<2 | 3>(3);
 
   const [opponentHP, setOpponentHP] = useState(MAX_HP);
   const [opponentDeck, setOpponentDeck] = useState<CardData[]>([]);
@@ -192,38 +195,28 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     setTimeout(() => setVisualEffect({ type: null, target: null }), type === 'IMPACT' ? 600 : 1200);
   };
 
-  const triggerSpecialAbility = (user: 'PLAYER' | 'OPPONENT', ability: 'DAMAGE' | 'HEAL') => {
+  const triggerSpecialAbility = (user: 'PLAYER' | 'OPPONENT', ability: 'DAMAGE' | 'HEAL', level: 2 | 3) => {
+    const value = level === 2 ? 1 : SPECIAL_VALUE;
     playSound('IMPACT');
     if (user === 'PLAYER') {
-      setPlayerGauge(0); setPlayerLastType(null); setShowSpecialSelection(false);
-      if (ability === 'DAMAGE') { setOpponentHP(p => Math.max(0, p - SPECIAL_VALUE)); triggerVisualEffect('SPECIAL_ATTACK', 'OPPONENT'); }
-      else { setPlayerHP(p => Math.min(MAX_HP, p + SPECIAL_VALUE)); triggerVisualEffect('SPECIAL_HEAL', 'PLAYER'); }
+      if (level === 3) { setPlayerGauge(0); setPlayerLastType(null); }
+      setShowSpecialSelection(false);
+      if (ability === 'DAMAGE') { setOpponentHP(p => Math.max(0, p - value)); triggerVisualEffect('SPECIAL_ATTACK', 'OPPONENT'); }
+      else { setPlayerHP(p => Math.min(MAX_HP, p + value)); triggerVisualEffect('SPECIAL_HEAL', 'PLAYER'); }
     } else {
-      setOpponentGauge(0); setOpponentLastType(null);
-      if (ability === 'DAMAGE') { setPlayerHP(p => Math.max(0, p - SPECIAL_VALUE)); triggerVisualEffect('SPECIAL_ATTACK', 'PLAYER'); }
-      else { setOpponentHP(p => Math.min(MAX_HP, p + SPECIAL_VALUE)); triggerVisualEffect('SPECIAL_HEAL', 'OPPONENT'); }
+      if (level === 3) { setOpponentGauge(0); setOpponentLastType(null); }
+      if (ability === 'DAMAGE') { setPlayerHP(p => Math.max(0, p - value)); triggerVisualEffect('SPECIAL_ATTACK', 'PLAYER'); }
+      else { setOpponentHP(p => Math.min(MAX_HP, p + value)); triggerVisualEffect('SPECIAL_HEAL', 'OPPONENT'); }
     }
   };
 
-  const updateGauge = (isPlayer: boolean, cardType: CardType): boolean => {
-    if (cardType === 'IMPACT') {
-      if (isPlayer) { setPlayerGauge(0); setPlayerLastType(null); }
-      else { setOpponentGauge(0); setOpponentLastType(null); }
-      return false;
-    }
-    let triggered = false;
-    if (isPlayer) {
-      if (playerLastType === cardType) {
-        const newVal = playerGauge + 1; setPlayerGauge(newVal);
-        if (newVal >= GAUGE_MAX) triggered = true;
-      } else { setPlayerLastType(cardType); setPlayerGauge(1); }
-    } else {
-      if (latestOpponent.current.lastType === cardType) {
-        const newVal = latestOpponent.current.gauge + 1; setOpponentGauge(newVal);
-        if (newVal >= GAUGE_MAX) triggered = true;
-      } else { setOpponentLastType(cardType); setOpponentGauge(1); }
-    }
-    return triggered;
+  const updateGauge = (isPlayer: boolean, cardType: CardType): 0 | 2 | 3 => {
+    const previousType = isPlayer ? playerLastType : latestOpponent.current.lastType;
+    const previousGauge = isPlayer ? playerGauge : latestOpponent.current.gauge;
+    const next = previousType === cardType ? Math.min(GAUGE_MAX, previousGauge + 1) : 1;
+    if (isPlayer) { setPlayerLastType(cardType); setPlayerGauge(next); }
+    else { setOpponentLastType(cardType); setOpponentGauge(next); }
+    return next === 2 || next === 3 ? next : 0;
   };
 
   const drawCards = (target: 'PLAYER' | 'OPPONENT', amount: number) => {
@@ -254,21 +247,18 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     } else if (card.type === 'DEFENSE') {
       playSound('DEFENSE'); triggerVisualEffect('DEFENSE', isPlayer ? 'PLAYER' : 'OPPONENT');
       if (isPlayer) setPlayerHP(p => Math.min(MAX_HP, p + 1)); else setOpponentHP(p => Math.min(MAX_HP, p + 1));
+    } else if (card.type === 'ORDER') {
+      playSound('CLICK'); drawCards(isPlayer ? 'PLAYER' : 'OPPONENT', 1);
     } else if (card.type === 'IMPACT') {
       playSound('IMPACT'); triggerVisualEffect('IMPACT', 'GLOBAL');
       if (isPlayer) { setPlayerImpactLevel(p => p + 1); setPlayerImpactPlayedThisTurn(true); setOpponentHP(p => Math.max(0, p - 1)); setPlayerHP(p => Math.min(MAX_HP, p + 1)); }
       else { setOpponentImpactLevel(p => p + 1); setOpponentImpactPlayedThisTurn(true); setPlayerHP(p => Math.max(0, p - 1)); setOpponentHP(p => Math.min(MAX_HP, p + 1)); }
     }
 
-    const specialReady = updateGauge(isPlayer, card.type);
-    if (specialReady) {
-      if (isPlayer) setTimeout(() => setShowSpecialSelection(true), 600);
-      else {
-        const controller = aiController.current;
-        if (controller) void controller.wait(800).then(active => {
-          if (active && !gameOverRef.current) triggerSpecialAbility('OPPONENT', latestOpponent.current.health < 5 ? 'HEAL' : 'DAMAGE');
-        });
-      }
+    const comboLevel = updateGauge(isPlayer, card.type);
+    if (comboLevel) {
+      if (isPlayer) { setComboChoice(comboLevel); setShowSpecialSelection(true); }
+      else triggerSpecialAbility('OPPONENT', latestOpponent.current.health < MAX_HP / 2 ? 'HEAL' : 'DAMAGE', comboLevel);
     }
   };
 
@@ -547,32 +537,32 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
           <div className="w-full max-w-md p-6 relative flex flex-col items-center">
             <div className="absolute inset-0 bg-purple-900/20 blur-3xl rounded-full animate-pulse"></div>
             <h2 className="text-3xl font-decorative text-transparent bg-clip-text bg-gradient-to-b from-white to-purple-400 drop-shadow-[0_0_10px_rgba(168,85,247,0.8)] text-center mb-8 uppercase tracking-widest relative z-10">
-              Combo Completo
+              Combo ×{comboChoice}
             </h2>
             <p className="text-gray-300 font-body text-center mb-8 relative z-10 text-sm">
-              Tu poder arcano está al máximo. Elige tu destino.
+              Elige el efecto de tu combo.
             </p>
             <div className="grid grid-cols-2 gap-6 w-full relative z-10">
               <button
-                onClick={() => triggerSpecialAbility('PLAYER', 'DAMAGE')}
+                onClick={() => triggerSpecialAbility('PLAYER', 'DAMAGE', comboChoice)}
                 className="group relative flex flex-col items-center p-4 bg-black/60 border border-purple-900 hover:border-purple-500 rounded-lg transition-all hover:bg-purple-900/20 active:scale-95"
               >
                 <div className="w-16 h-16 rounded-full bg-purple-900/30 border border-purple-500 flex items-center justify-center mb-3 group-hover:shadow-[0_0_20px_#a855f7]">
                   <span className="material-icons text-3xl text-purple-300">bolt</span>
                 </div>
                 <span className="font-display font-bold text-white uppercase text-sm mb-1">Furia Real</span>
-                <span className="font-body text-xs text-purple-300">{SPECIAL_VALUE} Daño al Rival</span>
+                <span className="font-body text-xs text-purple-300">{comboChoice === 2 ? 1 : SPECIAL_VALUE} Daño al Rival</span>
               </button>
 
               <button
-                onClick={() => triggerSpecialAbility('PLAYER', 'HEAL')}
+                onClick={() => triggerSpecialAbility('PLAYER', 'HEAL', comboChoice)}
                 className="group relative flex flex-col items-center p-4 bg-black/60 border border-blue-900 hover:border-blue-500 rounded-lg transition-all hover:bg-blue-900/20 active:scale-95"
               >
                 <div className="w-16 h-16 rounded-full bg-blue-900/30 border border-blue-500 flex items-center justify-center mb-3 group-hover:shadow-[0_0_20px_#3b82f6]">
                   <span className="material-icons text-3xl text-blue-300">health_and_safety</span>
                 </div>
                 <span className="font-display font-bold text-white uppercase text-sm mb-1">Gracia Divina</span>
-                <span className="font-body text-xs text-blue-300">Curar {SPECIAL_VALUE} HP</span>
+                <span className="font-body text-xs text-blue-300">Curar {comboChoice === 2 ? 1 : SPECIAL_VALUE} HP</span>
               </button>
             </div>
           </div>
@@ -650,7 +640,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
             })}
           </div>
           {playerGauge >= 2 && phase === 'PLAYER_TURN' && <div key={playerGauge} className={`dr-royal-combo combo-${playerGauge}`}
-            aria-label={`Combo por ${playerGauge}`} role="status"><strong>COMBO</strong><b>×{playerGauge}</b></div>}
+            aria-label={`Combo por ${playerGauge}`} role="status"><strong>COMBO</strong><b>×{playerGauge}</b><em>de {{ ATTACK: 'Ataque', DEFENSE: 'Defensa', IMPACT: 'Impacto', ORDER: 'Orden' }[playerLastType ?? 'ATTACK']}</em></div>}
         </section>
 
         <section className="dr-royal-player-hand" aria-label={`Tu mano: ${playerHand.length} cartas`}>
@@ -674,7 +664,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
                 onPointerCancel={onCardPointerCancel}
                 onClick={event => { if (event.detail === 0) selectCard(card); }}>
                 <img src={card.img} alt="" draggable={false}/>
-                <span className="dr-royal-card-kind">{card.type === 'ATTACK' ? 'ATAQUE' : card.type === 'DEFENSE' ? 'DEFENSA' : 'IMPACTO'}</span>
+                <span className="dr-royal-card-kind">{card.type === 'ATTACK' ? 'ATAQUE' : card.type === 'DEFENSE' ? 'DEFENSA' : card.type === 'ORDER' ? 'ORDEN' : 'IMPACTO'}</span>
                 <span className="dr-royal-card-title">{card.name}</span>
                 <span className="dr-royal-card-effect">{card.description}</span>
               </button>;
