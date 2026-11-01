@@ -1,4 +1,4 @@
-export type CardType = "ATTACK" | "DEFENSE" | "IMPACT";
+export type CardType = "ATTACK" | "DEFENSE" | "IMPACT" | "ORDER";
 
 export interface CardData {
   id: string; // Changed to string for unique instances

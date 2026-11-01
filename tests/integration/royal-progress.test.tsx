@@ -30,3 +30,45 @@ test('rival row follows a real AI Impact while player slots remain independent',
   expect(within(player).getAllByRole('button')).toHaveLength(4);
   expect(player.querySelectorAll('.completed')).toHaveLength(0);
 });
+
+test('two Impacts across turns offer the one-point combo and preserve the streak', async () => {
+  vi.useFakeTimers();
+  vi.spyOn(Math, 'random').mockReturnValue(.999);
+  render(<MemoryRouter><GameBoard /></MemoryRouter>);
+  expect(screen.getByLabelText('Tu vida: 20 de 20')).toBeTruthy();
+  expect(screen.getByText('28', { selector: '.dr-royal-player-deck span' })).toBeTruthy();
+  fireEvent.click(screen.getByRole('button', { name: 'Lanzar Moneda' }));
+  for (const ms of [1500, 1500, 2000, 1500]) {
+    await act(async () => { await vi.advanceTimersByTimeAsync(ms); });
+  }
+  fireEvent.click(screen.getByRole('button', { name: /Impacto I:/ }));
+  fireEvent.click(screen.getByRole('button', { name: 'Casilla Impacto I' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Terminar turno' }));
+  for (const ms of [1500, 1000, 1500, 1500, 1500]) {
+    await act(async () => { await vi.advanceTimersByTimeAsync(ms); });
+  }
+  fireEvent.click(screen.getByRole('button', { name: /Impacto II:/ }));
+  fireEvent.click(screen.getByRole('button', { name: 'Casilla Impacto II' }));
+  expect(screen.getByText('Combo ×2')).toBeTruthy();
+  expect(screen.getByText('1 Daño al Rival')).toBeTruthy();
+  fireEvent.click(screen.getByRole('button', { name: /Furia Real/ }));
+  expect(screen.getByLabelText('Vida del rival: 18 de 20')).toBeTruthy();
+  expect(screen.getByText('de Impacto')).toBeTruthy();
+});
+
+test('Order draws one replacement card without changing the starting 28-card deck', async () => {
+  vi.useFakeTimers();
+  const random = vi.spyOn(Math, 'random').mockImplementationOnce(() => 0).mockReturnValue(.999);
+  render(<MemoryRouter><GameBoard /></MemoryRouter>);
+  random.mockReturnValue(.999);
+  fireEvent.click(screen.getByRole('button', { name: 'Lanzar Moneda' }));
+  for (const ms of [1500, 1500, 2000, 1500]) {
+    await act(async () => { await vi.advanceTimersByTimeAsync(ms); });
+  }
+  const before = screen.getByLabelText(/Tu mano:/).querySelectorAll('.dr-royal-hand-card').length;
+  const deckBefore = Number(document.querySelector('.dr-royal-player-deck span')?.textContent);
+  fireEvent.click(screen.getByRole('button', { name: /Decreto de Orden:/ }));
+  fireEvent.click(screen.getByRole('button', { name: 'Campo para activar Ataque o Defensa' }));
+  expect(screen.getByLabelText(/Tu mano:/).querySelectorAll('.dr-royal-hand-card')).toHaveLength(before);
+  expect(Number(document.querySelector('.dr-royal-player-deck span')?.textContent)).toBe(deckBefore - 1);
+});

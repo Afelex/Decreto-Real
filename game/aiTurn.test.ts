@@ -73,3 +73,20 @@ test('cancellation after a card prevents later actions and finish', async t => {
   controller.cancel(); t.mock.timers.tick(10000); await run;
   assert.equal(count, 1);
 });
+
+
+test('AI plays Orders, draws their replacements and then attacks', async t => {
+  t.mock.timers.enable({ apis: ['setTimeout', 'Date'] });
+  type C = { id: string; type: 'ATTACK' | 'DEFENSE' | 'IMPACT' | 'ORDER'; rank?: number };
+  const state = { hand: [{ id: 'order1', type: 'ORDER' } as C], health: 20, impactLevel: 0 };
+  const played: string[] = [];
+  let draws = 0;
+  const run = runOpponentTurn(new AiTurnController(), () => state, card => {
+    played.push(card.id);
+    state.hand = state.hand.filter(item => item.id !== card.id);
+    if (card.type === 'ORDER') state.hand.push(++draws === 1 ? { id: 'order2', type: 'ORDER' } : { id: 'attack', type: 'ATTACK' });
+  }, () => played.push('finished'));
+  for (const ms of [1000, 1500, 1500, 1500]) { t.mock.timers.tick(ms); await flush(); }
+  await run;
+  assert.deepEqual(played, ['order1', 'order2', 'attack', 'finished']);
+});

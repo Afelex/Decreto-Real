@@ -48,7 +48,7 @@ export class AiTurnController {
   }
 }
 
-type AiCard = { id: string; type: 'ATTACK' | 'DEFENSE' | 'IMPACT'; rank?: number };
+type AiCard = { id: string; type: 'ATTACK' | 'DEFENSE' | 'IMPACT' | 'ORDER'; rank?: number };
 type AiSnapshot<C extends AiCard> = { hand: C[]; health: number; impactLevel: number };
 
 /** Keep the existing priority: one legal Impact, defenses below 5 HP, then attacks. */
@@ -67,6 +67,11 @@ export async function runOpponentTurn<C extends AiCard>(
   let state = read();
   const impact = state.hand.find(card => card.type === 'IMPACT' && card.rank === state.impactLevel + 1);
   if (impact && !await perform(impact)) return;
+  // Orders replace themselves and may reveal another playable Order.
+  let order: C | undefined;
+  while ((order = read().hand.find(card => card.type === 'ORDER'))) {
+    if (!await perform(order)) return;
+  }
   state = read();
   if (state.health < 5) {
     let defense: C | undefined;

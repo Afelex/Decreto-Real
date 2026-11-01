@@ -1,11 +1,9 @@
 import type { CampaignMission } from './campaign.ts';
 import type { OriginalBattleOutcome } from '../screens/GameBoard';
 
-/** Score the original 10-HP, alternating-turn game without changing its
- * rules. Existing campaign goals were authored for 20 HP and player rounds.
- * Translate only their thresholds, not the game itself. */
+/** The original battle now has the campaign's 20 HP. */
 export function classicHealthGoal(mission: CampaignMission): number {
-  return Math.max(1, Math.min(10, Math.ceil(mission.healthGoal / 2)));
+  return Math.max(1, Math.min(20, mission.healthGoal));
 }
 
 export function classicRoundCount(turns: number): number {
