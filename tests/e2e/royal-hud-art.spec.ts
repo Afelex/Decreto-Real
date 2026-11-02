@@ -9,6 +9,8 @@ test('a single clipped end-turn illustration stays in the player footer', async 
   const sprite = viewport.locator('img.dr-royal-finish-art-image');
 
   await expect(portraits).toHaveCount(2);
+  await expect(portraits.first()).toHaveCSS('overflow', 'hidden');
+  await expect(portraits.locator('img.dr-royal-portrait-art-image')).toHaveCount(2);
   await expect(button).toHaveCount(1);
   await expect(page.locator('.dr-royal-finish')).toHaveCount(1);
   await expect(page.locator('.dr-royal-rival-area .dr-royal-finish')).toHaveCount(0);
