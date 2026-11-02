@@ -1,0 +1,153 @@
+/* DR-ART-02: retratos y botón FIN TURNO ilustrados.
+   Atlas AVIF transparente: 3 columnas × 192px, 240px de alto.
+   Col. 1: marco (retrato), col. 2: botón habilitado, col. 3: inhabilitado.
+   Mantiene retratos, HP, botón nativo y estado disabled dinámicos. */
+.dr-royal-screen {
+  --dr-hud-art: url('/Decreto-Real/interfaz/retratos-fin-turno.avif');
+}
+
+/* Marco ilustrado sobre el retrato de cada personaje, sin redibujar el retrato. */
+.dr-royal-screen .dr-royal-character-frame {
+  position: relative;
+  box-sizing: border-box;
+  width: auto;
+  height: calc(100% - 15px);
+  aspect-ratio: 4 / 5;
+  max-width: min(35cqw, 170px);
+  max-height: calc(100% - 15px);
+  flex: 0 1 auto;
+  align-self: center;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  clip-path: none;
+  background: transparent;
+  box-shadow: none;
+  filter: drop-shadow(0 3px 5px #0a081a9c);
+}
+.dr-royal-screen .dr-royal-character-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: var(--dr-hud-art) no-repeat 0% 50% / 300% 100%;
+}
+.dr-royal-screen .dr-royal-character-frame > img {
+  position: absolute;
+  left: 13%;
+  top: 20%;
+  width: 74%;
+  height: 59%;
+  min-width: 0;
+  max-width: none;
+  border-radius: 5px 5px 2px 2px;
+  object-fit: cover;
+  object-position: center 20%;
+}
+.dr-royal-screen .dr-royal-character-frame .dr-royal-hp {
+  position: absolute;
+  z-index: 2;
+  left: 19%;
+  right: 19%;
+  top: auto;
+  bottom: 8%;
+  width: auto;
+  height: 11%;
+  min-height: 13px;
+  padding: 0 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: 900 clamp(10px, 2.7cqw, 14px)/1 Cinzel, Georgia, serif;
+  color: #fff9e4;
+  white-space: nowrap;
+  border: 0;
+  border-radius: 4px;
+  box-shadow: none;
+  letter-spacing: -.03em;
+  text-shadow: 0 2px 3px #070c1d, 1px 0 #0a0c20;
+}
+.dr-royal-screen .dr-royal-character-frame .dr-royal-hp.red {
+  background: #7d1115c9;
+}
+.dr-royal-screen .dr-royal-character-frame .dr-royal-hp.blue {
+  background: #113c78c9;
+}
+
+/* Botón ilustrado: la acción, el foco y disabled siguen siendo HTML nativo. */
+.dr-royal-screen .dr-royal-finish {
+  position: absolute;
+  overflow: visible;
+  isolation: isolate;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background-color: transparent;
+  background-image: var(--dr-hud-art);
+  background-repeat: no-repeat;
+  background-size: 300% 125%;
+  background-position: 50% 50%;
+  box-shadow: 0 5px 12px #09071388;
+  opacity: 1;
+  filter: none;
+  color: #fff6e4;
+  text-shadow: 0 1px 2px #30111a;
+  transition: transform .15s ease, filter .15s ease;
+}
+.dr-royal-screen .dr-royal-finish > span {
+  display: none;
+}
+.dr-royal-screen .dr-royal-finish strong {
+  position: absolute;
+  left: 16%;
+  top: 68%;
+  width: 68%;
+  height: 19%;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font: 900 clamp(9px, 2.6cqw, 12px)/.92 Cinzel, Georgia, serif;
+  text-align: center;
+  color: #fff7da;
+  text-shadow: 0 1px 3px #300b11, 0 1px 2px #130b13;
+  pointer-events: none;
+}
+.dr-royal-screen .dr-royal-finish:disabled {
+  background-position: 100% 50%;
+  opacity: 1;
+  filter: none;
+  box-shadow: 0 3px 7px #09071366;
+  cursor: not-allowed;
+}
+.dr-royal-screen .dr-royal-finish:disabled strong {
+  color: #e5d7c9;
+}
+.dr-royal-screen .dr-royal-finish:focus-visible {
+  outline: 3px solid #fff2bd;
+  outline-offset: 3px;
+}
+.dr-royal-screen .dr-royal-finish:active:not(:disabled) {
+  transform: scale(.96);
+}
+@media (max-height: 550px) {
+  .dr-royal-screen .dr-royal-character-frame {
+    height: calc(100% - 12px);
+    max-height: calc(100% - 12px);
+  }
+  .dr-royal-screen .dr-royal-character-frame .dr-royal-hp {
+    font-size: 10px;
+    min-height: 11px;
+  }
+  .dr-royal-screen .dr-royal-finish strong {
+    font-size: 9px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dr-royal-screen .dr-royal-finish {
+    transition: none;
+  }
+}
