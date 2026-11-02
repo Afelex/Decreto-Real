@@ -1,7 +1,7 @@
 /* DR-ART-01 — Arte original de cartas en un atlas WebP 4x3.
  * Columnas: Ataque/Defensa/Orden/Impacto. Filas: marcos, ilustraciones, dorso/mazo.
  * Solo modifica la presentación: las reglas, la IA y el gesto de arrastre permanecen intactos. */
-.dr-royal-screen { --dr-card-atlas: url('/Decreto-Real/cartas/arcilla-atlas.webp'); }
+.dr-royal-screen { --dr-card-atlas: url('/Decreto-Real/cartas/arcilla-atlas.avif'); }
 .dr-royal-screen .dr-royal-hand-card {
   --dr-card-column: 0%;
   isolation: isolate;
