@@ -7,7 +7,7 @@ export function TurnIndicator({ side }: { side: Side }) {
   return (
     <div className={`dr-event-indicator ${side === 'PLAYER' ? 'is-player' : 'is-opponent'}`}
       role="status" aria-live="polite"
-      aria-label={side === 'PLAYER' ? 'Turno actual: tu turno' : 'Turno actual: turno del rival'}>
+      aria-label={side === 'PLAYER' ? 'Turno actual: tu turno' : 'Turno actual: turno del oponente'}>
       <span className="dr-event-indicator__laurel" aria-hidden="true">❧</span>
       <span className="dr-event-indicator__label">{side === 'PLAYER' ? 'Tu turno' : 'Turno rival'}</span>
       <span className="dr-event-indicator__laurel is-right" aria-hidden="true">❧</span>
