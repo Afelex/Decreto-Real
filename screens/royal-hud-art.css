@@ -1,9 +1,9 @@
 /* DR-ART-02: retratos y botón FIN TURNO ilustrados.
-   Atlas WebP transparente: 3 columnas × 160px, 200px de alto.
+   Atlas AVIF transparente: 3 columnas × 192px, 240px de alto.
    Col. 1: marco (retrato), col. 2: botón habilitado, col. 3: inhabilitado.
    Mantiene retratos, HP, botón nativo y estado disabled dinámicos. */
 .dr-royal-screen {
-  --dr-hud-art: url('/Decreto-Real/interfaz/retratos-fin-turno.webp');
+  --dr-hud-art: url('/Decreto-Real/interfaz/retratos-fin-turno.avif');
 }
 
 /* Marco ilustrado sobre el retrato de cada personaje, sin redibujar el retrato. */
