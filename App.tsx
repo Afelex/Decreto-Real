@@ -21,6 +21,7 @@ import './screens/table-original-revival.css';
 import './screens/royal-table.css';
 import './screens/royal-table-v2.css';
 import './screens/royal-card-art.css';
+import './screens/royal-hud-art.css';
 
 const App: React.FC = () => {
   return (
