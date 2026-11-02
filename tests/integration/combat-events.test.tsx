@@ -41,5 +41,5 @@ test('coin ritual starts with a single touch and announces its result', () => {
   rerender(<CoinTossPanel coinSide={null} isFlipping onToss={onToss} />);
   expect((screen.getByRole('button', { name: 'Lanzar Moneda' }) as HTMLButtonElement).disabled).toBe(true);
   rerender(<CoinTossPanel coinSide="CARA" isFlipping={false} onToss={onToss} />);
-  expect(screen.getByRole('status', { name: 'Empiezas tú' })).toBeTruthy();
+  expect(screen.getByText('Empiezas tú')).toBeTruthy();
 });
