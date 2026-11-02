@@ -1,0 +1,111 @@
+/* DR-ART-01 — Arte original de cartas en un atlas AVIF 4x3.
+ * Columnas: Ataque/Defensa/Orden/Impacto. Filas: marcos, ilustraciones, dorso/mazo.
+ * Solo modifica la presentación: las reglas, la IA y el gesto de arrastre permanecen intactos. */
+.dr-royal-screen { --dr-card-atlas: url('/Decreto-Real/cartas/arcilla-atlas.avif'); }
+.dr-royal-screen .dr-royal-hand-card {
+  --dr-card-column: 0%;
+  isolation: isolate;
+  border: 0; border-radius: 7px;
+  padding: clamp(5px,.8dvh,9px) clamp(6px,1.4cqw,9px);
+  background-color: #33151c;
+  background-image: var(--dr-card-atlas);
+  background-size: 400% 300%;
+  background-position: var(--dr-card-column) 50%;
+  background-repeat: no-repeat;
+  box-shadow: 0 8px 15px #080711c9;
+}
+.dr-royal-screen .dr-royal-hand-card.attack { --dr-card-column: 0%; }
+.dr-royal-screen .dr-royal-hand-card.defense { --dr-card-column: 33.333333%; }
+.dr-royal-screen .dr-royal-hand-card.order { --dr-card-column: 66.666667%; }
+.dr-royal-screen .dr-royal-hand-card.impact {
+  --dr-card-column: 100%;
+  background-image: var(--dr-card-atlas),radial-gradient(ellipse,#745022,#1c100a 80%);
+  background-size: 400% 300%,cover;
+  background-position: var(--dr-card-column) 50%,center;
+}
+.dr-royal-screen .dr-royal-hand-card::after,
+.dr-royal-screen .dr-royal-drag-ghost::after {
+  content: '';position:absolute;inset:0;z-index:2;pointer-events:none;
+  border-radius:inherit;background-image:var(--dr-card-atlas);
+  background-size:400% 300%;background-position:var(--dr-card-column,0%) 0%;
+  background-repeat:no-repeat;
+}
+.dr-royal-screen .dr-royal-hand-card:not(.impact)>img { opacity:0; }
+.dr-royal-screen .dr-royal-hand-card.impact>img {
+  opacity:1;max-width:86%;align-self:center;
+  object-fit:contain;border:0;filter:drop-shadow(0 0 6px #ffcd62);
+}
+.dr-royal-screen .dr-royal-hand-card>.dr-royal-card-kind,
+.dr-royal-screen .dr-royal-hand-card>.dr-royal-card-title,
+.dr-royal-screen .dr-royal-hand-card>.dr-royal-card-effect {
+  position:relative;z-index:3;text-shadow:0 1px 3px #130712,0 2px #130712;
+}
+.dr-royal-screen .dr-royal-hand-card .dr-royal-card-kind {
+  margin-top:auto;color:#fff0be;border-radius:4px;
+  border:1px solid #ffe1a24d;background:#1b0d1bc9!important;
+  padding:2px 3px;font-size:clamp(10px,2.65cqw,13px);
+}
+.dr-royal-screen .dr-royal-hand-card .dr-royal-card-title,
+.dr-royal-screen .dr-royal-hand-card .dr-royal-card-effect {
+  width:100%;padding:1px 3px;border-radius:3px;
+  background:#160d19b8;color:#fff2d0;
+}
+.dr-royal-screen .dr-royal-hand-card .dr-royal-card-effect {
+  font-size:clamp(10px,2.5cqw,12px);
+}
+.dr-royal-screen .dr-royal-hand-card.selected {
+  box-shadow:0 0 0 2px #ffe7a9,0 0 21px #ffd46b,0 11px 23px #000c;
+}
+.dr-royal-screen .dr-royal-hand-card.unavailable:not(.selected) {
+  filter:saturate(.63) brightness(.73);
+}
+.dr-royal-screen .dr-royal-facedown {
+  border:0;border-radius:6px;background-color:#501a20;
+  background-image:var(--dr-card-atlas);background-size:400% 300%;
+  background-position:0% 100%;background-repeat:no-repeat;
+  box-shadow:0 5px 9px #000b;
+}
+.dr-royal-screen .dr-royal-card-crest {display:none;}
+.dr-royal-screen .dr-royal-deck-back,
+.dr-royal-screen .dr-royal-deck-back.blue {
+  border:0;border-radius:5px;background-color:transparent;
+  background-image:var(--dr-card-atlas);background-size:400% 300%;
+  background-position:33.333333% 100%;background-repeat:no-repeat;
+  box-shadow:0 6px 13px #0008;color:#fff2cf;
+}
+.dr-royal-screen .dr-royal-deck-back::before {content:none;}
+.dr-royal-screen .dr-royal-deck-back>span,
+.dr-royal-screen .dr-royal-deck-back>small {
+  position:relative;z-index:2;border-radius:99px;
+  background:#100b16d8;padding:2px 6px;text-shadow:0 1px 2px #000;
+}
+.dr-royal-screen .dr-royal-rival-deck .dr-royal-deck-back>span {
+  outline:1px solid #6cb8ff;
+}
+.dr-royal-screen .dr-royal-player-deck .dr-royal-deck-back>span {
+  outline:1px solid #ff8b73;
+}
+.dr-royal-screen .dr-royal-drag-ghost {
+  --dr-card-column:0%;background-color:#31171d;
+  background-image:var(--dr-card-atlas);background-size:400% 300%;
+  background-position:var(--dr-card-column) 50%;
+  border:0;border-radius:7px;
+}
+.dr-royal-screen .dr-royal-drag-ghost.attack {--dr-card-column:0%;}
+.dr-royal-screen .dr-royal-drag-ghost.defense {--dr-card-column:33.333333%;}
+.dr-royal-screen .dr-royal-drag-ghost.order {--dr-card-column:66.666667%;}
+.dr-royal-screen .dr-royal-drag-ghost.impact {--dr-card-column:100%;}
+.dr-royal-screen .dr-royal-drag-ghost>img {opacity:0;}
+.dr-royal-screen .dr-royal-drag-ghost.impact>img {
+  opacity:1;object-fit:contain;width:80%;height:60%;margin:15% auto 0;
+}
+@media(max-width:350px),(max-height:690px) {
+  .dr-royal-screen .dr-royal-hand-card {padding:5px 5px 6px;}
+  .dr-royal-screen .dr-royal-hand-card .dr-royal-card-effect {
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  }
+}
+@media(prefers-reduced-motion:reduce) {
+  .dr-royal-screen .dr-royal-hand-card,
+  .dr-royal-screen .dr-royal-facedown {transition-duration:.01ms!important;}
+}

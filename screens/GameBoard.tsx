@@ -570,7 +570,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
           <div className="dr-royal-character">
             <div className="dr-royal-character-frame gold-leaf-frame">
               <img src={rivalPortrait} alt="Retrato del rival"/>
-              <div className="dr-royal-hp red" aria-label={`Vida del rival: ${opponentHP} de ${MAX_HP}`}>HP: {opponentHP}/{MAX_HP}</div>
+              <div className="dr-royal-hp blue" aria-label={`Vida del rival: ${opponentHP} de ${MAX_HP}`}>HP: {opponentHP}/{MAX_HP}</div>
             </div>
             {renderGauge(opponentGauge)}
             <div className="dr-royal-rival-impact" aria-label={`Impactos del rival: ${opponentImpactLevel} de 4`}>
@@ -668,12 +668,12 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
           <div className="dr-royal-player-deck">
             <button className="dr-royal-audio" type="button" onClick={handleGlobalAudioToggle}
               aria-label={isMuted ? 'Activar sonido' : 'Silenciar sonido'}><span className="material-icons" aria-hidden="true">{isMuted ? 'volume_off' : 'volume_up'}</span></button>
-            <div className="dr-royal-deck-back blue"><span>{playerDeck.length}</span><small>MAZO</small></div>
+            <div className="dr-royal-deck-back red"><span>{playerDeck.length}</span><small>MAZO</small></div>
           </div>
           <div className="dr-royal-character player">
             <div className="dr-royal-character-frame gold-leaf-frame">
               <img src={playerPortrait} alt="Retrato de tu personaje"/>
-              <div className="dr-royal-hp blue" aria-label={`Tu vida: ${playerHP} de ${MAX_HP}`}>HP: {playerHP}/{MAX_HP}</div>
+              <div className="dr-royal-hp red" aria-label={`Tu vida: ${playerHP} de ${MAX_HP}`}>HP: {playerHP}/{MAX_HP}</div>
             </div>
             {renderGauge(playerGauge)}
           </div>
@@ -684,7 +684,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
           </button>
         </footer>
       </div>
-      {dragAt && <div className="dr-royal-drag-ghost" aria-hidden="true"
+      {dragAt && <div className={`dr-royal-drag-ghost ${playerHand.find(card => card.id === dragAt.id)?.type.toLowerCase() ?? ""}`} aria-hidden="true"
         style={{ left: dragAt.x, top: dragAt.y }}>
         <img src={playerHand.find(card => card.id === dragAt.id)?.img ?? IMG_ATTACK} alt=""/>
       </div>}

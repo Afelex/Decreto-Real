@@ -20,6 +20,7 @@ import './screens/boss-combat-effects.css';
 import './screens/table-original-revival.css';
 import './screens/royal-table.css';
 import './screens/royal-table-v2.css';
+import './screens/royal-card-art.css';
 
 const App: React.FC = () => {
   return (
