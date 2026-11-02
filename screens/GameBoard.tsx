@@ -680,7 +680,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
           <button className="dr-royal-finish" type="button" onClick={handleEndTurn}
             disabled={phase !== 'PLAYER_TURN' || showSpecialSelection || isMenuOpen || !!cardAnnouncement}
             aria-label="Terminar turno">
-            <span aria-hidden="true">➜</span><strong>FIN<br/>TURNO</strong>
+            <strong>FIN<br/>TURNO</strong>
           </button>
         </footer>
       </div>
