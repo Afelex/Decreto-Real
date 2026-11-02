@@ -17,7 +17,13 @@ export const CardActivationBanner: React.FC<Props> = ({ card, isPlayer, paused }
     if (!video) return;
     video.playbackRate = 4;
     if (paused) video.pause();
-    else void video.play().catch(() => setFailedVideo(true));
+    else {
+      // jsdom and some embedded WebViews may return void instead of a Promise.
+      const playback = video.play();
+      if (playback && typeof playback.catch === 'function') {
+        void playback.catch(() => setFailedVideo(true));
+      }
+    }
   }, [paused, src]);
 
   return (
