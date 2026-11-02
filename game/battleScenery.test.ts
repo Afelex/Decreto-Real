@@ -1,35 +1,38 @@
-import { describe, expect, it } from 'vitest';
+import assert from 'node:assert/strict';
+import test from 'node:test';
 import {
   resolveBattleScenery,
   STANDARD_BATTLE_POSTER,
   STANDARD_BATTLE_VIDEO,
-} from './battleScenery';
+} from './battleScenery.ts';
 
-describe('battle scenery', () => {
-  it('uses the introductory loop only for the standard free-play battle', () => {
-    expect(resolveBattleScenery()).toEqual({
-      poster: STANDARD_BATTLE_POSTER,
-      video: STANDARD_BATTLE_VIDEO,
-    });
+test('standard free-play match uses only the introductory video', () => {
+  assert.deepEqual(resolveBattleScenery(), {
+    poster: STANDARD_BATTLE_POSTER,
+    video: STANDARD_BATTLE_VIDEO,
   });
+});
 
-  it('does not replace campaign mission backgrounds with the standard loop', () => {
-    expect(resolveBattleScenery({ background: '/Decreto-Real/escenarios/mision-2.webp' }))
-      .toEqual({ poster: '/Decreto-Real/escenarios/mision-2.webp' });
-  });
+test('campaign mission does not inherit the standard loop', () => {
+  assert.deepEqual(
+    resolveBattleScenery({ background: '/Decreto-Real/escenarios/mision-2.webp' }),
+    { poster: '/Decreto-Real/escenarios/mision-2.webp' },
+  );
+});
 
-  it('accepts independent videos and posters for future missions', () => {
-    expect(resolveBattleScenery({
-      background: '/Decreto-Real/escenarios/mision-2.webp',
-      backgroundVideo: '/Decreto-Real/escenarios/mision-2.mp4',
-    })).toEqual({
-      poster: '/Decreto-Real/escenarios/mision-2.webp',
-      video: '/Decreto-Real/escenarios/mision-2.mp4',
-    });
+test('later missions may select their own scene and video', () => {
+  assert.deepEqual(resolveBattleScenery({
+    background: '/Decreto-Real/escenarios/mision-2.webp',
+    backgroundVideo: '/Decreto-Real/escenarios/mision-2.mp4',
+  }), {
+    poster: '/Decreto-Real/escenarios/mision-2.webp',
+    video: '/Decreto-Real/escenarios/mision-2.mp4',
   });
+});
 
-  it('can explicitly disable the intro animation', () => {
-    expect(resolveBattleScenery({ backgroundVideo: null }))
-      .toEqual({ poster: STANDARD_BATTLE_POSTER });
-  });
+test('introductory video can be disabled explicitly', () => {
+  assert.deepEqual(
+    resolveBattleScenery({ backgroundVideo: null }),
+    { poster: STANDARD_BATTLE_POSTER },
+  );
 });
