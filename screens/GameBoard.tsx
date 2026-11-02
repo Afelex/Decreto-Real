@@ -17,6 +17,27 @@ const ATTACK_DAMAGE = 2;
 const GAUGE_MAX = 3;
 const SPECIAL_VALUE = 3;
 
+/** DR-HUD-V3 — arte renderizado en el DOM, no como fondo CSS.
+ * Tres celdas del atlas: retrato (0), FIN TURNO activo (1) y desactivado (2).
+ * La ruta incorpora versión para evitar que Android reutilice el recurso anterior. */
+const ROYAL_HUD_SPRITE = '/Decreto-Real/interfaz/retratos-fin-turno.avif?v=3';
+const PortraitOrnament: React.FC = () => (
+  <svg className="dr-royal-portrait-ornament" viewBox="0 0 192 240"
+    preserveAspectRatio="none" focusable="false" aria-hidden="true"
+    style={{position:"absolute",inset:0,width:"100%",height:"100%",pointerEvents:"none",zIndex:2}}>
+    <image href={ROYAL_HUD_SPRITE} x="0" y="0" width="576" height="240" />
+  </svg>
+);
+const EndTurnOrnament: React.FC<{ disabled: boolean }> = ({ disabled }) => (
+  <svg className="dr-royal-finish-ornament"
+    viewBox={disabled ? "384 24 192 192" : "192 24 192 192"}
+    preserveAspectRatio="none" focusable="false" aria-hidden="true"
+    style={{position:"absolute",inset:0,width:"100%",height:"100%",pointerEvents:"none",zIndex:0}}>
+    <image href={ROYAL_HUD_SPRITE} x="0" y="0" width="576" height="240" />
+  </svg>
+);
+
+
 // --- ASSETS ---
 const IMG_ATTACK = 'https://i.imgur.com/x9iHqkK.png';
 const IMG_DEFEND = 'https://i.imgur.com/z9KyWGL_d.webp?maxwidth=760&fidelity=grand';
@@ -438,6 +459,8 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     </div>
   );
 
+  const endTurnUnavailable = phase !== 'PLAYER_TURN' || showSpecialSelection || isMenuOpen || !!cardAnnouncement;
+
   const Board = (
     <div className={`dr-classic-screen dr-royal-screen bg-[#050505] font-body w-full overflow-hidden select-none flex flex-col relative text-white ${shakeScreen ? 'animate-shake' : ''}`} style={{ width: 'min(100vw, 430px)', height: '100dvh' }}>
       <style>{`
@@ -570,6 +593,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
           <div className="dr-royal-character">
             <div className="dr-royal-character-frame gold-leaf-frame">
               <img src={rivalPortrait} alt="Retrato del rival"/>
+              <PortraitOrnament/>
               <div className="dr-royal-hp blue" aria-label={`Vida del rival: ${opponentHP} de ${MAX_HP}`}>HP: {opponentHP}/{MAX_HP}</div>
             </div>
             {renderGauge(opponentGauge)}
@@ -673,13 +697,15 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
           <div className="dr-royal-character player">
             <div className="dr-royal-character-frame gold-leaf-frame">
               <img src={playerPortrait} alt="Retrato de tu personaje"/>
+              <PortraitOrnament/>
               <div className="dr-royal-hp red" aria-label={`Tu vida: ${playerHP} de ${MAX_HP}`}>HP: {playerHP}/{MAX_HP}</div>
             </div>
             {renderGauge(playerGauge)}
           </div>
           <button className="dr-royal-finish" type="button" onClick={handleEndTurn}
-            disabled={phase !== 'PLAYER_TURN' || showSpecialSelection || isMenuOpen || !!cardAnnouncement}
-            aria-label="Terminar turno">
+            disabled={endTurnUnavailable}
+            aria-label="Terminar turno" data-art-version="hud-v3">
+            <EndTurnOrnament disabled={endTurnUnavailable}/>
             <strong>FIN<br/>TURNO</strong>
           </button>
         </footer>
