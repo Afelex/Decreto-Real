@@ -51,11 +51,11 @@ const HandCount: React.FC<HandCountProps> = ({ side, count }) => (
     aria-label={side === 'rival' ? `El rival tiene ${count} cartas` : `Tienes ${count} cartas en la mano`}>
     <svg className="dr-royal-hand-laurels" viewBox="0 0 104 48" aria-hidden="true" focusable="false">
       <defs>
-        <linearGradient id="dr-laurel-gold" x1="0" x2="0.7" y1="0" y2="1">
+        <linearGradient id={`dr-laurel-gold-${side}`} x1="0" x2="0.7" y1="0" y2="1">
           <stop offset="0" stopColor="#ffeb9e"/><stop offset=".55" stopColor="#e9b34c"/><stop offset="1" stopColor="#a46b24"/>
         </linearGradient>
       </defs>
-      <g fill="url(#dr-laurel-gold)" stroke="#8d4c1a" strokeWidth=".7">
+      <g fill={`url(#dr-laurel-gold-${side})`} stroke="#8d4c1a" strokeWidth=".7">
         <path d="M24 43C8 38 5 23 13 7" fill="none" stroke="#e5ae48" strokeWidth="2.2"/>
         <ellipse cx="12" cy="10" rx="3.2" ry="7" transform="rotate(31 12 10)"/>
         <ellipse cx="9" cy="20" rx="3.2" ry="6" transform="rotate(64 9 20)"/>
@@ -64,7 +64,7 @@ const HandCount: React.FC<HandCountProps> = ({ side, count }) => (
         <ellipse cx="18" cy="17" rx="2.8" ry="6" transform="rotate(-20 18 17)"/>
         <ellipse cx="18" cy="28" rx="2.8" ry="6" transform="rotate(5 18 28)"/>
       </g>
-      <g transform="translate(104 0) scale(-1 1)" fill="url(#dr-laurel-gold)" stroke="#8d4c1a" strokeWidth=".7">
+      <g transform="translate(104 0) scale(-1 1)" fill={`url(#dr-laurel-gold-${side})`} stroke="#8d4c1a" strokeWidth=".7">
         <path d="M24 43C8 38 5 23 13 7" fill="none" stroke="#e5ae48" strokeWidth="2.2"/>
         <ellipse cx="12" cy="10" rx="3.2" ry="7" transform="rotate(31 12 10)"/>
         <ellipse cx="9" cy="20" rx="3.2" ry="6" transform="rotate(64 9 20)"/>
