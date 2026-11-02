@@ -57,7 +57,7 @@ test('cancelling a paused turn cancels cards, deferred abilities and turn comple
   t.mock.timers.enable({ apis: ['setTimeout', 'Date'] });
   const controller = new AiTurnController();
   let actions = 0;
-  const run = runOpponentTurn(controller, () => ({ hand: [card('a', 'ATTACK')], health: 10, impactLevel: 0 }), () => actions++, () => actions++);
+  const run = runOpponentTurn(controller, () => ({ hand: [card('a', 'ATTACK')], health: 10, impactLevel: 0 }), () => { actions++; }, () => { actions++; });
   const ability = controller.wait(800).then(active => { if (active) actions++; });
   controller.pause(); controller.cancel(); controller.resume();
   t.mock.timers.tick(20000); await Promise.all([run, ability]);
@@ -68,7 +68,7 @@ test('cancellation after a card prevents later actions and finish', async t => {
   t.mock.timers.enable({ apis: ['setTimeout', 'Date'] });
   const controller = new AiTurnController();
   let count = 0;
-  const run = runOpponentTurn(controller, () => ({ hand: [card('a', 'ATTACK')], health: 10, impactLevel: 0 }), () => count++, () => count++);
+  const run = runOpponentTurn(controller, () => ({ hand: [card('a', 'ATTACK')], health: 10, impactLevel: 0 }), () => { count++; }, () => { count++; });
   t.mock.timers.tick(1000); await flush(); assert.equal(count, 1);
   controller.cancel(); t.mock.timers.tick(10000); await run;
   assert.equal(count, 1);

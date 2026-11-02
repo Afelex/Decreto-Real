@@ -6,6 +6,8 @@ import { useAudio } from '../contexts/AudioContext';
 import { AiTurnController, runOpponentTurn } from '../game/aiTurn';
 import { cardPlacementPrompt, checkCardPlacement, resolveVisualDropZone, type CardDropZone } from '../game/cardPlacement.ts';
 import { CardActivationBanner } from './CardActivationBanner';
+import { resolveBattleScenery } from '../game/battleScenery';
+import { BattleSceneryLayer } from './BattleSceneryLayer';
 
 // --- GAME CONFIGURATION ---
 const MAX_HP = 20;
@@ -65,6 +67,8 @@ function useFitScale(baseW = 430, baseH = 932) {
 export type OriginalBattleOutcome = Readonly<{ won: boolean; turns: number; health: number }>;
 export type BattlePresentation = Readonly<{
   background?: string;
+  /** Optional per-battle animation. Null explicitly disables animation. */
+  backgroundVideo?: string | null;
   playerPortrait?: string;
   opponentPortrait?: string;
 }>;
@@ -74,7 +78,7 @@ type GameBoardProps = {
   presentation?: BattlePresentation;
 };
 const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation }) => {
-  const scenicBackground = presentation?.background ?? '/Decreto-Real/escenarios/plaza-arcilla-estandar.webp';
+  const scenery = resolveBattleScenery(presentation);
   const playerPortrait = presentation?.playerPortrait ?? PLAYER_IMG;
   const rivalPortrait = presentation?.opponentPortrait ?? OPPONENT_IMG;
   const navigate = useNavigate();
@@ -461,11 +465,8 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
         .text-gold-gradient { background: linear-gradient(to bottom, #fff 0%, #ffd700 50%, #b8860b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
       `}</style>
 
-      {/* BACKGROUND */}
-      <div className="absolute inset-0 z-0">
-        <img src={scenicBackground} alt="" className="dr-royal-background w-full h-full object-cover opacity-100" />
-        <div className="absolute inset-0 dr-royal-vignette"></div>
-      </div>
+      {/* Scene only: all cards, controls and overlays remain live above the animation. */}
+      <BattleSceneryLayer {...scenery} />
 
       {/* --- VISUAL EFFECTS LAYER --- */}
       {visualEffect.type && (
