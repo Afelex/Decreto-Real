@@ -6,6 +6,7 @@ import { useAudio } from '../contexts/AudioContext';
 import { AiTurnController, runOpponentTurn } from '../game/aiTurn';
 import { cardPlacementPrompt, checkCardPlacement, resolveVisualDropZone, type CardDropZone } from '../game/cardPlacement.ts';
 import { CardActivationBanner } from './CardActivationBanner';
+import { TurnIndicator, TurnAnnouncement, ComboChoicePanel, CoinTossPanel } from './CombatEventUI';
 import { resolveBattleScenery } from '../game/battleScenery';
 import { BattleSceneryLayer } from './BattleSceneryLayer';
 
@@ -87,7 +88,6 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   const [phase, setPhase] = useState<GamePhase>('INIT');
   const [turnCount, setTurnCount] = useState(0);
   const [whoStarted, setWhoStarted] = useState<'PLAYER' | 'OPPONENT' | null>(null);
-  const [bannerText, setBannerText] = useState("");
   const gameOverRef = useRef(false);
   const campaignOutcomeReported = useRef(false);
   const aiController = useRef<AiTurnController | null>(null);
@@ -128,6 +128,8 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   const gesture = useRef<{ id: string; pointerId: number; startX: number; startY: number; moved: boolean } | null>(null);
   const spentIds = useRef(new Set<string>());
 
+  const turnOwner: 'PLAYER' | 'OPPONENT' | null = whoStarted === null || turnCount === 0 ? null
+    : ((whoStarted === 'PLAYER' && turnCount % 2 !== 0) || (whoStarted === 'OPPONENT' && turnCount % 2 === 0)) ? 'PLAYER' : 'OPPONENT';
   const isMuted = !musicEnabled && !sfxEnabled;
   const latestOpponent = useRef({ hand: opponentHand, health: opponentHP, impactLevel: opponentImpactLevel, gauge: opponentGauge, lastType: opponentLastType });
   latestOpponent.current = { hand: opponentHand, health: opponentHP, impactLevel: opponentImpactLevel, gauge: opponentGauge, lastType: opponentLastType };
@@ -162,7 +164,6 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   useEffect(() => {
     if (gameOverRef.current) return;
     if (phase === 'START_BANNER') {
-      setBannerText("¡INICIA EL COMBATE!");
       setTimeout(() => {
         if (gameOverRef.current) return;
         drawCards('PLAYER', INITIAL_HAND_SIZE);
@@ -172,7 +173,6 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
       }, 2000);
     } else if (phase === 'TURN_BANNER') {
       const currentPlayer = ((whoStarted === 'PLAYER' && turnCount % 2 !== 0) || (whoStarted === 'OPPONENT' && turnCount % 2 === 0)) ? 'PLAYER' : 'OPPONENT';
-      setBannerText(`TURNO ${turnCount}: ${currentPlayer === 'PLAYER' ? 'TU TURNO' : 'TURNO DEL RIVAL'}`);
       setTimeout(() => {
         if (gameOverRef.current) return;
         if (currentPlayer === 'PLAYER') startPlayerTurn();
@@ -555,42 +555,10 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
         </div>
       )}
 
-      {/* --- SPECIAL SELECTION MODAL --- */}
       {showSpecialSelection && (
-        <div className="absolute inset-0 z-[60] bg-black/80 backdrop-blur-md flex items-center justify-center animate-in fade-in duration-300">
-          <div className="w-full max-w-md p-6 relative flex flex-col items-center">
-            <div className="absolute inset-0 bg-purple-900/20 blur-3xl rounded-full animate-pulse"></div>
-            <h2 className="text-3xl font-decorative text-transparent bg-clip-text bg-gradient-to-b from-white to-purple-400 drop-shadow-[0_0_10px_rgba(168,85,247,0.8)] text-center mb-8 uppercase tracking-widest relative z-10">
-              Combo ×{comboChoice}
-            </h2>
-            <p className="text-gray-300 font-body text-center mb-8 relative z-10 text-sm">
-              Elige el efecto de tu combo.
-            </p>
-            <div className="grid grid-cols-2 gap-6 w-full relative z-10">
-              <button
-                onClick={() => triggerSpecialAbility('PLAYER', 'DAMAGE', comboChoice)}
-                className="group relative flex flex-col items-center p-4 bg-black/60 border border-purple-900 hover:border-purple-500 rounded-lg transition-all hover:bg-purple-900/20 active:scale-95"
-              >
-                <div className="w-16 h-16 rounded-full bg-purple-900/30 border border-purple-500 flex items-center justify-center mb-3 group-hover:shadow-[0_0_20px_#a855f7]">
-                  <span className="material-icons text-3xl text-purple-300">bolt</span>
-                </div>
-                <span className="font-display font-bold text-white uppercase text-sm mb-1">Furia Real</span>
-                <span className="font-body text-xs text-purple-300">{comboChoice === 2 ? 1 : SPECIAL_VALUE} Daño al Rival</span>
-              </button>
-
-              <button
-                onClick={() => triggerSpecialAbility('PLAYER', 'HEAL', comboChoice)}
-                className="group relative flex flex-col items-center p-4 bg-black/60 border border-blue-900 hover:border-blue-500 rounded-lg transition-all hover:bg-blue-900/20 active:scale-95"
-              >
-                <div className="w-16 h-16 rounded-full bg-blue-900/30 border border-blue-500 flex items-center justify-center mb-3 group-hover:shadow-[0_0_20px_#3b82f6]">
-                  <span className="material-icons text-3xl text-blue-300">health_and_safety</span>
-                </div>
-                <span className="font-display font-bold text-white uppercase text-sm mb-1">Gracia Divina</span>
-                <span className="font-body text-xs text-blue-300">Curar {comboChoice === 2 ? 1 : SPECIAL_VALUE} HP</span>
-              </button>
-            </div>
-          </div>
-        </div>
+        <ComboChoicePanel level={comboChoice}
+          onDamage={() => triggerSpecialAbility('PLAYER', 'DAMAGE', comboChoice)}
+          onHeal={() => triggerSpecialAbility('PLAYER', 'HEAL', comboChoice)} />
       )}
 
       {/* DR-C08 — Scenic playfield. Portraits and the backdrop are independent assets. */}
@@ -721,26 +689,15 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
         <img src={playerHand.find(card => card.id === dragAt.id)?.img ?? IMG_ATTACK} alt=""/>
       </div>}
 
-      {/* OVERLAYS */}
-      {(phase === 'START_BANNER' || phase === 'TURN_BANNER') && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-          <div className="w-full py-10 bg-stone-900/90 border-y-4 border-gold-dark text-center">
-            <h2 className="text-4xl font-decorative text-gold-main uppercase tracking-widest">{bannerText}</h2>
-          </div>
-        </div>
-      )}
-
-      {phase === 'COIN_TOSS' && (
-        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/95">
-          <h2 className="text-2xl text-gold-main mb-12 tracking-[0.3em] uppercase">Ritual de Inicio</h2>
-          <div className={`w-32 h-32 rounded-full border-4 border-gold-dark flex items-center justify-center bg-stone-900 transition-transform ${isCoinFlipping ? 'animate-spin' : ''}`}>
-            <span className="text-5xl">{coinSide === 'CARA' ? '☀️' : coinSide === 'SELLO' ? '🌑' : '❔'}</span>
-          </div>
-          {!isCoinFlipping && !coinSide && (
-            <button onClick={handleCoinToss} className="mt-12 px-8 py-3 border border-gold-main text-gold-main uppercase font-bold tracking-widest hover:bg-gold-main/10">Lanzar Moneda</button>
-          )}
-        </div>
-      )}
+      {/* Combat cues are brief overlays; the field remains visible. */}
+      {turnOwner && (phase === 'TURN_BANNER' || phase === 'PLAYER_TURN' || phase === 'OPPONENT_TURN') &&
+        <TurnIndicator side={turnOwner} />}
+      {(phase === 'START_BANNER' || phase === 'TURN_BANNER') &&
+        <TurnAnnouncement key={`${phase}-${turnCount}`}
+          variant={phase === 'START_BANNER' ? 'opening' : turnOwner === 'PLAYER' ? 'player' : 'opponent'}
+          turn={turnCount} />}
+      {phase === 'COIN_TOSS' &&
+        <CoinTossPanel coinSide={coinSide} isFlipping={isCoinFlipping} onToss={handleCoinToss} />}
 
       {(phase === 'VICTORY' || phase === 'DEFEAT') && (
         <div className={`absolute inset-0 z-[100] flex items-center justify-center backdrop-blur-lg ${phase === 'VICTORY' ? 'bg-gold-dark/20' : 'bg-red-900/30'}`}>
