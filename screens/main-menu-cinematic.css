@@ -47,12 +47,19 @@
   flex-direction: column;
   align-items: center;
 }
+/* El centro visual del logo coincide con el centro del viewport,
+   independientemente de la altura que ocupen los botones inferiores. */
 .dr-cinematic-brand {
-  flex: 0 0 auto;
-  width: 100%;
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(100% - 24px);
   display: grid;
   place-items: center;
-  margin-top: clamp(8px, 2dvh, 28px);
+  margin: 0;
+  pointer-events: none;
 }
 .dr-cinematic-title {
   margin: 0;
@@ -63,7 +70,7 @@
 }
 .dr-cinematic-logo {
   display: block;
-  width: min(95vw, 450px);
+  width: min(92vw, 450px);
   max-width: 100%;
   max-height: min(24dvh, 220px);
   height: auto;
@@ -73,6 +80,8 @@
 }
 .dr-cinematic-actions {
   box-sizing: border-box;
+  position: relative;
+  z-index: 3;
   width: min(100%, 430px);
   margin-top: auto;
   padding: clamp(9px, 1.5dvh, 14px);
@@ -188,11 +197,19 @@
   font-size: clamp(10px, 3vw, 13px);
 }
 @media (max-height: 590px) {
-  .dr-cinematic-brand { margin-top: 2px; }
+  .dr-cinematic-brand { margin-top: 0; }
   .dr-cinematic-logo { max-height: 17dvh; }
   .dr-cinematic-actions { padding: 7px; gap: 5px; }
   .dr-cinematic-button-primary { min-height: 52px; }
   .dr-cinematic-button-secondary, .dr-cinematic-button-classic { min-height: 40px; }
+}
+/* En pantallas muy bajas, compactar los controles sin desplazar el logo. */
+@media (max-height: 430px) {
+  .dr-cinematic-logo { max-height: 14dvh; }
+  .dr-cinematic-actions { padding: 5px; gap: 4px; }
+  .dr-cinematic-button-primary { min-height: 44px; padding-top: 3px; padding-bottom: 6px; }
+  .dr-cinematic-button-secondary,
+  .dr-cinematic-button-classic { min-height: 36px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .dr-cinematic-video { display: none; }
