@@ -22,6 +22,7 @@ import './screens/royal-table.css';
 import './screens/royal-table-v2.css';
 import './screens/royal-card-art.css';
 import './screens/royal-hud-art.css';
+import './screens/royal-battle-status.css';
 
 const App: React.FC = () => {
   return (
