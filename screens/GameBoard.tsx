@@ -28,13 +28,17 @@ const PortraitOrnament: React.FC = () => (
     <image href={ROYAL_HUD_SPRITE} x="0" y="0" width="576" height="240" />
   </svg>
 );
+/** A single button graphic. The HTML clipping viewport hides the other two
+ * sprite cells, preventing Chromium/WebView from painting them outside the HUD.
+ * Atlas dimensions: 576x240 = 3 columns of 192x240. Crop the central 192x192.
+ */
 const EndTurnOrnament: React.FC<{ disabled: boolean }> = ({ disabled }) => (
-  <svg className="dr-royal-finish-ornament"
-    viewBox={disabled ? "384 24 192 192" : "192 24 192 192"}
-    preserveAspectRatio="none" focusable="false" aria-hidden="true"
-    style={{position:"absolute",inset:0,width:"100%",height:"100%",pointerEvents:"none",zIndex:0}}>
-    <image href={ROYAL_HUD_SPRITE} x="0" y="0" width="576" height="240" />
-  </svg>
+  <span className="dr-royal-finish-ornament" aria-hidden="true"
+    data-state={disabled ? 'disabled' : 'active'}>
+    <img className="dr-royal-finish-art-image" src={ROYAL_HUD_SPRITE}
+      draggable={false} alt=""
+      style={{ left: disabled ? '-200%' : '-100%' }}/>
+  </span>
 );
 
 
@@ -704,7 +708,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
           </div>
           <button className="dr-royal-finish" type="button" onClick={handleEndTurn}
             disabled={endTurnUnavailable}
-            aria-label="Terminar turno" data-art-version="hud-v3">
+            aria-label="Terminar turno" data-art-version="hud-v4">
             <EndTurnOrnament disabled={endTurnUnavailable}/>
             <strong>FIN<br/>TURNO</strong>
           </button>
