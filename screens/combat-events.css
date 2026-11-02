@@ -23,10 +23,10 @@
 .dr-royal-screen .dr-event-indicator.is-player {bottom:clamp(80px,17dvh,145px);left:8px;}
 .dr-royal-screen .dr-event-indicator__dot {
   width:7px;height:7px;border-radius:50%;flex:0 0 auto;
-  background:#75caff;box-shadow:0 0 7px #46aeff;
+  background:#ff8072;box-shadow:0 0 7px #e55353;
 }
 .dr-royal-screen .dr-event-indicator.is-opponent .dr-event-indicator__dot {
-  background:#ff8072;box-shadow:0 0 7px #e55353;
+  background:#75caff;box-shadow:0 0 7px #46aeff;
 }
 .dr-royal-screen .dr-event-turn {
   --dr-event-from:-100%;
@@ -44,15 +44,15 @@
   width:100%;
   padding:clamp(11px,2.1dvh,20px) 9px;
   text-align:center;
-  background:linear-gradient(97deg,#0c315cc9,#2a84c9ee 35%,#194c80f5 74%,#0b233dd5);
-  border-top:2px solid #a6e6ff;
-  border-bottom:2px solid #86bfff;
+  background:linear-gradient(97deg,#4b1218d8,#bc4344ef 35%,#842333f5 74%,#380e16d9);
+  border-top:2px solid #ffb3a2;
+  border-bottom:2px solid #ffb3a2;
   box-shadow:0 6px 22px #0009,inset 0 0 28px #ffffff16;
   transform:skewY(-2deg);
 }
 .dr-royal-screen .dr-event-turn--opponent .dr-event-turn__ribbon {
-  background:linear-gradient(97deg,#4b1218d8,#bc4344ef 35%,#842333f5 74%,#380e16d9);
-  border-color:#ffb3a2;
+  background:linear-gradient(97deg,#0c315cc9,#2a84c9ee 35%,#194c80f5 74%,#0b233dd5);
+  border-color:#86bfff;
 }
 .dr-royal-screen .dr-event-turn--opening .dr-event-turn__ribbon {
   background:linear-gradient(97deg,#462d15df,#b58740f2 40%,#76501ffd);
