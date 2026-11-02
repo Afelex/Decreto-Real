@@ -1,0 +1,200 @@
+/* Portada de vídeo: pantalla completa, accesible y adaptativa. */
+.dr-cinematic-screen {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  background: #112c46;
+  color: #f8e7c3;
+}
+.dr-cinematic-background {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 46% center;
+  pointer-events: none;
+  user-select: none;
+}
+.dr-cinematic-poster { z-index: -3; }
+.dr-cinematic-video { z-index: -2; }
+.dr-cinematic-shade {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg,
+    rgba(5, 13, 25, .38) 0%, transparent 30%,
+    transparent 44%, rgba(5, 13, 25, .32) 63%,
+    rgba(3, 9, 18, .79) 100%);
+  pointer-events: none;
+}
+.dr-cinematic-layout {
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+  width: min(100%, 720px);
+  height: 100%;
+  min-height: 0;
+  margin: 0 auto;
+  padding: max(10px, env(safe-area-inset-top))
+    max(12px, env(safe-area-inset-right))
+    max(12px, env(safe-area-inset-bottom))
+    max(12px, env(safe-area-inset-left));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.dr-cinematic-brand {
+  flex: 0 0 auto;
+  width: 100%;
+  display: grid;
+  place-items: center;
+  margin-top: clamp(8px, 2dvh, 28px);
+}
+.dr-cinematic-title {
+  margin: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  line-height: 1;
+}
+.dr-cinematic-logo {
+  display: block;
+  width: min(95vw, 450px);
+  max-width: 100%;
+  max-height: min(24dvh, 220px);
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 5px 9px rgba(0, 0, 0, .85));
+  user-select: none;
+}
+.dr-cinematic-actions {
+  box-sizing: border-box;
+  width: min(100%, 430px);
+  margin-top: auto;
+  padding: clamp(9px, 1.5dvh, 14px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(7px, 1.1dvh, 11px);
+  border: 1px solid rgba(235, 189, 112, .42);
+  border-radius: 17px;
+  background: linear-gradient(180deg, rgba(8, 17, 27, .72), rgba(9, 17, 27, .82));
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .36), inset 0 1px 0 rgba(255, 239, 187, .15);
+  backdrop-filter: blur(7px);
+}
+.dr-cinematic-button {
+  box-sizing: border-box;
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  border: 1px solid #c9a664;
+  border-radius: 9px;
+  color: #fdf0d4;
+  cursor: pointer;
+  touch-action: manipulation;
+  font-family: Cinzel, Georgia, serif;
+  font-weight: 700;
+  letter-spacing: .055em;
+  text-shadow: 0 2px 3px rgba(0, 0, 0, .95);
+  transition: filter .15s ease, transform .15s ease;
+}
+.dr-cinematic-button:focus-visible {
+  outline: 3px solid #ffdf8b;
+  outline-offset: 3px;
+}
+.dr-cinematic-button:active { transform: scale(.98); }
+@media (hover: hover) {
+  .dr-cinematic-button:hover { filter: brightness(1.16); }
+}
+.dr-cinematic-button-primary {
+  min-height: clamp(61px, 8.1dvh, 77px);
+  padding: 8px 26px 11px 12px;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) 16px;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(180deg, #b53b2c, #772016);
+  border: 2px solid #f3ca76;
+  box-shadow: 0 4px 0 #3a180e, inset 0 1px 0 #ffffff44;
+}
+.dr-cinematic-button-icon { font-size: 25px; }
+.dr-cinematic-primary-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  text-align: left;
+}
+.dr-cinematic-primary-copy strong {
+  color: #fff4d6;
+  font-size: clamp(16px, 4.8vw, 20px);
+  letter-spacing: .12em;
+}
+.dr-cinematic-primary-copy small {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 600 clamp(10px, 2.8vw, 12px)/1.2 system-ui, sans-serif;
+  letter-spacing: 0;
+  color: #ffe5ae;
+}
+.dr-cinematic-chevron { font: 32px/1 Georgia, serif; }
+.dr-cinematic-button-primary .dr-menu-progress-track {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 3px;
+  height: 3px;
+  border-radius: 3px;
+  background: #2d08094d;
+  overflow: hidden;
+}
+.dr-cinematic-button-primary .dr-menu-progress-track > span {
+  display: block;
+  height: 100%;
+  background: #ffe49b;
+}
+.dr-cinematic-secondary {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.dr-cinematic-button-secondary {
+  min-height: clamp(44px, 6.1dvh, 52px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(180deg, #344658, #142536);
+  font-size: clamp(11px, 3.3vw, 14px);
+}
+.dr-cinematic-button-secondary > span:first-child { font-size: 19px; }
+.dr-cinematic-button-classic {
+  min-height: clamp(43px, 5.9dvh, 50px);
+  padding: 7px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  background: linear-gradient(180deg, #4c3d30, #29252a);
+  font-size: clamp(10px, 3vw, 13px);
+}
+@media (max-height: 590px) {
+  .dr-cinematic-brand { margin-top: 2px; }
+  .dr-cinematic-logo { max-height: 17dvh; }
+  .dr-cinematic-actions { padding: 7px; gap: 5px; }
+  .dr-cinematic-button-primary { min-height: 52px; }
+  .dr-cinematic-button-secondary, .dr-cinematic-button-classic { min-height: 40px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dr-cinematic-video { display: none; }
+  .dr-cinematic-button { transition: none; }
+}
