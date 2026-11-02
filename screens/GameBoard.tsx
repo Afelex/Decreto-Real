@@ -20,7 +20,7 @@ const SPECIAL_VALUE = 3;
 /** DR-HUD-V3 — arte renderizado en el DOM, no como fondo CSS.
  * Tres celdas del atlas: retrato (0), FIN TURNO activo (1) y desactivado (2).
  * La ruta incorpora versión para evitar que Android reutilice el recurso anterior. */
-const ROYAL_HUD_SPRITE = `${import.meta.env.BASE_URL}interfaz/retratos-fin-turno.avif?v=3`;
+const ROYAL_HUD_SPRITE = '/Decreto-Real/interfaz/retratos-fin-turno.avif?v=3';
 const PortraitOrnament: React.FC = () => (
   <svg className="dr-royal-portrait-ornament" viewBox="0 0 192 240"
     preserveAspectRatio="none" focusable="false" aria-hidden="true"
