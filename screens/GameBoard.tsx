@@ -693,7 +693,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
       {turnOwner && (phase === 'TURN_BANNER' || phase === 'PLAYER_TURN' || phase === 'OPPONENT_TURN') &&
         <TurnIndicator side={turnOwner} />}
       {(phase === 'START_BANNER' || phase === 'TURN_BANNER') &&
-        <TurnAnnouncement key={`${phase}-${turnCount}`}
+        <TurnAnnouncement
           variant={phase === 'START_BANNER' ? 'opening' : turnOwner === 'PLAYER' ? 'player' : 'opponent'}
           turn={turnCount} />}
       {phase === 'COIN_TOSS' &&
