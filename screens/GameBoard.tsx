@@ -43,6 +43,41 @@ const EndTurnOrnament: React.FC<{ disabled: boolean }> = ({ disabled }) => (
 );
 
 
+type HandCountProps = { side: 'rival' | 'player'; count: number };
+
+/** Number-only counters: gold laurel ornament is decorative, counts remain live. */
+const HandCount: React.FC<HandCountProps> = ({ side, count }) => (
+  <output className={`dr-royal-hand-count ${side}`}
+    aria-label={side === 'rival' ? `El rival tiene ${count} cartas` : `Tienes ${count} cartas en la mano`}>
+    <svg className="dr-royal-hand-laurels" viewBox="0 0 104 48" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id={`dr-laurel-gold-${side}`} x1="0" x2="0.7" y1="0" y2="1">
+          <stop offset="0" stopColor="#ffeb9e"/><stop offset=".55" stopColor="#e9b34c"/><stop offset="1" stopColor="#a46b24"/>
+        </linearGradient>
+      </defs>
+      <g fill={`url(#dr-laurel-gold-${side})`} stroke="#8d4c1a" strokeWidth=".7">
+        <path d="M24 43C8 38 5 23 13 7" fill="none" stroke="#e5ae48" strokeWidth="2.2"/>
+        <ellipse cx="12" cy="10" rx="3.2" ry="7" transform="rotate(31 12 10)"/>
+        <ellipse cx="9" cy="20" rx="3.2" ry="6" transform="rotate(64 9 20)"/>
+        <ellipse cx="12" cy="31" rx="3.1" ry="6.2" transform="rotate(100 12 31)"/>
+        <ellipse cx="19" cy="40" rx="3" ry="6" transform="rotate(128 19 40)"/>
+        <ellipse cx="18" cy="17" rx="2.8" ry="6" transform="rotate(-20 18 17)"/>
+        <ellipse cx="18" cy="28" rx="2.8" ry="6" transform="rotate(5 18 28)"/>
+      </g>
+      <g transform="translate(104 0) scale(-1 1)" fill={`url(#dr-laurel-gold-${side})`} stroke="#8d4c1a" strokeWidth=".7">
+        <path d="M24 43C8 38 5 23 13 7" fill="none" stroke="#e5ae48" strokeWidth="2.2"/>
+        <ellipse cx="12" cy="10" rx="3.2" ry="7" transform="rotate(31 12 10)"/>
+        <ellipse cx="9" cy="20" rx="3.2" ry="6" transform="rotate(64 9 20)"/>
+        <ellipse cx="12" cy="31" rx="3.1" ry="6.2" transform="rotate(100 12 31)"/>
+        <ellipse cx="19" cy="40" rx="3" ry="6" transform="rotate(128 19 40)"/>
+        <ellipse cx="18" cy="17" rx="2.8" ry="6" transform="rotate(-20 18 17)"/>
+        <ellipse cx="18" cy="28" rx="2.8" ry="6" transform="rotate(5 18 28)"/>
+      </g>
+    </svg>
+    <strong className="dr-royal-hand-number">{count}</strong>
+  </output>
+);
+
 // --- ASSETS ---
 const IMG_ATTACK = 'https://i.imgur.com/x9iHqkK.png';
 const IMG_DEFEND = 'https://i.imgur.com/z9KyWGL_d.webp?maxwidth=760&fidelity=grand';
@@ -443,27 +478,6 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   const handleSurrenderConfirm = () => { playSound('CLICK'); if (onReturn) onReturn(); else navigate('/'); };
   const handleSurrenderCancel = () => { playSound('CLICK'); setShowSurrenderConfirm(false); };
 
-  const renderGauge = (val: number) => (
-    <div className="flex gap-1 mt-1 justify-center">
-      {[1, 2, 3].map(v => (
-        <div key={v} className={`w-3 h-3 rounded-full border border-stone-600 transition-all duration-300 relative ${v <= val ? 'bg-[#d946ef] shadow-[0_0_8px_#d946ef]' : 'bg-black/50'}`}>
-          {v <= val && <div className="absolute inset-0 bg-white opacity-40 animate-pulse rounded-full"></div>}
-        </div>
-      ))}
-    </div>
-  );
-
-  const renderImpactSlots = (currentLevel: number) => (
-    <div className="flex gap-2 p-1 bg-[#0a0a0a]/80 rounded-lg border border-gold-dark/50 justify-center mt-2">
-      {[1, 2, 3, 4].map(lvl => (
-        <div key={lvl} className="relative w-4 h-4 flex items-center justify-center">
-          {lvl <= currentLevel && <div className="absolute inset-0 bg-gold-main blur-sm animate-pulse"></div>}
-          <div className={`absolute inset-0 transition-all duration-700 transform border border-black rotate-45 ${lvl <= currentLevel ? 'bg-gold-main scale-110' : 'bg-stone-800 scale-90'}`}></div>
-        </div>
-      ))}
-    </div>
-  );
-
   const endTurnUnavailable = phase !== 'PLAYER_TURN' || showSpecialSelection || isMenuOpen || !!cardAnnouncement;
 
   const Board = (
@@ -601,10 +615,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
               <PortraitOrnament/>
               <div className="dr-royal-hp blue" aria-label={`Vida del rival: ${opponentHP} de ${MAX_HP}`}>HP: {opponentHP}/{MAX_HP}</div>
             </div>
-            {renderGauge(opponentGauge)}
-            <div className="dr-royal-rival-impact" aria-label={`Impactos del rival: ${opponentImpactLevel} de 4`}>
-              {renderImpactSlots(opponentImpactLevel)}
-            </div>
+
           </div>
           <button className="dr-royal-menu-button" type="button" onClick={handleMenuToggle} aria-label="Abrir menú de pausa">
             <span className="material-icons" aria-hidden="true">menu</span>
@@ -623,7 +634,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
               } as React.CSSProperties}><span className="dr-royal-card-crest">✥</span></div>;
             })}
           </div>
-          <output className="dr-royal-hand-count rival" aria-label={`El rival tiene ${opponentHand.length} cartas`}>MANO {opponentHand.length}</output>
+          <HandCount side="rival" count={opponentHand.length}/>
         </section>
 
         <section className={`dr-royal-field${selectedCard ? ' is-guiding' : ''}${dragAt ? ' is-dragging' : ''}${selectedCard && selectedCard.type !== 'IMPACT' ? ' is-regular' : ''}`}
@@ -665,7 +676,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
         </section>
 
         <section className="dr-royal-player-hand" aria-label={`Tu mano: ${playerHand.length} cartas`}>
-          <output className="dr-royal-hand-count player" aria-label={`Tienes ${playerHand.length} cartas en la mano`}>MANO {playerHand.length}</output>
+          <HandCount side="player" count={playerHand.length}/>
           <div className="dr-royal-player-fan">
             {playerHand.map((card, i) => {
               const distance = i - (playerHand.length - 1) / 2;
@@ -705,7 +716,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
               <PortraitOrnament/>
               <div className="dr-royal-hp red" aria-label={`Tu vida: ${playerHP} de ${MAX_HP}`}>HP: {playerHP}/{MAX_HP}</div>
             </div>
-            {renderGauge(playerGauge)}
+
           </div>
           <button className="dr-royal-finish" type="button" onClick={handleEndTurn}
             disabled={endTurnUnavailable}
