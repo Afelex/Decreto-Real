@@ -18,7 +18,7 @@
   border-radius:0;
   clip-path:none;
   background:none;
-  box-shadow:0 3px 9px #0908137d;
+  box-shadow:none;
   filter:none;
 }
 .dr-royal-screen .dr-royal-character-frame::after { content:none; }
@@ -46,7 +46,7 @@
   z-index:2;
   pointer-events:none;
   contain:paint;
-  filter:drop-shadow(0 3px 5px #060712aa);
+  filter:none;
 }
 .dr-royal-screen .dr-royal-portrait-art-image {
   position:absolute;
@@ -103,7 +103,7 @@
   border-radius:50%;
   overflow:visible;
   background:none;
-  box-shadow:0 4px 10px #120b1396;
+  box-shadow:none;
   opacity:1;
   filter:none;
   cursor:pointer;
@@ -144,7 +144,11 @@
   pointer-events:none;
   user-select:none;
 }
-.dr-royal-screen .dr-royal-finish > span {display:none;}
+/* Do not hide the only button artwork: the old arrow span was removed. */
+.dr-royal-screen .dr-royal-finish > span.dr-royal-finish-ornament {
+  display:block;
+  visibility:visible;
+}
 .dr-royal-screen .dr-royal-finish strong {
   position:absolute;
   z-index:1;
@@ -165,7 +169,7 @@
   border:0;
   opacity:1;
   filter:none;
-  box-shadow:0 3px 7px #100c1466;
+  box-shadow:none;
   cursor:not-allowed;
 }
 .dr-royal-screen .dr-royal-finish:disabled strong {color:#eadcc6;}
@@ -176,6 +180,47 @@
 .dr-royal-screen .dr-royal-finish:active:not(:disabled) {
   transform:scale(.97);
 }
+
+/* DR-HUD-V5 — use only the illustrated deck, not rectangular badges or
+   simulated shadows that create transparent-looking panels around the assets. */
+.dr-royal-screen .dr-royal-deck-back,
+.dr-royal-screen .dr-royal-deck-back.blue,
+.dr-royal-screen .dr-royal-deck-back.red {
+  box-shadow:none;
+  filter:none;
+}
+.dr-royal-screen .dr-royal-deck-back > span,
+.dr-royal-screen .dr-royal-deck-back > small {
+  background:transparent;
+  border:0;
+  border-radius:0;
+  outline:none;
+  box-shadow:none;
+  padding:0;
+  margin:0;
+  color:#fff4d9;
+  text-shadow:-1px -1px 2px #210b13,1px -1px 2px #210b13,
+    -1px 1px 2px #210b13,1px 1px 2px #210b13,0 2px 3px #110810;
+}
+.dr-royal-screen .dr-royal-deck-back > span {
+  font-weight:900;
+  line-height:1;
+}
+.dr-royal-screen .dr-royal-deck-back > small {
+  font-weight:900;
+  line-height:1.1;
+  letter-spacing:.06em;
+}
+.dr-royal-screen .dr-royal-rival-deck .dr-royal-deck-back > span,
+.dr-royal-screen .dr-royal-player-deck .dr-royal-deck-back > span {
+  outline:none;
+}
+.dr-royal-screen .dr-royal-deck,
+.dr-royal-screen .dr-royal-player-deck {
+  filter:none;
+  box-shadow:none;
+}
+
 @media(max-height:550px) {
   .dr-royal-screen .dr-royal-character-frame {
     height:calc(100% - 12px);
