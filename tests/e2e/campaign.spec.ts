@@ -165,8 +165,8 @@ test('original game keeps its rules but activates cards by selection plus target
   const cards = page.locator('.dr-royal-hand-card');
   await expect(cards).toHaveCount(4, { timeout: 18000 });
   await expect(page.locator('.dr-royal-facedown')).toHaveCount(3);
-  await expect(page.locator('.dr-royal-hand-count.rival')).toContainText('MANO 3');
-  await expect(page.locator('.dr-royal-hand-count.player')).toContainText('MANO 4');
+  await expect(page.locator('.dr-royal-hand-count.rival')).toHaveText('3');
+  await expect(page.locator('.dr-royal-hand-count.player')).toHaveText('4');
   const ordinary = cards.filter({ hasText: /Decreto de Ataque|Decreto de Defensa/ });
   const chosen = ordinary.last();
   const before = await cards.count();
@@ -233,8 +233,8 @@ test('four Impact placements are ordered, and player/rival hands show real count
   await expect(page.locator('.dr-royal-impact-slot').nth(1)).toHaveAttribute('aria-label', 'Casilla Impacto II');
   await expect(page.locator('.dr-royal-impact-slot').nth(2)).toHaveAttribute('aria-label', 'Casilla Impacto III');
   await expect(page.locator('.dr-royal-impact-slot').nth(3)).toHaveAttribute('aria-label', 'Casilla Impacto Final');
-  await expect(page.locator('.dr-royal-hand-count.rival')).toHaveText('MANO 0');
-  await expect(page.locator('.dr-royal-hand-count.player')).toHaveText('MANO 0');
+  await expect(page.locator('.dr-royal-hand-count.rival')).toHaveText('0');
+  await expect(page.locator('.dr-royal-hand-count.player')).toHaveText('0');
   await expect(page.locator('.dr-royal-combo')).toHaveCount(0);
   await expect(page.locator('.dr-royal-facedown')).toHaveCount(0);
   const viewport = page.viewportSize()!;
