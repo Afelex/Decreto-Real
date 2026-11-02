@@ -10,7 +10,7 @@ export const CardActivationBanner: React.FC<Props> = ({ card, isPlayer, paused }
   const [failedVideo, setFailedVideo] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const copy = cardActivationCopy(card, isPlayer);
-  const src = `${import.meta.env.BASE_URL}animaciones/banner-${isPlayer ? 'jugador-rojo' : 'rival-azul'}.webm`;
+  const src = `/Decreto-Real/animaciones/banner-${isPlayer ? 'jugador-rojo' : 'rival-azul'}.webm`;
 
   useEffect(() => {
     const video = videoRef.current;
