@@ -98,6 +98,16 @@
 }
 .dr-royal-screen .dr-royal-finish::before,
 .dr-royal-screen .dr-royal-finish::after {content:none;}
+/* Only the player's footer owns the interactive turn control. */
+.dr-royal-screen .dr-royal-player-area { position:relative; }
+.dr-royal-screen .dr-royal-player-area > .dr-royal-finish {
+  position:absolute;
+  right:clamp(5px,2cqw,12px);
+  bottom:clamp(5px,1.2dvh,13px);
+  z-index:5;
+}
+/* HTML overflow clipping is reliable on mobile browsers, unlike SVG <image>
+ * outside a viewBox. The 2 unselected sprite cells never paint on the board. */
 .dr-royal-screen .dr-royal-finish-ornament {
   position:absolute;
   inset:0;
@@ -105,9 +115,22 @@
   height:100%;
   display:block;
   z-index:0;
-  overflow:hidden;
+  overflow:hidden!important;
+  border-radius:50%;
+  clip-path:inset(0 round 50%);
+  contain:paint;
   pointer-events:none;
-  filter:drop-shadow(0 2px 3px #0b081199);
+}
+.dr-royal-screen .dr-royal-finish-art-image {
+  position:absolute;
+  top:-12.5%;
+  height:125%;
+  width:300%;
+  max-width:none;
+  display:block;
+  object-fit:fill;
+  pointer-events:none;
+  user-select:none;
 }
 .dr-royal-screen .dr-royal-finish > span {display:none;}
 .dr-royal-screen .dr-royal-finish strong {
