@@ -32,6 +32,26 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: Optimize initial battle background
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_video="public/escenarios/gemini_generated_video_b8059a5c.mp4"
+          optimized_video="dist/escenarios/partida-inicial-loop.mp4"
+          test -s "$source_video"
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg
+          fi
+          ffmpeg -hide_banner -loglevel error -nostdin -y \
+            -i "$source_video" \
+            -vf "scale=540:960" -c:v libx264 -preset medium -crf 26 \
+            -pix_fmt yuv420p -an -movflags +faststart "$optimized_video"
+          test -s "$optimized_video"
+          # Ship only the small optimized video, not the 4.6 MB source clip.
+          rm -f dist/escenarios/gemini_generated_video_b8059a5c.mp4
+          ls -lh "$optimized_video"
+
       - name: Upload build
         uses: actions/upload-pages-artifact@v3
         with:
