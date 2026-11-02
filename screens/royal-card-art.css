@@ -1,4 +1,4 @@
-/* DR-ART-01 — Arte original de cartas en un atlas WebP 4x3.
+/* DR-ART-01 — Arte original de cartas en un atlas AVIF 4x3.
  * Columnas: Ataque/Defensa/Orden/Impacto. Filas: marcos, ilustraciones, dorso/mazo.
  * Solo modifica la presentación: las reglas, la IA y el gesto de arrastre permanecen intactos. */
 .dr-royal-screen { --dr-card-atlas: url('/Decreto-Real/cartas/arcilla-atlas.avif'); }
@@ -30,9 +30,9 @@
   background-size:400% 300%;background-position:var(--dr-card-column,0%) 0%;
   background-repeat:no-repeat;
 }
-.dr-royal-screen .dr-royal-hand-card:not(.impact)>img { visibility:hidden; }
+.dr-royal-screen .dr-royal-hand-card:not(.impact)>img { opacity:0; }
 .dr-royal-screen .dr-royal-hand-card.impact>img {
-  visibility:visible;max-width:86%;align-self:center;
+  opacity:1;max-width:86%;align-self:center;
   object-fit:contain;border:0;filter:drop-shadow(0 0 6px #ffcd62);
 }
 .dr-royal-screen .dr-royal-hand-card>.dr-royal-card-kind,
@@ -95,9 +95,9 @@
 .dr-royal-screen .dr-royal-drag-ghost.defense {--dr-card-column:33.333333%;}
 .dr-royal-screen .dr-royal-drag-ghost.order {--dr-card-column:66.666667%;}
 .dr-royal-screen .dr-royal-drag-ghost.impact {--dr-card-column:100%;}
-.dr-royal-screen .dr-royal-drag-ghost>img {visibility:hidden;}
+.dr-royal-screen .dr-royal-drag-ghost>img {opacity:0;}
 .dr-royal-screen .dr-royal-drag-ghost.impact>img {
-  visibility:visible;object-fit:contain;width:80%;height:60%;margin:15% auto 0;
+  opacity:1;object-fit:contain;width:80%;height:60%;margin:15% auto 0;
 }
 @media(max-width:350px),(max-height:690px) {
   .dr-royal-screen .dr-royal-hand-card {padding:5px 5px 6px;}
