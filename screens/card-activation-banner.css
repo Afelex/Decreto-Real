@@ -1,0 +1,59 @@
+/* Cinematic overlays from user-provided Veo recordings; graphics are intentionally text-free.
+   Video playback runs at 4x speed; effects execute only once its 2.5s cue finishes. */
+.dr-royal-screen .dr-cinematic-overlay{
+  position:absolute;inset:0;z-index:75;overflow:hidden;pointer-events:none;
+  display:flex;align-items:center;justify-content:center;isolation:isolate;
+}
+.dr-royal-screen .dr-cinematic-media{
+  position:absolute;left:50%;top:50%;width:160%;aspect-ratio:16 / 9;
+  transform:translate(-50%,-50%);pointer-events:none;
+}
+.dr-royal-screen .dr-cinematic-media video{width:100%;height:100%;display:block;object-fit:contain}
+.dr-royal-screen .dr-cinematic-fallback{
+  position:absolute;top:21%;left:0;width:100%;height:58%;
+  transform:rotate(-12deg) scaleX(1.02);
+  clip-path:polygon(0 26%,100% 0,100% 74%,0 100%);
+  background:linear-gradient(110deg,#081b62,#1452be 44%,#05245c 100%);
+  border-top:4px solid #f6bf50;border-bottom:4px solid #f6bf50;
+  box-shadow:0 0 14px #ffdf80;
+  animation:dr-cinematic-fallback 2.5s ease-in-out both;
+}
+.dr-royal-screen .dr-cinematic-overlay.player .dr-cinematic-fallback{
+  background:linear-gradient(110deg,#5b091b,#cb2440 44%,#5a071a 100%);
+}
+.dr-royal-screen .dr-cinematic-copy{
+  position:absolute;left:50%;top:50%;width:min(93%,660px);
+  display:flex;flex-direction:column;align-items:center;gap:clamp(3px,.65dvh,8px);
+  text-align:center;transform:translate(-50%,-50%) rotate(-12deg);
+  text-shadow:0 2px 3px #080512,0 0 8px #080512,1px 2px 1px #271217;
+  animation:dr-cinematic-text 2.5s ease both;
+  color:#fffaf1;
+}
+.dr-royal-screen .dr-cinematic-kicker{
+  font:800 clamp(9px,2.5cqw,17px)/1.1 Cinzel,Georgia,serif;
+  color:#ffdf92;letter-spacing:.055em;
+}
+.dr-royal-screen .dr-cinematic-title{
+  font:900 clamp(17px,5.3cqw,39px)/1.06 Cinzel,Georgia,serif;
+  color:white;max-width:100%;overflow-wrap:break-word;
+}
+.dr-royal-screen .dr-cinematic-effect{
+  font:750 clamp(10px,2.75cqw,20px)/1.15 Georgia,serif;
+  color:#fff0c7;max-width:92%;
+}
+.dr-royal-screen .dr-cinematic-overlay.paused .dr-cinematic-copy,
+.dr-royal-screen .dr-cinematic-overlay.paused .dr-cinematic-fallback{animation-play-state:paused}
+@keyframes dr-cinematic-text{
+  0%,9%{opacity:0;filter:blur(8px);translate:-24px 0}
+  18%{opacity:1;filter:blur(0);translate:0 0}
+  69%{opacity:1;filter:blur(0);translate:0 0}
+  83%,100%{opacity:0;filter:blur(4px);translate:25px 0}
+}
+@keyframes dr-cinematic-fallback{
+  0%{opacity:0;translate:-110% 0}20%,68%{opacity:1;translate:0 0}
+  100%{opacity:0;translate:110% 0}
+}
+@media(prefers-reduced-motion:reduce){
+ .dr-royal-screen .dr-cinematic-copy,
+ .dr-royal-screen .dr-cinematic-fallback{animation:none;opacity:1}
+}

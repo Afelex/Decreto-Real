@@ -20,7 +20,7 @@ test('rival row follows a real AI Impact while player slots remain independent',
   expect(within(row).queryAllByRole('button')).toHaveLength(0);
   random.mockReturnValue(0); // Rival wins the coin toss.
   fireEvent.click(screen.getByRole('button', { name: 'Lanzar Moneda' }));
-  for (const ms of [1500, 1500, 2000, 1500, 2000]) {
+  for (const ms of [1500, 1500, 2000, 1500, 1000, 2500]) {
     await act(async () => { await vi.advanceTimersByTimeAsync(ms); });
   }
   expect(screen.getByRole('group', { name: 'Progreso de impactos del rival: 1 de 4' })).toBeTruthy();
@@ -43,16 +43,20 @@ test('two Impacts across turns offer the one-point combo and preserve the streak
   }
   fireEvent.click(screen.getByRole('button', { name: /Impacto I:/ }));
   fireEvent.click(screen.getByRole('button', { name: 'Casilla Impacto I' }));
+  expect(screen.getByRole('status', {name: /HAS ACTIVADO/})).toBeTruthy();
+  expect((screen.getByRole('button', { name: 'Terminar turno' }) as HTMLButtonElement).disabled).toBe(true);
+  await act(async () => { await vi.advanceTimersByTimeAsync(2500); });
   fireEvent.click(screen.getByRole('button', { name: 'Terminar turno' }));
-  for (const ms of [1500, 1000, 1500, 1500, 1500]) {
+  for (const ms of [1500, 1000, 2500, 1500, 1500]) {
     await act(async () => { await vi.advanceTimersByTimeAsync(ms); });
   }
   fireEvent.click(screen.getByRole('button', { name: /Impacto II:/ }));
   fireEvent.click(screen.getByRole('button', { name: 'Casilla Impacto II' }));
+  await act(async () => { await vi.advanceTimersByTimeAsync(2500); });
   expect(screen.getByText('Combo ×2')).toBeTruthy();
   expect(screen.getByText('1 Daño al Rival')).toBeTruthy();
   fireEvent.click(screen.getByRole('button', { name: /Furia Real/ }));
-  expect(screen.getByLabelText('Vida del rival: 18 de 20')).toBeTruthy();
+  expect(screen.getByLabelText('Vida del rival: 17 de 20')).toBeTruthy();
   expect(screen.getByText('de Impacto')).toBeTruthy();
 });
 
@@ -69,6 +73,8 @@ test('Order draws one replacement card without changing the starting 28-card dec
   const deckBefore = Number(document.querySelector('.dr-royal-player-deck span')?.textContent);
   fireEvent.click(screen.getByRole('button', { name: /Decreto de Orden:/ }));
   fireEvent.click(screen.getByRole('button', { name: 'Campo para activar Ataque o Defensa' }));
+  expect(screen.getByRole('status', {name: /HAS ACTIVADO/})).toBeTruthy();
+  await act(async () => { await vi.advanceTimersByTimeAsync(2500); });
   expect(screen.getByLabelText(/Tu mano:/).querySelectorAll('.dr-royal-hand-card')).toHaveLength(before);
   expect(Number(document.querySelector('.dr-royal-player-deck span')?.textContent)).toBe(deckBefore - 1);
 });

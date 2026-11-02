@@ -55,13 +55,14 @@ type AiSnapshot<C extends AiCard> = { hand: C[]; health: number; impactLevel: nu
 export async function runOpponentTurn<C extends AiCard>(
   controller: AiTurnController,
   read: () => AiSnapshot<C>,
-  play: (card: C) => void,
+  play: (card: C) => void | Promise<void>,
   finish: () => void,
 ) {
   if (!await controller.wait(1000)) return;
   const perform = async (card: C) => {
     if (!controller.active) return false;
-    play(card);
+    await play(card);
+    if (!controller.active) return false;
     return controller.wait(1500);
   };
   let state = read();

@@ -5,6 +5,7 @@ import { CardData, GamePhase, CardType } from '../types';
 import { useAudio } from '../contexts/AudioContext';
 import { AiTurnController, runOpponentTurn } from '../game/aiTurn';
 import { cardPlacementPrompt, checkCardPlacement, resolveVisualDropZone, type CardDropZone } from '../game/cardPlacement.ts';
+import { CardActivationBanner } from './CardActivationBanner';
 
 // --- GAME CONFIGURATION ---
 const MAX_HP = 20;
@@ -112,6 +113,10 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showSurrenderConfirm, setShowSurrenderConfirm] = useState(false);
   const [visualEffect, setVisualEffect] = useState<{ type: EffectType, target: EffectTarget }>({ type: null, target: null });
+  const [cardAnnouncement, setCardAnnouncement] = useState<{ id: number; card: CardData; isPlayer: boolean } | null>(null);
+  const announcementBusy = useRef(false);
+  const announcementCount = useRef(0);
+  const announcementClock = useRef(new AiTurnController());
   const [shakeScreen, setShakeScreen] = useState(false);
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   const [playHint, setPlayHint] = useState<string | null>(null);
@@ -236,10 +241,20 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     }
   };
 
-  const playCard = (card: CardData, isPlayer: boolean) => {
-    if (gameOverRef.current) return;
+  // Announce a legally placed card BEFORE applying its HP, seal or draw effects.
+  // The same pausable clock is used for player and rival animations.
+  const playCard = async (card: CardData, isPlayer: boolean): Promise<void> => {
+    if (gameOverRef.current || announcementBusy.current) return;
+    announcementBusy.current = true;
     if (isPlayer) setPlayerHand(prev => prev.filter(c => c.id !== card.id));
     else setOpponentHand(prev => prev.filter(c => c.id !== card.id));
+
+    setCardAnnouncement({ id: ++announcementCount.current, card, isPlayer });
+    const active = await announcementClock.current.wait(2500);
+    if (!active) return; // Unmounted/cancelled: do not mutate the match.
+    setCardAnnouncement(null);
+    announcementBusy.current = false;
+    if (gameOverRef.current) return;
 
     if (card.type === 'ATTACK') {
       playSound('ATTACK'); triggerVisualEffect('ATTACK', isPlayer ? 'OPPONENT' : 'PLAYER');
@@ -271,7 +286,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     aiController.current = controller;
     if (isMenuOpen) controller.pause();
     void runOpponentTurn(controller, () => latestOpponent.current, card => {
-      if (!gameOverRef.current) latestPlayCard.current(card, false);
+      if (!gameOverRef.current) return latestPlayCard.current(card, false);
     }, () => {
       if (!gameOverRef.current) { setTurnCount(p => p + 1); setPhase('TURN_BANNER'); }
     });
@@ -282,9 +297,11 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   }, [phase]);
 
   useEffect(() => {
-    if (isMenuOpen) aiController.current?.pause();
-    else aiController.current?.resume();
+    if (isMenuOpen) { aiController.current?.pause(); announcementClock.current.pause(); }
+    else { aiController.current?.resume(); announcementClock.current.resume(); }
   }, [isMenuOpen]);
+
+  useEffect(() => () => announcementClock.current.cancel(), []);
 
   useEffect(() => {
     if (gameOverRef.current) return;
@@ -306,7 +323,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     }
   }, [phase]);
 
-  const canHandleCards = phase === 'PLAYER_TURN' && !showSpecialSelection && !isMenuOpen && !gameOverRef.current;
+  const canHandleCards = phase === 'PLAYER_TURN' && !showSpecialSelection && !isMenuOpen && !cardAnnouncement && !announcementBusy.current && !gameOverRef.current;
   const selectedCard = playerHand.find(card => card.id === selectedCardId) ?? null;
 
   const selectCard = (card: CardData) => {
@@ -386,7 +403,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     : cardPlacementPrompt(selectedCard, playerImpactLevel));
 
   const handleEndTurn = () => {
-    if (phase !== 'PLAYER_TURN' || showSpecialSelection || gameOverRef.current) return;
+    if (phase !== 'PLAYER_TURN' || showSpecialSelection || announcementBusy.current || gameOverRef.current) return;
     setSelectedCardId(null); setPlayHint(null);
     playSound('CLICK'); setTurnCount(p => p + 1); setPhase('TURN_BANNER');
   };
@@ -493,6 +510,12 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
             </div>
           )}
         </div>
+      )}
+
+      {/* Cinematic card announcement precedes the existing damage/heal VFX. */}
+      {cardAnnouncement && (
+        <CardActivationBanner key={cardAnnouncement.id} card={cardAnnouncement.card}
+          isPlayer={cardAnnouncement.isPlayer} paused={isMenuOpen} />
       )}
 
       {/* --- MENU MODAL --- */}
@@ -686,7 +709,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
             {renderGauge(playerGauge)}
           </div>
           <button className="dr-royal-finish" type="button" onClick={handleEndTurn}
-            disabled={phase !== 'PLAYER_TURN' || showSpecialSelection || isMenuOpen}
+            disabled={phase !== 'PLAYER_TURN' || showSpecialSelection || isMenuOpen || !!cardAnnouncement}
             aria-label="Terminar turno">
             <span aria-hidden="true">➜</span><strong>FIN<br/>TURNO</strong>
           </button>
