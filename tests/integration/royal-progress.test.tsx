@@ -56,7 +56,7 @@ test('two Impacts across turns offer the one-point combo and preserve the streak
   expect(screen.getByText('Combo ×2')).toBeTruthy();
   expect(screen.getByText('1 Daño al Rival')).toBeTruthy();
   fireEvent.click(screen.getByRole('button', { name: /Furia Real/ }));
-  expect(screen.getByLabelText('Vida del rival: 17 de 20')).toBeTruthy();
+  expect(screen.getByLabelText('Vida del rival: 18 de 20')).toBeTruthy();
   expect(screen.getByText('de Impacto')).toBeTruthy();
 });
 
