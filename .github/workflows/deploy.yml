@@ -29,6 +29,28 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      # The uploaded original is kept as source in Git, not shipped to users.
+      # Re-encode it as the exact 540x960 H.264 silent loop expected by GameBoard.
+      - name: Optimize introductory battle background
+        run: |
+          set -euo pipefail
+          source="public/escenarios/gemini_generated_video_b8059a5c.mp4"
+          output="public/escenarios/partida-inicial-loop.mp4"
+          test -s "$source" || { echo "::error::Missing source battle video: $source"; exit 1; }
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y ffmpeg
+          fi
+          ffmpeg -nostdin -hide_banner -loglevel error -y \
+            -i "$source" \
+            -vf "scale=540:960:flags=lanczos,fps=24" \
+            -c:v libx264 -preset medium -crf 26 \
+            -pix_fmt yuv420p -an -movflags +faststart \
+            "$output"
+          test -s "$output" || { echo "::error::Optimization failed"; exit 1; }
+          echo "Optimized background: $(wc -c < "$output") bytes"
+          rm "$source"
+
       - name: Build project
         run: npm run build
 
