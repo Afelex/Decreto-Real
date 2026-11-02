@@ -44,7 +44,7 @@ test('two Impacts across turns offer the one-point combo and preserve the streak
   fireEvent.click(screen.getByRole('button', { name: /Impacto I:/ }));
   fireEvent.click(screen.getByRole('button', { name: 'Casilla Impacto I' }));
   expect(screen.getByRole('status', {name: /HAS ACTIVADO/})).toBeTruthy();
-  expect(screen.getByRole('button', { name: 'Terminar turno' })).toBeDisabled();
+  expect((screen.getByRole('button', { name: 'Terminar turno' }) as HTMLButtonElement).disabled).toBe(true);
   await act(async () => { await vi.advanceTimersByTimeAsync(2500); });
   fireEvent.click(screen.getByRole('button', { name: 'Terminar turno' }));
   for (const ms of [1500, 1000, 2500, 1500, 1500]) {
