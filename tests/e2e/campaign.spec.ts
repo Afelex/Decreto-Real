@@ -120,7 +120,7 @@ test('main-menu campaign CTA previews the latest verified stage', async ({ page 
   await expect(campaignButton).toContainText('Reto 2/38');
   await expect(campaignButton).toContainText('La orden sin sello');
   await expect(campaignButton.locator('.dr-menu-progress-track span')).toHaveCSS('width', /[0-9.]+px/);
-  const menu = await page.locator('.dr-main-menu-footer').boundingBox();
+  const menu = await page.locator('.dr-cinematic-actions').boundingBox();
   expect(menu).not.toBeNull();
   expect(menu!.y + menu!.height).toBeLessThanOrEqual(page.viewportSize()!.height + 2);
 });

@@ -34,8 +34,16 @@ async function noPageScroll(page: Page) {
 test('home menu stays fully inside one screen', async ({ page }, testInfo) => {
   await page.goto(route(''));
   await expect(page.getByRole('button', { name: 'Empezar campaña' })).toBeVisible();
-  await fits(page, '.dr-main-menu-header');
-  await fits(page, '.dr-main-menu-footer');
+  await fits(page, '.dr-cinematic-brand');
+  await fits(page, '.dr-cinematic-actions');
+  await expect(page.getByText('Juego de Cartas', { exact: true })).toBeVisible();
+  await expect(page.locator('.dr-cinematic-actions button')).toHaveCount(4);
+  for (const button of await page.locator('.dr-cinematic-actions button').all()) {
+    const bounds = await button.boundingBox();
+    expect(bounds).not.toBeNull();
+    expect(bounds!.y).toBeGreaterThanOrEqual(-1);
+    expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(page.viewportSize()!.height + 1);
+  }
   await noPageScroll(page);
   await page.screenshot({ path: testInfo.outputPath('menu-one-screen.png'), fullPage: true });
 });

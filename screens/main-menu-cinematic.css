@@ -1,13 +1,17 @@
-/* Portada de vídeo: pantalla completa, accesible y adaptativa. */
+/* DR-MENU: portada animada, logo centrado y botones apilados.
+   Los tamaños de la referencia son 720×130 (campaña) y 680×90 (resto).
+   Exportar los PNG al doble: 1440×260 y 1360×180 respectivamente. */
 .dr-cinematic-screen {
   position: relative;
   isolation: isolate;
   width: 100%;
   height: 100dvh;
+  min-height: 0;
   overflow: hidden;
   background: #112c46;
   color: #f8e7c3;
 }
+
 .dr-cinematic-background {
   position: absolute;
   inset: 0;
@@ -26,123 +30,160 @@
   inset: 0;
   z-index: -1;
   background: linear-gradient(180deg,
-    rgba(5, 13, 25, .38) 0%, transparent 30%,
-    transparent 44%, rgba(5, 13, 25, .32) 63%,
-    rgba(3, 9, 18, .79) 100%);
+    rgba(3, 11, 26, .23), transparent 29%,
+    transparent 51%, rgba(4, 12, 27, .20) 74%,
+    rgba(2, 9, 25, .44) 100%);
   pointer-events: none;
 }
-.dr-cinematic-layout {
-  box-sizing: border-box;
-  position: relative;
-  z-index: 1;
-  width: min(100%, 720px);
-  height: 100%;
-  min-height: 0;
-  margin: 0 auto;
-  padding: max(10px, env(safe-area-inset-top))
-    max(12px, env(safe-area-inset-right))
-    max(12px, env(safe-area-inset-bottom))
-    max(12px, env(safe-area-inset-left));
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-/* El centro visual del logo coincide con el centro del viewport,
-   independientemente de la altura que ocupen los botones inferiores. */
+
+/* El LOGO (no el subtítulo) tiene su centro a media altura exacta. */
 .dr-cinematic-brand {
+  box-sizing: border-box;
   position: absolute;
   z-index: 2;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: calc(100% - 24px);
-  display: grid;
-  place-items: center;
-  margin: 0;
+  width: min(72vw, 610px, 38dvh);
+  aspect-ratio: 496 / 255;
   pointer-events: none;
+  text-align: center;
 }
 .dr-cinematic-title {
-  margin: 0;
+  display: block;
   width: 100%;
-  display: flex;
-  justify-content: center;
-  line-height: 1;
+  height: 100%;
+  margin: 0;
+  line-height: 0;
 }
 .dr-cinematic-logo {
   display: block;
-  width: min(92vw, 450px);
-  max-width: 100%;
-  max-height: min(24dvh, 220px);
-  height: auto;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 5px 9px rgba(0, 0, 0, .85));
+  filter: drop-shadow(0 5px 9px rgba(0, 0, 0, .83));
   user-select: none;
 }
+.dr-cinematic-tagline {
+  position: absolute;
+  top: calc(100% + clamp(7px, 1dvh, 14px));
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  white-space: nowrap;
+  color: #fff1c9;
+  text-transform: none;
+  font: 700 clamp(12px, 2.2vw, 22px)/1.2 Cinzel, Georgia, serif;
+  letter-spacing: .14em;
+  text-shadow: 0 2px 4px #071527, 0 0 8px #06132b;
+}
+
+/* Sin panel general: cuatro botones independientes superpuestos al vídeo. */
 .dr-cinematic-actions {
   box-sizing: border-box;
-  position: relative;
+  position: absolute;
   z-index: 3;
-  width: min(100%, 430px);
-  margin-top: auto;
-  padding: clamp(9px, 1.5dvh, 14px);
+  left: 50%;
+  bottom: clamp(12px, 8dvh, 135px);
+  transform: translateX(-50%);
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: clamp(7px, 1.1dvh, 11px);
-  border: 1px solid rgba(235, 189, 112, .42);
-  border-radius: 17px;
-  background: linear-gradient(180deg, rgba(8, 17, 27, .72), rgba(9, 17, 27, .82));
-  box-shadow: 0 12px 30px rgba(0, 0, 0, .36), inset 0 1px 0 rgba(255, 239, 187, .15);
-  backdrop-filter: blur(7px);
+  align-items: center;
+  gap: clamp(5px, 1dvh, 15px);
+  pointer-events: none;
 }
 .dr-cinematic-button {
   box-sizing: border-box;
   position: relative;
-  width: 100%;
+  display: block;
+  padding: 0;
+  flex: 0 0 auto;
   min-width: 0;
-  min-height: 44px;
-  border: 1px solid #c9a664;
-  border-radius: 9px;
-  color: #fdf0d4;
   cursor: pointer;
+  pointer-events: auto;
   touch-action: manipulation;
+  overflow: visible;
+  border: 3px solid #e2a835;
+  border-radius: 20px;
+  color: #fff4da;
   font-family: Cinzel, Georgia, serif;
   font-weight: 700;
-  letter-spacing: .055em;
-  text-shadow: 0 2px 3px rgba(0, 0, 0, .95);
-  transition: filter .15s ease, transform .15s ease;
+  text-shadow: 0 2px 3px rgba(0,0,0,.85);
+  box-shadow: 0 5px 0 #6e4319, 0 9px 16px #0008,
+              inset 0 3px 0 #ffe7a07a, inset 0 -4px 0 #0005;
+  transition: transform .16s ease, filter .16s ease;
 }
+.dr-cinematic-button::before,
+.dr-cinematic-button::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: 50%;
+  width: clamp(13px, 2.6vw, 25px);
+  height: clamp(13px, 2.6vw, 25px);
+  transform: translateY(-50%) rotate(45deg);
+  border: 2px solid #ffe397;
+  background: linear-gradient(130deg, #ffd85a, #b76f0d);
+  box-shadow: 0 3px 4px #0008;
+}
+.dr-cinematic-button::before { left: -5px; }
+.dr-cinematic-button::after { right: -5px; }
 .dr-cinematic-button:focus-visible {
-  outline: 3px solid #ffdf8b;
-  outline-offset: 3px;
+  outline: 3px solid #fff1a0;
+  outline-offset: 6px;
 }
-.dr-cinematic-button:active { transform: scale(.98); }
+.dr-cinematic-button:active { transform: scale(.975); }
 @media (hover: hover) {
-  .dr-cinematic-button:hover { filter: brightness(1.16); }
+  .dr-cinematic-button:hover { filter: brightness(1.14); }
 }
+
 .dr-cinematic-button-primary {
-  min-height: clamp(61px, 8.1dvh, 77px);
-  padding: 8px 26px 11px 12px;
-  display: grid;
-  grid-template-columns: 34px minmax(0, 1fr) 16px;
-  align-items: center;
-  gap: 6px;
-  background: linear-gradient(180deg, #b53b2c, #772016);
-  border: 2px solid #f3ca76;
-  box-shadow: 0 4px 0 #3a180e, inset 0 1px 0 #ffffff44;
+  width: min(88vw, 720px);
+  aspect-ratio: 72 / 13;
+  min-height: 54px;
+  background: linear-gradient(180deg, #de2e29 0%, #bd151b 48%, #750e19 100%);
 }
-.dr-cinematic-button-icon { font-size: 25px; }
+.dr-cinematic-button-secondary {
+  width: min(83vw, 680px);
+  aspect-ratio: 68 / 9;
+  min-height: 44px;
+  background: linear-gradient(180deg, #14558f 0%, #064580 42%, #072d67 100%);
+}
+.dr-cinematic-button-copy {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 3vw, 34px);
+  padding: 4px 18px;
+  white-space: nowrap;
+}
+.dr-cinematic-button-icon {
+  flex: 0 0 auto;
+  line-height: 1;
+  font-size: clamp(21px, 3.6vw, 44px);
+  filter: drop-shadow(0 2px 2px #00152e);
+}
+.dr-cinematic-button-primary .dr-cinematic-button-icon {
+  font-size: clamp(25px, 4vw, 54px);
+}
 .dr-cinematic-primary-copy {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 3px;
-  text-align: left;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1px, .4dvh, 5px);
+  text-align: center;
 }
 .dr-cinematic-primary-copy strong {
-  color: #fff4d6;
-  font-size: clamp(16px, 4.8vw, 20px);
-  letter-spacing: .12em;
+  font-size: clamp(18px, 3.2vw, 40px);
+  line-height: 1.08;
+  letter-spacing: .055em;
 }
 .dr-cinematic-primary-copy small {
   display: block;
@@ -150,66 +191,100 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font: 600 clamp(10px, 2.8vw, 12px)/1.2 system-ui, sans-serif;
+  font: 600 clamp(10px, 1.65vw, 19px)/1.2 system-ui, sans-serif;
   letter-spacing: 0;
-  color: #ffe5ae;
 }
-.dr-cinematic-chevron { font: 32px/1 Georgia, serif; }
+.dr-cinematic-button-secondary strong {
+  min-width: 0;
+  font: 700 clamp(13px, 2.3vw, 27px)/1.15 Cinzel, Georgia, serif;
+  letter-spacing: .035em;
+  white-space: nowrap;
+}
 .dr-cinematic-button-primary .dr-menu-progress-track {
   position: absolute;
-  left: 10px;
-  right: 10px;
+  left: 9%;
+  right: 9%;
   bottom: 3px;
   height: 3px;
-  border-radius: 3px;
-  background: #2d08094d;
   overflow: hidden;
+  border-radius: 3px;
+  background: #3d0c1c77;
 }
 .dr-cinematic-button-primary .dr-menu-progress-track > span {
   display: block;
   height: 100%;
-  background: #ffe49b;
+  background: #ffecb5;
 }
-.dr-cinematic-secondary {
+
+/* Al aportar los PNG, solo cambia src en BUTTON_PNG del MainMenu.tsx.
+   Un PNG completo con texto desactiva la copia HTML pero no los clics. */
+.dr-cinematic-button-has-png {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.dr-cinematic-button-has-png::before,
+.dr-cinematic-button-has-png::after { display: none; }
+.dr-cinematic-button-png {
+  position: absolute;
+  inset: 0;
+  display: block;
   width: 100%;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
 }
-.dr-cinematic-button-secondary {
-  min-height: clamp(44px, 6.1dvh, 52px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: linear-gradient(180deg, #344658, #142536);
-  font-size: clamp(11px, 3.3vw, 14px);
-}
-.dr-cinematic-button-secondary > span:first-child { font-size: 19px; }
-.dr-cinematic-button-classic {
-  min-height: clamp(43px, 5.9dvh, 50px);
-  padding: 7px 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-  background: linear-gradient(180deg, #4c3d30, #29252a);
-  font-size: clamp(10px, 3vw, 13px);
-}
-@media (max-height: 590px) {
-  .dr-cinematic-brand { margin-top: 0; }
-  .dr-cinematic-logo { max-height: 17dvh; }
-  .dr-cinematic-actions { padding: 7px; gap: 5px; }
+
+/* Teléfonos compactos: evitar que el subtítulo y los botones se solapen. */
+@media (max-height: 700px) {
+  .dr-cinematic-brand { width: min(66vw, 30dvh); }
+  .dr-cinematic-actions { bottom: max(8px, env(safe-area-inset-bottom)); }
   .dr-cinematic-button-primary { min-height: 52px; }
-  .dr-cinematic-button-secondary, .dr-cinematic-button-classic { min-height: 40px; }
+  .dr-cinematic-actions { gap: 5px; }
 }
-/* En pantallas muy bajas, compactar los controles sin desplazar el logo. */
-@media (max-height: 430px) {
-  .dr-cinematic-logo { max-height: 14dvh; }
-  .dr-cinematic-actions { padding: 5px; gap: 4px; }
-  .dr-cinematic-button-primary { min-height: 44px; padding-top: 3px; padding-bottom: 6px; }
-  .dr-cinematic-button-secondary,
-  .dr-cinematic-button-classic { min-height: 36px; }
+@media (max-height: 520px) and (orientation: portrait) {
+  .dr-cinematic-brand { top: 39%; width: min(66vw, 24dvh); }
+  .dr-cinematic-tagline { font-size: 11px; }
+  .dr-cinematic-actions { bottom: 5px; gap: 4px; }
+  .dr-cinematic-button-primary { min-height: 48px; }
+  .dr-cinematic-button-secondary { min-height: 40px; }
+}
+
+/* En horizontal, logo y botones comparten una fila para no quedar cortados. */
+@media (orientation: landscape) and (max-height: 520px) {
+  .dr-cinematic-brand {
+    left: 24%;
+    top: 48%;
+    width: min(34vw, 45dvh);
+  }
+  .dr-cinematic-tagline { font-size: 11px; letter-spacing: .09em; }
+  .dr-cinematic-actions {
+    left: auto;
+    right: max(12px, env(safe-area-inset-right));
+    bottom: max(7px, env(safe-area-inset-bottom));
+    transform: none;
+    width: min(51vw, 445px);
+    gap: 5px;
+  }
+  .dr-cinematic-button-primary {
+    width: 100%;
+    aspect-ratio: auto;
+    height: 48px;
+    min-height: 44px;
+  }
+  .dr-cinematic-button-secondary {
+    width: 96%;
+    aspect-ratio: auto;
+    height: 40px;
+    min-height: 38px;
+  }
+  .dr-cinematic-button-copy { gap: 10px; }
+  .dr-cinematic-primary-copy strong { font-size: 15px; }
+  .dr-cinematic-primary-copy small { font-size: 10px; }
+  .dr-cinematic-button-secondary strong { font-size: 12px; }
+  .dr-cinematic-button-icon { font-size: 20px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .dr-cinematic-video { display: none; }
