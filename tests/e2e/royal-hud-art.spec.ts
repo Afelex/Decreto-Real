@@ -1,27 +1,45 @@
 import { expect, test } from '@playwright/test';
 
-test('new illustrated portrait frames and end-turn button use a decoded visible asset', async ({ page }) => {
+test('a single clipped end-turn illustration stays in the player footer', async ({ page }) => {
   await page.goto('/Decreto-Real/#/game');
-  const frames = page.locator('.dr-royal-portrait-ornament');
-  const button = page.locator('.dr-royal-finish');
-  const art = button.locator('.dr-royal-finish-ornament');
+  const portraits = page.locator('.dr-royal-portrait-ornament');
+  const footer = page.locator('.dr-royal-player-area');
+  const button = footer.locator(':scope > .dr-royal-finish');
+  const viewport = button.locator('.dr-royal-finish-ornament');
+  const sprite = viewport.locator('img.dr-royal-finish-art-image');
 
-  await expect(frames).toHaveCount(2);
-  await expect(art).toHaveCount(1);
-  await expect(button).toHaveAttribute('data-art-version', 'hud-v3');
-  await expect(frames.first()).toBeVisible();
-  await expect(art).toBeVisible();
-  // On the opening/coin phase the game correctly uses the disabled illustration.
+  await expect(portraits).toHaveCount(2);
+  await expect(portraits.first()).toHaveCSS('overflow', 'hidden');
+  await expect(portraits.locator('img.dr-royal-portrait-art-image')).toHaveCount(2);
+  await expect(button).toHaveCount(1);
+  await expect(page.locator('.dr-royal-finish')).toHaveCount(1);
+  await expect(page.locator('.dr-royal-rival-area .dr-royal-finish')).toHaveCount(0);
+  await expect(page.locator('.dr-royal-finish-ornament')).toHaveCount(1);
+  await expect(button).toHaveAttribute('data-art-version', 'hud-v4');
+  await expect(viewport).toBeVisible();
+  await expect(viewport).toHaveCSS('overflow', 'hidden');
+  await expect(sprite).toHaveCSS('left', /-\d+(\.\d+)?px/);
   await expect(button).toBeDisabled();
-  await expect(art).toHaveAttribute('viewBox', '384 24 192 192');
-  const url = await art.locator('image').getAttribute('href');
-  expect(url).toContain('/Decreto-Real/interfaz/retratos-fin-turno.avif?v=3');
-  // A valid 200 response is insufficient: verify that Chromium can decode the AVIF.
-  const dimensions = await page.evaluate(async (url) => {
+  await expect(viewport).toHaveAttribute('data-state', 'disabled');
+
+  const url = await sprite.getAttribute('src');
+  expect(url).toContain('retratos-fin-turno.avif?v=3');
+  const dimensions = await page.evaluate(async (src) => {
     const img = new Image();
-    img.src = url!;
+    img.src = src!;
     await img.decode();
     return [img.naturalWidth, img.naturalHeight];
   }, url);
   expect(dimensions).toEqual([576, 240]);
+
+  // Prevent the cropped sprite from spilling near the rival/top of the board.
+  const layout = await page.evaluate(() => {
+    const area = document.querySelector('.dr-royal-player-area')!.getBoundingClientRect();
+    const button = document.querySelector('.dr-royal-finish')!.getBoundingClientRect();
+    const crop = document.querySelector('.dr-royal-finish-ornament')!.getBoundingClientRect();
+    return { insideFooter: button.top >= area.top - 1 && button.bottom <= area.bottom + 1,
+      sameBox: Math.abs(button.x - crop.x) < 1 && Math.abs(button.y - crop.y) < 1,
+      right: button.right <= area.right + 1 };
+  });
+  expect(layout).toEqual({ insideFooter: true, sameBox: true, right: true });
 });
