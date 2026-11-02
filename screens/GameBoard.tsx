@@ -23,14 +23,16 @@ const SPECIAL_VALUE = 3;
 const ROYAL_HUD_SPRITE = `${import.meta.env.BASE_URL}interfaz/retratos-fin-turno.avif?v=3`;
 const PortraitOrnament: React.FC = () => (
   <svg className="dr-royal-portrait-ornament" viewBox="0 0 192 240"
-    preserveAspectRatio="none" focusable="false" aria-hidden="true">
+    preserveAspectRatio="none" focusable="false" aria-hidden="true"
+    style={{position:"absolute",inset:0,width:"100%",height:"100%",pointerEvents:"none",zIndex:2}}>
     <image href={ROYAL_HUD_SPRITE} x="0" y="0" width="576" height="240" />
   </svg>
 );
 const EndTurnOrnament: React.FC<{ disabled: boolean }> = ({ disabled }) => (
   <svg className="dr-royal-finish-ornament"
     viewBox={disabled ? "384 24 192 192" : "192 24 192 192"}
-    preserveAspectRatio="none" focusable="false" aria-hidden="true">
+    preserveAspectRatio="none" focusable="false" aria-hidden="true"
+    style={{position:"absolute",inset:0,width:"100%",height:"100%",pointerEvents:"none",zIndex:0}}>
     <image href={ROYAL_HUD_SPRITE} x="0" y="0" width="576" height="240" />
   </svg>
 );
@@ -589,7 +591,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
             <div className="dr-royal-deck-back"><span>{opponentDeck.length}</span><small>MAZO</small></div>
           </div>
           <div className="dr-royal-character">
-            <div className="dr-royal-character-frame">
+            <div className="dr-royal-character-frame gold-leaf-frame">
               <img src={rivalPortrait} alt="Retrato del rival"/>
               <PortraitOrnament/>
               <div className="dr-royal-hp blue" aria-label={`Vida del rival: ${opponentHP} de ${MAX_HP}`}>HP: {opponentHP}/{MAX_HP}</div>
@@ -693,7 +695,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
             <div className="dr-royal-deck-back red"><span>{playerDeck.length}</span><small>MAZO</small></div>
           </div>
           <div className="dr-royal-character player">
-            <div className="dr-royal-character-frame">
+            <div className="dr-royal-character-frame gold-leaf-frame">
               <img src={playerPortrait} alt="Retrato de tu personaje"/>
               <PortraitOrnament/>
               <div className="dr-royal-hp red" aria-label={`Tu vida: ${playerHP} de ${MAX_HP}`}>HP: {playerHP}/{MAX_HP}</div>
