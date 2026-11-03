@@ -258,7 +258,7 @@ const script: Readonly<Record<string, DialogueRow>> = {
     "¡No perderé contra ti! Sigumán me prometió el mando.",
     "Éramos iguales, Xervias. La diferencia es que yo aprendí a conseguir lo que quiero sin pedir permiso.",
     "Me venciste, pero sigo creyendo que el poder vale más que tus promesas.",
-    "El poder no te da derecho a lastimar a otros. Te detendré, aunque eso signifique perder al compañero que conocí."
+    "Zhinchi me salvó y me entregó su bastón. Con él podré despertar las cartas místicas de los generales. ¿Dónde estás, maestro?"
   ],
   "37": [
     "Sigumán me ordenó cerrar esta entrada. Aquí llegaron las últimas noticias sobre Zhinchi.",
