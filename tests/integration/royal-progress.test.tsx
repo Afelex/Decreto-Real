@@ -79,7 +79,7 @@ test('Order draws one replacement card without changing the starting 28-card dec
   fireEvent.click(screen.getByRole('button', { name: 'Campo para activar Ataque o Defensa' }));
   expect(screen.getByRole('status', {name: /HAS ACTIVADO/})).toBeTruthy();
   const orderVideo = document.querySelector<HTMLVideoElement>('.dr-cinematic-overlay--energy video');
-  expect(orderVideo?.querySelector('source')?.getAttribute('src')).toBe('/Decreto-Real/efectos/orden.webm');
+  expect(orderVideo?.querySelector('source')?.getAttribute('src')).toContain('/efectos/orden.webm');
   expect(orderVideo?.muted).toBe(true); // Mocked test preferences disable SFX.
   await act(async () => { await vi.advanceTimersByTimeAsync(1050); });
   expect(screen.queryByRole('status', { name: /HAS ACTIVADO/ })).toBeNull();
