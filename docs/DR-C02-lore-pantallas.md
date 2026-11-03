@@ -1,4 +1,4 @@
-# DR-C02 — Pantallas narrativas de Decreto Real I: El Sello y la Falsa Luz
+# DR-C02 — Pantallas narrativas de Decreto Real I: El Sello y la Revolución Solar
 
 **Rama:** `feat/campania-ia-estrellas-v1`
 **Estado:** implementación revisable; no fusionada ni desplegada. **No afirmar QA aprobado hasta consultar CI.**
@@ -7,15 +7,16 @@
 ## Canon editorial protegido
 
 - Ambientación: Perú virreinal ficticio, año `162X`.
-- Protagonista: joven soldado compasivo. `X` es identificador provisional; en una futura integración el jugador utilizará su nombre de cuenta.
-- `Zero`: capitán y mentor, antiguo compañero de `Sigma`, guardián de un secreto de San Jerónimo.
-- `Vile`: exmiembro brutal, mercenario armado, aliado de Sigma por poder y no por fe.
-- `Sigma`: excomandante honorable, falso redentor de la Falsa Luz; descubre parte del fraude, pero continúa conscientemente imponiendo autoridad.
-- La Falsa Luz utiliza injusticias reales y falsificaciones del Escribano del Alba.
-- Final de Decreto Real I: Zero desaparece gravemente herido después de enfrentarse a Vile; Vile es capturado; Sigma muere en el derrumbe de la Casa del Sello; quedan abiertos San Jerónimo y el destino de Zero para Decreto Real II.
+- Protagonista: joven soldado compasivo. Su nombre canónico es Xervias; es portador del anillo de la Orden de la Corona Solar.
+- `Zhinchi`: capitán y mentor, antiguo compañero de `Sigumán`, guardián de un secreto de San Jerónimo.
+- `Vándalo Rojo`: exmiembro brutal, mercenario armado, aliado de Sigumán por poder y no por fe.
+- `Sigumán`: excomandante honorable, falso redentor de la Revolución Solar; descubre parte del fraude, pero continúa conscientemente imponiendo autoridad.
+- La Revolución Solar utiliza injusticias reales y falsificaciones del Escribano del Alba.
+- Final de Decreto Real I: Zhinchi desaparece gravemente herido después de enfrentarse a Vándalo Rojo; Vándalo Rojo es capturado; Sigumán muere en el derrumbe de la Casa del Sello; quedan abiertos San Jerónimo y el destino de Zhinchi para una conclusión propia.
 - PvP futuro: elegir exactamente **3 cartas especiales de las 8**; no se implementan aquí ni se mezclan con cartas comunes de efectos.
 
-**Nota de canon:** los ocho generales, regiones y cartas especiales son canónicos dentro de esta versión. Los títulos de pequeñas misiones, adversarios menores y diálogos de enlace son una **adaptación provisional para pantallas**, no una transcripción literal aprobada de las 38 misiones anteriores. Deben revisarse editorialmente antes de cerrar la historia.
+**Nota histórica:** Este archivo documenta decisiones y pantallas de una fase previa. Para el canon místico vigente, consultar `docs/DR-CANON-CORONA-SOLAR.md`.
+\n**Nota de canon:** los ocho generales, regiones y cartas especiales son canónicos dentro de esta versión. Los títulos de pequeñas misiones, adversarios menores y diálogos de enlace son una **adaptación provisional para pantallas**, no una transcripción literal aprobada de las 38 misiones anteriores. Deben revisarse editorialmente antes de cerrar la historia.
 
 ## Pantallas incorporadas
 
@@ -34,7 +35,7 @@ El menú principal mantiene tres accesos: campaña, duelo libre y juego original
 
 - Prólogo: 2 misiones (01–02).
 - Ocho regiones: 4 misiones cada una (03–34), de las cuales la cuarta es el enfrentamiento con el general; en cada región existe un subjefe nombrado (segundo reto).
-- Final: 4 misiones (35–38): Escribano del Alba, Vile, legado de Zero y Sigma. **Zero no es enemigo:** su escena consiste en superar la guardia de Sigma y seguir sus últimas pistas.
+- Final: 4 misiones (35–38): Escribano del Alba, Vándalo Rojo, legado de Zhinchi y Sigumán. **Zhinchi no es enemigo:** su escena consiste en superar la guardia de Sigumán y seguir sus últimas pistas.
 
 | General | Región | Carta especial de lore | Jefe |
 |---|---|---|---|
