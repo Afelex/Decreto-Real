@@ -74,7 +74,11 @@ test('Order draws one replacement card without changing the starting 28-card dec
   fireEvent.click(screen.getByRole('button', { name: /Decreto de Orden:/ }));
   fireEvent.click(screen.getByRole('button', { name: 'Campo para activar Ataque o Defensa' }));
   expect(screen.getByRole('status', {name: /HAS ACTIVADO/})).toBeTruthy();
-  await act(async () => { await vi.advanceTimersByTimeAsync(2500); });
+  const orderVideo = document.querySelector<HTMLVideoElement>('.dr-cinematic-overlay--order video');
+  expect(orderVideo?.querySelector('source')?.getAttribute('src')).toBe('/Decreto-Real/animaciones/decreto-orden.webm');
+  expect(orderVideo?.muted).toBe(true); // Mocked test preferences disable SFX.
+  await act(async () => { await vi.advanceTimersByTimeAsync(1050); });
+  expect(screen.queryByRole('status', { name: /HAS ACTIVADO/ })).toBeNull();
   expect(screen.getByLabelText(/Tu mano:/).querySelectorAll('.dr-royal-hand-card')).toHaveLength(before);
   expect(Number(document.querySelector('.dr-royal-player-deck span')?.textContent)).toBe(deckBefore - 1);
 });
