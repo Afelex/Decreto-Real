@@ -1,4 +1,4 @@
-/** DR-C02 · Lore and 38 missions of Decreto Real I: El Sello y la Falsa Luz.
+/** DR-C02 · Lore and 38 missions of Decreto Real I: El Sello y la Revolución Solar.
  * Xervias, Zhinchi, Vándalo Rojo and Sigumán are the definitive protagonists and antagonists. The 38 encounters form a continuous narrative: manipulated decrees, real grievances,
  * eight moral conflicts and a final confrontation. Narration is concise for one-screen mobile layouts.
  * The eight general names, regions, special cards, canonical subbosses, original 2+32+4 layout and overarching conclusion
@@ -19,7 +19,7 @@ export const STORY_CHAPTERS: readonly StoryChapter[] = [
     "id": "p",
     "title": "El llamado del Sello",
     "region": "Los primeros caminos",
-    "subtitle": "Prólogo · El rumor de la Falsa Luz",
+    "subtitle": "Prólogo · El rumor de la Revolución Solar",
     "summary": "Dos órdenes con el mismo sello dicen cosas opuestas. Xervias debe proteger a las familias afectadas y descubrir quién está cambiando los decretos.",
     "color": "#caa873"
   },
@@ -38,7 +38,7 @@ export const STORY_CHAPTERS: readonly StoryChapter[] = [
     "title": "Los caminos escarlata",
     "region": "Caminos del Reino",
     "subtitle": "General II · Jinete Escarlata",
-    "summary": "Los mensajeros reparten órdenes falsas por los caminos del reino. Xervias sigue sus cartas para averiguar quién les paga.",
+    "summary": "Los solarianos reparten decretos falsos por los caminos. Xervias sigue sus cartas para descubrir quién financia la Revolución Solar.",
     "general": "Jinete Escarlata",
     "specialCard": "Carga de caballería",
     "color": "#c47562"
@@ -105,10 +105,10 @@ export const STORY_CHAPTERS: readonly StoryChapter[] = [
   },
   {
     "id": "f",
-    "title": "La Falsa Luz",
+    "title": "La Revolución Solar",
     "region": "Casa del Sello",
     "subtitle": "Final · Vándalo Rojo, el Escribano y Sigumán",
-    "summary": "Xervias llega al origen de las órdenes falsas. Debe enfrentar al Escribano, a su antiguo compañero Vándalo Rojo y finalmente a Sigumán.",
+    "summary": "Xervias descubre cómo los solarianos manipularon órdenes. Enfrenta al Escribano, a Vándalo Rojo y finalmente a Sigumán.",
     "color": "#ba8394"
   }
 ];
@@ -264,8 +264,8 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "description": "El Señor de la Plata se enriquece con las minas y utiliza parte del dinero para apoyar a Sigumán y conservar sus privilegios.",
     "kind": "boss",
     "opponent": "Señor de la Plata",
-    "openingLine": "OBJETIVO: Recupera las cuentas para demostrar quién pagó a la Falsa Luz.",
-    "victoryLine": "Sus cuentas revelan pagos a Leocadio del Alba y a la fortaleza de los cañones. ¿Por qué la Falsa Luz necesita tantos cañones?",
+    "openingLine": "OBJETIVO: Recupera las cuentas para demostrar quién pagó a la Revolución Solar.",
+    "victoryLine": "Sus cuentas revelan pagos a Leocadio del Alba y a la fortaleza de los cañones. ¿Por qué la Revolución Solar necesita tantos cañones?",
     "defeatLine": "El Señor de la Plata conserva sus libros y compra el silencio de sus testigos."
   },
   {
@@ -320,14 +320,14 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "skirmish",
     "opponent": "Guardián del sendero",
     "openingLine": "OBJETIVO: Gana la confianza de las familias y encuentra el sendero.",
-    "victoryLine": "Una familia muestra a Xervias el sendero que usaron los mensajeros de la Falsa Luz. ¿Quién más conoce ese sendero escondido?",
+    "victoryLine": "Una familia muestra a Xervias el sendero que usaron los mensajeros de la Revolución Solar. ¿Quién más conoce ese sendero escondido?",
     "defeatLine": "Los custodios vuelven a cerrar el acceso a los testigos de la frontera."
   },
   {
     "id": "20",
     "chapterId": "5",
     "title": "El explorador renegado",
-    "description": "Un explorador guía a los mensajeros de la Falsa Luz por caminos escondidos. Lo hace porque amenazaron a su familia.",
+    "description": "Un explorador guía a los mensajeros de la Revolución Solar por caminos escondidos. Lo hace porque amenazaron a su familia.",
     "kind": "subboss",
     "opponent": "Explorador renegado",
     "openingLine": "OBJETIVO: Descubre el puente secreto y ayuda a liberar al explorador de las amenazas.",
@@ -371,7 +371,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "id": "24",
     "chapterId": "6",
     "title": "El predicador impostor",
-    "description": "Un falso predicador promete paz a cambio de obedecer a Sigumán. Utiliza los problemas reales de la ciudad para ganar seguidores.",
+    "description": "Un falso predicador recluta solarianos prometiendo paz a cambio de obedecer a Sigumán. Se aprovecha de los problemas reales de la ciudad.",
     "kind": "subboss",
     "opponent": "Predicador impostor",
     "openingLine": "OBJETIVO: Muestra las órdenes falsas y libera a la gente de sus amenazas.",
@@ -497,7 +497,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "opponent": "Escribano del Alba",
     "openingLine": "OBJETIVO: Recupera los originales y demuestra cómo se organizó el engaño.",
     "victoryLine": "Los originales prueban la falsificación y que Sigumán decidió continuar aun sabiéndolo. ¿Qué hará Vándalo Rojo cuando descubran toda la verdad?",
-    "defeatLine": "Leocadio esconde sus matrices y la Falsa Luz conserva su coartada."
+    "defeatLine": "Leocadio esconde sus matrices y la Revolución Solar conserva su coartada."
   },
   {
     "id": "36",
@@ -525,11 +525,11 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "id": "38",
     "chapterId": "f",
     "title": "La Casa del Sello",
-    "description": "Sigumán utilizó decretos falsos para que el reino lo obedeciera. Xervias debe detenerlo y demostrar que no puede construir la paz con mentiras.",
+    "description": "Sigumán, antiguo comandante de la Orden de la Corona Solar, usó decretos falsos para someter al reino. Xervias debe detenerlo.",
     "kind": "final",
     "opponent": "Sigumán",
-    "openingLine": "OBJETIVO: Detén a Sigumán y termina con el control de la Falsa Luz.",
-    "victoryLine": "Sigumán muere al derrumbarse la Casa del Sello. La Falsa Luz cae; San Jerónimo y Zhinchi siguen siendo un misterio. ¿Dónde está Zhinchi y qué sucedió en San Jerónimo?",
+    "openingLine": "OBJETIVO: Detén a Sigumán y termina con el control de la Revolución Solar.",
+    "victoryLine": "Sigumán muere al derrumbarse la Casa del Sello. La Revolución Solar cae; San Jerónimo y Zhinchi siguen siendo un misterio. ¿Dónde está Zhinchi y qué sucedió en San Jerónimo?",
     "defeatLine": "Sigumán conserva la Casa del Sello y el reino continúa sometido a su mentira."
   }
 ];
