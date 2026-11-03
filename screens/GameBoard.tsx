@@ -45,11 +45,11 @@ const EndTurnOrnament: React.FC<{ disabled: boolean }> = ({ disabled }) => (
 
 // --- ASSETS ---
 // Artes aprobadas, servidas desde el propio juego para que funcionen en GitHub Pages.
-// La cuarta familia (Impacto) conserva su arte y mecánica existentes.
+// Impacto I–FINAL comparten ilustración; se mantienen rangos y mecánicas.
 const IMG_ATTACK = `${import.meta.env.BASE_URL}cartas/decreto-ataque.webp`;
 const IMG_DEFEND = `${import.meta.env.BASE_URL}cartas/decreto-defensa.webp`;
-const IMG_ORDER = `${import.meta.env.BASE_URL}cartas/decreto-orden.webp`;
-const IMG_IMPACT = 'https://i.imgur.com/l0ZwqZN_d.webp?maxwidth=760&fidelity=grand';
+const IMG_ORDER = `${import.meta.env.BASE_URL}cartas/decreto-orden.webp?v=20261103`;
+const IMG_IMPACT = `${import.meta.env.BASE_URL}cartas/decreto-impacto.webp?v=20261103`;
 
 // --- DECK GENERATION & UTILS ---
 const generateDeck = (playerIdPrefix: string): CardData[] => {

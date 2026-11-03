@@ -32,12 +32,12 @@
 .dr-royal-screen .dr-event-indicator.is-player {
   left:clamp(6px,2cqw,13px);right:auto;top:auto;
   bottom:clamp(140px,32dvh,410px);
-  background-image:url('/Decreto-Real/interfaz/cinta-turno-jugador.svg');
+  background-image:url('/Decreto-Real/interfaz/banner-tu-turno.webp');
 }
 .dr-royal-screen .dr-event-indicator.is-opponent {
   right:clamp(6px,2cqw,13px);left:auto;bottom:auto;
   top:clamp(92px,18.5dvh,225px);
-  background-image:url('/Decreto-Real/interfaz/cinta-turno-rival.svg');
+  background-image:url('/Decreto-Real/interfaz/banner-turno-rival.webp');
 }
 .dr-royal-screen .dr-event-indicator::before,
 .dr-royal-screen .dr-event-indicator::after {content:none;}
@@ -75,3 +75,7 @@
   transform:translateY(2px) rotate(6.5deg);
   transform-origin:center;
 }
+
+/* Las nuevas cintas ya incluyen el texto dorado. Conservar el rótulo HTML
+   para accesibilidad, ocultándolo visualmente para impedir la superposición. */
+.dr-royal-screen .dr-event-indicator__label {opacity:0;}

@@ -186,14 +186,14 @@
   width:min(94%,430px);
   aspect-ratio:3 / 1;
   padding:0;
-  background:url('/Decreto-Real/interfaz/cinta-turno-jugador.svg') center/contain no-repeat;
+  background:url('/Decreto-Real/interfaz/banner-tu-turno.webp') center/contain no-repeat;
   border:0;
   box-shadow:none;
   transform:none;
   filter:drop-shadow(0 7px 8px #0008);
 }
 .dr-royal-screen .dr-event-turn--opponent .dr-event-turn__ribbon {
-  background:url('/Decreto-Real/interfaz/cinta-turno-rival.svg') center/contain no-repeat;
+  background:url('/Decreto-Real/interfaz/banner-turno-rival.webp') center/contain no-repeat;
   border:0;
 }
 .dr-royal-screen .dr-event-turn--opening .dr-event-turn__ribbon {
@@ -457,4 +457,11 @@
 .dr-royal-screen .dr-event-choice .dr-event-choice__options .dr-event-ability small {
   font-size:clamp(9px,2.55vw,12px);
   line-height:1.15;
+}
+
+/* Las cintas cinematográficas nuevas contienen sus propios rótulos.
+   El texto DOM sigue disponible en el estado accesible (aria-label). */
+.dr-royal-screen .dr-event-turn--player .dr-event-turn__ribbon strong,
+.dr-royal-screen .dr-event-turn--opponent .dr-event-turn__ribbon strong {
+  opacity:0;
 }
