@@ -83,6 +83,7 @@ const CampaignMission: React.FC = () => {
         { label: 'Mejor marca', value: `${outcome.best}/3` },
       ]}
       warning={!outcome.saved ? 'No se pudo guardar tu progreso en este navegador.' : undefined}
+      narrative={outcome.won ? mission.victoryLine : mission.defeatLine}
       actions={[
         ...(outcome.won && !next ? [{
           label: 'Leer epílogo ✦',
