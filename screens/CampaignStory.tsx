@@ -29,9 +29,9 @@ const CampaignStory: React.FC = () => {
         <div className="dc-full-art dc-full-art-intro" aria-hidden="true">✥ <span>162X</span></div>
         <span className="dc-scene-label">PERÚ VIRREINAL FICTICIO · AÑO 162X</span>
         <h2 id="dc-story-paged-title">El reino escucha dos verdades</h2>
-        <p>Xervias es soldado de la <strong>Orden de la Corona Solar</strong>. Tras un duro entrenamiento, sus consagrados reciben un anillo que canaliza la mística mediante cartas. A ese combate se lo llama Decreto Real.</p>
-        <p>Dos órdenes escritas con el mismo sello se contradicen: una libera a unas familias y otra manda arrestarlas. Sigumán, antiguo comandante, dirige la <strong>Revolución Solar</strong>. Sus seguidores, los <strong>solarianos</strong>, usan problemas reales para difundir decretos falsos.</p>
-        <blockquote className="dc-story-quote">Zhinchi: «Si una orden hace daño y nadie explica por qué, investiga antes de obedecer». Pero ¿quién cambió las palabras sin alterar el sello?</blockquote>
+        <p>Xervias sirve a la <strong>Orden de la Corona Solar</strong>. Tras su consagración, recibió un anillo que canaliza las cartas en un combate llamado Decreto Real.</p>
+        <p>Dos órdenes con el mismo sello se contradicen: una libera familias y otra las arresta. Sigumán, excomandante, dirige la <strong>Revolución Solar</strong>; sus seguidores, los <strong>solarianos</strong>, difunden decretos falsos.</p>
+        <blockquote className="dc-story-quote">Zhinchi: «Investiga antes de obedecer. ¿Quién alteró el sello?»</blockquote>
       </>}
       {page === 1 && <>
         <span className="dc-scene-label">PERSONAJES · ELENCO PRINCIPAL</span>
