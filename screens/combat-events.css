@@ -465,3 +465,34 @@
 .dr-royal-screen .dr-event-turn--opponent .dr-event-turn__ribbon strong {
   opacity:0;
 }
+
+
+/* DR-UX06: nuevo arte del menú de combo, proporción real 1000 × 747.
+ * Mantener la escena nítida detrás y los dos estandartes íntegros. */
+.dr-royal-screen .dr-event-choice.dr-event-choice--2,
+.dr-royal-screen .dr-event-choice.dr-event-choice--3 {
+  aspect-ratio:1000 / 747;
+  background:transparent;
+  border:0;
+  border-radius:0;
+  overflow:visible;
+}
+.dr-royal-screen .dr-event-choice.dr-event-choice--2 h2,
+.dr-royal-screen .dr-event-choice.dr-event-choice--3 h2 {
+  top:8.5%;
+  left:21%;
+  width:58%;
+  font:900 clamp(16px,4.6vw,24px)/1.08 Cinzel,Georgia,serif;
+  color:#fff3c1;
+}
+.dr-royal-screen .dr-event-choice.dr-event-choice--2 .dr-event-choice__options,
+.dr-royal-screen .dr-event-choice.dr-event-choice--3 .dr-event-choice__options {
+  top:30%;
+  bottom:17%;
+  left:9%;
+  right:9%;
+  gap:5%;
+}
+.dr-royal-screen .dr-event-choice .dr-event-choice__options .dr-event-ability {
+  padding-bottom:4%;
+}
