@@ -35,3 +35,17 @@ test('derrota por Decreto Final del rival', () => {
     message: 'Tu rival invocó el Decreto Final',
   });
 });
+
+test('rendición voluntaria: derrota sin reducir artificialmente los 20 HP', async () => {
+  const { resolveSurrender } = await import('./battleEnd.ts');
+  assert.deepEqual(resolveSurrender(), {
+    phase: 'DEFEAT', reason: 'PLAYER_SURRENDER', title: 'Derrota', message: 'Te has rendido.',
+  });
+});
+
+test('victoria automática de QA no simula un Decreto Final', async () => {
+  const { resolveDevelopmentVictory } = await import('./battleEnd.ts');
+  assert.deepEqual(resolveDevelopmentVictory(), {
+    phase: 'VICTORY', reason: 'DEVELOPMENT_VICTORY', title: 'Victoria', message: 'Victoria automática de prueba.',
+  });
+});
