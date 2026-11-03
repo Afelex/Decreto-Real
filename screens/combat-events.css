@@ -176,3 +176,69 @@
   .dr-royal-screen .dr-event-ability {transition:none;}
 }
 @keyframes dr-event-cross-fade {0%,100%{opacity:0}15%,75%{opacity:1}}
+
+/* DR-UX04: turn banners use the same source artwork as the persistent indicators. */
+.dr-royal-screen .dr-event-turn {animation-duration:1s;}
+.dr-royal-screen .dr-event-turn--opening {animation-duration:1.1s;}
+.dr-royal-screen .dr-event-turn__ribbon {
+  display:grid;
+  place-items:center;
+  width:min(94%,430px);
+  aspect-ratio:3 / 1;
+  padding:0;
+  background:url('/Decreto-Real/interfaz/cinta-turno-jugador.webp') center/contain no-repeat;
+  border:0;
+  box-shadow:none;
+  transform:none;
+  filter:drop-shadow(0 7px 8px #0008);
+}
+.dr-royal-screen .dr-event-turn--opponent .dr-event-turn__ribbon {
+  background:url('/Decreto-Real/interfaz/cinta-turno-rival.webp') center/contain no-repeat;
+  border:0;
+}
+.dr-royal-screen .dr-event-turn--opening .dr-event-turn__ribbon {
+  width:100%;
+  aspect-ratio:auto;
+  min-height:80px;
+  padding:12px 6px;
+  background:linear-gradient(97deg,#462d15df,#b58740f2 40%,#76501ffd);
+  border-top:2px solid #ffe3a1;
+  border-bottom:2px solid #ffe3a1;
+}
+.dr-royal-screen .dr-event-turn__ribbon > * {transform:none;}
+.dr-royal-screen .dr-event-turn__ribbon strong {
+  width:80%;
+  font-size:clamp(18px,5.8vw,32px);
+  line-height:1.05;
+  color:#ffe9a2;
+  letter-spacing:-.02em;
+  text-shadow:0 2px 3px #000,0 0 3px #4c280e;
+}
+.dr-royal-screen .dr-event-turn--opening .dr-event-turn__ribbon strong {color:#fff3c3;}
+.dr-royal-screen .dr-event-coin-panel {
+  width:min(100%,245px);
+  padding:8px 10px 12px;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+}
+.dr-royal-screen .dr-event-coin-panel h2 {font-size:clamp(15px,4vw,20px);text-shadow:0 2px 5px #000;}
+.dr-royal-screen .dr-event-coin {
+  margin:10px auto 2px;
+  width:clamp(66px,13dvh,96px);
+  height:clamp(66px,13dvh,96px);
+}
+.dr-royal-screen .dr-event-stage--coin .dr-event-stage__veil {
+  background:#08060c55;
+  backdrop-filter:none;
+}
+.dr-royal-screen .dr-event-coin.is-flipping .dr-event-coin__face {
+  animation:dr-event-coin-spin .5s ease-in-out 1;
+}
+.dr-royal-screen .dr-event-coin-panel__result {margin-top:5px;}
+@media(prefers-reduced-motion:reduce) {
+  .dr-royal-screen .dr-event-turn {animation:dr-event-cross-fade 1s linear both;}
+  .dr-royal-screen .dr-event-turn--opening {animation-duration:1.1s;}
+  .dr-royal-screen .dr-event-coin.is-flipping .dr-event-coin__face {animation:none;}
+}
