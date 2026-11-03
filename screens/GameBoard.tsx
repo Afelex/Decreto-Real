@@ -8,6 +8,7 @@ import { cardPlacementPrompt, checkCardPlacement, resolveVisualDropZone, type Ca
 import { CardActivationBanner } from './CardActivationBanner';
 import { TurnIndicator, TurnAnnouncement, ComboChoicePanel, CoinTossPanel } from './CombatEventUI';
 import { resolveBattleScenery } from '../game/battleScenery';
+import { getRoyalCardText } from '../game/royalCardText';
 import { BattleSceneryLayer } from './BattleSceneryLayer';
 
 // --- GAME CONFIGURATION ---
@@ -652,6 +653,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
               const selected = selectedCardId === card.id;
               const canUse = canHandleCards && (card.type !== 'IMPACT' ||
                 (!playerImpactPlayedThisTurn && card.rank === playerImpactLevel + 1));
+              const display = getRoyalCardText(card, ATTACK_DAMAGE);
               return <button key={card.id} type="button"
                 className={`dr-royal-hand-card ${card.type.toLowerCase()}${selected ? ' selected' : ''}${!canUse ? ' unavailable' : ''}`}
                 style={{ left: `${50 + distance * step}%`, '--fan-rotate': `${distance * 7}deg`,
@@ -664,9 +666,8 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
                 onPointerCancel={onCardPointerCancel}
                 onClick={event => { if (event.detail === 0) selectCard(card); }}>
                 <img src={card.img} alt="" draggable={false}/>
-                <span className="dr-royal-card-kind">{card.type === 'ATTACK' ? 'ATAQUE' : card.type === 'DEFENSE' ? 'DEFENSA' : card.type === 'ORDER' ? 'ORDEN' : 'IMPACTO'}</span>
-                <span className="dr-royal-card-title">{card.name}</span>
-                <span className="dr-royal-card-effect">{card.description}</span>
+                <span className="dr-royal-card-title">{display.title}</span>
+                <span className="dr-royal-card-effect">{display.effect}</span>
               </button>;
             })}
           </div>
