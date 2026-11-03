@@ -7,6 +7,7 @@ import {
   getCampaignMission, isMissionUnlocked, loadCampaignProgress, saveCampaignProgress,
 } from '../campaign/campaign.ts';
 import { chapterForStage } from '../campaign/story.ts';
+import { enemyForMission } from '../campaign/characters.ts';
 import { missionStarGoals } from '../campaign/progressView.ts';
 import BattleResultScreen from './BattleResultScreen';
 import { RegionScene } from './RegionScene';
@@ -29,6 +30,7 @@ const CampaignMission: React.FC = () => {
   const { missionId } = useParams<{ missionId: string }>();
   const mission = getCampaignMission(missionId);
   const chapter = chapterForStage(missionId ?? '');
+  const enemy = enemyForMission(missionId ?? '');
   const [attempt, setAttempt] = React.useState(0);
   const [view, setView] = React.useState<'briefing' | 'duel'>('briefing');
   const [outcome, setOutcome] = React.useState<MissionOutcome | null>(null);
@@ -113,10 +115,10 @@ const CampaignMission: React.FC = () => {
       {mission.kind === 'boss' && <span className="dc-general-banner"><GeneralPortrait chapterId={chapter?.id ?? ''} className="dc-mini-general"/><span>♛ GENERAL DE LA REGIÓN · {mission.title}</span></span>}
       <span className="dc-scene-label">{mission.kind === 'boss' ? 'ENCUENTRO CON GENERAL' : mission.kind === 'subboss' ? 'ENCUENTRO CON SUBJEFE' : mission.kind === 'final' ? 'ENFRENTAMIENTO FINAL' : 'NUEVA MISIÓN'} · {mission.id}/38</span>
       <h2 id="dc-scene-title">{mission.title}</h2>
-      <p className="dc-scene-location">⌖ {chapter?.region}</p>
+      <p className="dc-scene-location">⌖ {chapter?.region} · Rival: {enemy?.name ?? mission.opponent}</p>
       <p className="dc-scene-narration">{mission.description}</p>
       <div className="dc-story-conversation">
-        <small>{mission.opponent === 'Sigma' ? 'SIGMA' : mission.opponent === 'Vile' ? 'VILE' : mission.openingLine.includes(':') ? mission.openingLine.split(':', 1)[0] : 'CRÓNICA'}</small>
+        <small>{mission.openingLine.includes(':') ? mission.openingLine.split(':', 1)[0] : 'CRÓNICA'}</small>
         <p>{mission.openingLine.includes(':') ? mission.openingLine.substring(mission.openingLine.indexOf(':') + 1).trim() : mission.openingLine}</p>
       </div>
       <div className="dc-mission-card">
