@@ -7,6 +7,7 @@ import {
   getCampaignMission, isMissionUnlocked, loadCampaignProgress, saveCampaignProgress,
 } from '../campaign/campaign.ts';
 import { chapterForStage } from '../campaign/story.ts';
+import { combatConversationForMission } from '../campaign/combatDialogues.ts';
 import { enemyForMission } from '../campaign/characters.ts';
 import { missionStarGoals } from '../campaign/progressView.ts';
 import BattleResultScreen from './BattleResultScreen';
@@ -31,6 +32,7 @@ const CampaignMission: React.FC = () => {
   const mission = getCampaignMission(missionId);
   const chapter = chapterForStage(missionId ?? '');
   const enemy = enemyForMission(missionId ?? '');
+  const conversation = mission ? combatConversationForMission(mission.id) : undefined;
   const [attempt, setAttempt] = React.useState(0);
   const [view, setView] = React.useState<'briefing' | 'duel'>('briefing');
   const [outcome, setOutcome] = React.useState<MissionOutcome | null>(null);
@@ -100,7 +102,7 @@ const CampaignMission: React.FC = () => {
             navigate(`/campania/mision/${next.id}`);
           },
         }] : []),
-        { label: 'Repetir duelo', onClick: retry },
+        { label: 'Repetir combate', onClick: retry },
         { label: 'Volver al mapa', onClick: () => navigate('/campania') },
       ]}
     />;
@@ -128,7 +130,7 @@ const CampaignMission: React.FC = () => {
       </div>
       <p className="dc-note dc-briefing-note">Combate original: 20 de vida, 10 ataques, 10 defensas, 4 Impactos y 4 Órdenes. Los combos x2 y x3 permiten causar daño o curar vida.</p>
       <div className="dc-briefing-actions">
-        <button className="dc-primary" onClick={() => setView('duel')}>¡Comenzar duelo! ⚔</button>
+        <button className="dc-primary" onClick={() => setView('duel')}>Preparar combate ⚔</button>
         <button className="dc-secondary" onClick={() => navigate('/campania')}>Volver al mapa</button>
       </div>
     </section>
@@ -137,6 +139,7 @@ const CampaignMission: React.FC = () => {
   return <GameBoard
     key={`${mission.id}-${attempt}`}
     onOutcome={onClassicOutcome}
+    storyConversation={conversation}
     presentation={{ background: '/Decreto-Real/escenarios/plaza-virreinal-v2.svg' }}
     onReturn={() => navigate('/campania')}
   />;
