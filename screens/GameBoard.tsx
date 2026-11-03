@@ -44,10 +44,12 @@ const EndTurnOrnament: React.FC<{ disabled: boolean }> = ({ disabled }) => (
 
 
 // --- ASSETS ---
-const IMG_ATTACK = 'https://i.imgur.com/x9iHqkK.png';
-const IMG_DEFEND = 'https://i.imgur.com/z9KyWGL_d.webp?maxwidth=760&fidelity=grand';
+// Artes aprobadas, servidas desde el propio juego para que funcionen en GitHub Pages.
+// La cuarta familia (Impacto) conserva su arte y mecánica existentes.
+const IMG_ATTACK = `${import.meta.env.BASE_URL}cartas/decreto-ataque.webp`;
+const IMG_DEFEND = `${import.meta.env.BASE_URL}cartas/decreto-defensa.webp`;
+const IMG_ORDER = `${import.meta.env.BASE_URL}cartas/decreto-orden.webp`;
 const IMG_IMPACT = 'https://i.imgur.com/l0ZwqZN_d.webp?maxwidth=760&fidelity=grand';
-const IMG_ORDER = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 360"><defs><linearGradient id="g" x2="1" y2="1"><stop stop-color="#e9c976"/><stop offset="1" stop-color="#75452c"/></linearGradient></defs><rect width="240" height="360" fill="#30202d"/><path d="M48 42h144v270H48z" fill="url(#g)" stroke="#fff1c0" stroke-width="5"/><path d="M70 82h100M70 106h100M70 130h82M70 218h100M70 243h100M70 268h68" stroke="#53382c" stroke-width="7"/><circle cx="120" cy="175" r="23" fill="#923f42" stroke="#f9e2a6" stroke-width="5"/></svg>')}`;
 
 // --- DECK GENERATION & UTILS ---
 const generateDeck = (playerIdPrefix: string): CardData[] => {
