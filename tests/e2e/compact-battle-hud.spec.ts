@@ -29,7 +29,7 @@ test('turn ribbon is diagonal, crown-free and does not block the audio shortcut'
   await expect(ribbon).toBeVisible({ timeout: 18000 });
   await expect(ribbon.locator('.dr-event-indicator__label')).toHaveText('Tu Turno');
   await expect(ribbon.locator('.dr-event-indicator__laurel')).toHaveCount(0);
-  await expect(ribbon).toHaveCSS('background-image', /cinta-turno-jugador\\.webp/);
+  await expect(ribbon).toHaveCSS('background-image', /cinta-turno-jugador\.svg/);
   await expect(ribbon).not.toContainText('♛');
   await expect(ribbon).toHaveCSS('pointer-events', 'none');
   const turnButton = page.getByRole('button', { name: 'Terminar turno' });
