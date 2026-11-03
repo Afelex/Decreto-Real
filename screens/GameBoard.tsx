@@ -6,6 +6,8 @@ import { useAudio } from '../contexts/AudioContext';
 import { AiTurnController, runOpponentTurn } from '../game/aiTurn';
 import { cardPlacementPrompt, checkCardPlacement, resolveVisualDropZone, type CardDropZone } from '../game/cardPlacement.ts';
 import { CardActivationBanner } from './CardActivationBanner';
+import { ComboEffectOverlay } from './ComboEffectOverlay';
+import { cardEffectCue, comboEffectCue } from '../game/effectCues';
 import { TurnIndicator, TurnAnnouncement, ComboChoicePanel, CoinTossPanel } from './CombatEventUI';
 import { resolveBattleScenery } from '../game/battleScenery';
 import { getRoyalCardText } from '../game/royalCardText';
@@ -133,6 +135,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   const [playerLastType, setPlayerLastType] = useState<CardType | null>(null);
   const [showSpecialSelection, setShowSpecialSelection] = useState(false);
   const [comboChoice, setComboChoice] = useState<2 | 3>(3);
+  const [comboAnnouncement, setComboAnnouncement] = useState<{ id: number; level: 2 | 3; ability: 'DAMAGE' | 'HEAL'; isPlayer: boolean } | null>(null);
 
   const [opponentHP, setOpponentHP] = useState(MAX_HP);
   const [opponentDeck, setOpponentDeck] = useState<CardData[]>([]);
@@ -152,6 +155,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   const announcementBusy = useRef(false);
   const announcementCount = useRef(0);
   const announcementClock = useRef(new AiTurnController());
+  const cueFinished = useRef<(() => void) | null>(null);
   const [shakeScreen, setShakeScreen] = useState(false);
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   const [playHint, setPlayHint] = useState<string | null>(null);
@@ -228,6 +232,20 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     setPhase('OPPONENT_TURN');
   };
 
+  // Advance as soon as the real clip ends; use a pausable fallback for blocked
+  // autoplay, unavailable assets, or browsers that never emit an ended event.
+  const waitForCue = async (durationMs: number): Promise<boolean> => {
+    const mediaEnded = new Promise<boolean>(resolve => {
+      cueFinished.current = () => resolve(true);
+    });
+    const active = await Promise.race([
+      mediaEnded,
+      announcementClock.current.wait(durationMs + 400),
+    ]);
+    cueFinished.current = null;
+    return active;
+  };
+
   const triggerVisualEffect = (type: EffectType, target: EffectTarget) => {
     setVisualEffect({ type, target });
     if (['ATTACK', 'IMPACT', 'SPECIAL_ATTACK'].includes(type || '')) {
@@ -237,18 +255,27 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     setTimeout(() => setVisualEffect({ type: null, target: null }), type === 'IMPACT' ? 600 : 1200);
   };
 
-  const triggerSpecialAbility = (user: 'PLAYER' | 'OPPONENT', ability: 'DAMAGE' | 'HEAL', level: 2 | 3) => {
+  const triggerSpecialAbility = async (user: 'PLAYER' | 'OPPONENT', ability: 'DAMAGE' | 'HEAL', level: 2 | 3): Promise<void> => {
+    if (gameOverRef.current || announcementBusy.current) return;
+    announcementBusy.current = true;
+    if (user === 'PLAYER') setShowSpecialSelection(false);
+    setComboAnnouncement({ id: ++announcementCount.current, level, ability, isPlayer: user === 'PLAYER' });
+    const active = await waitForCue(comboEffectCue(ability, level).durationMs);
+    setComboAnnouncement(null);
+    announcementBusy.current = false;
+    if (!active || gameOverRef.current) return;
+
+    // The bonus is resolved only AFTER the chosen combo animation finishes.
     const value = level === 2 ? 1 : SPECIAL_VALUE;
     playSound('IMPACT');
     if (user === 'PLAYER') {
       if (level === 3) { setPlayerGauge(0); setPlayerLastType(null); }
-      setShowSpecialSelection(false);
-      if (ability === 'DAMAGE') { setOpponentHP(p => Math.max(0, p - value)); triggerVisualEffect('SPECIAL_ATTACK', 'OPPONENT'); }
-      else { setPlayerHP(p => Math.min(MAX_HP, p + value)); triggerVisualEffect('SPECIAL_HEAL', 'PLAYER'); }
+      if (ability === 'DAMAGE') setOpponentHP(p => Math.max(0, p - value));
+      else setPlayerHP(p => Math.min(MAX_HP, p + value));
     } else {
       if (level === 3) { setOpponentGauge(0); setOpponentLastType(null); }
-      if (ability === 'DAMAGE') { setPlayerHP(p => Math.max(0, p - value)); triggerVisualEffect('SPECIAL_ATTACK', 'PLAYER'); }
-      else { setOpponentHP(p => Math.min(MAX_HP, p + value)); triggerVisualEffect('SPECIAL_HEAL', 'OPPONENT'); }
+      if (ability === 'DAMAGE') setPlayerHP(p => Math.max(0, p - value));
+      else setOpponentHP(p => Math.min(MAX_HP, p + value));
     }
   };
 
@@ -287,20 +314,20 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     else setOpponentHand(prev => prev.filter(c => c.id !== card.id));
 
     setCardAnnouncement({ id: ++announcementCount.current, card, isPlayer });
-    const active = await announcementClock.current.wait(card.type === 'ORDER' ? 1050 : 2500);
+    const active = await waitForCue(cardEffectCue(card.type).durationMs);
     if (!active) return; // Unmounted/cancelled: do not mutate the match.
     setCardAnnouncement(null);
     announcementBusy.current = false;
     if (gameOverRef.current) return;
 
     if (card.type === 'ATTACK') {
-      playSound('ATTACK'); triggerVisualEffect('ATTACK', isPlayer ? 'OPPONENT' : 'PLAYER');
+      playSound('ATTACK');
       if (isPlayer) setOpponentHP(p => Math.max(0, p - ATTACK_DAMAGE)); else setPlayerHP(p => Math.max(0, p - ATTACK_DAMAGE));
     } else if (card.type === 'DEFENSE') {
-      playSound('DEFENSE'); triggerVisualEffect('DEFENSE', isPlayer ? 'PLAYER' : 'OPPONENT');
+      playSound('DEFENSE');
       if (isPlayer) setPlayerHP(p => Math.min(MAX_HP, p + 1)); else setOpponentHP(p => Math.min(MAX_HP, p + 1));
     } else if (card.type === 'ORDER') {
-      // ORDER's own WebM contains the intended sound; do not overlay a click.
+      playSound('FLIP'); // The supplied Order clip has no soundtrack.
       drawCards(isPlayer ? 'PLAYER' : 'OPPONENT', 1);
     } else if (card.type === 'IMPACT') {
       playSound('IMPACT'); triggerVisualEffect('IMPACT', 'GLOBAL');
@@ -311,7 +338,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     const comboLevel = updateGauge(isPlayer, card.type);
     if (comboLevel) {
       if (isPlayer) { setComboChoice(comboLevel); setShowSpecialSelection(true); }
-      else triggerSpecialAbility('OPPONENT', latestOpponent.current.health < MAX_HP / 2 ? 'HEAL' : 'DAMAGE', comboLevel);
+      else await triggerSpecialAbility('OPPONENT', latestOpponent.current.health < MAX_HP / 2 ? 'HEAL' : 'DAMAGE', comboLevel);
     }
   };
 
@@ -372,7 +399,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     }
   };
 
-  const canHandleCards = phase === 'PLAYER_TURN' && !showSpecialSelection && !isMenuOpen && !cardAnnouncement && !announcementBusy.current && !gameOverRef.current;
+  const canHandleCards = phase === 'PLAYER_TURN' && !showSpecialSelection && !isMenuOpen && !cardAnnouncement && !comboAnnouncement && !announcementBusy.current && !gameOverRef.current;
   const selectedCard = playerHand.find(card => card.id === selectedCardId) ?? null;
 
   const selectCard = (card: CardData) => {
@@ -440,19 +467,19 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
 
   // Turn changes and modals discard any pending selection or drag.
   useEffect(() => {
-    if (phase !== 'PLAYER_TURN' || showSpecialSelection || isMenuOpen) {
+    if (phase !== 'PLAYER_TURN' || showSpecialSelection || !!comboAnnouncement || isMenuOpen) {
       setSelectedCardId(null);
       setDragAt(null);
       gesture.current = null;
     }
-  }, [phase, showSpecialSelection, isMenuOpen]);
+  }, [phase, showSpecialSelection, comboAnnouncement, isMenuOpen]);
 
   const helpText = playHint ?? (selectedCard && selectedCard.type !== 'IMPACT'
     ? `Arrastra ${selectedCard.name} al campo o a una losa.`
     : cardPlacementPrompt(selectedCard, playerImpactLevel));
 
   const handleEndTurn = () => {
-    if (phase !== 'PLAYER_TURN' || showSpecialSelection || announcementBusy.current || gameOverRef.current) return;
+    if (phase !== 'PLAYER_TURN' || showSpecialSelection || !!comboAnnouncement || announcementBusy.current || gameOverRef.current) return;
     setSelectedCardId(null); setPlayHint(null);
     playSound('CLICK'); setTurnCount(p => p + 1); setPhase('TURN_BANNER');
   };
@@ -462,7 +489,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   const handleSurrenderConfirm = () => { playSound('CLICK'); if (onReturn) onReturn(); else navigate('/'); };
   const handleSurrenderCancel = () => { playSound('CLICK'); setShowSurrenderConfirm(false); };
 
-  const endTurnUnavailable = phase !== 'PLAYER_TURN' || showSpecialSelection || isMenuOpen || !!cardAnnouncement;
+  const endTurnUnavailable = phase !== 'PLAYER_TURN' || showSpecialSelection || !!comboAnnouncement || isMenuOpen || !!cardAnnouncement || announcementBusy.current;
 
   const Board = (
     <div className={`dr-classic-screen dr-royal-screen bg-[#050505] font-body w-full overflow-hidden select-none flex flex-col relative text-white ${shakeScreen ? 'animate-shake' : ''}`} style={{ width: 'min(100vw, 430px)', height: '100dvh' }}>
@@ -539,10 +566,17 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
         </div>
       )}
 
-      {/* Cinematic card announcement precedes the existing damage/heal VFX. */}
+      {/* Real card animation completes before a ×2/×3 combo may be chosen. */}
       {cardAnnouncement && (
         <CardActivationBanner key={cardAnnouncement.id} card={cardAnnouncement.card}
-          isPlayer={cardAnnouncement.isPlayer} paused={isMenuOpen} sfxEnabled={sfxEnabled} />
+          isPlayer={cardAnnouncement.isPlayer} paused={isMenuOpen}
+          onEnded={() => cueFinished.current?.()} />
+      )}
+      {/* The selected combo video completes before the bonus damage/healing applies. */}
+      {comboAnnouncement && (
+        <ComboEffectOverlay key={comboAnnouncement.id} level={comboAnnouncement.level}
+          ability={comboAnnouncement.ability} paused={isMenuOpen}
+          onEnded={() => cueFinished.current?.()} />
       )}
 
       {/* --- MENU MODAL --- */}
