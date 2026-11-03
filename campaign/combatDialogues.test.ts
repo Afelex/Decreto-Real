@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { STORY_STAGES } from './story.ts';
 import { combatConversationForMission } from './combatDialogues.ts';
+import { enemyForMission } from './characters.ts';
 
 test('cada una de las 38 misiones abre con rival, Xervias, rival e Inicia el combate', () => {
   assert.equal(STORY_STAGES.length, 38);
@@ -19,6 +20,7 @@ test('cada una de las 38 misiones abre con rival, Xervias, rival e Inicia el com
       assert.ok(line.text.length <= 155, `Diálogo largo para móvil en ${mission.id}`);
     }
     assert.ok(conversation.opponentName.trim().length > 2);
+    assert.equal(conversation.opponentRole, enemyForMission(mission.id)?.role);
     assert.ok(conversation.victory.length > 0);
     assert.equal(conversation.victory.at(-1)?.speaker, 'player');
     assert.ok(!/\bduelo\b/i.test(JSON.stringify(conversation)));
