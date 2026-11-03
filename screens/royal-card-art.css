@@ -109,3 +109,60 @@
   .dr-royal-screen .dr-royal-hand-card,
   .dr-royal-screen .dr-royal-facedown {transition-duration:.01ms!important;}
 }
+
+
+/* DR-CARD-ART02: nuevas imágenes completas del jugador; sin la ilustración
+ * del antiguo atlas detrás y con las leyendas de reglas legibles encima. */
+.dr-royal-screen .dr-royal-hand-card.attack,
+.dr-royal-screen .dr-royal-hand-card.defense,
+.dr-royal-screen .dr-royal-hand-card.order {
+  background:#1b1022;
+  border:2px solid #cfa75d;
+  overflow:hidden;
+  padding:4px 3px 6px;
+}
+.dr-royal-screen .dr-royal-hand-card.attack::after,
+.dr-royal-screen .dr-royal-hand-card.defense::after,
+.dr-royal-screen .dr-royal-hand-card.order::after,
+.dr-royal-screen .dr-royal-drag-ghost:not(.impact)::after {display:none;}
+.dr-royal-screen .dr-royal-hand-card:not(.impact)>img {
+  opacity:1;
+  position:absolute;
+  inset:0;
+  display:block;
+  width:100%;
+  height:100%;
+  max-width:none;
+  object-fit:cover;
+  object-position:center 40%;
+  flex:none;
+  border-radius:5px;
+  pointer-events:none;
+}
+.dr-royal-screen .dr-royal-hand-card:not(.impact)>.dr-royal-card-kind,
+.dr-royal-screen .dr-royal-hand-card:not(.impact)>.dr-royal-card-title,
+.dr-royal-screen .dr-royal-hand-card:not(.impact)>.dr-royal-card-effect {
+  z-index:3;
+  flex-shrink:0;
+  max-width:100%;
+}
+.dr-royal-screen .dr-royal-hand-card:not(.impact)>.dr-royal-card-kind {
+  margin-top:auto;
+  background:#160b17e8!important;
+}
+.dr-royal-screen .dr-royal-hand-card:not(.impact)>.dr-royal-card-title,
+.dr-royal-screen .dr-royal-hand-card:not(.impact)>.dr-royal-card-effect {
+  background:#160b17dc;
+}
+.dr-royal-screen .dr-royal-drag-ghost:not(.impact) {
+  background:#170f19;
+  border:2px solid #e4bc6f;
+}
+.dr-royal-screen .dr-royal-drag-ghost:not(.impact)>img {
+  opacity:1;
+  display:block;
+  width:100%;
+  height:100%;
+  margin:0;
+  object-fit:cover;
+}

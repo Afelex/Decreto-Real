@@ -232,3 +232,39 @@
 @media(prefers-reduced-motion:reduce) {
   .dr-royal-screen .dr-royal-finish {transition:none;}
 }
+
+
+/* DR-PORTRAITS05 — Igualar marco y retrato de ambos contrincantes.
+ * La fila del jugador gana altura, reduciendo ligeramente la zona central;
+ * permanece una sola pantalla y ningún retrato invade la mano de cartas. */
+.dr-royal-screen .dr-royal-layout {
+  grid-template-rows:minmax(0,22fr) minmax(0,13fr) minmax(0,25fr) minmax(0,18fr) minmax(0,22fr);
+}
+.dr-royal-screen .dr-royal-rival-area .dr-royal-character,
+.dr-royal-screen .dr-royal-player-area .dr-royal-character {
+  width:clamp(130px,37cqw,190px);
+  height:100%;
+}
+.dr-royal-screen .dr-royal-rival-area .dr-royal-character-frame,
+.dr-royal-screen .dr-royal-player-area .dr-royal-character-frame {
+  flex:0 0 auto;
+  width:min(35cqw,16dvh,168px);
+  height:auto;
+  aspect-ratio:4 / 5;
+  max-width:none;
+  max-height:calc(100% - 5px);
+  margin:0 auto;
+}
+.dr-royal-screen .dr-royal-rival-area .dr-royal-character-frame > img:first-child,
+.dr-royal-screen .dr-royal-player-area .dr-royal-character-frame > img:first-child {
+  object-position:center 20%;
+}
+@media (max-height:570px) {
+  .dr-royal-screen .dr-royal-layout {
+    grid-template-rows:minmax(0,22fr) minmax(0,13fr) minmax(0,25fr) minmax(0,18fr) minmax(0,22fr);
+  }
+  .dr-royal-screen .dr-royal-rival-area .dr-royal-character-frame,
+  .dr-royal-screen .dr-royal-player-area .dr-royal-character-frame {
+    width:min(34cqw,15.5dvh,145px);
+  }
+}

@@ -412,3 +412,49 @@
   .dr-royal-screen .dr-event-choice.dr-event-choice--2,
   .dr-royal-screen .dr-event-choice.dr-event-choice--3 {animation:none;}
 }
+
+
+/* DR-UX05 — La selección de Combo no oscurece ni difumina la partida. */
+.dr-royal-screen .dr-event-stage--combo .dr-event-stage__veil {
+  background:transparent;
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+}
+.dr-royal-screen .dr-event-choice.dr-event-choice--2,
+.dr-royal-screen .dr-event-choice.dr-event-choice--3 {
+  background:transparent;
+  box-shadow:none;
+  filter:drop-shadow(0 5px 13px #0007);
+}
+.dr-royal-screen .dr-event-choice.dr-event-choice--2 h2,
+.dr-royal-screen .dr-event-choice.dr-event-choice--3 h2 {
+  top:5.8%;
+  left:19%;
+  width:62%;
+  padding:0;
+  text-align:center;
+  font:900 clamp(15px,4.25vw,23px)/1.05 Cinzel,Georgia,serif;
+  letter-spacing:.015em;
+  white-space:nowrap;
+  color:#fff7d9;
+  text-shadow:0 1px 2px #4f151b,0 2px 5px #000c;
+}
+.dr-royal-screen .dr-event-choice.dr-event-choice--2 .dr-event-choice__options,
+.dr-royal-screen .dr-event-choice.dr-event-choice--3 .dr-event-choice__options {
+  top:29%;
+  bottom:9%;
+  left:9%;
+  right:9%;
+}
+.dr-royal-screen .dr-event-choice .dr-event-choice__options .dr-event-ability {
+  padding-bottom:5%;
+  text-align:center;
+}
+.dr-royal-screen .dr-event-choice .dr-event-choice__options .dr-event-ability strong {
+  font-size:clamp(10px,2.9vw,15px);
+  line-height:1.12;
+}
+.dr-royal-screen .dr-event-choice .dr-event-choice__options .dr-event-ability small {
+  font-size:clamp(9px,2.55vw,12px);
+  line-height:1.15;
+}
