@@ -29,18 +29,18 @@ const CampaignStory: React.FC = () => {
         <div className="dc-full-art dc-full-art-intro" aria-hidden="true">✥ <span>162X</span></div>
         <span className="dc-scene-label">PERÚ VIRREINAL FICTICIO · AÑO 162X</span>
         <h2 id="dc-story-paged-title">El reino escucha dos verdades</h2>
-        <p>Al amanecer, dos decretos con el mismo sello llegan a un puesto de guardia: uno ordena liberar a los detenidos; el otro, castigarlos. Xervias presencia cómo una firma puede decidir una vida.</p>
-        <p>Zhinchi le encomienda investigar, no perseguir culpables a ciegas. Sigumán dirige <strong>la Falsa Luz</strong>, una rebelión que transforma agravios verdaderos en decretos falsos y hace de la obediencia su arma.</p>
-        <blockquote className="dc-story-quote">Zhinchi: «Un sello puede ordenar. No puede decidir por tu conciencia. Protege a quienes no tienen voz».</blockquote>
+        <p>Un decreto es una orden escrita. Un día llegan dos decretos con el mismo sello: uno manda liberar a unas familias y el otro, arrestarlas. Xervias quiere saber cuál es verdadero antes de que alguien salga herido.</p>
+        <p>Su mentor, Zhinchi, le pide seguir las cartas y escuchar a la gente. Detrás aparece <strong>la Falsa Luz</strong>, el movimiento de Sigumán: utiliza problemas reales para convencer al reino de obedecer órdenes falsas.</p>
+        <blockquote className="dc-story-quote">Zhinchi: «Si una orden hace daño y nadie explica por qué, investiga antes de obedecer».</blockquote>
       </>}
       {page === 1 && <>
         <span className="dc-scene-label">PERSONAJES · ELENCO PRINCIPAL</span>
         <h2 id="dc-story-paged-title">Los cuatro protagonistas</h2>
         <div className="dc-full-cast">
-          <div><span>⚔</span><strong>Xervias</strong><small>Soldado que deberá elegir entre la obediencia y la justicia.</small></div>
-          <div><span>✦</span><strong>Zhinchi</strong><small>El Prototipo Cero; mentor que oculta una promesa ligada a San Jerónimo.</small></div>
-          <div><span>♜</span><strong>Vándalo Rojo</strong><small>Antiguo compañero de Xervias; prefirió el poder a sus juramentos.</small></div>
-          <div><span>♛</span><strong>Sigumán</strong><small>Antiguo comandante convencido de imponer la paz aunque deba mentir.</small></div>
+          <div><span>⚔</span><strong>Xervias</strong><small>Joven soldado que busca quién cambió las órdenes y protege a las familias.</small></div>
+          <div><span>✦</span><strong>Zhinchi</strong><small>Mentor de Xervias. Le enseña a pensar antes de obedecer y guarda un secreto.</small></div>
+          <div><span>♜</span><strong>Vándalo Rojo</strong><small>Antiguo amigo de Xervias. Ayuda a Sigumán porque quiere poder.</small></div>
+          <div><span>♛</span><strong>Sigumán</strong><small>Comandante que falsifica órdenes porque cree que solo él puede imponer la paz.</small></div>
         </div>
       </>}
       {page === 2 && <>
