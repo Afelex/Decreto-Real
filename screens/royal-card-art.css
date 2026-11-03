@@ -261,3 +261,21 @@
   .dr-royal-screen .dr-royal-hand-card > .dr-royal-card-title {font-size:9px;}
   .dr-royal-screen .dr-royal-hand-card > .dr-royal-card-effect {font-size:9px;}
 }
+
+/* Clase MÍSTICA de prueba: marco violeta/solar; arte definitivo por aprobar. */
+.dr-royal-screen .dr-royal-hand-card.mystic {
+  background:linear-gradient(145deg,#7049a2,#21112e 76%);
+  border:2px solid #f2cb84;border-radius:7px;overflow:hidden;padding:4px 3px 6px;
+  box-shadow:0 0 9px #b65fff77,0 8px 15px #07050bc9;
+}
+.dr-royal-screen .dr-royal-hand-card.mystic::after,
+.dr-royal-screen .dr-royal-drag-ghost.mystic::after {display:none;}
+.dr-royal-screen .dr-royal-hand-card.mystic>img {
+  opacity:.84;position:absolute;inset:0;width:100%;height:100%;
+  max-width:none;object-fit:cover;filter:hue-rotate(58deg) saturate(1.2);
+}
+.dr-royal-screen .dr-royal-hand-card.mystic .dr-royal-card-title,
+.dr-royal-screen .dr-royal-hand-card.mystic .dr-royal-card-effect {
+  position:relative;z-index:3;background:#230e39de;color:#ffe5af;
+}
+.dr-royal-screen .dr-royal-drag-ghost.mystic {background:linear-gradient(145deg,#7049a2,#21112e);border:2px solid #f2cb84;}
