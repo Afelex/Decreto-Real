@@ -15,6 +15,13 @@ test('eight named generals and four central names', () => {
   assert.equal(MAIN_CHARACTERS.hero.name, 'Xervias');
   assert.equal(MAIN_CHARACTERS.hero.role, 'Soldado');
   assert.ok(ENEMY_ROSTER.every(enemy => enemy.role.length >= 5));
+  assert.ok(ENEMY_ROSTER.every(enemy => ['orden','retirado','civil_consagrado','custodio'].includes(enemy.sealPath)));
+  assert.deepEqual(new Set(ENEMY_ROSTER.map(enemy => enemy.sealPath)),
+    new Set(['orden', 'retirado', 'civil_consagrado', 'custodio']));
+  assert.equal(enemyForMission('12')?.sealPath, 'retirado');
+  assert.equal(enemyForMission('25')?.sealPath, 'civil_consagrado');
+  assert.equal(enemyForMission('23')?.sealPath, 'custodio');
+  assert.equal(enemyForMission('38')?.sealPath, 'retirado');
   assert.ok(ENEMY_ROSTER.every(enemy => !/protagonista|rival|oponente|adversario/i.test(enemy.role)));
   for (const id of ['06', '10', '14', '18', '22', '26', '30', '34']) {
     assert.equal(enemyForMission(id)?.role, 'General');
@@ -22,4 +29,5 @@ test('eight named generals and four central names', () => {
   assert.equal(MAIN_CHARACTERS.mentor.name, 'Zhinchi');
   assert.equal(MAIN_CHARACTERS.outlaw.name, 'Vándalo Rojo');
   assert.equal(MAIN_CHARACTERS.antagonist.name, 'Sigumán');
+  assert.equal(enemyForMission('38')?.alias, 'Caudillo de los solarianos');
 });

@@ -72,7 +72,7 @@ const CampaignMission: React.FC = () => {
   if (outcome) {
     const heading = outcome.won
       ? mission.kind === 'boss' ? '¡General derrotado!'
-        : mission.kind === 'final' ? '¡La Falsa Luz cae!' : '¡Misión superada!'
+        : mission.kind === 'final' ? '¡La Revolución Solar cae!' : '¡Misión superada!'
       : 'Misión fallida';
 
     return <BattleResultScreen

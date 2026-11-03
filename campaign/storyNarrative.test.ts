@@ -41,5 +41,8 @@ test('los ocho generales y el desenlace conservan los hechos canónicos', () => 
   assert.match(STORY_STAGES.find(stage => stage.id === '38')!.victoryLine, /Sigumán muere/);
   assert.match(STORY_STAGES.find(stage => stage.id === '38')!.victoryLine, /San Jerónimo/);
   const prose = JSON.stringify([STORY_STAGES, STORY_CHAPTERS]);
-  assert.doesNotMatch(prose, /Sigmar|Zerión|Nayra/);
+  assert.doesNotMatch(prose, /Sigmar|Zerión|Nayra|Falsa Luz/);
+  assert.match(prose, /Revolución Solar/);
+  assert.match(prose, /solarianos/);
+  assert.match(prose, /Orden de la Corona Solar/);
 });

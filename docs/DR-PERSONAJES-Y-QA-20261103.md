@@ -1,10 +1,10 @@
 # Decreto Real — elenco y catálogo de retratos
 
 ## Identidades principales
-- **Xervias**: protagonista, joven guerrero y defensor de los inocentes.
+- **Xervias**: soldado consagrado de la Orden de la Corona Solar, defensor de los inocentes.
 - **Zhinchi**, «**el Prototipo Cero**»: capitán y mentor. Su pasado queda abierto para próximas campañas.
 - **Vándalo Rojo**: apodo del antiguo compañero, bandido antagonista.
-- **Sigumán**: antiguo comandante y líder de la Falsa Luz.
+- **Sigumán**: antiguo comandante de la Orden de la Corona Solar y líder de la Revolución Solar. Sus seguidores son los solarianos.
 
 Los ocho generales mantienen sus títulos canónicos, ahora acompañados de un nombre propio.
 
@@ -49,7 +49,7 @@ Los ocho generales mantienen sus títulos canónicos, ahora acompañados de un n
 | 35 | Leocadio del Alba | Escribano del Alba | Falsificador erudito vestido de negro |
 | 36 | Vándalo Rojo | Bandido escarlata | Rufián de armadura roja desgastada |
 | 37 | Bruno Serrat | Guardia de Sigumán | Guardaespaldas con armadura de sombra |
-| 38 | Sigumán | Señor de la Falsa Luz | Antiguo comandante caído, manto oscuro y oro falso |
+| 38 | Sigumán | Caudillo de los solarianos | Antiguo comandante caído, manto oscuro y oro falso |
 
 ## Guía de imágenes
 

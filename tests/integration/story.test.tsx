@@ -33,6 +33,10 @@ function screenAt(path: string) {
 test('the prologue introduces the named protagonists and eight generals', () => {
   screenAt('/campania/historia');
   expect(screen.getByRole('heading', { name: 'El reino escucha dos verdades' })).toBeTruthy();
+  expect(screen.getByText(/Orden de la Corona Solar/)).toBeTruthy();
+  expect(screen.getByText('Revolución Solar')).toBeTruthy();
+  expect(screen.getByText(/solarianos/)).toBeTruthy();
+  expect(screen.queryByText(/Falsa Luz/)).toBeNull();
   fireEvent.click(screen.getByRole('button', { name: 'Personajes' }));
   expect(screen.getByText('Xervias')).toBeTruthy();
   expect(screen.getByText(/Soldado\. Busca quién cambió las órdenes/)).toBeTruthy();
@@ -68,6 +72,8 @@ test('the final mission victory reveals the canonical ending', () => {
   expect(screen.getByText(/Sigumán, que conocía parte del engaño/)).toBeTruthy();
   fireEvent.click(screen.getByRole('button', { name: 'Siguiente ›' }));
   expect(screen.getByText(/Zhinchi desapareció gravemente herido/)).toBeTruthy();
+  expect(screen.getByText('FIN')).toBeTruthy();
+  expect(screen.queryByText(/continuará|Decreto Real II/i)).toBeNull();
 });
 
 test('a forged final result without preceding victories cannot reveal the epilogue', () => {

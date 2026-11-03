@@ -54,7 +54,7 @@ const script: Readonly<Record<string, DialogueRow>> = {
     "Primero pondremos a salvo a los mineros. Después seguiremos la pista del dinero robado."
   ],
   "14": [
-    "Soy el dueño de estas minas. Una parte de la plata sirve para pagar a los soldados de la Falsa Luz.",
+    "Soy el dueño de estas minas. Una parte de la plata sirve para pagar a los soldados de la Revolución Solar.",
     "¿Por qué financias a Sigumán? Tus trabajadores pasan hambre mientras tú pagas por una rebelión.",
     "Sigumán me prometió conservar mis tierras y mis minas. Si él manda, nadie revisará mis cuentas.",
     "¡Todavía tengo oro y hombres a mi servicio!",
@@ -108,7 +108,7 @@ const script: Readonly<Record<string, DialogueRow>> = {
     "Escucharé primero a las familias de la frontera. Ellas saben por dónde pasaron los mensajeros."
   ],
   "20": [
-    "Conozco el puente escondido. Estoy guiando por él a los mensajeros de la Falsa Luz.",
+    "Conozco el puente escondido. Estoy guiando por él a los mensajeros de la Revolución Solar.",
     "¿Por qué los ayudas? Están llevando órdenes falsas a las aldeas de la selva.",
     "Porque me amenazaron. Si dejo de guiarlos, harán daño a mi familia. No sé cómo salir de esto.",
     "¡No puedo perder! Mi familia sigue en peligro.",
@@ -144,7 +144,7 @@ const script: Readonly<Record<string, DialogueRow>> = {
     "Esta plaza es de todos sus vecinos. Hablarán entre ellos antes de que alguien vuelva a obligarlos a elegir bando."
   ],
   "24": [
-    "Estoy reuniendo a la gente para prometerle paz. Les digo que la Falsa Luz resolverá todos sus problemas.",
+    "Estoy reuniendo a la gente para prometerle paz. Les digo que los solarianos acabarán con todos sus problemas.",
     "¿Por qué les prometes eso si sabes que hay órdenes falsas? La gente confía en tus palabras.",
     "Porque, si tienen miedo, me escuchan. Sigumán me ofreció poder si consigo que sigan sus órdenes.",
     "¡No me quites a mis seguidores! Sin ellos no soy nadie.",
@@ -273,7 +273,7 @@ const script: Readonly<Record<string, DialogueRow>> = {
     "He usado decretos falsos para conseguir que los generales me obedezcan. Así quería unir un reino que estaba dividido.",
     "¿Por qué mentiste, Sigumán? La gente tenía problemas reales, pero tú los usaste para conseguir poder.",
     "Porque pensé que solo una autoridad fuerte podía imponer la paz. Si decía toda la verdad, muchos no me seguirían.",
-    "¡No dejaré que destruyas la Falsa Luz! Sin mí, el reino volverá al caos.",
+    "¡No dejaré que destruyas la Revolución Solar! Sin mí, el reino volverá al caos.",
     "Veo que estás cerca de vencerme. Pero sigo creyendo que la gente necesita a alguien que decida por ella.",
     "He perdido. Obligarlos a obedecer no resolvió sus problemas... y ahora todo lo que construí se derrumba.",
     "Tu error fue creer que la paz se consigue obligando a todos a callar. La gente necesita justicia y poder decidir."

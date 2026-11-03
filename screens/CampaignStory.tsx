@@ -12,11 +12,11 @@ import './one-screen-ui.css';
 const CampaignStory: React.FC = () => {
   const navigate = useNavigate();
   const [page, setPage] = React.useState(0);
-  const headings = ['La Falsa Luz', 'Personajes', 'Ocho generales'];
+  const headings = ['La Revolución Solar', 'Personajes', 'Ocho generales'];
   return <main className="dc-page dc-full-page dc-story-page dc-prologue">
     <header className="dc-header">
       <button type="button" onClick={() => navigate('/campania')}>‹ Mapa</button>
-      <div><small>DECRETO REAL I · CRÓNICA</small><h1>El Sello y la Falsa Luz</h1></div>
+      <div><small>DECRETO REAL I · CRÓNICA</small><h1>El Sello y la Revolución Solar</h1></div>
     </header>
     <nav className="dc-page-tabs" aria-label="Capítulos del prólogo">
       {headings.map((heading, index) => <button key={heading} type="button"
@@ -29,9 +29,9 @@ const CampaignStory: React.FC = () => {
         <div className="dc-full-art dc-full-art-intro" aria-hidden="true">✥ <span>162X</span></div>
         <span className="dc-scene-label">PERÚ VIRREINAL FICTICIO · AÑO 162X</span>
         <h2 id="dc-story-paged-title">El reino escucha dos verdades</h2>
-        <p>Un decreto es una orden escrita. Un día llegan dos decretos con el mismo sello: uno manda liberar a unas familias y el otro, arrestarlas. Xervias quiere saber cuál es verdadero antes de que alguien salga herido.</p>
-        <p>Su mentor, Zhinchi, le pide seguir las cartas y escuchar a la gente. Detrás aparece <strong>la Falsa Luz</strong>, el movimiento de Sigumán: utiliza problemas reales para convencer al reino de obedecer órdenes falsas.</p>
-        <blockquote className="dc-story-quote">Zhinchi: «Si una orden hace daño y nadie explica por qué, investiga antes de obedecer». Pero ¿quién cambió las palabras sin alterar el sello?</blockquote>
+        <p>Xervias sirve a la <strong>Orden de la Corona Solar</strong>. Tras su consagración, recibió un anillo que canaliza las cartas en un combate llamado Decreto Real.</p>
+        <p>Dos órdenes con el mismo sello se contradicen: una libera familias y otra las arresta. Sigumán, excomandante, dirige la <strong>Revolución Solar</strong>; sus seguidores, los <strong>solarianos</strong>, difunden decretos falsos.</p>
+        <blockquote className="dc-story-quote">Zhinchi: «Investiga antes de obedecer. ¿Quién alteró el sello?»</blockquote>
       </>}
       {page === 1 && <>
         <span className="dc-scene-label">PERSONAJES · ELENCO PRINCIPAL</span>

@@ -116,7 +116,7 @@ const CampaignMap: React.FC = () => {
         <button type="button" className="dcm-back" onClick={() => navigate('/')} aria-label="Volver al menú">‹</button>
         <div className="dcm-heading">
           <h1>Campaña</h1>
-          <span>Virreinato del Perú · El Sello y la Falsa Luz</span>
+          <span>Virreinato del Perú · El Sello y la Revolución Solar</span>
         </div>
         <button type="button" className="dcm-story" onClick={() => navigate('/campania/historia')} aria-label="Ver la historia">▤<span>Historia</span></button>
       </header>

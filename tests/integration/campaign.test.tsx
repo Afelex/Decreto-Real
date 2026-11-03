@@ -24,7 +24,7 @@ afterEach(() => cleanup());
 test('fullscreen campaign starts at challenge one, keeps second and next region locked', () => {
   openMap();
   expect(screen.getByRole('heading', { name: 'Campaña' })).toBeTruthy();
-  expect(screen.getByText('El Sello y la Falsa Luz', { exact: false })).toBeTruthy();
+  expect(screen.getByText('El Sello y la Revolución Solar', { exact: false })).toBeTruthy();
   expect(document.querySelector('.dcm-screen')).toBeTruthy();
   expect(document.querySelector('.dcm-map-art')?.getAttribute('src')).toContain('virreinato-map.svg');
   expect(screen.getByRole('button', { name: /Misión 1:/ }).hasAttribute('disabled')).toBe(false);
