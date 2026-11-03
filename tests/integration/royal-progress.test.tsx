@@ -56,6 +56,10 @@ test('two Impacts across turns offer the one-point combo and preserve the streak
   expect(screen.getByText('Combo ×2')).toBeTruthy();
   expect(screen.getByText('1 Daño al Rival')).toBeTruthy();
   fireEvent.click(screen.getByRole('button', { name: /Furia Real/ }));
+  // The combo choice triggers a clip; the bonus waits until it finishes.
+  expect(screen.getByRole('status', { name: /Combo ×2: Ataque/ })).toBeTruthy();
+  expect((screen.getByRole('button', { name: 'Terminar turno' }) as HTMLButtonElement).disabled).toBe(true);
+  await act(async () => { await vi.advanceTimersByTimeAsync(1000); });
   expect(screen.getByLabelText('Vida del rival: 18 de 20')).toBeTruthy();
   expect(screen.getByText('de Impacto')).toBeTruthy();
 });
@@ -74,8 +78,8 @@ test('Order draws one replacement card without changing the starting 28-card dec
   fireEvent.click(screen.getByRole('button', { name: /Decreto de Orden:/ }));
   fireEvent.click(screen.getByRole('button', { name: 'Campo para activar Ataque o Defensa' }));
   expect(screen.getByRole('status', {name: /HAS ACTIVADO/})).toBeTruthy();
-  const orderVideo = document.querySelector<HTMLVideoElement>('.dr-cinematic-overlay--order video');
-  expect(orderVideo?.querySelector('source')?.getAttribute('src')).toBe('/Decreto-Real/animaciones/decreto-orden.webm');
+  const orderVideo = document.querySelector<HTMLVideoElement>('.dr-cinematic-overlay--energy video');
+  expect(orderVideo?.querySelector('source')?.getAttribute('src')).toBe('/Decreto-Real/efectos/orden.webm');
   expect(orderVideo?.muted).toBe(true); // Mocked test preferences disable SFX.
   await act(async () => { await vi.advanceTimersByTimeAsync(1050); });
   expect(screen.queryByRole('status', { name: /HAS ACTIVADO/ })).toBeNull();
