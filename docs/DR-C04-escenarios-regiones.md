@@ -2,9 +2,9 @@
 
 ## Alcance
 
-Actualiza la presentación de los diez capítulos de `Decreto Real I: El Sello y la Falsa Luz`, sin alterar las reglas del duelo.
+Actualiza la presentación de los diez capítulos de `Decreto Real I: El Sello y la Revolución Solar`, sin alterar las reglas del duelo.
 
-1. Los capítulos emplean diez paletas, símbolos y paisajes vectoriales originales y locales: pregón, Callao, caballería, minas, artillería, selva, ciudad, Andes, juramento y Falsa Luz.
+1. Los capítulos emplean diez paletas, símbolos y paisajes vectoriales originales y locales: pregón, Callao, caballería, minas, artillería, selva, ciudad, Andes, juramento y Revolución Solar.
 2. El mapa virreinal conserva su ilustración de pergamino, posición de nodos y progresión bloqueada. Añade una atmósfera cromática y un símbolo suave detrás de la ruta, para reconocer visualmente el capítulo.
 3. Los encuentros reutilizan un componente `RegionScene` con siluetas propias de cada región. Las escenas de generales destacan por un contorno dorado y su nombre explícito.
 4. Las cartas especiales de los generales se **mencionan únicamente en el lore**. No se incorporan a la baraja, ni se alteran probabilidades, IA, reglas o dificultad.
