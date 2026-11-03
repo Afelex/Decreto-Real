@@ -698,7 +698,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
       </div>}
 
       {/* Combat cues are brief overlays; the field remains visible. */}
-      {turnOwner && (phase === 'TURN_BANNER' || phase === 'PLAYER_TURN' || phase === 'OPPONENT_TURN') &&
+      {turnOwner && (phase === 'PLAYER_TURN' || phase === 'OPPONENT_TURN') &&
         <TurnIndicator side={turnOwner} />}
       {(phase === 'START_BANNER' || phase === 'TURN_BANNER') &&
         <TurnAnnouncement
