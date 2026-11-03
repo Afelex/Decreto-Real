@@ -78,7 +78,7 @@ export function CoinTossPanel({ coinSide, isFlipping, onToss }: {
         aria-labelledby="dr-event-coin-title">
         <h2 id="dr-event-coin-title">¿Quién comienza?</h2>
         <button type="button" className={`dr-event-coin ${isFlipping ? 'is-flipping' : ''} ${coinSide === 'SELLO' ? 'show-sello' : 'show-cara'}`}
-          aria-label="Lanzar moneda para decidir quién comienza" onClick={onToss} disabled={isFlipping || coinSide !== null}>
+          aria-label="Lanzar Moneda" onClick={onToss} disabled={isFlipping || coinSide !== null}>
           <span className="dr-event-coin__face" aria-hidden="true">
             <img className="dr-event-coin__art dr-event-coin__art--cara"
               src={`${import.meta.env.BASE_URL}moneda/sol.webp`} alt="" draggable={false} />
