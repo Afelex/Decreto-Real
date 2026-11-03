@@ -79,3 +79,51 @@
 /* Las nuevas cintas ya incluyen el texto dorado. Conservar el rótulo HTML
    para accesibilidad, ocultándolo visualmente para impedir la superposición. */
 .dr-royal-screen .dr-event-indicator__label {opacity:0;}
+
+/* DR-UX07: motivo del desenlace antes del resultado final. */
+.dr-royal-screen .dr-royal-end-banner-stage {
+  position:absolute;inset:0;z-index:125;
+  display:flex;align-items:center;justify-content:center;
+  box-sizing:border-box;padding:clamp(12px,4cqw,24px);
+  background:#0b08148a;
+}
+.dr-royal-screen .dr-royal-end-banner {
+  box-sizing:border-box;width:min(100%,390px);
+  max-height:calc(100dvh - 32px);
+  display:flex;flex-direction:column;align-items:center;
+  gap:clamp(12px,2.4dvh,20px);
+  padding:clamp(22px,4dvh,34px) 16px clamp(17px,3dvh,26px);
+  border:3px solid #d9ab53;border-radius:16px;
+  background:linear-gradient(155deg,#57201bfa,#22111bf8 65%,#120c16fc);
+  box-shadow:0 15px 40px #000c,inset 0 0 0 2px #ffe0a640;text-align:center;
+}
+.dr-royal-screen .dr-royal-end-banner-stage.is-defeat .dr-royal-end-banner {
+  background:linear-gradient(155deg,#192a49f9,#1d1625fc 65%,#110d18fc);
+  border-color:#9ab8d9;
+}
+.dr-royal-screen .dr-royal-end-banner h2 {
+  margin:0;color:#ffe6a0;
+  font:900 clamp(26px,7cqw,38px)/1 Cinzel,Georgia,serif;
+  text-shadow:0 2px 4px #050307;
+}
+.dr-royal-screen .dr-royal-end-banner p {
+  margin:0;color:#fff7e8;
+  font:700 clamp(16px,3.8cqw,19px)/1.34 Georgia,serif;
+  max-width:32ch;
+}
+.dr-royal-screen .dr-royal-end-banner button {
+  width:min(85%,245px);min-height:48px;
+  border:2px solid #ffdf89;border-radius:30px;
+  background:linear-gradient(180deg,#ad3231,#6c161b);
+  box-shadow:0 4px 0 #2a1017,0 7px 18px #0008;
+  color:#fff7d8;
+  font:900 clamp(15px,3.6cqw,19px)/1 Cinzel,Georgia,serif;
+  cursor:pointer;
+}
+.dr-royal-screen .dr-royal-end-banner-stage.is-defeat button {
+  background:linear-gradient(180deg,#38659c,#193860);
+}
+.dr-royal-screen .dr-royal-end-banner button:focus-visible {
+  outline:3px solid white;outline-offset:4px;
+}
+.dr-royal-screen .dr-royal-end-banner button:active {transform:translateY(2px);}

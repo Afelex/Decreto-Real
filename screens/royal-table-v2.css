@@ -381,3 +381,45 @@
   .dr-royal-screen .dr-royal-field.is-guiding::after,
   .dr-royal-screen .dr-royal-combo {animation:none!important;}
 }
+
+
+/* DR-UX07 — Impactos colocados algo más altos y marcas siempre legibles. */
+.dr-royal-screen .dr-royal-impact-slot.completed,
+.dr-royal-screen .dr-royal-rival-progress-slot.completed {
+  position:relative;
+  isolation:isolate;
+}
+.dr-royal-screen .dr-royal-impact-slot.completed > .dr-royal-impact-card-art,
+.dr-royal-screen .dr-royal-rival-progress-slot.completed > .dr-royal-impact-card-art {
+  position:absolute;
+  inset:0;
+  display:block;
+  width:100%;
+  height:calc(100% + 9px);
+  max-width:none;
+  object-fit:cover;
+  object-position:center 36%;
+  transform:translateY(-7px);
+  border-radius:4px;
+  pointer-events:none;
+  z-index:1;
+}
+.dr-royal-screen .dr-royal-impact-persistent-label {
+  position:absolute;
+  left:9%;
+  right:9%;
+  bottom:clamp(4px,.8dvh,8px);
+  z-index:3;
+  display:block;
+  margin:0;
+  padding:2px 0;
+  border:1px solid #f3cd82;
+  border-radius:4px;
+  background:linear-gradient(180deg,#422d23f5,#100d13f8);
+  color:#fff0c9;
+  font:900 clamp(10px,2.8cqw,13px)/1 Cinzel,Georgia,serif;
+  text-align:center;
+  white-space:nowrap;
+  text-shadow:0 2px #070606;
+  pointer-events:none;
+}

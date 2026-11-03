@@ -496,3 +496,20 @@
 .dr-royal-screen .dr-event-choice .dr-event-choice__options .dr-event-ability {
   padding-bottom:4%;
 }
+
+
+/* DR-UX07 — Arte sin caja negra. El rótulo se centra más abajo dentro del pergamino. */
+.dr-royal-screen .dr-event-choice.dr-event-choice--2,
+.dr-royal-screen .dr-event-choice.dr-event-choice--3 {
+  aspect-ratio:1050 / 794;
+  background:transparent;
+  box-shadow:none;
+}
+.dr-royal-screen .dr-event-choice.dr-event-choice--2 h2,
+.dr-royal-screen .dr-event-choice.dr-event-choice--3 h2 {
+  top:11.1%;
+  left:19%;
+  width:62%;
+  text-align:center;
+  font-size:clamp(16px,4.4vw,23px);
+}
