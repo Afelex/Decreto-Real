@@ -222,3 +222,42 @@
   object-fit:cover;
   filter:none;
 }
+
+
+/* DR-CARD-TEXT-V4: una sola línea para nombre y otra para efecto.
+ * Primera etiqueta duplicada eliminada del DOM. */
+.dr-royal-screen .dr-royal-hand-card > .dr-royal-card-title,
+.dr-royal-screen .dr-royal-hand-card > .dr-royal-card-effect {
+  position:relative;
+  z-index:3;
+  box-sizing:border-box;
+  display:block;
+  flex:0 0 auto;
+  width:100%;
+  min-width:0;
+  max-width:100%;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:clip;
+  -webkit-line-clamp:unset;
+  -webkit-box-orient:unset;
+  padding:2px 1px;
+  text-align:center;
+  background:#160b17e8;
+  border-radius:3px;
+  color:#fff2ce;
+}
+.dr-royal-screen .dr-royal-hand-card > .dr-royal-card-title {
+  margin:auto 0 0;
+  font:900 clamp(9px,2.55cqw,12px)/1.13 Cinzel,Georgia,serif;
+  letter-spacing:-.03em;
+}
+.dr-royal-screen .dr-royal-hand-card > .dr-royal-card-effect {
+  margin:2px 0 0;
+  font:700 clamp(9px,2.45cqw,11px)/1.13 Georgia,serif;
+  letter-spacing:-.025em;
+}
+@media (max-width:350px) {
+  .dr-royal-screen .dr-royal-hand-card > .dr-royal-card-title {font-size:9px;}
+  .dr-royal-screen .dr-royal-hand-card > .dr-royal-card-effect {font-size:9px;}
+}
