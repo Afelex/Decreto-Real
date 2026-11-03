@@ -27,7 +27,7 @@ test('colección visible desde el principio; editor protegido hasta misión 36',
   renderDeck();
   expect(screen.getByRole('heading',{name:'Cartas místicas'})).toBeTruthy();
   expect(screen.getByRole('button',{name:/Editar baraja/}).hasAttribute('disabled')).toBe(true);
-  expect(screen.getByText(/mística/i)).toBeTruthy();
+  expect(screen.getByText('Místicas selladas')).toBeTruthy();
   expect(screen.getByText(/misión 36/)).toBeTruthy();
 });
 
@@ -47,7 +47,7 @@ test('el bastón desbloquea editor, limita tres espacios y guarda elecciones',()
   expect(screen.getByRole('heading',{name:/Editar baraja · 0\/3/})).toBeTruthy();
   const first=screen.getByLabelText('Espacio 1') as HTMLSelectElement;
   fireEvent.change(first,{target:{value:'general-1'}});
-  fireEvent.change(screen.getByLabelText('Sustituye', {selector:'#mystic-replace-0'}),{target:{value:'DEFENSE'}});
+  fireEvent.change(document.querySelector('#mystic-replace-0')!,{target:{value:'DEFENSE'}});
   fireEvent.change(screen.getByLabelText('Espacio 2'),{target:{value:'general-2'}});
   fireEvent.change(screen.getByLabelText('Espacio 3'),{target:{value:'legado-zhinchi'}});
   expect(screen.getByRole('heading',{name:/Editar baraja · 3\/3/})).toBeTruthy();
