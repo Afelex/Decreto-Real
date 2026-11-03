@@ -840,7 +840,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
       {phase === 'COIN_TOSS' && !storyMoment &&
         <CoinTossPanel coinSide={coinSide} isFlipping={isCoinFlipping} onToss={handleCoinToss} />}
       {storyMoment && storySpeech && storyConversation && (
-        <StorySpeechPanel speech={storySpeech} rivalName={storyConversation.opponentName}
+        <StorySpeechPanel speech={storySpeech} rivalName={storyConversation.opponentName} rivalRole={storyConversation.opponentRole}
           playerPortrait={playerPortrait} rivalPortrait={rivalPortrait}
           step={storyMoment.step + 1} total={storyLines.length}
           onContinue={advanceStorySpeech}/>
