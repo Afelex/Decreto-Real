@@ -34,6 +34,7 @@ export function TurnAnnouncement({ variant, turn }: {
   );
 }
 
+/** Combo x2 y x3 comparten el mismo arte; los efectos y botones siguen siendo texto real. */
 export function ComboChoicePanel({ level, onDamage, onHeal }: {
   level: 2 | 3;
   onDamage: () => void;
@@ -45,17 +46,17 @@ export function ComboChoicePanel({ level, onDamage, onHeal }: {
       <div className="dr-event-stage__veil" aria-hidden="true" />
       <div className={`dr-event-choice dr-event-choice--${level}`} role="dialog"
         aria-modal="true" aria-labelledby="dr-event-combo-title" aria-describedby="dr-event-combo-help">
+        <img className="dr-event-choice__art" src={`${import.meta.env.BASE_URL}interfaz/combo-estandartes.webp`}
+          alt="" aria-hidden="true" draggable={false} />
         <h2 id="dr-event-combo-title">Combo ×{level}</h2>
-        <p id="dr-event-combo-help">Elige el efecto de tu combo.</p>
+        <p className="dr-event-combo-sr-only" id="dr-event-combo-help">Elige el efecto de tu combo.</p>
         <div className="dr-event-choice__options">
           <button type="button" className="dr-event-ability dr-event-ability--damage"
             onClick={onDamage} autoFocus>
-            <span className="dr-event-ability__icon material-icons" aria-hidden="true">bolt</span>
             <strong>Furia Real</strong>
             <small>{amount} Daño al Rival</small>
           </button>
           <button type="button" className="dr-event-ability dr-event-ability--heal" onClick={onHeal}>
-            <span className="dr-event-ability__icon material-icons" aria-hidden="true">health_and_safety</span>
             <strong>Gracia Divina</strong>
             <small>Curar {amount} HP</small>
           </button>

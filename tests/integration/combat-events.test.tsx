@@ -25,6 +25,10 @@ test('compact combo choices preserve the damage/heal decisions', () => {
   const onDamage = vi.fn(), onHeal = vi.fn();
   const { rerender } = render(<ComboChoicePanel level={2} onDamage={onDamage} onHeal={onHeal} />);
   const dialog = screen.getByRole('dialog', { name: 'Combo ×2' });
+  const art = dialog.querySelector('.dr-event-choice__art') as HTMLImageElement;
+  expect(art.getAttribute('src')).toContain('interfaz/combo-estandartes.webp');
+  expect(art.getAttribute('aria-hidden')).toBe('true');
+  expect(dialog.querySelectorAll('.dr-event-ability')).toHaveLength(2);
   expect(within(dialog).getByText('1 Daño al Rival')).toBeTruthy();
   fireEvent.click(within(dialog).getByRole('button', { name: /Furia Real/ }));
   expect(onDamage).toHaveBeenCalledOnce();

@@ -29,12 +29,13 @@ type MenuButtonProps = {
   artKey: MenuArtKey;
   className?: string;
   ariaLabel: string;
-  onClick: () => void;
+  onClick?: () => void;
+  disabled?: boolean;
   children: React.ReactNode;
 };
 
 const MenuButton: React.FC<MenuButtonProps> = ({
-  artKey, className = '', ariaLabel, onClick, children,
+  artKey, className = '', ariaLabel, onClick, disabled = false, children,
 }) => {
   const art = BUTTON_PNG[artKey];
   const fullArt = Boolean(art.src && art.includesText);
@@ -44,6 +45,7 @@ const MenuButton: React.FC<MenuButtonProps> = ({
       type="button"
       aria-label={ariaLabel}
       onClick={onClick}
+      disabled={disabled}
       className={`dr-cinematic-button ${className} ${art.src ? 'dr-cinematic-button-has-png' : ''}`}
     >
       {art.src && (
@@ -106,7 +108,7 @@ const MainMenu: React.FC = () => {
         <p className="dr-cinematic-tagline">Juego de Cartas</p>
       </header>
 
-      {/* Cuatro botones verticales como en la referencia, sin panel común. */}
+      {/* Campaña, duelo y baraja en columna; reglas y opciones en una sola fila. */}
       <nav className="dr-cinematic-actions" aria-label="Menú principal">
         <MenuButton
           artKey="campaign"
@@ -135,24 +137,39 @@ const MainMenu: React.FC = () => {
         </MenuButton>
 
         <MenuButton
-          artKey="rules"
-          className="dr-cinematic-button-secondary"
-          ariaLabel="Reglas"
-          onClick={() => navigate('/rules')}
+          artKey="duel"
+          className="dr-cinematic-button-secondary dr-cinematic-button-disabled dr-cinematic-button-deck"
+          ariaLabel="Creación de baraja - No disponible"
+          disabled
         >
-          <span className="dr-cinematic-button-icon" aria-hidden="true">📖</span>
-          <strong>REGLAS</strong>
+          <span className="dr-cinematic-button-icon" aria-hidden="true">🃏</span>
+          <span className="dr-cinematic-deck-copy">
+            <strong>CREACIÓN DE BARAJA</strong>
+            <small>No disponible</small>
+          </span>
         </MenuButton>
 
-        <MenuButton
-          artKey="options"
-          className="dr-cinematic-button-secondary"
-          ariaLabel="Opciones"
-          onClick={() => navigate('/options')}
-        >
-          <span className="dr-cinematic-button-icon" aria-hidden="true">⚙️</span>
-          <strong>OPCIONES</strong>
-        </MenuButton>
+        <div className="dr-cinematic-actions-duo" role="group" aria-label="Información y configuración">
+          <MenuButton
+            artKey="rules"
+            className="dr-cinematic-button-secondary dr-cinematic-button-half"
+            ariaLabel="Reglas"
+            onClick={() => navigate('/rules')}
+          >
+            <span className="dr-cinematic-button-icon" aria-hidden="true">📖</span>
+            <strong>REGLAS</strong>
+          </MenuButton>
+
+          <MenuButton
+            artKey="options"
+            className="dr-cinematic-button-secondary dr-cinematic-button-half"
+            ariaLabel="Opciones"
+            onClick={() => navigate('/options')}
+          >
+            <span className="dr-cinematic-button-icon" aria-hidden="true">⚙️</span>
+            <strong>OPCIONES</strong>
+          </MenuButton>
+        </div>
       </nav>
     </div>
   );
