@@ -32,12 +32,12 @@
 .dr-royal-screen .dr-event-indicator.is-player {
   left:clamp(6px,2cqw,13px);right:auto;top:auto;
   bottom:clamp(164px,34dvh,445px);
-  background-image:url('/Decreto-Real/interfaz/cinta-turno-jugador.webp');
+  background-image:url('/Decreto-Real/interfaz/cinta-turno-jugador.svg');
 }
 .dr-royal-screen .dr-event-indicator.is-opponent {
   right:clamp(6px,2cqw,13px);left:auto;bottom:auto;
   top:clamp(92px,18.5dvh,225px);
-  background-image:url('/Decreto-Real/interfaz/cinta-turno-rival.webp');
+  background-image:url('/Decreto-Real/interfaz/cinta-turno-rival.svg');
 }
 .dr-royal-screen .dr-event-indicator::before,
 .dr-royal-screen .dr-event-indicator::after {content:none;}
