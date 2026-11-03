@@ -2,7 +2,7 @@
 .dr-story-dialogue-layer {
   position:absolute;
   inset:0;
-  z-index:140;
+  z-index:1000; /* always above victory banner and coin/turn cinematics */
   display:flex;
   justify-content:center;
   align-items:flex-end;
