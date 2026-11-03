@@ -191,16 +191,17 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   }, []);
 
   const handleCoinToss = () => {
-    if (isCoinFlipping) return;
+    if (isCoinFlipping || gameOverRef.current) return;
     playSound('FLIP');
     setIsCoinFlipping(true);
     // One tap, a single short flip, then the result before battle begins.
     setTimeout(() => {
+      if (gameOverRef.current) return; // A surrender during the toss must remain a defeat.
       const isHeads = Math.random() > 0.5;
       setCoinSide(isHeads ? 'CARA' : 'SELLO');
       setWhoStarted(isHeads ? 'PLAYER' : 'OPPONENT');
       setIsCoinFlipping(false);
-      setTimeout(() => setPhase('START_BANNER'), 450);
+      setTimeout(() => { if (!gameOverRef.current) setPhase('START_BANNER'); }, 450);
     }, 500);
   };
 
