@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { STORY_CHAPTERS } from '../campaign/story.ts';
+import { generalForChapter } from '../campaign/characters.ts';
 import './campaign.css';
 import './one-screen-ui.css';
 
@@ -28,18 +29,18 @@ const CampaignStory: React.FC = () => {
         <div className="dc-full-art dc-full-art-intro" aria-hidden="true">✥ <span>162X</span></div>
         <span className="dc-scene-label">PERÚ VIRREINAL FICTICIO · AÑO 162X</span>
         <h2 id="dc-story-paged-title">El reino escucha dos verdades</h2>
-        <p>Un joven soldado recibe una misión de Zero: investigar decretos contradictorios y una rebelión alimentada por agravios reales y documentos falsos.</p>
-        <p>Detrás de las proclamas aparece <strong>la Falsa Luz</strong>. Sigma promete redención, pero pretende imponer su voluntad. Zero sigue el rastro de la verdad.</p>
-        <blockquote className="dc-story-quote">Zero: «Defiende a los inocentes. No confundas un juramento con la verdad».</blockquote>
+        <p>Xervias, un joven soldado, recibe una misión de Zerión: investigar decretos contradictorios y una rebelión alimentada por agravios reales y documentos falsos.</p>
+        <p>Detrás de las proclamas aparece <strong>la Falsa Luz</strong>. Sigmar promete redención, pero pretende imponer su voluntad. Zerión sigue el rastro de la verdad.</p>
+        <blockquote className="dc-story-quote">Zerión: «Defiende a los inocentes. No confundas un juramento con la verdad».</blockquote>
       </>}
       {page === 1 && <>
-        <span className="dc-scene-label">PERSONAJES · NOMBRES PROVISIONALES</span>
+        <span className="dc-scene-label">PERSONAJES · ELENCO PRINCIPAL</span>
         <h2 id="dc-story-paged-title">Los cuatro protagonistas</h2>
         <div className="dc-full-cast">
-          <div><span>⚔</span><strong>Tu personaje (X)</strong><small>Joven soldado que busca la verdad y protege a los inocentes.</small></div>
-          <div><span>✦</span><strong>Zero</strong><small>Capitán y mentor; conoce el secreto de San Jerónimo.</small></div>
-          <div><span>♜</span><strong>Vile</strong><small>Excompañero brutal, aliado de Sigma por ambición.</small></div>
-          <div><span>♛</span><strong>Sigma</strong><small>Antiguo comandante, falso redentor de la Falsa Luz.</small></div>
+          <div><span>⚔</span><strong>Xervias</strong><small>Joven soldado que busca la verdad y protege a los inocentes.</small></div>
+          <div><span>✦</span><strong>Zerión</strong><small>El Prototipo Cero. Capitán y mentor; conoce el secreto de San Jerónimo.</small></div>
+          <div><span>♜</span><strong>Vándalo Rojo</strong><small>Excompañero brutal, aliado de Sigmar por ambición.</small></div>
+          <div><span>♛</span><strong>Sigmar</strong><small>Antiguo comandante, falso redentor de la Falsa Luz.</small></div>
         </div>
       </>}
       {page === 2 && <>
@@ -47,7 +48,7 @@ const CampaignStory: React.FC = () => {
         <h2 id="dc-story-paged-title">Guardianes del camino</h2>
         <div className="dc-general-list dc-full-generals">
           {STORY_CHAPTERS.filter(chapter => chapter.general).map(chapter =>
-            <div key={chapter.id}><span className="dc-general-emblem" aria-hidden="true">✥</span><div><strong>{chapter.general}</strong><small>{chapter.region}</small></div></div>)}
+            <div key={chapter.id}><span className="dc-general-emblem" aria-hidden="true">✥</span><div><strong>{generalForChapter(chapter.id)?.name ?? chapter.general}</strong><small>{chapter.general} · {chapter.region}</small></div></div>)}
         </div>
       </>}
     </article>
