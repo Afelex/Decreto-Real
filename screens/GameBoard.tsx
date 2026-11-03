@@ -9,6 +9,7 @@ import { CardActivationBanner } from './CardActivationBanner';
 import { TurnIndicator, TurnAnnouncement, ComboChoicePanel, CoinTossPanel } from './CombatEventUI';
 import { resolveBattleScenery } from '../game/battleScenery';
 import { getRoyalCardText } from '../game/royalCardText';
+import { resolveBattleEnd, type BattleEndResult } from '../game/battleEnd';
 import { BattleSceneryLayer } from './BattleSceneryLayer';
 
 // --- GAME CONFIGURATION ---
@@ -119,6 +120,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   const [whoStarted, setWhoStarted] = useState<'PLAYER' | 'OPPONENT' | null>(null);
   const gameOverRef = useRef(false);
   const campaignOutcomeReported = useRef(false);
+  const [battleEnd, setBattleEnd] = useState<BattleEndResult | null>(null);
   const aiController = useRef<AiTurnController | null>(null);
 
   const [playerHP, setPlayerHP] = useState(MAX_HP);
@@ -339,25 +341,36 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
 
   useEffect(() => () => announcementClock.current.cancel(), []);
 
+  // La partida termina en el tablero: no navegar hasta pulsar «Continuar».
   useEffect(() => {
     if (gameOverRef.current) return;
-    if (playerHP <= 0 || opponentImpactLevel === 4) { setPhase('DEFEAT'); gameOverRef.current = true; }
-    else if (opponentHP <= 0 || playerImpactLevel === 4) { setPhase('VICTORY'); gameOverRef.current = true; }
+    const result = resolveBattleEnd({ playerHP, opponentHP, playerImpactLevel, opponentImpactLevel });
+    if (!result) return;
+    gameOverRef.current = true;
+    setBattleEnd(result);
+    setShowSpecialSelection(false);
+    setPhase(result.phase);
   }, [playerHP, opponentHP, playerImpactLevel, opponentImpactLevel]);
 
   useEffect(() => {
     if (phase === 'VICTORY' || phase === 'DEFEAT') {
-      const timer = setTimeout(() => {
-        if (onOutcome) {
-          if (campaignOutcomeReported.current) return;
-          campaignOutcomeReported.current = true;
-          playSound(phase === 'VICTORY' ? 'VICTORY' : 'DEFEAT');
-          onOutcome({ won: phase === 'VICTORY', turns: turnCount, health: playerHP });
-        } else navigate('/victory', { state: { outcome: phase, turnCount, playerHP, playerImpactLevel } });
-      }, 3000);
-      return () => clearTimeout(timer);
+      playSound(phase === 'VICTORY' ? 'VICTORY' : 'DEFEAT');
     }
   }, [phase]);
+
+  const handleBattleEndContinue = () => {
+    if (!battleEnd || campaignOutcomeReported.current) return;
+    campaignOutcomeReported.current = true; // Evitar doble avance o doble guardado.
+    playSound('CLICK');
+    if (onOutcome) {
+      onOutcome({ won: battleEnd.phase === 'VICTORY', turns: turnCount, health: playerHP });
+    } else {
+      navigate('/victory', { state: {
+        outcome: battleEnd.phase, reason: battleEnd.reason,
+        turnCount, playerHP, opponentHP, playerImpactLevel, opponentImpactLevel,
+      } });
+    }
+  };
 
   const canHandleCards = phase === 'PLAYER_TURN' && !showSpecialSelection && !isMenuOpen && !cardAnnouncement && !announcementBusy.current && !gameOverRef.current;
   const selectedCard = playerHand.find(card => card.id === selectedCardId) ?? null;
@@ -617,7 +630,8 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
               const label = lvl === 4 ? 'FINAL' : ['I', 'II', 'III'][lvl - 1];
               return <div key={lvl} className={`dr-royal-rival-progress-slot${completed ? ' completed' : ''}`}
                 role="img" aria-label={`Impacto rival ${label}${completed ? ', completado' : ', pendiente'}`}>
-                {completed ? <img src={IMG_IMPACT} alt=""/> : <span className="dr-royal-rival-progress-numeral">{label}</span>}
+                {completed && <img className="dr-royal-impact-card-art" src={IMG_IMPACT} alt=""/>}
+                <span className="dr-royal-rival-progress-numeral dr-royal-impact-persistent-label">{label}</span>
               </div>;
             })}
           </div>
@@ -637,7 +651,8 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
                 onClick={event => { event.stopPropagation(); placeSelected(`impact-${lvl}` as CardDropZone); }}
                 aria-label={`Casilla Impacto ${label}${completed ? ', completado' : ''}`}
                 aria-disabled={!available && !(canHandleCards && selectedCard && selectedCard.type !== 'IMPACT')}>
-                {completed ? <img src={IMG_IMPACT} alt=""/> : <span className="dr-royal-impact-numeral">{label}</span>}
+                {completed && <img className="dr-royal-impact-card-art" src={IMG_IMPACT} alt=""/>}
+                <span className="dr-royal-impact-numeral dr-royal-impact-persistent-label">{label}</span>
               </button>;
             })}
           </div>
@@ -710,11 +725,14 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
       {phase === 'COIN_TOSS' &&
         <CoinTossPanel coinSide={coinSide} isFlipping={isCoinFlipping} onToss={handleCoinToss} />}
 
-      {(phase === 'VICTORY' || phase === 'DEFEAT') && (
-        <div className="dr-royal-result-transition" role="status"
-          aria-label={phase === 'VICTORY' ? 'Victoria' : 'Derrota'}>
-          <img src={`${import.meta.env.BASE_URL}final/${phase === 'VICTORY' ? 'victoria' : 'derrota'}.webp`}
-            alt="" draggable={false}/>
+      {battleEnd && (phase === 'VICTORY' || phase === 'DEFEAT') && (
+        <div className={`dr-royal-end-banner-stage ${battleEnd.phase === 'VICTORY' ? 'is-victory' : 'is-defeat'}`}>
+          <section className="dr-royal-end-banner" role="dialog" aria-modal="true"
+            aria-labelledby="dr-royal-end-title" aria-describedby="dr-royal-end-reason">
+            <h2 id="dr-royal-end-title">{battleEnd.title}</h2>
+            <p id="dr-royal-end-reason">{battleEnd.message}</p>
+            <button type="button" onClick={handleBattleEndContinue} autoFocus>Continuar</button>
+          </section>
         </div>
       )}
     </div>
