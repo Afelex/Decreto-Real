@@ -6,6 +6,7 @@ import {
 } from '../campaign/campaign.ts';
 import { STORY_CHAPTERS, stagesForChapter } from '../campaign/story.ts';
 import { campaignOverview, missionStarGoals } from '../campaign/progressView.ts';
+import { enemyForMission } from '../campaign/characters.ts';
 import { regionVisual } from '../campaign/regionVisuals.ts';
 const mapImage = '/Decreto-Real/virreinato-map.svg';
 import './campaign-map-fullscreen.css';
