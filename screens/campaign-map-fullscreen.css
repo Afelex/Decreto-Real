@@ -354,3 +354,9 @@
 @media (prefers-reduced-motion: reduce) {
   .dcm-screen * {animation:none !important;transition:none !important;}
 }
+
+/* Acceso independiente a la colección mística, incluso mientras está sellada. */
+.dcm-header {grid-template-columns:42px minmax(0,1fr) 45px 45px;}
+.dcm-deck {border-color:#deba7b;color:#fff1c4;background:linear-gradient(150deg,#6e4460,#302239);}
+.dcm-deck span {font-size:9px;}
+@media(max-width:350px) { .dcm-header {grid-template-columns:36px minmax(0,1fr) 42px 42px;gap:3px;padding:3px;} .dcm-heading h1 {font-size:22px;} }
