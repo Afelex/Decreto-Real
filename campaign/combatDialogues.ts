@@ -107,175 +107,175 @@ const script: Readonly<Record<string, DialogueRow>> = {
     "Escucharé primero a las familias de la frontera. Ellas saben por dónde pasaron los mensajeros."
   ],
   "20": [
-    "Conozco las rutas que tus mapas no pueden nombrar.",
-    "No vengo a tomar tus rutas; quiero descubrir quién las usa.",
-    "Mi familia depende de que nadie cruce.",
-    "¡No arriesgaré la vida de los míos!",
-    "No puedes comprender lo que estoy protegiendo.",
-    "Tal vez pueda encontrar otro modo de cuidarlos.",
-    "Un camino abierto vale más si nadie debe pagarlo con miedo."
+    "Conozco el puente escondido. Estoy guiando por él a los mensajeros de la Falsa Luz.",
+    "¿Por qué los ayudas? Están llevando órdenes falsas a las aldeas de la selva.",
+    "Porque me amenazaron. Si dejo de guiarlos, harán daño a mi familia. No sé cómo salir de esto.",
+    "¡No puedo perder! Mi familia sigue en peligro.",
+    "Mi familia me necesita. Pero cada mensaje que llevo puede poner en riesgo a otra familia.",
+    "Ya no puedo seguir ocultando el puente. Te diré dónde está.",
+    "Buscaremos cómo proteger a tu familia. No tienes que seguir ayudando a quienes te amenazan."
   ],
   "21": [
-    "Cada aldea escucha la proclamación que necesita.",
-    "Eso no es informar: es dividir para gobernar.",
-    "La verdad cambia según quien la cuente.",
-    "¡No conseguirás detener todos los mensajes!",
+    "Estoy entregando una orden distinta en cada aldea. Así cada pueblo escucha lo que quiere oír.",
+    "¿Por qué cambias el texto? Si todos reciben órdenes diferentes, acabarán peleando entre ellos.",
+    "Es lo que me pidió el Escribano del Alba. Me dijo que así lograríamos que todos siguieran a Sigumán.",
+    "¡Si me detienes, el Escribano sabrá que he fallado!",
     "",
     "",
-    "Una misma firma une versiones que pretendían ser distintas."
+    "Todos estos papeles tienen una misma marca. Ahora sabemos dónde buscar al hombre que escribe las mentiras."
   ],
   "22": [
-    "Los soldados de la capital siempre traen promesas.",
-    "He venido con pruebas, no con nuevas órdenes.",
-    "Si te equivocas, mi gente pagará el precio.",
-    "No subestimes lo que protege esta selva.",
-    "Antes te derrotaría que entregar a mi pueblo.",
-    "La tinta... coincide con los decretos que recibí.",
-    "Nayisa, protege a tu pueblo. Yo llevaré la prueba fuera de aquí."
+    "Voy a cerrar los senderos de la selva. No permitiré que entren soldados que puedan hacer daño a mi gente.",
+    "¿Por qué nos atacas, Nayisa? Traigo pruebas de que los mensajes que llegan a tus aldeas son falsos.",
+    "Antes también prometieron ayudarnos y terminaron robándonos. Si dejo pasar a cualquiera, mi pueblo pagará el precio.",
+    "¡No permitiré que pongan en peligro a mi gente!",
+    "Quiero defender mi hogar, pero si esos mensajes son falsos, quizá estoy protegiendo a quienes nos engañan.",
+    "Veo que tienes razón: esta carta fue cambiada. He cerrado la selva por miedo a que nos lastimen otra vez.",
+    "No has dejado de proteger a tu pueblo, Nayisa. Ahora puedes ayudarme a llevar la verdad a las otras aldeas."
   ],
   "23": [
-    "Una bandera debe gobernar esta plaza.",
-    "Ningún color vale más que los vecinos que separaste.",
-    "Entonces elige un bando y lucha.",
-    "¡La plaza todavía me obedece!",
+    "Voy a sacar de la plaza a quienes llevan la bandera contraria. Son enemigos de nuestra ciudad.",
+    "¿Por qué? Son tus vecinos. Tener otra bandera no significa que quieran hacer daño.",
+    "Mi capitana dice que, si permitimos dos banderas, la ciudad volverá a enfrentarse. Por eso debo expulsarlos.",
+    "¡No puedo dejar que vuelvan a entrar a la plaza!",
     "",
     "",
-    "Que vuelva la palabra antes que las armas."
+    "Esta plaza es de todos sus vecinos. Hablarán entre ellos antes de que alguien vuelva a obligarlos a elegir bando."
   ],
   "24": [
-    "La Falsa Luz librará a todos de sus dudas.",
-    "Quitarles el derecho a decidir no es liberarlos.",
-    "La multitud cree en mí, no en tus preguntas.",
-    "¡No perderé a mis seguidores!",
-    "He sostenido esta ciudad con una promesa.",
-    "Mis palabras ya no bastan...",
-    "Una promesa no justifica engañar a quienes confían en ti."
+    "Estoy reuniendo a la gente para prometerle paz. Les digo que la Falsa Luz resolverá todos sus problemas.",
+    "¿Por qué les prometes eso si sabes que hay órdenes falsas? La gente confía en tus palabras.",
+    "Porque, si tienen miedo, me escuchan. Sigumán me ofreció poder si consigo que sigan sus órdenes.",
+    "¡No me quites a mis seguidores! Sin ellos no soy nadie.",
+    "Pensé que podía guiar a toda la ciudad. Ahora muchos empiezan a hacerse preguntas.",
+    "Ya nadie cree mis promesas. No puedo seguir ocultando las órdenes falsas.",
+    "Puedes hablar con la gente, pero no decidir por ella. Una promesa solo vale si dices la verdad."
   ],
   "25": [
-    "Estos archivos están cerrados por orden superior.",
-    "Solo quiero comparar las dos versiones del decreto.",
-    "Una de ellas no existe oficialmente.",
-    "¡Los libros no saldrán de aquí!",
+    "Voy a cerrar el archivo del cabildo, donde se guardan las decisiones de la ciudad.",
+    "¿Por qué no puedo leerlas? Aquí hay dos copias del mismo decreto y dicen cosas diferentes.",
+    "Me ordenaron esconder una de ellas. Si el pueblo descubre que cambió el texto, dejará de confiar en sus jefes.",
+    "¡No dejaré que compares esas copias!",
     "",
     "",
-    "Ningún archivo puede esconder para siempre su contradicción."
+    "Las dos copias prueban que alguien cambió el decreto. Debemos llevar esa prueba a la siguiente región."
   ],
   "26": [
-    "Sin mi estandarte, esta ciudad se romperá.",
-    "La unidad no se construye negando lo que pasó.",
-    "Si lo derribas, tú cargarás con sus consecuencias.",
-    "¡Mis soldados no abandonarán la bandera!",
-    "He consagrado mi vida a este símbolo.",
-    "Quizás confundí defender la ciudad con defender mi estandarte.",
-    "Que la ciudad permanezca unida por sus habitantes, Isabela."
+    "Voy a quitar la bandera de quienes se oponen a mí. Solo mi estandarte podrá verse en esta ciudad.",
+    "¿Por qué obligas a todos a seguirte? Hay familias enfrentadas porque no les permites hablar de lo que ocurrió.",
+    "Creo que, si todos siguen un mismo símbolo, dejarán de pelear. Tengo miedo de que la ciudad se rompa otra vez.",
+    "¡No dejaré que destruyan mi estandarte!",
+    "He protegido esta bandera durante años. Pero veo que mis soldados empiezan a pelear también por ella.",
+    "Me has vencido. Tal vez obligar a todos a seguir un color solo hizo crecer el problema.",
+    "Isabela, no hace falta que todos piensen igual para vivir juntos. Lo importante es escuchar a la ciudad."
   ],
   "27": [
-    "Nadie puede pasar por la tormenta.",
-    "No abandonaré a quienes llevan las pruebas.",
-    "Entonces la montaña decidirá por ti.",
-    "¡El desfiladero sigue cerrado!",
+    "Vigilo el paso de montaña. No dejaré cruzar a nadie mientras dure la tormenta.",
+    "Tenemos que llevar estas pruebas a la fortaleza. Además, hay personas detrás de nosotros que necesitan refugio.",
+    "El camino es peligroso y mis superiores lo han cerrado. Si alguien cae, dirán que fue culpa mía.",
+    "¡Regresa! No permitiré que arriesgues a nadie en este paso.",
     "",
     "",
-    "Cruzaremos juntos, o no cruzaremos."
+    "Primero ayudaremos a cruzar a todos. Las pruebas no sirven de nada si abandonamos a quienes las llevaron."
   ],
   "28": [
-    "Juramos guardar estas rutas hasta la muerte.",
-    "Un juramento debe proteger a alguien, no condenarlo.",
-    "No puedo decidirlo mientras empuñas una espada.",
-    "¡Mi palabra no caerá contigo!",
-    "He custodiado este paso durante años.",
-    "Quizás abrí los ojos demasiado tarde.",
-    "Aún puedes usar tu juramento para salvar a otros."
+    "Soy el guardián de este puente. Juré impedir el paso a quienes no tengan permiso del Cóndor.",
+    "¿Por qué mantienes cerrado el camino? Llevamos documentos que podrían demostrar quién ha falsificado las órdenes.",
+    "Porque prometí obedecer al Cóndor. Si rompo mi palabra, mis propios compañeros dejarán de confiar en mí.",
+    "¡Aún puedo defender el puente!",
+    "Llevo toda la vida cuidando este paso. Si me equivoco ahora, ¿para qué sirvió tanto esfuerzo?",
+    "Me venciste. Tal vez debí escuchar lo que traías antes de atacarte.",
+    "Cumplir una promesa también exige saber a quién protege. Ahora deja que llevemos las pruebas."
   ],
   "29": [
-    "El Cóndor conoce cada paso que intentas tomar.",
-    "Y yo conozco lo que ha costado llegar hasta aquí.",
-    "Entonces todavía no conoces el miedo de la cumbre.",
-    "¡El puente seguirá cerrado!",
+    "Estoy vigilando el último puente hacia la fortaleza del Cóndor. Nadie debe llegar hasta su cámara.",
+    "¿Qué guarda allí? Sabemos que tiene una carta antigua que puede revelar quién cambió los juramentos.",
+    "Es cierto. El general teme que esa carta haga que sus soldados duden de todas las órdenes que recibieron.",
+    "¡No llegarás a la cámara del Cóndor!",
     "",
     "",
-    "La última respuesta nos espera al otro lado."
+    "Ya podemos llegar hasta el general. Le preguntaré directamente por qué ha escondido la carta."
   ],
   "30": [
-    "Hay promesas escritas con sangre de generaciones.",
-    "Y también nombres borrados de los documentos que guardas.",
-    "Lo que protejo es más antiguo que tu causa.",
-    "¡Mis cumbres no serán tu victoria!",
-    "Nadie rompe un juramento sin pagar un precio.",
-    "Esta carta... fue escrita antes de que nos mintieran.",
-    "Aukan, entrégala. Lo que pasó merece ser conocido."
+    "Guardo una carta antigua que explica por qué los ocho generales juraron servir a Sigumán.",
+    "¿Por qué la escondes, Aukan? Si esa carta fue cambiada, tus soldados merecen saberlo.",
+    "Porque he servido a ese juramento durante años. Si está basado en una mentira, tendré que aceptar que me equivoqué.",
+    "¡No permitiré que me arrebates la carta!",
+    "Empiezo a pensar que he defendido una promesa sin comprobar qué decía en realidad.",
+    "Ya lo veo. Esta carta menciona a San Jerónimo y es anterior a las órdenes que recibimos.",
+    "Gracias por entregarla, Aukan. Seguiremos ese nombre hasta encontrar al verdadero autor de las órdenes."
   ],
   "31": [
-    "Los heraldos no cuestionamos el juramento.",
-    "Entonces no sabéis a quién estáis protegiendo.",
-    "Protegemos la palabra de nuestros superiores.",
-    "¡Mi palabra no será puesta en duda!",
+    "Voy a detenerte. Los heraldos tenemos órdenes de proteger la Casa del Juramento.",
+    "¿Qué protegen exactamente? Tenemos pruebas de que alguien cambió las palabras de sus promesas.",
+    "Nos enseñaron a obedecerlas desde jóvenes. Si las cuestionamos, todo lo que defendimos podría perder sentido.",
+    "¡No puedes decir que nuestro juramento es falso!",
     "",
     "",
-    "Las promesas deben responder ante las personas."
+    "No tienes que dejar de ser leal. Solo debes saber si tu promesa está ayudando a la gente o dañándola."
   ],
   "32": [
-    "Mi deber es guardar cada copia de estos documentos.",
-    "Tu deber también es impedir que los falsifiquen.",
-    "No soy quien debe decidir cuál es verdadera.",
-    "¡No abrirás la cámara del juramento!",
-    "He protegido esos papeles durante años.",
-    "Guardarlos también me hizo cómplice de su silencio.",
-    "Ahora puedes custodiar las pruebas sin ocultarlas."
+    "Estoy guardando las copias antiguas de los juramentos. Nadie puede revisarlas.",
+    "¿Por qué las ocultas? Necesitamos compararlas con los decretos que Leocadio entregó a los generales.",
+    "Porque si son diferentes, se demostrará que muchos soldados fueron engañados. Me ordenaron evitar ese escándalo.",
+    "¡No te llevarás las copias originales!",
+    "Llevo años cuidando estos documentos. Quizá los protegí tanto que terminé escondiendo la verdad.",
+    "Las copias son distintas. Ya no puedo decir que todos recibieron el mismo juramento.",
+    "Gracias por abrir el archivo. Mostrar las dos versiones es la única manera de que todos entiendan qué pasó."
   ],
   "33": [
-    "Tras esa puerta duerme la versión oficial.",
-    "Y también las palabras que borraron de ella.",
-    "No harás que las lea frente a mis hombres.",
-    "¡La cámara seguirá cerrada!",
+    "Estoy cerrando la sala donde se escribió el juramento que todavía obedecen los soldados.",
+    "¿Por qué impides el paso? Allí podríamos encontrar el documento que prueba que Sigumán sabía del engaño.",
+    "Mi capitán me ordenó protegerlo. Si Sigumán conocía la mentira, nadie volverá a confiar en nuestro ejército.",
+    "¡No entrarás a esa sala!",
     "",
     "",
-    "Una orden no se vuelve justa por estar bajo llave."
+    "Aquí está la prueba: Sigumán sabía que algunas órdenes eran falsas y decidió usarlas de todos modos."
   ],
   "34": [
-    "Juramos guardar la paz, no discutir su origen.",
-    "Pero alguien cambió las palabras de tu juramento.",
-    "Si eso es cierto, toda mi vida fue una mentira.",
-    "¡No permitiré que derribes mi palabra!",
-    "¿Qué queda de un caballero sin su juramento?",
-    "No defendí la paz... defendí un texto adulterado.",
-    "Aún puedes cumplir tu promesa protegiendo la verdad, Gonzalo."
+    "Soy el Caballero del Juramento. Prometí proteger al reino y por eso sigo defendiendo a Sigumán.",
+    "¿Y si alguien cambió tu promesa? Tenemos el documento original: no dice que debas obedecer una mentira.",
+    "Si es verdad, he luchado contra personas inocentes creyendo que estaba protegiendo la paz. No quiero aceptarlo.",
+    "¡No puedo perder! Mi palabra es lo único que me queda.",
+    "Me aferro al juramento porque toda mi vida ha girado a su alrededor. Pero ya no sé qué versión es la verdadera.",
+    "Me venciste. Ahora veo que defendí las órdenes de Sigumán, no la promesa de proteger al pueblo.",
+    "Gonzalo, todavía puedes cumplir tu promesa. Empieza ayudando a quienes sufrieron por esas órdenes."
   ],
   "35": [
-    "No inventé el sufrimiento del reino; solo escribí lo que deseaban oír.",
-    "Usaste ese dolor para fabricar decretos que enfrentaron a inocentes.",
-    "Las palabras siempre pertenecen al vencedor.",
-    "¡Mis originales nunca verán la luz!",
-    "Todo comenzó en mi mesa, pero no terminará aquí.",
-    "La escritura me dio poder... y ahora me condena.",
-    "Los testimonios quedarán junto a tus falsificaciones, Leocadio."
+    "Yo escribí las nuevas órdenes. Cambié partes de los decretos para que cada pueblo apoyara a Sigumán.",
+    "¿Por qué lo hiciste? Aprovechaste problemas reales, como el hambre y los abusos, para enfrentar a la gente.",
+    "Porque Sigumán me pagó y prometió darme poder. Era más fácil manipular su enojo que resolver sus problemas.",
+    "¡No permitiré que encuentres mis documentos originales!",
+    "Todo lo que Sigumán construyó depende de mis textos. Si caigo, se sabrá cómo engañamos al reino.",
+    "Me has vencido. Los originales están ahí: demuestran que Sigumán sabía que las órdenes eran falsas.",
+    "Leocadio, usaste el dolor de la gente para ganar poder. Guardaremos las pruebas para que nadie repita esa mentira."
   ],
   "36": [
-    "Fuimos compañeros. Tú obedecías; yo aprendí a ganar.",
-    "Confundes ganar con tomar lo que no te pertenece.",
-    "Todavía puedes seguirme, Xervias. Es nuestra última oportunidad.",
-    "¡No me derrotarás con ideales!",
-    "No necesito a Sigumán para vencerte.",
-    "Caí... pero no me arrepiento de haber elegido el poder.",
-    "No te dejaré decidir por los inocentes otra vez."
+    "Voy a entregarte a Sigumán. Él me dará poder sobre los soldados que antes luchaban a nuestro lado.",
+    "¿Por qué haces esto, Vándalo? Fuimos compañeros. ¿Cuándo empezaste a tratar a las personas como una recompensa?",
+    "Cuando vi que obedecer no me daba nada. Sigumán me ofreció un ejército y decidí tomarlo. Tú también podrías unirte.",
+    "¡No perderé contra ti! Sigumán me prometió el mando.",
+    "Éramos iguales, Xervias. La diferencia es que yo aprendí a conseguir lo que quiero sin pedir permiso.",
+    "Me venciste, pero sigo creyendo que el poder vale más que tus promesas.",
+    "El poder no te da derecho a lastimar a otros. Te detendré, aunque eso signifique perder al compañero que conocí."
   ],
   "37": [
-    "Sigumán no te entregará el rastro de Zhinchi.",
-    "No abandonaré a mi maestro ni a las personas que protegió.",
-    "Entonces tendrás que buscar entre los escombros.",
-    "¡Todavía guardo la última entrada!",
+    "Sigumán me ordenó cerrar esta entrada. Aquí llegaron las últimas noticias sobre Zhinchi.",
+    "¿Dónde está mi maestro? Se quedó atrás para protegerme y ahora está gravemente herido. Necesito encontrarlo.",
+    "No lo sé. Solo me pidieron ocultar los mensajes. Si entras, llegarás hasta la sala donde espera Sigumán.",
+    "¡No pasarás! Me ordenaron destruir esos mensajes.",
     "",
     "",
-    "Zhinchi, seguiré tu promesa aunque no pueda encontrarte hoy."
+    "Encontré una última pista de Zhinchi, pero todavía no sé dónde está. Seguiré adelante y después volveré a buscarlo."
   ],
   "38": [
-    "He traído orden a un reino dividido por su propia verdad.",
-    "Convertiste injusticias reales en una mentira que sometió a todos.",
-    "¿Y qué harás tú, Xervias? ¿Gobernar con dudas?",
-    "¡Aún puedo sostener la Falsa Luz!",
-    "Mira a tu alrededor. Incluso mis enemigos necesitan autoridad.",
-    "Mi voluntad... no bastó para sostener este reino.",
-    "No vengo a reemplazar tu voluntad por la mía. Vengo a devolverles su voz."
+    "He usado decretos falsos para conseguir que los generales me obedezcan. Así quería unir un reino que estaba dividido.",
+    "¿Por qué mentiste, Sigumán? La gente tenía problemas reales, pero tú los usaste para conseguir poder.",
+    "Porque pensé que solo una autoridad fuerte podía imponer la paz. Si decía toda la verdad, muchos no me seguirían.",
+    "¡No dejaré que destruyas la Falsa Luz! Sin mí, el reino volverá al caos.",
+    "Veo que estás cerca de vencerme. Pero sigo creyendo que la gente necesita a alguien que decida por ella.",
+    "He perdido. Obligarlos a obedecer no resolvió sus problemas... y ahora todo lo que construí se derrumba.",
+    "Tu error fue creer que la paz se consigue obligando a todos a callar. La gente necesita justicia y poder decidir."
   ],
   "01": [
     "Voy a detener a estas familias. Tengo una orden que dice que son culpables.",
