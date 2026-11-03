@@ -186,14 +186,14 @@
   width:min(94%,430px);
   aspect-ratio:3 / 1;
   padding:0;
-  background:url('/Decreto-Real/interfaz/cinta-turno-jugador.webp') center/contain no-repeat;
+  background:url('/Decreto-Real/interfaz/cinta-turno-jugador.svg') center/contain no-repeat;
   border:0;
   box-shadow:none;
   transform:none;
   filter:drop-shadow(0 7px 8px #0008);
 }
 .dr-royal-screen .dr-event-turn--opponent .dr-event-turn__ribbon {
-  background:url('/Decreto-Real/interfaz/cinta-turno-rival.webp') center/contain no-repeat;
+  background:url('/Decreto-Real/interfaz/cinta-turno-rival.svg') center/contain no-repeat;
   border:0;
 }
 .dr-royal-screen .dr-event-turn--opening .dr-event-turn__ribbon {
