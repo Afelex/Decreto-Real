@@ -227,7 +227,7 @@ const script: Readonly<Record<string, DialogueRow>> = {
     "Estoy cerrando la sala donde se escribió el juramento que todavía obedecen los soldados.",
     "¿Por qué impides el paso? Allí podríamos encontrar el documento que prueba que Sigumán sabía del engaño.",
     "Mi capitán me ordenó protegerlo. Si Sigumán conocía la mentira, nadie volverá a confiar en nuestro ejército.",
-    "¡No entrarás a esa sala!",
+    "¡No puedes entrar! Si encuentran las órdenes de Sigumán, mis superiores me culparán por dejarlas salir.",
     "",
     "",
     "Aquí está la prueba: Sigumán sabía que algunas órdenes eran falsas y decidió usarlas de todos modos."
