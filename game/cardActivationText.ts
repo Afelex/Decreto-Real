@@ -17,6 +17,9 @@ export function cardActivationCopy(card: Pick<CardData, 'type' | 'name' | 'descr
     case 'ORDER':
       effect = isPlayer ? 'Robas 1 carta extra' : 'El rival roba 1 carta extra';
       break;
+    case 'MYSTIC':
+      effect = isPlayer ? 'Poder provisional: infliges 2 de daño' : 'Poder provisional: recibes 2 de daño';
+      break;
     case 'IMPACT':
       effect = card.rank === 4 ? '¡Cuarto Impacto: victoria!' : 'Sella un Impacto, drena 1 de vida y recupera 1';
       break;
