@@ -111,7 +111,7 @@ test('star goals dialog is complete, keyboard-accessible and fits the phone', as
   await page.getByRole('button', { name: 'Ver objetivos del reto' }).click();
   const dialog = page.getByRole('dialog', { name: 'El pregón alterado' });
   await expect(dialog).toBeVisible();
-  await expect(dialog.getByText('Gana el duelo')).toBeVisible();
+  await expect(dialog.getByText('Gana el combate')).toBeVisible();
   await expect(dialog.getByText('Conserva al menos 6 de vida')).toBeVisible();
   await expect(dialog.getByText('Gana en 10 rondas o menos')).toBeVisible();
   const bounds = await dialog.boundingBox();
