@@ -199,8 +199,8 @@ test('original game keeps its rules but activates cards by selection plus target
 test('original game and campaign use the same physical-looking board and audio controls', async ({ page }) => {
   test.skip(test.info().project.name !== 'mobile-390', 'One shared-component smoke test');
   await page.goto('/Decreto-Real/#/game');
-  await advanceStoryPrelude(page);
   await expect(page.getByText('¿Quién comienza?')).toBeVisible();
+  await expect(page.getByTestId('story-combat-dialogue')).toHaveCount(0);
   await page.goto('/Decreto-Real/#/campania/mision/01');
   await page.getByRole('button', { name: /Preparar combate/ }).click();
   await expect(page.locator('.dr-classic-screen')).toBeVisible();
