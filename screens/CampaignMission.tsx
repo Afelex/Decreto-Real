@@ -118,7 +118,7 @@ const CampaignMission: React.FC = () => {
       {mission.kind === 'boss' && <span className="dc-general-banner"><GeneralPortrait chapterId={chapter?.id ?? ''} className="dc-mini-general"/><span>♛ GENERAL DE LA REGIÓN · {mission.title}</span></span>}
       <span className="dc-scene-label">{mission.kind === 'boss' ? 'ENCUENTRO CON GENERAL' : mission.kind === 'subboss' ? 'ENCUENTRO CON SUBJEFE' : mission.kind === 'final' ? 'ENFRENTAMIENTO FINAL' : 'NUEVA MISIÓN'} · {mission.id}/38</span>
       <h2 id="dc-scene-title">{mission.title}</h2>
-      <p className="dc-scene-location">⌖ {chapter?.region} · Rival: {enemy?.name ?? mission.opponent}</p>
+      <p className="dc-scene-location">⌖ {chapter?.region} · {enemy ? `${enemy.role}: ${enemy.name}` : mission.opponent}</p>
       <p className="dc-scene-narration">{mission.description}</p>
       <div className="dc-story-conversation">
         <small>{mission.openingLine.includes(':') ? mission.openingLine.split(':', 1)[0] : 'CRÓNICA'}</small>
