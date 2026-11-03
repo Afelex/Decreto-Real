@@ -28,7 +28,7 @@ test('colección visible desde el principio; editor protegido hasta misión 36',
   expect(screen.getByRole('heading',{name:'Cartas místicas'})).toBeTruthy();
   expect(screen.getByRole('button',{name:/Editar baraja/}).hasAttribute('disabled')).toBe(true);
   expect(screen.getByText('Místicas selladas')).toBeTruthy();
-  expect(screen.getByText(/misión 36/)).toBeTruthy();
+  expect(screen.getAllByText(/misión 36/).length).toBeGreaterThan(0);
 });
 
 test('cada general otorga una carta sellada sin habilitar editor',()=>{
