@@ -30,14 +30,14 @@ function screenAt(path: string) {
   </MemoryRouter>);
 }
 
-test('the prologue introduces the four provisional characters and eight generals', () => {
+test('the prologue introduces the named protagonists and eight generals', () => {
   screenAt('/campania/historia');
   expect(screen.getByRole('heading', { name: 'El reino escucha dos verdades' })).toBeTruthy();
   fireEvent.click(screen.getByRole('button', { name: 'Protagonistas' }));
-  expect(screen.getByText('Tu personaje (X)')).toBeTruthy();
-  expect(screen.getByText('Zero')).toBeTruthy();
-  expect(screen.getByText('Vile')).toBeTruthy();
-  expect(screen.getByText('Sigma')).toBeTruthy();
+  expect(screen.getByText('Xervias')).toBeTruthy();
+  expect(screen.getByText('Zerión')).toBeTruthy();
+  expect(screen.getByText('Vándalo Rojo')).toBeTruthy();
+  expect(screen.getByText('Sigmar')).toBeTruthy();
   fireEvent.click(screen.getByRole('button', { name: 'Ocho generales' }));
   expect(document.querySelectorAll('.dc-general-list > div').length).toBe(8);
 });
@@ -63,9 +63,9 @@ test('the final mission victory reveals the canonical ending', () => {
   window.localStorage.setItem(CAMPAIGN_STORAGE_KEY, JSON.stringify({ version: 1, stars: Object.fromEntries(Array.from({ length: 38 }, (_, i) => [String(i + 1).padStart(2, '0'), 1])) }));
   screenAt('/campania/epilogo');
   expect(screen.getByRole('heading', { name: 'El Sello permanece' })).toBeTruthy();
-  expect(screen.getByText(/Sigma, que conocía parte del engaño/)).toBeTruthy();
+  expect(screen.getByText(/Sigmar, que conocía parte del engaño/)).toBeTruthy();
   fireEvent.click(screen.getByRole('button', { name: 'Siguiente ›' }));
-  expect(screen.getByText(/Zero desapareció gravemente herido/)).toBeTruthy();
+  expect(screen.getByText(/Zerión desapareció gravemente herido/)).toBeTruthy();
 });
 
 test('a forged final result without preceding victories cannot reveal the epilogue', () => {
