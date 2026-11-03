@@ -115,6 +115,7 @@ test('a real original-game victory unlocks the next mission and gives achievable
   const saved = JSON.parse(window.localStorage.getItem(CAMPAIGN_STORAGE_KEY)!);
   expect(saved.stars['01']).toBe(3);
   expect(screen.getByRole('button', { name: 'Siguiente misión →' })).toBeTruthy();
+  expect(screen.getByText(/el sello es auténtico, pero alguien ha cambiado sus palabras/)).toBeTruthy();
 });
 
 test('a defeat with the original game cannot unlock the next challenge', () => {
@@ -123,4 +124,5 @@ test('a defeat with the original game cannot unlock the next challenge', () => {
   fireEvent.click(screen.getByRole('button', { name: 'Derrota original de prueba' }));
   expect(screen.getByRole('heading', { name: 'Misión fallida' })).toBeTruthy();
   expect(window.localStorage.getItem(CAMPAIGN_STORAGE_KEY)).toBeNull();
+  expect(screen.getByText(/Los vecinos quedan expuestos al castigo/)).toBeTruthy();
 });
