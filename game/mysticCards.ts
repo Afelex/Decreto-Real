@@ -50,7 +50,7 @@ export function mysticCard(id: MysticId, instanceId: string): CardData {
     name: mysticDisplayName(id),
     description: 'Efecto provisional: inflige 2 de daño',
     cost: 0,
-    img: `${import.meta.env.BASE_URL}cartas/decreto-orden.webp?v=20261103`,
+    img: '/Decreto-Real/cartas/decreto-orden.webp?v=20261103',
   };
 }
 
