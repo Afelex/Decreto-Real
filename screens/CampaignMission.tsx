@@ -8,7 +8,7 @@ import {
 } from '../campaign/campaign.ts';
 import { chapterForStage } from '../campaign/story.ts';
 import { missionStarGoals } from '../campaign/progressView.ts';
-import { regionVisual } from '../campaign/regionVisuals.ts';
+import BattleResultScreen from './BattleResultScreen';
 import { RegionScene } from './RegionScene';
 import { GeneralPortrait } from './GeneralPortrait';
 import './campaign.css';
@@ -37,7 +37,6 @@ const CampaignMission: React.FC = () => {
   const index = mission ? CAMPAIGN_MISSIONS.findIndex(item => item.id === mission.id) : -1;
   const next = CAMPAIGN_MISSIONS[index + 1];
   const nextRegion = next && next.chapterId !== mission?.chapterId ? chapterForStage(next.id) : null;
-  const region = regionVisual(chapter?.id);
   const accent = { '--dc-accent': chapter?.color ?? '#bfa374' } as React.CSSProperties;
 
   React.useEffect(() => {
@@ -66,30 +65,43 @@ const CampaignMission: React.FC = () => {
     <button className="dc-primary" onClick={() => navigate('/campania')}>Volver al mapa</button>
   </main>;
 
-  if (outcome) return <main className="dc-page dc-center dc-full-page dc-mission-result" style={accent}>
-    <section className="dc-result-card dc-story-result" aria-label="Resultado y crónica de la misión">
-      <small>DECRETO REAL I · MISIÓN {mission.id}/38</small>
-      <span className="dc-story-emblem dc-region-result-emblem" aria-hidden="true">{outcome.won ? region.symbol : '✧'}</span>
-      <h1>{outcome.won ? mission.kind === 'boss' ? '¡General derrotado!' : mission.kind === 'final' ? '¡La Falsa Luz cae!' : '¡Misión superada!' : 'Misión fallida'}</h1>
-      <h2>{mission.title}</h2>
-      {outcome.won && outcome.saved && nextRegion && <p className="dc-new-region">✥ Nueva región: <b>{nextRegion.region}</b></p>}
-      <p className="dc-scene-narration">{outcome.won ? mission.victoryLine : mission.defeatLine}</p>
-      <div className="dc-result-stars" role="img" aria-label={`${outcome.earned} de 3 estrellas`}>
-        {[0, 1, 2].map(i => <span key={i} className={i < outcome.earned ? 'earned' : ''}>★</span>)}
-      </div>
-      <p>{outcome.won ? `Mejor marca: ${outcome.best}/3 estrellas` : 'Consigue una victoria para continuar la historia.'}</p>
-      <div className="dc-result-stats"><span>Turno <b>{outcome.turns}</b></span><span>Vida restante <b>{outcome.health}</b></span></div>
-      {chapter?.specialCard && mission.kind === 'boss' && outcome.won && <p className="dc-note">Carta del general en la historia: <b>{chapter.specialCard}</b>. Todavía no es una recompensa jugable.</p>}
-      
-      {!outcome.saved && <p role="alert" className="dc-warning">No se pudo guardar tu progreso en este navegador.</p>}
-      {outcome.won && !next && <button className="dc-primary" onClick={() => navigate('/campania/epilogo')}>Leer epílogo ✦</button>}
-      {outcome.won && next && outcome.saved && <button className="dc-primary" onClick={() => { setOutcome(null); setAttempt(0); setView('briefing'); navigate(`/campania/mision/${next.id}`); }}>{nextRegion ? 'Entrar en la nueva región →' : 'Siguiente misión →'}</button>}
-      <div className="dc-result-actions">
-        <button className="dc-secondary" onClick={retry}>Repetir duelo</button>
-        <button className="dc-secondary" onClick={() => navigate('/campania')}>Volver al mapa</button>
-      </div>
-    </section>
-  </main>;
+  if (outcome) {
+    const heading = outcome.won
+      ? mission.kind === 'boss' ? '¡General derrotado!'
+        : mission.kind === 'final' ? '¡La Falsa Luz cae!' : '¡Misión superada!'
+      : 'Misión fallida';
+
+    return <BattleResultScreen
+      won={outcome.won}
+      heading={heading}
+      stats={[
+        { label: 'Turnos', value: outcome.turns },
+        { label: 'Vida restante', value: outcome.health },
+        { label: 'Estrellas', value: `${outcome.earned}/3` },
+        { label: 'Mejor marca', value: `${outcome.best}/3` },
+      ]}
+      warning={!outcome.saved ? 'No se pudo guardar tu progreso en este navegador.' : undefined}
+      actions={[
+        ...(outcome.won && !next ? [{
+          label: 'Leer epílogo ✦',
+          primary: true,
+          onClick: () => navigate('/campania/epilogo'),
+        }] : []),
+        ...(outcome.won && next && outcome.saved ? [{
+          label: nextRegion ? 'Entrar en la nueva región →' : 'Siguiente misión →',
+          primary: true,
+          onClick: () => {
+            setOutcome(null);
+            setAttempt(0);
+            setView('briefing');
+            navigate(`/campania/mision/${next.id}`);
+          },
+        }] : []),
+        { label: 'Repetir duelo', onClick: retry },
+        { label: 'Volver al mapa', onClick: () => navigate('/campania') },
+      ]}
+    />;
+  }
 
   if (view === 'briefing') return <main className="dc-page dc-full-page dc-story-page dc-mission-briefing" style={accent}>
     <header className="dc-header">
