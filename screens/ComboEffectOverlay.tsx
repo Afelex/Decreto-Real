@@ -26,7 +26,7 @@ export function ComboEffectOverlay({ level, ability, paused, onEnded }: {
   }, [paused, src]);
 
   return (
-    <div className={`dr-energy-overlay dr-energy-overlay--combo ${ability === 'HEAL' ? 'is-heal' : 'is-damage'}`}
+    <div className={`dr-energy-overlay dr-energy-overlay--combo ${ability === 'HEAL' ? 'is-heal' : 'is-damage'} ${paused ? 'paused' : ''}`}
       role="status" aria-label={`Combo ×${level}: ${ability === 'DAMAGE' ? 'Ataque' : 'Curación'}`}>
       <div className="dr-energy-overlay__media" aria-hidden="true">
         {!failed && <video ref={videoRef} autoPlay muted playsInline preload="auto"
