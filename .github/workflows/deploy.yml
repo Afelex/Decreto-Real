@@ -32,23 +32,30 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Optimize initial battle background
+      - name: Optimize initial battle background (bounded)
         shell: bash
+        timeout-minutes: 4
         run: |
           set -euo pipefail
           source_video="public/escenarios/gemini_generated_video_b8059a5c.mp4"
           optimized_video="dist/escenarios/partida-inicial-loop.mp4"
           test -s "$source_video"
-          if ! command -v ffmpeg >/dev/null 2>&1; then
-            sudo apt-get update
-            sudo apt-get install -y ffmpeg
+          # Keep the scene animated, but never stall UI releases on video encoding.
+          # The runner generally includes ffmpeg. Avoid a slow apt-get update here.
+          if command -v ffmpeg >/dev/null 2>&1; then
+            if ! timeout -k 5s 90s ffmpeg -hide_banner -loglevel error -nostdin -y \
+              -threads 2 -i "$source_video" \
+              -vf "fps=24,scale=480:854:flags=fast_bilinear" \
+              -c:v libx264 -preset ultrafast -crf 29 \
+              -pix_fmt yuv420p -an -movflags +faststart "$optimized_video"; then
+              echo "::warning::Optimized background unavailable; using source video for this release."
+              cp "$source_video" "$optimized_video"
+            fi
+          else
+            echo "::warning::ffmpeg missing; using source video for this release."
+            cp "$source_video" "$optimized_video"
           fi
-          ffmpeg -hide_banner -loglevel error -nostdin -y \
-            -i "$source_video" \
-            -vf "scale=540:960" -c:v libx264 -preset medium -crf 26 \
-            -pix_fmt yuv420p -an -movflags +faststart "$optimized_video"
           test -s "$optimized_video"
-          # Ship only the small optimized video, not the 4.6 MB source clip.
           rm -f dist/escenarios/gemini_generated_video_b8059a5c.mp4
           ls -lh "$optimized_video"
 
