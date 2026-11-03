@@ -46,7 +46,7 @@ export function ComboChoicePanel({ level, onDamage, onHeal }: {
       <div className="dr-event-stage__veil" aria-hidden="true" />
       <div className={`dr-event-choice dr-event-choice--${level}`} role="dialog"
         aria-modal="true" aria-labelledby="dr-event-combo-title" aria-describedby="dr-event-combo-help">
-        <img className="dr-event-choice__art" src={`${import.meta.env.BASE_URL}interfaz/combo-estandartes-transparente.webp`}
+        <img className="dr-event-choice__art" src={`${import.meta.env.BASE_URL}interfaz/combo-estandartes-transparente.webp?v=20261103b`}
           alt="" aria-hidden="true" draggable={false} />
         <h2 id="dr-event-combo-title">Combo ×{level}</h2>
         <p className="dr-event-combo-sr-only" id="dr-event-combo-help">Elige el efecto de tu combo.</p>
