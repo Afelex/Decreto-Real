@@ -3,16 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import './one-screen-ui.css';
 
 const RULE_PAGES = [
-  { name: 'Inicio', icon: '♛', title: 'La partida original',
-    lines: ['Ambos jugadores empiezan con 10 puntos de vida y un mazo propio de 24 cartas.', 'Lanza la moneda del ritual para decidir quién juega primero.', 'Gana al reducir la vida rival a cero o al completar cuatro Impactos.'] },
-  { name: 'Cartas', icon: '◈', title: '10 ataques, 10 defensas y 4 Impactos',
-    lines: ['Cada mazo contiene 10 Decretos de Ataque, 10 Decretos de Defensa y los cuatro Impactos.', 'Comienzas con tres cartas en la mano y robas una al iniciar cada turno propio.', 'Toca una carta para seleccionarla; arrástrala al centro para activarla. Sin Mando.'] },
-  { name: 'Ataque', icon: '⚔', title: 'Actúa sin esperar',
-    lines: ['Cada Decreto de Ataque quita 2 puntos de vida al rival.', 'Cada Decreto de Defensa recupera 1 punto de vida, sin superar los 10 iniciales.', 'Para Ataque o Defensa, suéltala en el campo central. También puedes seleccionar y tocar la zona.'] },
-  { name: 'Impactos', icon: '✦', title: 'Los cuatro sellos',
-    lines: ['Coloca Impacto I, II, III y Final en las cuatro casillas, de izquierda a derecha.', 'Solo puedes jugar un Impacto por turno.', 'Los primeros Impactos dañan al rival y recuperan vida. El cuarto termina el combate.'] },
-  { name: 'Combos', icon: '♜', title: 'Habilidades especiales',
-    lines: ['Encadena cartas del mismo tipo: COMBO ×2 anuncia progreso y ×3 activa la habilidad.', 'Cuando se active, escoge entre infligir daño adicional o recuperar vida.', 'Tu rival también tiene mazo, mano, combinaciones y efectos.'] },
+  { name: 'Inicio', icon: '♛', title: 'El duelo de decretos',
+    lines: ['Ambos jugadores comienzan con 20 puntos de vida y un mazo propio de 28 cartas.', 'Lanza la moneda para decidir quién empieza. Recibes tres cartas y robas una al iniciar cada turno.', 'Vences si la vida rival llega a 0 o si completas tus cuatro Impactos. Rendirse cuenta como derrota.'] },
+  { name: 'Cartas', icon: '◈', title: '28 cartas, cuatro clases',
+    lines: ['10 Decretos de Ataque, 10 de Defensa, 4 de Impacto y 4 Decretos de Orden por jugador.', 'Selecciona una carta y arrástrala al centro del campo para activarla; también puedes tocar la zona de destino.', 'Las cartas de Impacto se colocan en las cuatro casillas de progreso, en secuencia.'] },
+  { name: 'Acciones', icon: '⚔', title: 'Ataque, defensa y orden',
+    lines: ['Ataque: resta 2 puntos de vida al oponente.', 'Defensa: recupera 1 punto de vida propio, sin superar el máximo de 20.', 'Orden: roba una carta adicional de tu mazo. Tu rival puede usar las mismas cartas.'] },
+  { name: 'Impactos', icon: '✦', title: 'El Decreto Final',
+    lines: ['Juega Impacto I, II, III y Final en ese orden. Solo puedes activar un Impacto por turno.', 'Cada Impacto quita 1 punto de vida al rival y recupera 1 de tu vida, hasta el máximo.', 'Al colocar Impacto Final (cuarto sello) ganas inmediatamente, aunque el rival aún conserve vida.'] },
+  { name: 'Combos', icon: '♜', title: 'Combos ×2 y ×3',
+    lines: ['Activa dos cartas seguidas del mismo tipo para COMBO ×2: elige entre quitar 1 de vida o curarte 1.', 'Tres cartas seguidas del mismo tipo activan COMBO ×3: elige entre quitar 3 de vida o curarte 3.', 'Valen Ataque, Defensa, Impacto y Orden. La racha continúa entre turnos, incluso entre dos Impactos consecutivos.'] },
 ] as const;
 
 /** Short readable pages rather than a tall scrollable manual. */
