@@ -58,8 +58,8 @@ export const HAND_CARDS: CardData[] = [
 export const CORNER_IMG = "https://lh3.googleusercontent.com/aida-public/AB6AXuDLYjIvF3w-VpTTlVS_chZzFr0IRsJnAvYjmaUIMzNwLSkzqCK-CXVnIxhIY0OZ9ChUitP_Dydn8QaOV_5xsZaLOORFu79SihveZDqq6fECjnSTnCWPUgcJnbmZjbhUpV_KaZLS6FAvc6iyQmmNyoCSYhaAsT_gV1eVXpNPBGg3y7lzvf6i_lW0EzWigLY5nzwsDooDs2H5Be4GQzx0xP7tKOlpCFghLlySkXCdC0--W2mrQR7PL6tfuLVYzepU1KPFX6kRcn2Pvig";
 // Updated with the specific image ID from the provided Imgur gallery link
 export const SOVEREIGN_IMG = "https://i.imgur.com/ktYckGj.jpeg";
-export const OPPONENT_IMG = "https://i.imgur.com/UQwzvBK.jpeg";
-export const PLAYER_IMG = "https://i.imgur.com/Lbr74t5_d.webp?maxwidth=760&fidelity=grand"; // Unified the player avatar
+export const OPPONENT_IMG = `${import.meta.env.BASE_URL}retratos/rival.webp`;
+export const PLAYER_IMG = `${import.meta.env.BASE_URL}retratos/jugador.webp`;
 export const VICTORY_IMG = SOVEREIGN_IMG; // Unified the victory avatar
 export const BACKGROUND_ORNAMENT = "https://img.freepik.com/free-vector/luxury-ornamental-design-element_1159-5485.jpg?w=1380";
 export const BATTLE_BG_IMG = "https://i.imgur.com/uk6XG6c.jpeg"; // Dark ruins background
