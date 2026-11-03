@@ -82,3 +82,14 @@ test('Order draws one replacement card without changing the starting 28-card dec
   expect(screen.getByLabelText(/Tu mano:/).querySelectorAll('.dr-royal-hand-card')).toHaveLength(before);
   expect(Number(document.querySelector('.dr-royal-player-deck span')?.textContent)).toBe(deckBefore - 1);
 });
+
+
+test('standard duel uses the two local portraits with the same frame component', () => {
+  render(<MemoryRouter><GameBoard /></MemoryRouter>);
+  const player = screen.getByRole('img', { name: 'Retrato de tu personaje' }) as HTMLImageElement;
+  const rival = screen.getByRole('img', { name: 'Retrato del rival' }) as HTMLImageElement;
+  expect(player.getAttribute('src')).toContain('retratos/jugador.webp');
+  expect(rival.getAttribute('src')).toContain('retratos/rival.webp');
+  expect(player.closest('.dr-royal-character-frame')).toBeTruthy();
+  expect(rival.closest('.dr-royal-character-frame')).toBeTruthy();
+});
