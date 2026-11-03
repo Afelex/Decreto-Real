@@ -315,7 +315,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     else setOpponentHand(prev => prev.filter(c => c.id !== card.id));
 
     setCardAnnouncement({ id: ++announcementCount.current, card, isPlayer });
-    const active = await announcementClock.current.wait(2500);
+    const active = await announcementClock.current.wait(card.type === 'ORDER' ? 1050 : 2500);
     if (!active) return; // Unmounted/cancelled: do not mutate the match.
     setCardAnnouncement(null);
     announcementBusy.current = false;
@@ -328,7 +328,8 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
       playSound('DEFENSE'); triggerVisualEffect('DEFENSE', isPlayer ? 'PLAYER' : 'OPPONENT');
       if (isPlayer) setPlayerHP(p => Math.min(MAX_HP, p + 1)); else setOpponentHP(p => Math.min(MAX_HP, p + 1));
     } else if (card.type === 'ORDER') {
-      playSound('CLICK'); drawCards(isPlayer ? 'PLAYER' : 'OPPONENT', 1);
+      // ORDER's own WebM contains the intended sound; do not overlay a click.
+      drawCards(isPlayer ? 'PLAYER' : 'OPPONENT', 1);
     } else if (card.type === 'IMPACT') {
       playSound('IMPACT'); triggerVisualEffect('IMPACT', 'GLOBAL');
       if (isPlayer) { setPlayerImpactLevel(p => p + 1); setPlayerImpactPlayedThisTurn(true); setOpponentHP(p => Math.max(0, p - 1)); setPlayerHP(p => Math.min(MAX_HP, p + 1)); }
@@ -558,7 +559,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
       {/* Cinematic card announcement precedes the existing damage/heal VFX. */}
       {cardAnnouncement && (
         <CardActivationBanner key={cardAnnouncement.id} card={cardAnnouncement.card}
-          isPlayer={cardAnnouncement.isPlayer} paused={isMenuOpen} />
+          isPlayer={cardAnnouncement.isPlayer} paused={isMenuOpen} sfxEnabled={sfxEnabled} />
       )}
 
       {/* --- MENU MODAL --- */}
