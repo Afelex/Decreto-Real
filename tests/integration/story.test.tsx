@@ -34,7 +34,7 @@ test('the prologue introduces the named protagonists and eight generals', () => 
   screenAt('/campania/historia');
   expect(screen.getByRole('heading', { name: 'El reino escucha dos verdades' })).toBeTruthy();
   expect(screen.getByText(/Orden de la Corona Solar/)).toBeTruthy();
-  expect(screen.getByText(/Revolución Solar/)).toBeTruthy();
+  expect(screen.getByText('Revolución Solar')).toBeTruthy();
   expect(screen.getByText(/solarianos/)).toBeTruthy();
   expect(screen.queryByText(/Falsa Luz/)).toBeNull();
   fireEvent.click(screen.getByRole('button', { name: 'Personajes' }));
