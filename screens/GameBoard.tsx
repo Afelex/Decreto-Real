@@ -353,7 +353,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
           campaignOutcomeReported.current = true;
           playSound(phase === 'VICTORY' ? 'VICTORY' : 'DEFEAT');
           onOutcome({ won: phase === 'VICTORY', turns: turnCount, health: playerHP });
-        } else navigate('/victory', { state: { outcome: phase, turnCount } });
+        } else navigate('/victory', { state: { outcome: phase, turnCount, playerHP, playerImpactLevel } });
       }, 3000);
       return () => clearTimeout(timer);
     }
@@ -711,10 +711,10 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
         <CoinTossPanel coinSide={coinSide} isFlipping={isCoinFlipping} onToss={handleCoinToss} />}
 
       {(phase === 'VICTORY' || phase === 'DEFEAT') && (
-        <div className={`absolute inset-0 z-[100] flex items-center justify-center backdrop-blur-lg ${phase === 'VICTORY' ? 'bg-gold-dark/20' : 'bg-red-900/30'}`}>
-          <div className="p-12 bg-black border-4 border-gold-main shadow-2xl">
-            <h1 className={`text-6xl font-decorative ${phase === 'VICTORY' ? 'text-gold-main' : 'text-red-600'}`}>{phase === 'VICTORY' ? 'VICTORIA' : 'CAÍDA'}</h1>
-          </div>
+        <div className="dr-royal-result-transition" role="status"
+          aria-label={phase === 'VICTORY' ? 'Victoria' : 'Derrota'}>
+          <img src={`${import.meta.env.BASE_URL}final/${phase === 'VICTORY' ? 'victoria' : 'derrota'}.webp`}
+            alt="" draggable={false}/>
         </div>
       )}
     </div>
