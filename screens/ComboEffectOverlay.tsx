@@ -2,12 +2,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import { comboEffectCue } from '../game/effectCues';
 import './card-activation-banner.css';
 
-export function ComboEffectOverlay({ level, ability, paused, onEnded }: {
+type Props = {
   level: 2 | 3;
   ability: 'DAMAGE' | 'HEAL';
   paused: boolean;
   onEnded: () => void;
-}) {
+};
+
+export const ComboEffectOverlay: React.FC<Props> = ({ level, ability, paused, onEnded }) => {
   const [failed, setFailed] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { file } = comboEffectCue(ability, level);
@@ -38,4 +40,4 @@ export function ComboEffectOverlay({ level, ability, paused, onEnded }: {
       <strong className="dr-energy-overlay__label">COMBO ×{level} · {ability === 'DAMAGE' ? 'ATAQUE' : 'CURACIÓN'}</strong>
     </div>
   );
-}
+};
