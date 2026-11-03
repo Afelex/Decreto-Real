@@ -122,7 +122,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "skirmish",
     "opponent": "Guardia del pregón",
     "openingLine": "OBJETIVO: Protege a las familias y averigua por qué existen dos órdenes opuestas.",
-    "victoryLine": "Xervias rescata a los testigos: el sello es auténtico, pero alguien ha cambiado sus palabras. ¿Quién cambió las palabras de un sello auténtico?",
+    "victoryLine": "Xervias rescata a los testigos: el sello es auténtico, pero alguien ha cambiado sus palabras. ¿Quién pudo hacerlo sin romper el sello?",
     "defeatLine": "Los vecinos quedan expuestos al castigo y el pregón falso sigue circulando."
   },
   {
