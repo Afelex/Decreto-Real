@@ -1,47 +1,51 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { CardData } from '../types';
 import { cardActivationCopy } from '../game/cardActivationText';
+import { cardEffectCue } from '../game/effectCues';
 import './card-activation-banner.css';
 
-type Props = { card: CardData; isPlayer: boolean; paused: boolean; sfxEnabled?: boolean };
+type Props = {
+  card: CardData;
+  isPlayer: boolean;
+  paused: boolean;
+  sfxEnabled?: boolean;
+  onEnded?: () => void;
+};
 
-/** Decorative media only. All game state is resolved by GameBoard after the cue. */
-export const CardActivationBanner: React.FC<Props> = ({ card, isPlayer, paused, sfxEnabled = true }) => {
+/** The card effect is shown before applying game effects or opening the combo panel.
+ * The fallback ribbon remains available if a device cannot decode the uploaded WebM. */
+export const CardActivationBanner: React.FC<Props> = ({ card, isPlayer, paused, onEnded }) => {
   const [failedVideo, setFailedVideo] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const isOrder = card.type === 'ORDER';
   const copy = cardActivationCopy(card, isPlayer);
-  const src = isOrder ? '/Decreto-Real/animaciones/decreto-orden.webm'
-    : `/Decreto-Real/animaciones/banner-${isPlayer ? 'jugador-rojo' : 'rival-azul'}.webm`;
+  const cue = cardEffectCue(card.type);
+  const isEnergy = Boolean(cue.file);
+  const src = isEnergy
+    ? `${import.meta.env.BASE_URL}${cue.file}`
+    : `${import.meta.env.BASE_URL}animaciones/banner-${isPlayer ? 'jugador-rojo' : 'rival-azul'}.webm`;
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-    video.playbackRate = isOrder ? 1 : 4;
-    video.muted = !isOrder || !sfxEnabled;
+    video.playbackRate = isEnergy ? 1 : 4;
+    video.muted = true; // Supplied energy clips have no soundtrack; SFX is played by GameBoard.
     if (paused) video.pause();
     else {
-      // jsdom and some embedded WebViews may return void instead of a Promise.
       const playback = video.play();
       if (playback && typeof playback.catch === 'function') {
-        void playback.catch(() => {
-          // If the browser blocks unmuted autoplay, keep the order animation visible.
-          video.muted = true;
-          const retry = video.play();
-          if (retry && typeof retry.catch === 'function') void retry.catch(() => setFailedVideo(true));
-        });
+        void playback.catch(() => setFailedVideo(true));
       }
     }
-  }, [paused, src, isOrder, sfxEnabled]);
+  }, [paused, src, isEnergy]);
 
   return (
-    <div className={`dr-cinematic-overlay ${isPlayer ? 'player' : 'rival'}${isOrder ? ' dr-cinematic-overlay--order' : ''}${paused ? ' paused' : ''}`}
+    <div className={`dr-cinematic-overlay ${isPlayer ? 'player' : 'rival'}${isEnergy ? ' dr-cinematic-overlay--energy' : ''}${paused ? ' paused' : ''}`}
       role="status" aria-live="polite" aria-atomic="true"
       aria-label={`${copy.kicker}: ${card.name}. ${copy.effect}`}>
       <div className="dr-cinematic-media" aria-hidden="true">
-        {!failedVideo && <video ref={videoRef} autoPlay muted={!isOrder || !sfxEnabled} playsInline preload="auto"
-          onLoadedMetadata={event => { event.currentTarget.playbackRate = isOrder ? 1 : 4; }}
-          onError={() => setFailedVideo(true)}>
+        {!failedVideo && <video ref={videoRef} autoPlay muted playsInline preload="auto"
+          onLoadedMetadata={event => { event.currentTarget.playbackRate = isEnergy ? 1 : 4; }}
+          onEnded={onEnded} onError={() => setFailedVideo(true)}>
           <source src={src} type="video/webm" />
         </video>}
         {failedVideo && <div className="dr-cinematic-fallback" />}
