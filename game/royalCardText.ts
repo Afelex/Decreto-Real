@@ -13,6 +13,8 @@ export function getRoyalCardText(card: Pick<CardData, 'type' | 'rank'>, attackDa
       return { title: 'Defensa', effect: '+1 Vida' };
     case 'ORDER':
       return { title: 'Orden', effect: 'Roba 1 carta' };
+    case 'MYSTIC':
+      return { title: 'Mística', effect: '−2 Vida · prueba' };
     case 'IMPACT': {
       const rankLabel = card.rank === 4 ? 'FINAL' : ['I', 'II', 'III'][Math.max(0, (card.rank ?? 1) - 1)] ?? 'I';
       return { title: `Impacto ${rankLabel}`, effect: card.rank === 4 ? 'Victoria' : 'Drena 1' };
