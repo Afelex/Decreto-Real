@@ -65,3 +65,13 @@
 @media (prefers-reduced-motion:reduce) {
   .dr-royal-screen .dr-event-indicator {transition:none;animation:none;}
 }
+
+/* La escritura sigue la inclinación real de la cinta (rojo ascendente, azul descendente). */
+.dr-royal-screen .dr-event-indicator.is-player .dr-event-indicator__label {
+  transform:translateY(-2px) rotate(-6.5deg);
+  transform-origin:center;
+}
+.dr-royal-screen .dr-event-indicator.is-opponent .dr-event-indicator__label {
+  transform:translateY(2px) rotate(6.5deg);
+  transform-origin:center;
+}
