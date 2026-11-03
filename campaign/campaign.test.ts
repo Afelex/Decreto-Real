@@ -95,7 +95,7 @@ test('all eight canonical generals and their special-card labels appear as boss 
     assert.ok(generals.some(chapter => chapter.general === general && chapter.specialCard === specialCard));
     assert.equal(STORY_STAGES.filter(stage => stage.kind === 'boss' && stage.opponent === general).length, 1);
   }
-  assert.equal(STORY_STAGES[STORY_STAGES.length - 1].opponent, 'Sigmar');
+  assert.equal(STORY_STAGES[STORY_STAGES.length - 1].opponent, 'Sigumán');
 });
 
 test('chapters contain two prologue, four stages per general, and four finales', () => {

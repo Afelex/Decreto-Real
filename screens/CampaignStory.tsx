@@ -29,18 +29,18 @@ const CampaignStory: React.FC = () => {
         <div className="dc-full-art dc-full-art-intro" aria-hidden="true">✥ <span>162X</span></div>
         <span className="dc-scene-label">PERÚ VIRREINAL FICTICIO · AÑO 162X</span>
         <h2 id="dc-story-paged-title">El reino escucha dos verdades</h2>
-        <p>Xervias, un joven soldado, recibe una misión de Zhinchi: investigar decretos contradictorios y una rebelión alimentada por agravios reales y documentos falsos.</p>
-        <p>Detrás de las proclamas aparece <strong>la Falsa Luz</strong>. Sigumán promete redención, pero pretende imponer su voluntad. Zhinchi sigue el rastro de la verdad.</p>
-        <blockquote className="dc-story-quote">Zhinchi: «Defiende a los inocentes. No confundas un juramento con la verdad».</blockquote>
+        <p>Al amanecer, dos decretos con el mismo sello llegan a un puesto de guardia: uno ordena liberar a los detenidos; el otro, castigarlos. Xervias presencia cómo una firma puede decidir una vida.</p>
+        <p>Zhinchi le encomienda investigar, no perseguir culpables a ciegas. Sigumán dirige <strong>la Falsa Luz</strong>, una rebelión que transforma agravios verdaderos en decretos falsos y hace de la obediencia su arma.</p>
+        <blockquote className="dc-story-quote">Zhinchi: «Un sello puede ordenar. No puede decidir por tu conciencia. Protege a quienes no tienen voz».</blockquote>
       </>}
       {page === 1 && <>
         <span className="dc-scene-label">PERSONAJES · ELENCO PRINCIPAL</span>
         <h2 id="dc-story-paged-title">Los cuatro protagonistas</h2>
         <div className="dc-full-cast">
-          <div><span>⚔</span><strong>Xervias</strong><small>Joven soldado que busca la verdad y protege a los inocentes.</small></div>
-          <div><span>✦</span><strong>Zhinchi</strong><small>El Prototipo Cero. Capitán y mentor; conoce el secreto de San Jerónimo.</small></div>
-          <div><span>♜</span><strong>Vándalo Rojo</strong><small>Excompañero brutal, aliado de Sigumán por ambición.</small></div>
-          <div><span>♛</span><strong>Sigumán</strong><small>Antiguo comandante, falso redentor de la Falsa Luz.</small></div>
+          <div><span>⚔</span><strong>Xervias</strong><small>Soldado que deberá elegir entre la obediencia y la justicia.</small></div>
+          <div><span>✦</span><strong>Zhinchi</strong><small>El Prototipo Cero; mentor que oculta una promesa ligada a San Jerónimo.</small></div>
+          <div><span>♜</span><strong>Vándalo Rojo</strong><small>Antiguo compañero de Xervias; prefirió el poder a sus juramentos.</small></div>
+          <div><span>♛</span><strong>Sigumán</strong><small>Antiguo comandante convencido de imponer la paz aunque deba mentir.</small></div>
         </div>
       </>}
       {page === 2 && <>

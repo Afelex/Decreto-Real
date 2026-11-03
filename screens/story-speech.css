@@ -1,0 +1,67 @@
+/* Intervenciones exclusivas de Historia: un panel por parlamento. */
+.dr-story-dialogue-layer {
+  position:absolute;
+  inset:0;
+  z-index:1000; /* always above victory banner and coin/turn cinematics */
+  display:flex;
+  justify-content:center;
+  align-items:flex-end;
+  padding:max(12px,env(safe-area-inset-top)) 12px max(18px,env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,#03081378 0%,#03081344 34%,#030813c9 100%);
+  touch-action:manipulation;
+}
+.dr-story-dialogue {
+  width:100%;
+  max-width:430px;
+  border:2px solid #d8ac65;
+  background:linear-gradient(145deg,#213447f5,#111e2dfb);
+  border-radius:16px;
+  box-shadow:0 10px 38px #000a,0 0 24px #cfb77c35;
+  padding:clamp(12px,2.3dvh,20px);
+  color:#f9e9cb;
+  display:flex;
+  flex-direction:column;
+  gap:clamp(8px,1.5dvh,15px);
+}
+.dr-story-dialogue.is-rival {border-color:#78a9df;}
+.dr-story-dialogue.is-player {border-color:#d6a65f;}
+.dr-story-dialogue.is-system {
+  border-color:#f4d088;
+  background:linear-gradient(150deg,#473522f5,#182537f9);
+}
+.dr-story-dialogue__speaker {display:flex;align-items:center;gap:12px;min-height:58px;}
+.dr-story-dialogue__speaker img {
+  width:clamp(52px,10dvh,70px);
+  height:clamp(52px,10dvh,70px);
+  object-fit:cover;
+  border-radius:9px;
+  border:1px solid #d8b77b;
+  flex:0 0 auto;
+}
+.dr-story-dialogue__speaker small {display:block;font:700 10px/1.2 system-ui,sans-serif;color:#d9bf98;letter-spacing:.13em;}
+.dr-story-dialogue__speaker h2 {margin:4px 0 0;font:700 clamp(17px,4.6vw,24px)/1.15 Georgia,serif;color:#ffe5ab;overflow-wrap:anywhere;}
+.dr-story-dialogue p {margin:0;min-height:2.7em;font:500 clamp(15px,4.2vw,18px)/1.42 Georgia,serif;color:#fff0da;text-wrap:pretty;}
+.dr-story-dialogue.is-system p {font:800 clamp(20px,5.6vw,29px)/1.2 Georgia,serif;text-align:center;text-transform:uppercase;color:#ffdb8f;}
+.dr-story-dialogue.is-system .dr-story-dialogue__speaker {min-height:22px;}
+.dr-story-dialogue footer {display:flex;justify-content:space-between;align-items:center;gap:12px;}
+.dr-story-dialogue footer span {font:700 12px system-ui,sans-serif;color:#cfba97;}
+.dr-story-dialogue footer button {
+  min-height:44px;
+  padding:10px 19px;
+  border:1px solid #ffe4ae;
+  border-radius:9px;
+  background:linear-gradient(140deg,#ca944f,#885220);
+  color:#141013;
+  font:800 14px system-ui,sans-serif;
+}
+.dr-story-dialogue footer button:focus-visible {outline:3px solid white;outline-offset:3px;}
+@media (max-height:520px) {
+  .dr-story-dialogue {gap:5px;padding:9px;}
+  .dr-story-dialogue__speaker {min-height:42px;}
+  .dr-story-dialogue__speaker img {width:42px;height:42px;}
+  .dr-story-dialogue p {font-size:13px;min-height:0;}
+  .dr-story-dialogue footer button {min-height:38px;padding:7px 12px;}
+}
+@media (prefers-reduced-motion: reduce) {
+  .dr-story-dialogue, .dr-story-dialogue-layer {animation:none!important;transition:none!important;}
+}

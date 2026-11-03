@@ -97,7 +97,7 @@ test('selected mission shows all three star objectives without leaving the map',
   fireEvent.click(screen.getByRole('button', { name: 'Ver objetivos del reto' }));
   const dialog = screen.getByRole('dialog', { name: 'El pregón alterado' });
   expect(dialog).toBeTruthy();
-  expect(screen.getByText('Gana el duelo')).toBeTruthy();
+  expect(screen.getByText('Gana el combate')).toBeTruthy();
   expect(screen.getByText('Conserva al menos 12 de vida')).toBeTruthy();
   expect(screen.getByText('Gana en 10 rondas o menos')).toBeTruthy();
   expect(screen.getByRole('button', { name: 'Cerrar objetivos' })).toBeTruthy();

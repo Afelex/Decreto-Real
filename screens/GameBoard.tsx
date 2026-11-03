@@ -13,6 +13,8 @@ import { resolveBattleScenery } from '../game/battleScenery';
 import { getRoyalCardText } from '../game/royalCardText';
 import { resolveBattleEnd, resolveSurrender, resolveDevelopmentVictory, type BattleEndResult } from '../game/battleEnd';
 import { BattleSceneryLayer } from './BattleSceneryLayer';
+import StorySpeechPanel from './StorySpeechPanel';
+import type { CombatConversation } from '../campaign/combatDialogues.ts';
 
 // --- GAME CONFIGURATION ---
 const MAX_HP = 20;
@@ -111,12 +113,15 @@ export type BattlePresentation = Readonly<{
   playerPortrait?: string;
   opponentPortrait?: string;
 }>;
+type StoryMoment = { kind: 'intro' | 'midpoint' | 'critical' | 'victory'; step: number };
 type GameBoardProps = {
+  /** Exclusive to story missions; undefined keeps the classic/free duel untouched. */
+  storyConversation?: CombatConversation;
   onOutcome?: (result: OriginalBattleOutcome) => void;
   onReturn?: () => void;
   presentation?: BattlePresentation;
 };
-const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation }) => {
+const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation, storyConversation }) => {
   const scenery = resolveBattleScenery(presentation);
   const playerPortrait = presentation?.playerPortrait ?? PLAYER_IMG;
   const rivalPortrait = presentation?.opponentPortrait ?? OPPONENT_IMG;
@@ -128,6 +133,11 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   const [whoStarted, setWhoStarted] = useState<'PLAYER' | 'OPPONENT' | null>(null);
   const gameOverRef = useRef(false);
   const campaignOutcomeReported = useRef(false);
+  const midpointSpoken = useRef(false);
+  const criticalSpoken = useRef(false);
+  const [storyMoment, setStoryMoment] = useState<StoryMoment | null>(
+    storyConversation ? { kind: 'intro', step: 0 } : null,
+  );
   const [battleEnd, setBattleEnd] = useState<BattleEndResult | null>(null);
   const aiController = useRef<AiTurnController | null>(null);
 
@@ -172,6 +182,16 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   const turnOwner: 'PLAYER' | 'OPPONENT' | null = whoStarted === null || turnCount === 0 ? null
     : ((whoStarted === 'PLAYER' && turnCount % 2 !== 0) || (whoStarted === 'OPPONENT' && turnCount % 2 === 0)) ? 'PLAYER' : 'OPPONENT';
   const isMuted = !musicEnabled && !sfxEnabled;
+  const storyLines = storyMoment && storyConversation ? storyConversation[storyMoment.kind] : [];
+  const storySpeech = storyMoment ? storyLines[storyMoment.step] : undefined;
+  const advanceStorySpeech = () => {
+    playSound('CLICK');
+    setStoryMoment(current => {
+      if (!current || !storyConversation) return null;
+      return current.step + 1 >= storyConversation[current.kind].length
+        ? null : { ...current, step: current.step + 1 };
+    });
+  };
   const latestOpponent = useRef({ hand: opponentHand, health: opponentHP, impactLevel: opponentImpactLevel, gauge: opponentGauge, lastType: opponentLastType });
   latestOpponent.current = { hand: opponentHand, health: opponentHP, impactLevel: opponentImpactLevel, gauge: opponentGauge, lastType: opponentLastType };
   const handleGlobalAudioToggle = () => {
@@ -191,7 +211,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   }, []);
 
   const handleCoinToss = () => {
-    if (isCoinFlipping || gameOverRef.current) return;
+    if (isCoinFlipping || gameOverRef.current || storyMoment) return;
     playSound('FLIP');
     setIsCoinFlipping(true);
     // One tap, a single short flip, then the result before battle begins.
@@ -370,9 +390,29 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   }, [phase]);
 
   useEffect(() => {
-    if (isMenuOpen) { aiController.current?.pause(); announcementClock.current.pause(); }
+    if (isMenuOpen || storyMoment) { aiController.current?.pause(); announcementClock.current.pause(); }
     else { aiController.current?.resume(); announcementClock.current.resume(); }
-  }, [isMenuOpen]);
+  }, [isMenuOpen, storyMoment]);
+
+  // Player-caused thresholds only; never interrupt a playing clip, a choice,
+  // or a finished combat. A boss can speak at half HP and again near defeat.
+  useEffect(() => {
+    if (!storyConversation || storyMoment || gameOverRef.current || isMenuOpen ||
+        (phase !== 'PLAYER_TURN' && phase !== 'OPPONENT_TURN') ||
+        opponentHP <= 0 || cardAnnouncement || comboAnnouncement ||
+        showSpecialSelection || announcementBusy.current) return;
+    if (storyConversation.midpoint.length > 0 && !midpointSpoken.current && opponentHP <= MAX_HP / 2) {
+      midpointSpoken.current = true;
+      setStoryMoment({ kind: 'midpoint', step: 0 });
+      return;
+    }
+    // Two attack damage, a three-point combo, or the next Impacto FINAL.
+    if (!criticalSpoken.current && (opponentHP <= Math.max(ATTACK_DAMAGE, SPECIAL_VALUE) || playerImpactLevel >= 3)) {
+      criticalSpoken.current = true;
+      setStoryMoment({ kind: 'critical', step: 0 });
+    }
+  }, [storyConversation, storyMoment, phase, opponentHP, playerImpactLevel,
+      isMenuOpen, cardAnnouncement, comboAnnouncement, showSpecialSelection]);
 
   useEffect(() => () => announcementClock.current.cancel(), []);
 
@@ -384,6 +424,11 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     gameOverRef.current = true;
     setBattleEnd(result);
     setShowSpecialSelection(false);
+    if (result.phase === 'VICTORY' && storyConversation?.victory.length) {
+      // The opponent's defeat line (bosses) and Xervias' reply are shown
+      // before the existing victory reason and Continue button.
+      setStoryMoment({ kind: 'victory', step: 0 });
+    }
     setPhase(result.phase);
   }, [playerHP, opponentHP, playerImpactLevel, opponentImpactLevel]);
 
@@ -394,7 +439,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   }, [phase]);
 
   const handleBattleEndContinue = () => {
-    if (!battleEnd || campaignOutcomeReported.current) return;
+    if (!battleEnd || campaignOutcomeReported.current || storyMoment) return;
     campaignOutcomeReported.current = true; // Evitar doble avance o doble guardado.
     playSound('CLICK');
     if (onOutcome) {
@@ -407,7 +452,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     }
   };
 
-  const canHandleCards = phase === 'PLAYER_TURN' && !showSpecialSelection && !isMenuOpen && !cardAnnouncement && !comboAnnouncement && !announcementBusy.current && !gameOverRef.current;
+  const canHandleCards = phase === 'PLAYER_TURN' && !storyMoment && !showSpecialSelection && !isMenuOpen && !cardAnnouncement && !comboAnnouncement && !announcementBusy.current && !gameOverRef.current;
   const selectedCard = playerHand.find(card => card.id === selectedCardId) ?? null;
 
   const selectCard = (card: CardData) => {
@@ -487,7 +532,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     : cardPlacementPrompt(selectedCard, playerImpactLevel));
 
   const handleEndTurn = () => {
-    if (phase !== 'PLAYER_TURN' || showSpecialSelection || !!comboAnnouncement || announcementBusy.current || gameOverRef.current) return;
+    if (phase !== 'PLAYER_TURN' || storyMoment || showSpecialSelection || !!comboAnnouncement || announcementBusy.current || gameOverRef.current) return;
     setSelectedCardId(null); setPlayHint(null);
     playSound('CLICK'); setTurnCount(p => p + 1); setPhase('TURN_BANNER');
   };
@@ -510,6 +555,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     setDragAt(null);
     setIsMenuOpen(false);
     setShowSurrenderConfirm(false);
+    setStoryMoment(null);
     setBattleEnd(result);
     setPhase(result.phase);
   };
@@ -521,7 +567,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   };
   const handleSurrenderCancel = () => { playSound('CLICK'); setShowSurrenderConfirm(false); };
 
-  const endTurnUnavailable = phase !== 'PLAYER_TURN' || showSpecialSelection || !!comboAnnouncement || isMenuOpen || !!cardAnnouncement || announcementBusy.current;
+  const endTurnUnavailable = phase !== 'PLAYER_TURN' || !!storyMoment || showSpecialSelection || !!comboAnnouncement || isMenuOpen || !!cardAnnouncement || announcementBusy.current;
 
   const Board = (
     <div className={`dr-classic-screen dr-royal-screen bg-[#050505] font-body w-full overflow-hidden select-none flex flex-col relative text-white ${shakeScreen ? 'animate-shake' : ''}`} style={{ width: 'min(100vw, 430px)', height: '100dvh' }}>
@@ -791,8 +837,14 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
         <TurnAnnouncement
           variant={phase === 'START_BANNER' ? 'opening' : turnOwner === 'PLAYER' ? 'player' : 'opponent'}
           turn={turnCount} />}
-      {phase === 'COIN_TOSS' &&
+      {phase === 'COIN_TOSS' && !storyMoment &&
         <CoinTossPanel coinSide={coinSide} isFlipping={isCoinFlipping} onToss={handleCoinToss} />}
+      {storyMoment && storySpeech && storyConversation && (
+        <StorySpeechPanel speech={storySpeech} rivalName={storyConversation.opponentName}
+          playerPortrait={playerPortrait} rivalPortrait={rivalPortrait}
+          step={storyMoment.step + 1} total={storyLines.length}
+          onContinue={advanceStorySpeech}/>
+      )}
 
       {battleEnd && (phase === 'VICTORY' || phase === 'DEFEAT') && (
         <div className={`dr-royal-end-banner-stage ${battleEnd.phase === 'VICTORY' ? 'is-victory' : 'is-defeat'}`}>

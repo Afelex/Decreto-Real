@@ -45,7 +45,7 @@ export type MissionStarGoal = {
 /** Copy shown on the map and briefing matches calculateMissionStars. */
 export function missionStarGoals(mission: CampaignMission): readonly MissionStarGoal[] {
   return [
-    { id: 'victory', label: 'Gana el duelo' },
+    { id: 'victory', label: 'Gana el combate' },
     { id: 'health', label: `Conserva al menos ${classicHealthGoal(mission)} de vida` },
     { id: 'turns', label: `Gana en ${mission.turnGoal} rondas o menos` },
   ];

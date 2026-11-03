@@ -2,6 +2,21 @@ import { expect, test } from '@playwright/test';
 
 const campaign = '/Decreto-Real/#/campania';
 
+async function advanceStoryPrelude(page: import('@playwright/test').Page) {
+  const dialog = page.getByTestId('story-combat-dialogue');
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByRole('heading', { name: /.+/ })).toBeVisible();
+  for (const speaker of ['ADVERSARIO', 'PROTAGONISTA', 'ADVERSARIO']) {
+    await expect(dialog.getByText(speaker, { exact: true })).toBeVisible();
+    await dialog.getByRole('button', { name: /Siguiente/ }).click();
+  }
+  await expect(dialog.getByText('Inicia el combate')).toBeVisible();
+  await dialog.getByRole('button', { name: /Continuar/ }).click();
+  await expect(dialog).toBeHidden();
+  await expect(page.getByRole('button', { name: 'Lanzar Moneda' })).toBeVisible();
+}
+
+
 test('campaign map fits one viewport and locks future challenges', async ({ page }, testInfo) => {
   await page.goto(campaign);
   await expect(page.getByRole('heading', { name: 'Campaña' })).toBeVisible();
@@ -30,11 +45,11 @@ test('select challenge button opens the existing story mission and actual duel',
   await page.goto(campaign);
   await page.getByRole('button', { name: /Seleccionar reto/ }).click();
   await expect(page.getByRole('heading', { name: 'El pregón alterado' })).toBeVisible();
-  await expect(page.getByText(/Una proclamación contradictoria/)).toBeVisible();
-  await page.getByRole('button', { name: /Comenzar duelo/ }).click();
+  await expect(page.getByText(/Dos decretos idénticos condenan y absuelven/)).toBeVisible();
+  await page.getByRole('button', { name: /Preparar combate/ }).click();
   await expect(page.locator('.dr-classic-screen')).toBeVisible();
+  await advanceStoryPrelude(page);
   await expect(page.getByText('¿Quién comienza?')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Lanzar Moneda' })).toBeVisible();
   await expect(page.locator('.dr-game')).toHaveCount(0);
 });
 
@@ -85,8 +100,9 @@ test('boss is presented in briefing and on the duel board', async ({ page }) => 
   })));
   await page.goto('/Decreto-Real/#/campania/mision/06');
   await expect(page.getByRole('heading', { name: 'El Almirante de Hierro' })).toBeVisible();
-  await page.getByRole('button', { name: /Comenzar duelo/ }).click();
+  await page.getByRole('button', { name: /Preparar combate/ }).click();
   await expect(page.locator('.dr-classic-screen')).toBeVisible();
+  await advanceStoryPrelude(page);
   await expect(page.getByText('¿Quién comienza?')).toBeVisible();
 });
 
@@ -95,7 +111,7 @@ test('star goals dialog is complete, keyboard-accessible and fits the phone', as
   await page.getByRole('button', { name: 'Ver objetivos del reto' }).click();
   const dialog = page.getByRole('dialog', { name: 'El pregón alterado' });
   await expect(dialog).toBeVisible();
-  await expect(dialog.getByText('Gana el duelo')).toBeVisible();
+  await expect(dialog.getByText('Gana el combate')).toBeVisible();
   await expect(dialog.getByText('Conserva al menos 6 de vida')).toBeVisible();
   await expect(dialog.getByText('Gana en 10 rondas o menos')).toBeVisible();
   const bounds = await dialog.boundingBox();
@@ -156,10 +172,11 @@ test('original game keeps its rules but activates cards by selection plus target
   test.skip(testInfo.project.name !== 'mobile-390', 'Full original turn flow sampled on the main phone');
   await page.addInitScript(() => { Math.random = () => 0.6; });
   await page.goto('/Decreto-Real/#/campania/mision/01');
-  await page.getByRole('button', { name: /Comenzar duelo/ }).click();
+  await page.getByRole('button', { name: /Preparar combate/ }).click();
+  await advanceStoryPrelude(page);
   await expect(page.getByText('¿Quién comienza?')).toBeVisible();
-  await expect(page.locator('.dr-classic-screen img[src*="imgur.com"]').first()).toBeVisible();
-  await expect(page.getByText('24', { exact: true })).toHaveCount(2);
+  await expect(page.locator('.dr-classic-screen .gold-leaf-frame')).toHaveCount(2);
+  await expect(page.getByText('28', { exact: true })).toHaveCount(2);
   await page.getByRole('button', { name: 'Lanzar Moneda' }).click();
   await expect(page.getByText('¿Quién comienza?')).toBeHidden({ timeout: 12000 });
   const cards = page.locator('.dr-royal-hand-card');
@@ -183,10 +200,11 @@ test('original game and campaign use the same physical-looking board and audio c
   test.skip(test.info().project.name !== 'mobile-390', 'One shared-component smoke test');
   await page.goto('/Decreto-Real/#/game');
   await expect(page.getByText('¿Quién comienza?')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Lanzar Moneda' })).toBeVisible();
+  await expect(page.getByTestId('story-combat-dialogue')).toHaveCount(0);
   await page.goto('/Decreto-Real/#/campania/mision/01');
-  await page.getByRole('button', { name: /Comenzar duelo/ }).click();
+  await page.getByRole('button', { name: /Preparar combate/ }).click();
   await expect(page.locator('.dr-classic-screen')).toBeVisible();
+  await advanceStoryPrelude(page);
   await expect(page.getByText('¿Quién comienza?')).toBeVisible();
   await expect(page.locator('.dr-classic-screen .gold-leaf-frame')).toHaveCount(2);
   await expect(page.locator('.dr-game.dr-original-table')).toHaveCount(0);
