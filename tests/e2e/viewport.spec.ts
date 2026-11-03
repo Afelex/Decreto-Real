@@ -76,7 +76,7 @@ test('mission briefing and battle keep their last action visible', async ({ page
   await fits(page, '.dc-briefing-actions');
   await noPageScroll(page);
   await page.getByRole('button', { name: /Comenzar duelo/ }).click();
-  await expect(page.getByText('Ritual de Inicio')).toBeVisible();
+  await expect(page.getByText('¿Quién comienza?')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Lanzar Moneda' })).toBeVisible();
   await fits(page, '.dr-classic-screen');
   await noPageScroll(page);
