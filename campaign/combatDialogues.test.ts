@@ -13,6 +13,11 @@ test('cada una de las 38 misiones abre con rival, Xervias, rival e Inicia el com
     assert.equal(conversation.critical.length, 1);
     assert.equal(conversation.critical[0].speaker, 'opponent');
     assert.ok(conversation.intro.every(line => line.text.trim().length > 10));
+    for (const line of [...conversation.intro, ...conversation.midpoint, ...conversation.critical, ...conversation.victory]) {
+      if (line.speaker === 'system') continue;
+      assert.ok(line.text.length >= 30, `Diálogo insuficiente en ${mission.id}`);
+      assert.ok(line.text.length <= 155, `Diálogo largo para móvil en ${mission.id}`);
+    }
     assert.ok(conversation.opponentName.trim().length > 2);
     assert.ok(conversation.victory.length > 0);
     assert.equal(conversation.victory.at(-1)?.speaker, 'player');

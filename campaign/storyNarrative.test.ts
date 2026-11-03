@@ -17,10 +17,19 @@ test('la crónica conserva 38 misiones y sus diez capítulos en el orden canóni
 test('cada misión presenta un conflicto y consecuencias legibles en móvil', () => {
   for (const stage of STORY_STAGES) {
     assert.ok(chapterForStage(stage.id), `Sin capítulo: ${stage.id}`);
+    assert.match(stage.openingLine, /^OBJETIVO: /, `No se explica el objetivo de ${stage.id}`);
+    assert.ok(stage.description.length <= 175, `Contexto demasiado largo: ${stage.id}`);
     for (const field of ['title', 'description', 'openingLine', 'victoryLine', 'defeatLine'] as const) {
       assert.ok(stage[field].trim().length >= 12, `Falta texto en ${stage.id} / ${field}`);
       assert.ok(stage[field].length <= 230, `Texto demasiado largo en ${stage.id} / ${field}`);
     }
+  }
+});
+
+test('todos los capítulos tienen un resumen claro y breve', () => {
+  for (const chapter of STORY_CHAPTERS) {
+    assert.ok(chapter.summary.length >= 55, `Falta contexto: ${chapter.id}`);
+    assert.ok(chapter.summary.length <= 190, `Resumen largo: ${chapter.id}`);
   }
 });
 
