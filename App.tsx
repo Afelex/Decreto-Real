@@ -11,6 +11,7 @@ import CampaignMap from './screens/CampaignMap';
 import CampaignMission from './screens/CampaignMission';
 import CampaignStory from './screens/CampaignStory';
 import CampaignEpilogue from './screens/CampaignEpilogue';
+import CampaignDeck from './screens/CampaignDeck';
 import { AudioProvider } from './contexts/AudioContext';
 import './screens/one-screen-ui.css';
 import './screens/duel-viewport.css';
@@ -35,6 +36,7 @@ const App: React.FC = () => {
           <Route path="/campania" element={<CampaignMap />} />
           <Route path="/campania/historia" element={<CampaignStory />} />
           <Route path="/campania/epilogo" element={<CampaignEpilogue />} />
+          <Route path="/campania/baraja" element={<CampaignDeck />} />
           <Route path="/campania/mision/:missionId" element={<CampaignMission />} />
           <Route path="/duelo-v1/tutorial" element={<TutorialScreen />} />
           <Route path="/victory" element={<VictoryScreen />} />
