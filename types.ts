@@ -1,4 +1,4 @@
-export type CardType = "ATTACK" | "DEFENSE" | "IMPACT" | "ORDER";
+export type CardType = "ATTACK" | "DEFENSE" | "IMPACT" | "ORDER" | "MYSTIC";
 
 export interface CardData {
   id: string; // Changed to string for unique instances
@@ -6,6 +6,7 @@ export interface CardData {
   name: string;
   description: string;
   rank?: number; // 1, 2, 3, 4 for Impacts
+  mysticId?: string; // Identificador estable para la habilidad mística
   cost: number; // Keep for UI, even if logic says "any amount"
   img: string;
   rot?: string; // Visual rotation
