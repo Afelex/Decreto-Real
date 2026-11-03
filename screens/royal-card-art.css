@@ -166,3 +166,59 @@
   margin:0;
   object-fit:cover;
 }
+
+
+/* DR-CARD-ART03: ilustración nueva para Impacto I, II, III y FINAL.
+   El motor conserva el rango y la función de cada carta; sólo cambia su arte. */
+.dr-royal-screen .dr-royal-hand-card.impact {
+  background:#1b1022;
+  border:2px solid #cfa75d;
+  overflow:hidden;
+  padding:4px 3px 6px;
+}
+.dr-royal-screen .dr-royal-hand-card.impact::after,
+.dr-royal-screen .dr-royal-drag-ghost.impact::after {display:none;}
+.dr-royal-screen .dr-royal-hand-card.impact > img {
+  position:absolute;
+  inset:0;
+  display:block;
+  width:100%;
+  height:100%;
+  max-width:none;
+  opacity:1;
+  margin:0;
+  flex:none;
+  object-fit:cover;
+  object-position:center;
+  border:0;
+  border-radius:5px;
+  filter:none;
+  pointer-events:none;
+}
+.dr-royal-screen .dr-royal-hand-card.impact > .dr-royal-card-kind,
+.dr-royal-screen .dr-royal-hand-card.impact > .dr-royal-card-title,
+.dr-royal-screen .dr-royal-hand-card.impact > .dr-royal-card-effect {
+  z-index:3;
+  flex-shrink:0;
+}
+.dr-royal-screen .dr-royal-hand-card.impact > .dr-royal-card-kind {
+  margin-top:auto;
+  background:#160b17e8!important;
+}
+.dr-royal-screen .dr-royal-hand-card.impact > .dr-royal-card-title,
+.dr-royal-screen .dr-royal-hand-card.impact > .dr-royal-card-effect {
+  background:#160b17dc;
+}
+.dr-royal-screen .dr-royal-drag-ghost.impact {
+  background:#170f19;
+  border:2px solid #e4bc6f;
+}
+.dr-royal-screen .dr-royal-drag-ghost.impact > img {
+  display:block;
+  opacity:1;
+  width:100%;
+  height:100%;
+  margin:0;
+  object-fit:cover;
+  filter:none;
+}
