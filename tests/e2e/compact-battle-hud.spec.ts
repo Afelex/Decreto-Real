@@ -11,12 +11,10 @@ test('compact battle HUD has no redundant portrait diamonds and no MANO labels',
   await expect(page.locator('.dr-royal-rival-impact')).toHaveCount(0);
   await expect(page.locator('.dr-royal-character .flex.gap-1.mt-1')).toHaveCount(0);
 
-  const counters = page.locator('.dr-royal-hand-count');
-  await expect(counters).toHaveCount(2);
-  await expect(page.locator('.dr-royal-hand-count.rival')).toHaveText('0');
-  await expect(page.locator('.dr-royal-hand-count.player')).toHaveText('0');
-  await expect(page.locator('.dr-royal-hand-laurels')).toHaveCount(2);
-  await expect(page.locator('.dr-royal-hand-count').first()).not.toContainText('MANO');
+  // The fan itself communicates the number of cards; no numeric plaques remain.
+  await expect(page.locator('.dr-royal-hand-count')).toHaveCount(0);
+  await expect(page.locator('.dr-royal-hand-number')).toHaveCount(0);
+  await expect(page.locator('.dr-royal-hand-laurels')).toHaveCount(0);
   await expect(page.locator('.dr-royal-audio')).toHaveCount(1);
 });
 
@@ -29,8 +27,9 @@ test('turn ribbon is diagonal, crown-free and does not block the audio shortcut'
 
   const ribbon = page.locator('.dr-event-indicator.is-player');
   await expect(ribbon).toBeVisible({ timeout: 18000 });
-  await expect(ribbon.locator('.dr-event-indicator__label')).toHaveText('Tu turno');
-  await expect(ribbon.locator('.dr-event-indicator__laurel')).toHaveCount(2);
+  await expect(ribbon.locator('.dr-event-indicator__label')).toHaveText('Tu Turno');
+  await expect(ribbon.locator('.dr-event-indicator__laurel')).toHaveCount(0);
+  await expect(ribbon).toHaveCSS('background-image', /cinta-turno-jugador\.svg/);
   await expect(ribbon).not.toContainText('♛');
   await expect(ribbon).toHaveCSS('pointer-events', 'none');
   const turnButton = page.getByRole('button', { name: 'Terminar turno' });

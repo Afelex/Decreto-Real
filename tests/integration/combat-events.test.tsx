@@ -11,12 +11,14 @@ test('turn cues announce the active side without a full-screen dark modal', () =
     <TurnAnnouncement variant="player" turn={2} />
   </>);
   expect(screen.getByRole('status', { name: 'Turno actual: tu turno' })).toBeTruthy();
-  expect(screen.getByRole('status', { name: /TU TURNO. Juega una carta/ })).toBeTruthy();
+  expect(screen.getByRole('status', { name: /Tu Turno. Juega una carta/ })).toBeTruthy();
   expect(document.querySelector('.dr-event-turn__ribbon')).toBeTruthy();
+  expect(document.querySelector('.dr-event-indicator__label')?.textContent).toBe('Tu Turno');
+  expect(document.querySelector('.dr-event-indicator__laurel')).toBeNull();
   expect(document.querySelector('.dr-event-stage__veil')).toBeNull();
   rerender(<><TurnIndicator side="OPPONENT" /><TurnAnnouncement variant="opponent" turn={3} /></>);
   expect(screen.getByRole('status', { name: 'Turno actual: turno del oponente' })).toBeTruthy();
-  expect(screen.getByRole('status', { name: /TURNO DEL OPONENTE/ })).toBeTruthy();
+  expect(screen.getByRole('status', { name: /Turno del Rival/ })).toBeTruthy();
 });
 
 test('compact combo choices preserve the damage/heal decisions', () => {

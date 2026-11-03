@@ -1,160 +1,67 @@
-/* DR-HUD-V6 — Clean battle HUD, crown-free diagonal turn ribbons.
-   The impact fields themselves are still the visible, interactive progress display.
-   This stylesheet is loaded AFTER the previous table and HUD styles. */
+/* DR-HUD-V7 — Real transparent ribbon assets, one active side, no hand counters. */
 .dr-royal-screen .dr-royal-rival-impact {display:none!important;}
 
-/* Number-only hand counters: sculpted burgundy plaque, delicate gold laurel.
-   Leaves are inline SVG and never interfere with card touch targets. */
-.dr-royal-screen .dr-royal-hand-count {
-  position:absolute;
-  z-index:9;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:0;
-  width:clamp(55px,16cqw,72px);
-  height:clamp(30px,5.2dvh,42px);
-  min-width:0;
-  margin:0;
-  border:2px solid #e7bb63;
-  border-radius:46%;
-  background:radial-gradient(ellipse at 48% 25%,#5d2731,#25131b 77%);
-  box-shadow:inset 0 0 0 1px #7c461e,0 2px 5px #0a08127a;
-  color:#fff4d4;
-  line-height:1;
-  letter-spacing:0;
-  pointer-events:none;
-  text-align:center;
-}
-.dr-royal-screen .dr-royal-hand-count.rival {
-  bottom:clamp(2px,.55dvh,6px);
-  right:clamp(12px,3cqw,18px);
-  left:auto;
-  top:auto;
-}
-.dr-royal-screen .dr-royal-hand-count.player {
-  top:clamp(5px,1dvh,12px);
-  left:clamp(5px,1.3cqw,10px);
-  right:auto;
-  bottom:auto;
-}
-.dr-royal-screen .dr-royal-hand-laurels {
-  display:block;
-  position:absolute;
-  inset:-8px -12px;
-  width:calc(100% + 24px);
-  height:calc(100% + 16px);
-  overflow:visible;
-  z-index:0;
-  pointer-events:none;
-  filter:drop-shadow(0 1px 1px #25100899);
-}
-.dr-royal-screen .dr-royal-hand-number {
-  position:relative;
-  display:block;
-  z-index:1;
-  font:900 clamp(17px,5cqw,24px)/1 Cinzel,Georgia,serif;
-  color:#fff2d0;
-  text-shadow:0 2px 2px #180c14,0 0 6px #e9b76566;
-}
-
-/* Persistent, noninteractive turn status, visibly diagonal but compact.
-   Red = player, blue = rival; no crown and no on-screen duplicate. */
+/* Artwork supplied for each faction; the title is live text for sharp rendering
+   and accessibility on every screen size. Artwork is already diagonal. */
 .dr-royal-screen .dr-event-indicator {
   position:absolute;
   z-index:35;
-  display:flex;
-  flex-direction:row;
-  align-items:center;
-  justify-content:space-between;
-  gap:0;
-  width:clamp(132px,38cqw,176px);
-  height:clamp(39px,5.7dvh,51px);
+  display:grid;
+  place-items:center;
+  box-sizing:border-box;
+  width:clamp(166px,47cqw,225px);
+  height:auto;
+  aspect-ratio:3 / 1;
   min-height:0;
   max-width:none;
-  padding:0 7px;
+  padding:0;
   border:0;
   border-radius:0;
-  background:transparent;
+  background-color:transparent;
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:contain;
   box-shadow:none;
-  color:#fff6e5;
-  pointer-events:none;
-  white-space:nowrap;
   isolation:isolate;
-  transform:rotate(-7deg);
-  transform-origin:center;
+  pointer-events:none;
+  overflow:visible;
+  transform:none;
+  white-space:nowrap;
+  filter:drop-shadow(0 3px 3px #06061375);
 }
 .dr-royal-screen .dr-event-indicator.is-player {
-  left:clamp(8px,2cqw,15px);
-  right:auto;
-  top:auto;
+  left:clamp(6px,2cqw,13px);right:auto;top:auto;
   bottom:clamp(164px,34dvh,445px);
-  --dr-ribbon-a:#9f2634;
-  --dr-ribbon-b:#480e20;
+  background-image:url('/Decreto-Real/interfaz/cinta-turno-jugador.svg');
 }
 .dr-royal-screen .dr-event-indicator.is-opponent {
-  right:clamp(8px,2cqw,15px);
-  left:auto;
-  bottom:auto;
+  right:clamp(6px,2cqw,13px);left:auto;bottom:auto;
   top:clamp(92px,18.5dvh,225px);
-  --dr-ribbon-a:#2474b9;
-  --dr-ribbon-b:#0b335b;
+  background-image:url('/Decreto-Real/interfaz/cinta-turno-rival.svg');
 }
 .dr-royal-screen .dr-event-indicator::before,
-.dr-royal-screen .dr-event-indicator::after {
-  content:"";
-  position:absolute;
-  pointer-events:none;
-  clip-path:polygon(0 28%,100% 0,95% 82%,0% 100%);
-}
-.dr-royal-screen .dr-event-indicator::before {
-  inset:0;
-  z-index:-2;
-  background:linear-gradient(170deg,#fff0ad 0,#a46c29 24%,#f5c96c 61%,#91541d 100%);
-  filter:drop-shadow(1px 3px 3px #0007);
-}
-.dr-royal-screen .dr-event-indicator::after {
-  inset:3px 3px 3px 3px;
-  z-index:-1;
-  background:linear-gradient(125deg,var(--dr-ribbon-b),var(--dr-ribbon-a) 55%,var(--dr-ribbon-b));
-}
+.dr-royal-screen .dr-event-indicator::after {content:none;}
 .dr-royal-screen .dr-event-indicator__label {
   position:relative;
-  z-index:2;
-  flex:1 1 auto;
-  margin:0 2px;
-  padding:0;
-  font:italic 900 clamp(15px,4.3cqw,21px)/1 Cinzel,Georgia,serif;
-  text-align:center;
-  color:#fff3d3;
-  text-shadow:0 1px 2px #210d17,0 2px 4px #0009;
-  letter-spacing:0;
-}
-.dr-royal-screen .dr-event-indicator__laurel {
+  z-index:1;
   display:block;
-  position:relative;
-  z-index:2;
-  flex:0 0 auto;
-  width:16px;
-  margin:0 -3px 0 -5px;
-  transform:rotate(-16deg);
-  color:#f4c15e;
-  font:900 24px/1 Georgia,serif;
-  text-shadow:0 1px 1px #733b17,0 0 4px #ffce7844;
+  width:76%;
+  margin:-2px 0 0;
+  padding:0;
+  font:900 clamp(12px,3.6cqw,19px)/1 Cinzel,Georgia,serif;
+  letter-spacing:-.035em;
+  text-align:center;
+  color:#ffe9a2;
+  text-shadow:0 1px 1px #3d1b0b,0 2px 3px #000,1px 0 1px #5f350e;
 }
-.dr-royal-screen .dr-event-indicator__laurel.is-right {
-  transform:scaleX(-1) rotate(-16deg);
-  margin:0 -6px 0 -1px;
-}
+.dr-royal-screen .dr-event-indicator__laurel,
 .dr-royal-screen .dr-event-indicator__dot {display:none;}
-/* Short screens keep the banner above the player's cards, never over audio. */
-@media(max-height:570px) {
+@media (max-height:570px) {
   .dr-royal-screen .dr-event-indicator.is-player {bottom:34dvh;}
   .dr-royal-screen .dr-event-indicator.is-opponent {top:20dvh;}
-  .dr-royal-screen .dr-event-indicator {height:34px;width:130px;}
-  .dr-royal-screen .dr-event-indicator__label {font-size:15px;}
-  .dr-royal-screen .dr-royal-hand-count {height:29px;width:54px;}
+  .dr-royal-screen .dr-event-indicator {width:clamp(156px,44cqw,190px);}
+  .dr-royal-screen .dr-event-indicator__label {font-size:clamp(12px,3.4cqw,16px);}
 }
-@media(prefers-reduced-motion:reduce) {
+@media (prefers-reduced-motion:reduce) {
   .dr-royal-screen .dr-event-indicator {transition:none;animation:none;}
 }

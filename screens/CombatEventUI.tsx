@@ -3,32 +3,32 @@ import './combat-events.css';
 
 type Side = 'PLAYER' | 'OPPONENT';
 
+/** Compact, persistent status ribbon: blue belongs to the rival; red to the player. */
 export function TurnIndicator({ side }: { side: Side }) {
+  const player = side === 'PLAYER';
   return (
-    <div className={`dr-event-indicator ${side === 'PLAYER' ? 'is-player' : 'is-opponent'}`}
+    <div className={`dr-event-indicator ${player ? 'is-player' : 'is-opponent'}`}
       role="status" aria-live="polite"
-      aria-label={side === 'PLAYER' ? 'Turno actual: tu turno' : 'Turno actual: turno del oponente'}>
-      <span className="dr-event-indicator__laurel" aria-hidden="true">❧</span>
-      <span className="dr-event-indicator__label">{side === 'PLAYER' ? 'Tu turno' : 'Turno rival'}</span>
-      <span className="dr-event-indicator__laurel is-right" aria-hidden="true">❧</span>
+      aria-label={player ? 'Turno actual: tu turno' : 'Turno actual: turno del oponente'}>
+      <span className="dr-event-indicator__label">{player ? 'Tu Turno' : 'Turno del Rival'}</span>
     </div>
   );
 }
 
+/** Short centered cue on changing turns; the artwork remains separate from live text. */
 export function TurnAnnouncement({ variant, turn }: {
   variant: 'opening' | 'player' | 'opponent';
   turn?: number;
 }) {
   const opening = variant === 'opening';
-  const title = opening ? '¡INICIA EL COMBATE!' : variant === 'player' ? 'TU TURNO' : 'TURNO DEL OPONENTE';
+  const title = opening ? '¡INICIA EL COMBATE!' : variant === 'player' ? 'Tu Turno' : 'Turno del Rival';
   const subtitle = opening ? 'Prepárate para el duelo' : variant === 'player' ? 'Juega una carta' : 'El rival está actuando';
   return (
     <div className={`dr-event-turn dr-event-turn--${variant}`} role="status"
-      aria-live="polite" aria-label={`${title}. ${subtitle}`}>
+      aria-live="polite" aria-label={`${title}. ${subtitle}${turn ? ` (turno ${turn})` : ''}`}>
       <div className="dr-event-turn__ribbon">
-        {!opening && <span className="dr-event-turn__eyebrow">TURNO {turn}</span>}
         <strong>{title}</strong>
-        <small>{subtitle}</small>
+        {opening && <small>{subtitle}</small>}
       </div>
     </div>
   );
@@ -76,8 +76,7 @@ export function CoinTossPanel({ coinSide, isFlipping, onToss }: {
       <div className="dr-event-stage__veil" aria-hidden="true" />
       <div className="dr-event-coin-panel" role="dialog" aria-modal="true"
         aria-labelledby="dr-event-coin-title">
-        <h2 id="dr-event-coin-title">Ritual de Inicio</h2>
-        <p>Lance de moneda</p>
+        <h2 id="dr-event-coin-title">¿Quién comienza?</h2>
         <button type="button" className={`dr-event-coin ${isFlipping ? 'is-flipping' : ''}`}
           aria-label="Lanzar Moneda" onClick={onToss} disabled={isFlipping || coinSide !== null}>
           <span className="dr-event-coin__face" aria-hidden="true">
@@ -85,7 +84,7 @@ export function CoinTossPanel({ coinSide, isFlipping, onToss }: {
           </span>
         </button>
         <div className="dr-event-coin-panel__result" role="status" aria-live="polite">
-          {isFlipping && !coinSide ? 'La suerte está echada…' : result || 'Toca la moneda para lanzarla'}
+          {isFlipping && !coinSide ? 'Girando…' : result || 'Toca la moneda'}
         </div>
       </div>
     </div>

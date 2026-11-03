@@ -43,41 +43,6 @@ const EndTurnOrnament: React.FC<{ disabled: boolean }> = ({ disabled }) => (
 );
 
 
-type HandCountProps = { side: 'rival' | 'player'; count: number };
-
-/** Number-only counters: gold laurel ornament is decorative, counts remain live. */
-const HandCount: React.FC<HandCountProps> = ({ side, count }) => (
-  <output className={`dr-royal-hand-count ${side}`}
-    aria-label={side === 'rival' ? `El rival tiene ${count} cartas` : `Tienes ${count} cartas en la mano`}>
-    <svg className="dr-royal-hand-laurels" viewBox="0 0 104 48" aria-hidden="true" focusable="false">
-      <defs>
-        <linearGradient id={`dr-laurel-gold-${side}`} x1="0" x2="0.7" y1="0" y2="1">
-          <stop offset="0" stopColor="#ffeb9e"/><stop offset=".55" stopColor="#e9b34c"/><stop offset="1" stopColor="#a46b24"/>
-        </linearGradient>
-      </defs>
-      <g fill={`url(#dr-laurel-gold-${side})`} stroke="#8d4c1a" strokeWidth=".7">
-        <path d="M24 43C8 38 5 23 13 7" fill="none" stroke="#e5ae48" strokeWidth="2.2"/>
-        <ellipse cx="12" cy="10" rx="3.2" ry="7" transform="rotate(31 12 10)"/>
-        <ellipse cx="9" cy="20" rx="3.2" ry="6" transform="rotate(64 9 20)"/>
-        <ellipse cx="12" cy="31" rx="3.1" ry="6.2" transform="rotate(100 12 31)"/>
-        <ellipse cx="19" cy="40" rx="3" ry="6" transform="rotate(128 19 40)"/>
-        <ellipse cx="18" cy="17" rx="2.8" ry="6" transform="rotate(-20 18 17)"/>
-        <ellipse cx="18" cy="28" rx="2.8" ry="6" transform="rotate(5 18 28)"/>
-      </g>
-      <g transform="translate(104 0) scale(-1 1)" fill={`url(#dr-laurel-gold-${side})`} stroke="#8d4c1a" strokeWidth=".7">
-        <path d="M24 43C8 38 5 23 13 7" fill="none" stroke="#e5ae48" strokeWidth="2.2"/>
-        <ellipse cx="12" cy="10" rx="3.2" ry="7" transform="rotate(31 12 10)"/>
-        <ellipse cx="9" cy="20" rx="3.2" ry="6" transform="rotate(64 9 20)"/>
-        <ellipse cx="12" cy="31" rx="3.1" ry="6.2" transform="rotate(100 12 31)"/>
-        <ellipse cx="19" cy="40" rx="3" ry="6" transform="rotate(128 19 40)"/>
-        <ellipse cx="18" cy="17" rx="2.8" ry="6" transform="rotate(-20 18 17)"/>
-        <ellipse cx="18" cy="28" rx="2.8" ry="6" transform="rotate(5 18 28)"/>
-      </g>
-    </svg>
-    <strong className="dr-royal-hand-number">{count}</strong>
-  </output>
-);
-
 // --- ASSETS ---
 const IMG_ATTACK = 'https://i.imgur.com/x9iHqkK.png';
 const IMG_DEFEND = 'https://i.imgur.com/z9KyWGL_d.webp?maxwidth=760&fidelity=grand';
@@ -214,12 +179,14 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     if (isCoinFlipping) return;
     playSound('FLIP');
     setIsCoinFlipping(true);
+    // One tap, a single short flip, then the result before battle begins.
     setTimeout(() => {
       const isHeads = Math.random() > 0.5;
       setCoinSide(isHeads ? 'CARA' : 'SELLO');
       setWhoStarted(isHeads ? 'PLAYER' : 'OPPONENT');
-      setTimeout(() => { setPhase('START_BANNER'); setIsCoinFlipping(false); }, 1500);
-    }, 1500);
+      setIsCoinFlipping(false);
+      setTimeout(() => setPhase('START_BANNER'), 450);
+    }, 500);
   };
 
   useEffect(() => {
@@ -231,14 +198,14 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
         drawCards('OPPONENT', INITIAL_HAND_SIZE);
         setTurnCount(1);
         setPhase('TURN_BANNER');
-      }, 2000);
+      }, 1100);
     } else if (phase === 'TURN_BANNER') {
       const currentPlayer = ((whoStarted === 'PLAYER' && turnCount % 2 !== 0) || (whoStarted === 'OPPONENT' && turnCount % 2 === 0)) ? 'PLAYER' : 'OPPONENT';
       setTimeout(() => {
         if (gameOverRef.current) return;
         if (currentPlayer === 'PLAYER') startPlayerTurn();
         else startOpponentTurn();
-      }, 1500);
+      }, 1000);
     }
   }, [phase, turnCount]);
 
@@ -635,7 +602,6 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
               } as React.CSSProperties}><span className="dr-royal-card-crest">✥</span></div>;
             })}
           </div>
-          <HandCount side="rival" count={opponentHand.length}/>
         </section>
 
         <section className={`dr-royal-field${selectedCard ? ' is-guiding' : ''}${dragAt ? ' is-dragging' : ''}${selectedCard && selectedCard.type !== 'IMPACT' ? ' is-regular' : ''}`}
@@ -677,7 +643,6 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
         </section>
 
         <section className="dr-royal-player-hand" aria-label={`Tu mano: ${playerHand.length} cartas`}>
-          <HandCount side="player" count={playerHand.length}/>
           <div className="dr-royal-player-fan">
             {playerHand.map((card, i) => {
               const distance = i - (playerHand.length - 1) / 2;
@@ -733,7 +698,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
       </div>}
 
       {/* Combat cues are brief overlays; the field remains visible. */}
-      {turnOwner && (phase === 'TURN_BANNER' || phase === 'PLAYER_TURN' || phase === 'OPPONENT_TURN') &&
+      {turnOwner && (phase === 'PLAYER_TURN' || phase === 'OPPONENT_TURN') &&
         <TurnIndicator side={turnOwner} />}
       {(phase === 'START_BANNER' || phase === 'TURN_BANNER') &&
         <TurnAnnouncement
