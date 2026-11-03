@@ -1,4 +1,4 @@
-/* DR-HUD-V7 — Real transparent ribbon assets, one active side, no hand counters. */
+/* DR-HUD-V8 — Smaller transparent turn ribbons, clear of the Impact track. */
 .dr-royal-screen .dr-royal-rival-impact {display:none!important;}
 
 /* Artwork supplied for each faction; the title is live text for sharp rendering
@@ -9,7 +9,7 @@
   display:grid;
   place-items:center;
   box-sizing:border-box;
-  width:clamp(166px,47cqw,225px);
+  width:clamp(138px,39cqw,185px);
   height:auto;
   aspect-ratio:3 / 1;
   min-height:0;
@@ -31,7 +31,7 @@
 }
 .dr-royal-screen .dr-event-indicator.is-player {
   left:clamp(6px,2cqw,13px);right:auto;top:auto;
-  bottom:clamp(164px,34dvh,445px);
+  bottom:clamp(140px,32dvh,410px);
   background-image:url('/Decreto-Real/interfaz/cinta-turno-jugador.svg');
 }
 .dr-royal-screen .dr-event-indicator.is-opponent {
@@ -45,11 +45,11 @@
   position:relative;
   z-index:1;
   display:block;
-  width:76%;
+  width:74%;
   margin:-2px 0 0;
   padding:0;
-  font:900 clamp(12px,3.6cqw,19px)/1 Cinzel,Georgia,serif;
-  letter-spacing:-.035em;
+  font:900 clamp(11px,3.1cqw,17px)/1 Cinzel,Georgia,serif;
+  letter-spacing:-.03em;
   text-align:center;
   color:#ffe9a2;
   text-shadow:0 1px 1px #3d1b0b,0 2px 3px #000,1px 0 1px #5f350e;
@@ -57,10 +57,10 @@
 .dr-royal-screen .dr-event-indicator__laurel,
 .dr-royal-screen .dr-event-indicator__dot {display:none;}
 @media (max-height:570px) {
-  .dr-royal-screen .dr-event-indicator.is-player {bottom:34dvh;}
+  .dr-royal-screen .dr-event-indicator.is-player {bottom:30dvh;}
   .dr-royal-screen .dr-event-indicator.is-opponent {top:20dvh;}
-  .dr-royal-screen .dr-event-indicator {width:clamp(156px,44cqw,190px);}
-  .dr-royal-screen .dr-event-indicator__label {font-size:clamp(12px,3.4cqw,16px);}
+  .dr-royal-screen .dr-event-indicator {width:clamp(120px,36cqw,168px);}
+  .dr-royal-screen .dr-event-indicator__label {font-size:clamp(10px,3cqw,15px);}
 }
 @media (prefers-reduced-motion:reduce) {
   .dr-royal-screen .dr-event-indicator {transition:none;animation:none;}
