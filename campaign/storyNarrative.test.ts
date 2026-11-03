@@ -19,6 +19,7 @@ test('cada misión presenta un conflicto y consecuencias legibles en móvil', ()
     assert.ok(chapterForStage(stage.id), `Sin capítulo: ${stage.id}`);
     assert.match(stage.openingLine, /^OBJETIVO: /, `No se explica el objetivo de ${stage.id}`);
     assert.ok(stage.description.length <= 175, `Contexto demasiado largo: ${stage.id}`);
+    assert.match(stage.victoryLine, /\?$/, `Falta misterio al cerrar la misión ${stage.id}`);
     for (const field of ['title', 'description', 'openingLine', 'victoryLine', 'defeatLine'] as const) {
       assert.ok(stage[field].trim().length >= 12, `Falta texto en ${stage.id} / ${field}`);
       assert.ok(stage[field].length <= 230, `Texto demasiado largo en ${stage.id} / ${field}`);
