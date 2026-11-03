@@ -122,7 +122,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "skirmish",
     "opponent": "Guardia del pregón",
     "openingLine": "OBJETIVO: Protege a las familias y averigua por qué existen dos órdenes opuestas.",
-    "victoryLine": "Xervias rescata a los testigos: el sello es auténtico, pero alguien ha cambiado sus palabras.",
+    "victoryLine": "Xervias rescata a los testigos: el sello es auténtico, pero alguien ha cambiado sus palabras. ¿Quién pudo hacerlo sin romper el sello?",
     "defeatLine": "Los vecinos quedan expuestos al castigo y el pregón falso sigue circulando."
   },
   {
@@ -133,7 +133,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "skirmish",
     "opponent": "Mensajero encapuchado",
     "openingLine": "OBJETIVO: Detén al mensajero y descubre de dónde viene la orden falsa.",
-    "victoryLine": "En la cera del sobre aparece una marca de embarque. El rastro conduce al Callao.",
+    "victoryLine": "En la cera del sobre aparece una marca de embarque. El rastro conduce al Callao. ¿Qué ocultan los barcos del Callao?",
     "defeatLine": "El mensajero desaparece con la única copia que podía delatar su ruta."
   },
   {
@@ -144,7 +144,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "skirmish",
     "opponent": "Guardia del muelle",
     "openingLine": "OBJETIVO: Revisa la carga y encuentra los documentos del envío.",
-    "victoryLine": "El manifiesto revela una ruta clandestina entre la costa y las postas del reino.",
+    "victoryLine": "El manifiesto revela una ruta clandestina entre la costa y las postas del reino. ¿A quién iban destinadas esas armas?",
     "defeatLine": "El cargamento parte y las pruebas del engaño se hunden entre la niebla."
   },
   {
@@ -155,7 +155,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "subboss",
     "opponent": "Contramaestre rebelde",
     "openingLine": "OBJETIVO: Consigue la contraseña del arsenal para investigar las armas.",
-    "victoryLine": "Su contraseña permite acceder al arsenal sin alertar todavía al Almirante.",
+    "victoryLine": "Su contraseña permite acceder al arsenal sin alertar todavía al Almirante. ¿Qué nombres aparecen en los libros del arsenal?",
     "defeatLine": "El contramaestre alerta a la flota y se cierran los accesos al puerto."
   },
   {
@@ -166,7 +166,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "skirmish",
     "opponent": "Custodio del arsenal",
     "openingLine": "OBJETIVO: Recupera los libros y descubre adónde viajaron las armas.",
-    "victoryLine": "Un manifiesto vincula la pólvora con órdenes enviadas a las postas del interior.",
+    "victoryLine": "Un manifiesto vincula la pólvora con órdenes enviadas a las postas del interior. ¿Por qué las armas siguen la ruta de los decretos?",
     "defeatLine": "Los custodios sellan el archivo y el Almirante conserva sus pruebas."
   },
   {
@@ -177,7 +177,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "boss",
     "opponent": "Almirante de Hierro",
     "openingLine": "OBJETIVO: Abre el puerto y recupera las cartas que llevan al siguiente general.",
-    "victoryLine": "El puerto queda libre. Los manifiestos apuntan al Jinete Escarlata y su red de correos.",
+    "victoryLine": "El puerto queda libre. Los manifiestos apuntan al Jinete Escarlata y su red de correos. ¿Qué esconde el Jinete en sus correos?",
     "defeatLine": "La flota sostiene el bloqueo; la costa permanece bajo las órdenes de Sigumán."
   },
   {
@@ -188,7 +188,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "skirmish",
     "opponent": "Escolta del camino",
     "openingLine": "OBJETIVO: Intercepta las cartas antes de que lleguen a los pueblos.",
-    "victoryLine": "Xervias intercepta las órdenes antes de que otras aldeas las reciban.",
+    "victoryLine": "Xervias intercepta las órdenes antes de que otras aldeas las reciban. ¿Quién quiere detener a tantas familias?",
     "defeatLine": "El convoy se adelanta y la confusión llega primero a los caminos."
   },
   {
@@ -199,7 +199,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "subboss",
     "opponent": "Capitán de salteadores",
     "openingLine": "OBJETIVO: Libera el camino y recupera las cartas robadas.",
-    "victoryLine": "Liberas a los viajeros y recuperas un itinerario de las postas intervenidas.",
+    "victoryLine": "Liberas a los viajeros y recuperas un itinerario de las postas intervenidas. ¿Por qué alguien robaba precisamente las denuncias?",
     "defeatLine": "Las caravanas quedan aisladas y los denunciantes pierden su ruta."
   },
   {
@@ -210,7 +210,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "skirmish",
     "opponent": "Custodio de la posta",
     "openingLine": "OBJETIVO: Revisa las fechas y descubre quién organizó los mensajes.",
-    "victoryLine": "Las fechas y las marcas de lacre identifican una red coordinada desde el interior.",
+    "victoryLine": "Las fechas y las marcas de lacre identifican una red coordinada desde el interior. ¿Quién escribió noticias antes de que ocurrieran?",
     "defeatLine": "Los custodios destruyen el libro de salidas y borran la pista principal."
   },
   {
@@ -221,7 +221,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "boss",
     "opponent": "Jinete Escarlata",
     "openingLine": "OBJETIVO: Detén al Jinete y averigua quién financió los envíos.",
-    "victoryLine": "Su correspondencia revela pagos del Señor de la Plata por difundir proclamas falsas.",
+    "victoryLine": "Su correspondencia revela pagos del Señor de la Plata por difundir proclamas falsas. ¿Quién paga tantas mentiras con la plata de las minas?",
     "defeatLine": "El Jinete mantiene su dominio sobre los caminos y el reino escucha su versión."
   },
   {
@@ -232,7 +232,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "skirmish",
     "opponent": "Guardia de la mina",
     "openingLine": "OBJETIVO: Escucha a los mineros y consigue sus denuncias.",
-    "victoryLine": "Xervias escucha a los mineros y separa sus denuncias de las órdenes falsificadas.",
+    "victoryLine": "Xervias escucha a los mineros y separa sus denuncias de las órdenes falsificadas. ¿Quién está usando el dolor de los mineros?",
     "defeatLine": "El miedo silencia a los trabajadores y crece el resentimiento."
   },
   {
@@ -243,7 +243,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "subboss",
     "opponent": "Capataz",
     "openingLine": "OBJETIVO: Recupera los libros de pagos y demuestra el abuso.",
-    "victoryLine": "Los libros prueban abusos auténticos y un desvío de plata hacia los emisarios del Alba.",
+    "victoryLine": "Los libros prueban abusos auténticos y un desvío de plata hacia los emisarios del Alba. ¿Adónde fue a parar la plata que falta?",
     "defeatLine": "El capataz conserva los archivos y los mineros continúan sin respuestas."
   },
   {
@@ -254,7 +254,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "skirmish",
     "opponent": "Custodio de pólvora",
     "openingLine": "OBJETIVO: Ayuda a evacuar la mina y salva los documentos.",
-    "victoryLine": "La salida queda a salvo y una orden de pago apunta al despacho del Señor de la Plata.",
+    "victoryLine": "La salida queda a salvo y una orden de pago apunta al despacho del Señor de la Plata. ¿Qué más intenta esconder el Señor de la Plata?",
     "defeatLine": "La pólvora mantiene la mina bajo amenaza y la evacuación fracasa."
   },
   {
@@ -265,7 +265,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "boss",
     "opponent": "Señor de la Plata",
     "openingLine": "OBJETIVO: Recupera las cuentas para demostrar quién pagó a la Falsa Luz.",
-    "victoryLine": "Sus cuentas revelan pagos a Leocadio del Alba y a la fortaleza de los cañones.",
+    "victoryLine": "Sus cuentas revelan pagos a Leocadio del Alba y a la fortaleza de los cañones. ¿Por qué la Falsa Luz necesita tantos cañones?",
     "defeatLine": "El Señor de la Plata conserva sus libros y compra el silencio de sus testigos."
   },
   {
@@ -276,7 +276,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "skirmish",
     "opponent": "Explorador artillero",
     "openingLine": "OBJETIVO: Encuentra un camino seguro para las familias.",
-    "victoryLine": "La avanzada alcanza las defensas sin abandonar a los habitantes del camino.",
+    "victoryLine": "La avanzada alcanza las defensas sin abandonar a los habitantes del camino. ¿Quién dio la orden de disparar contra los caminos?",
     "defeatLine": "Los cañones obligan a retirarse y la ruta de los testigos se interrumpe."
   },
   {
@@ -287,7 +287,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "subboss",
     "opponent": "Maestro bombardero",
     "openingLine": "OBJETIVO: Consigue los planos para evitar los cañones.",
-    "victoryLine": "Sus planos revelan el punto débil del bastión y permiten abrir una ruta segura.",
+    "victoryLine": "Sus planos revelan el punto débil del bastión y permiten abrir una ruta segura. ¿Qué esconden detrás de la puerta del bastión?",
     "defeatLine": "El fuego de artillería conserva el control de los accesos."
   },
   {
@@ -298,7 +298,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "skirmish",
     "opponent": "Guardia del bastión",
     "openingLine": "OBJETIVO: Abre la puerta y libera a los testigos.",
-    "victoryLine": "Los testigos salen con vida y el Artillero queda sin su última defensa.",
+    "victoryLine": "Los testigos salen con vida y el Artillero queda sin su última defensa. ¿Por qué el Artillero teme tanto a esos testigos?",
     "defeatLine": "La puerta permanece cerrada y los prisioneros siguen a merced del general."
   },
   {
@@ -309,7 +309,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "boss",
     "opponent": "Artillero del Trueno",
     "openingLine": "OBJETIVO: Detén los cañones para que los testigos puedan declarar.",
-    "victoryLine": "El bastión calla. Un testigo señala a los emisarios que cruzaron la frontera oriental.",
+    "victoryLine": "El bastión calla. Un testigo señala a los emisarios que cruzaron la frontera oriental. ¿Qué llevaban los emisarios hacia la selva?",
     "defeatLine": "La fortaleza mantiene sus cañones y el testimonio sigue censurado."
   },
   {
@@ -320,7 +320,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "skirmish",
     "opponent": "Guardián del sendero",
     "openingLine": "OBJETIVO: Gana la confianza de las familias y encuentra el sendero.",
-    "victoryLine": "Una familia muestra a Xervias el sendero que usaron los mensajeros de la Falsa Luz.",
+    "victoryLine": "Una familia muestra a Xervias el sendero que usaron los mensajeros de la Falsa Luz. ¿Quién más conoce ese sendero escondido?",
     "defeatLine": "Los custodios vuelven a cerrar el acceso a los testigos de la frontera."
   },
   {
@@ -331,7 +331,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "subboss",
     "opponent": "Explorador renegado",
     "openingLine": "OBJETIVO: Descubre el puente secreto y ayuda a liberar al explorador de las amenazas.",
-    "victoryLine": "El guía se aparta de la red clandestina y revela un puente oculto.",
+    "victoryLine": "El guía se aparta de la red clandestina y revela un puente oculto. ¿Qué aguarda al otro lado del puente?",
     "defeatLine": "Amaru mantiene los senderos cerrados para proteger a su familia."
   },
   {
@@ -342,7 +342,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "skirmish",
     "opponent": "Emisario del Alba",
     "openingLine": "OBJETIVO: Recupera las cartas y busca quién las está escribiendo.",
-    "victoryLine": "Una marca en el papel identifica el taller de Leocadio del Alba.",
+    "victoryLine": "Una marca en el papel identifica el taller de Leocadio del Alba. ¿Por qué enviaron una versión distinta a cada aldea?",
     "defeatLine": "La red de mensajeros alcanza otra aldea antes de que puedas advertirla."
   },
   {
@@ -353,7 +353,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "boss",
     "opponent": "Fantasma de la Selva",
     "openingLine": "OBJETIVO: Muestra a Nayisa las órdenes falsas y consigue que los testigos puedan salir.",
-    "victoryLine": "Nayisa ve la prueba de la falsificación y permite llevar los testimonios fuera de la selva.",
+    "victoryLine": "Nayisa ve la prueba de la falsificación y permite llevar los testimonios fuera de la selva. ¿Quién está enfrentando a los vecinos de la ciudad?",
     "defeatLine": "La red de Nayisa conserva los pasos cerrados y la verdad no puede salir."
   },
   {
@@ -364,7 +364,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "skirmish",
     "opponent": "Guardia de la plaza",
     "openingLine": "OBJETIVO: Evita la expulsión y ayuda a que los vecinos vuelvan a hablar.",
-    "victoryLine": "Xervias consigue una tregua y los vecinos vuelven a declarar sin miedo.",
+    "victoryLine": "Xervias consigue una tregua y los vecinos vuelven a declarar sin miedo. ¿Quién ordenó levantar dos banderas enemigas?",
     "defeatLine": "Las facciones ocupan la plaza y la ciudad pierde su última tregua."
   },
   {
@@ -375,7 +375,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "subboss",
     "opponent": "Predicador impostor",
     "openingLine": "OBJETIVO: Muestra las órdenes falsas y libera a la gente de sus amenazas.",
-    "victoryLine": "Los habitantes escuchan los testimonios y dejan de obedecer al falso predicador.",
+    "victoryLine": "Los habitantes escuchan los testimonios y dejan de obedecer al falso predicador. ¿Quién escribió las falsas promesas del predicador?",
     "defeatLine": "El predicador conserva la plaza y la población desconfía de sus propios vecinos."
   },
   {
@@ -386,7 +386,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "skirmish",
     "opponent": "Escribano de guardia",
     "openingLine": "OBJETIVO: Recupera las dos copias para demostrar que el decreto fue cambiado.",
-    "victoryLine": "Ambos documentos prueban la manipulación y revelan una ruta hacia las cumbres.",
+    "victoryLine": "Ambos documentos prueban la manipulación y revelan una ruta hacia las cumbres. ¿Por qué los documentos señalan las cumbres?",
     "defeatLine": "Los libros son sellados y solo los pregones oficiales alcanzan la plaza."
   },
   {
@@ -397,7 +397,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "boss",
     "opponent": "Dama del Estandarte",
     "openingLine": "OBJETIVO: Demuestra que la ciudad puede unirse sin obligar a todos a obedecer.",
-    "victoryLine": "La Dama deja el estandarte. La ciudad conserva su unidad sin negar los testimonios.",
+    "victoryLine": "La Dama deja el estandarte. La ciudad conserva su unidad sin negar los testimonios. ¿Qué secreto espera entre las montañas?",
     "defeatLine": "La Dama mantiene la guarnición y la ciudad sigue dividida bajo una sola bandera."
   },
   {
@@ -408,7 +408,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "skirmish",
     "opponent": "Guardián de altura",
     "openingLine": "OBJETIVO: Abre un paso seguro y protege a quienes llevan las pruebas.",
-    "victoryLine": "La caravana cruza unida y conserva los documentos del cabildo.",
+    "victoryLine": "La caravana cruza unida y conserva los documentos del cabildo. ¿Por qué custodian tanto un puente de montaña?",
     "defeatLine": "El frío y los centinelas dispersan a quienes acompañan a Xervias."
   },
   {
@@ -419,7 +419,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "subboss",
     "opponent": "Guardián de los pasos",
     "openingLine": "OBJETIVO: Cruza el puente y demuestra que las pruebas merecen ser escuchadas.",
-    "victoryLine": "El guardián permite el paso y cuenta que el Cóndor custodia una carta antigua.",
+    "victoryLine": "El guardián permite el paso y cuenta que el Cóndor custodia una carta antigua. ¿Qué dice la carta que nadie puede leer?",
     "defeatLine": "Martín mantiene la ruta bloqueada por lealtad a su juramento."
   },
   {
@@ -430,7 +430,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "skirmish",
     "opponent": "Defensor de la cumbre",
     "openingLine": "OBJETIVO: Llega hasta el Cóndor y recupera la carta.",
-    "victoryLine": "El puente queda abierto y Xervias alcanza el refugio del Cóndor.",
+    "victoryLine": "El puente queda abierto y Xervias alcanza el refugio del Cóndor. ¿Se atreverá el Cóndor a revisar su juramento?",
     "defeatLine": "La patrulla sostiene el desfiladero y obliga a la caravana a retroceder."
   },
   {
@@ -441,7 +441,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "boss",
     "opponent": "Cóndor de los Andes",
     "openingLine": "OBJETIVO: Consigue la carta y descubre qué relación tiene con San Jerónimo.",
-    "victoryLine": "Aukan entrega la carta: una mención a San Jerónimo lleva hasta la Casa del Juramento.",
+    "victoryLine": "Aukan entrega la carta: una mención a San Jerónimo lleva hasta la Casa del Juramento. ¿Qué ocurrió realmente en San Jerónimo?",
     "defeatLine": "El Cóndor conserva la carta y el paso a los últimos secretos permanece cerrado."
   },
   {
@@ -452,7 +452,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "skirmish",
     "opponent": "Heraldo del juramento",
     "openingLine": "OBJETIVO: Entra a la casa y comprueba qué juraron realmente los soldados.",
-    "victoryLine": "Los heraldos reconocen que el juramento fue alterado después de ser pronunciado.",
+    "victoryLine": "Los heraldos reconocen que el juramento fue alterado después de ser pronunciado. ¿Quién cambió las palabras de aquel juramento?",
     "defeatLine": "La guardia sigue confundiendo lealtad con silencio."
   },
   {
@@ -463,7 +463,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "subboss",
     "opponent": "Teniente de la Guardia",
     "openingLine": "OBJETIVO: Compara las copias originales con los decretos falsos.",
-    "victoryLine": "Una copia original contradice las órdenes distribuidas por Leocadio del Alba.",
+    "victoryLine": "Una copia original contradice las órdenes distribuidas por Leocadio del Alba. ¿Desde cuándo sabía Sigumán que eran falsas?",
     "defeatLine": "El teniente conserva las copias y niega el acceso a los testigos."
   },
   {
@@ -474,7 +474,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "skirmish",
     "opponent": "Capitán del juramento",
     "openingLine": "OBJETIVO: Entra a la sala y busca pruebas de lo que sabía Sigumán.",
-    "victoryLine": "La cámara queda abierta. Una nota sugiere que Sigumán sabía del fraude desde el inicio.",
+    "victoryLine": "La cámara queda abierta. Una nota sugiere que Sigumán sabía del fraude desde el inicio. ¿Por qué Sigumán dejó que el fraude continuara?",
     "defeatLine": "El capitán mantiene la cámara cerrada y el origen de las órdenes sigue oculto."
   },
   {
@@ -485,7 +485,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "boss",
     "opponent": "Caballero del Juramento",
     "openingLine": "OBJETIVO: Muestra al Caballero la promesa original y abre el camino.",
-    "victoryLine": "El Caballero se retira. La puerta de la Casa del Sello se abre y apunta hacia Sigumán.",
+    "victoryLine": "El Caballero se retira. La puerta de la Casa del Sello se abre y apunta hacia Sigumán. ¿Qué encontrarán tras las puertas de la Casa del Sello?",
     "defeatLine": "Gonzalo conserva el acceso, incapaz todavía de distinguir deber y obediencia."
   },
   {
@@ -496,7 +496,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "subboss",
     "opponent": "Escribano del Alba",
     "openingLine": "OBJETIVO: Recupera los originales y demuestra cómo se organizó el engaño.",
-    "victoryLine": "Los originales prueban la falsificación y que Sigumán decidió continuar aun sabiéndolo.",
+    "victoryLine": "Los originales prueban la falsificación y que Sigumán decidió continuar aun sabiéndolo. ¿Qué hará Vándalo Rojo cuando descubran toda la verdad?",
     "defeatLine": "Leocadio esconde sus matrices y la Falsa Luz conserva su coartada."
   },
   {
@@ -507,7 +507,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "subboss",
     "opponent": "Vándalo Rojo",
     "openingLine": "OBJETIVO: Detén a Vándalo Rojo y evita que capture a Xervias.",
-    "victoryLine": "Vándalo es capturado. Zhinchi salva a Xervias, queda gravemente herido y desaparece.",
+    "victoryLine": "Vándalo es capturado. Zhinchi salva a Xervias, queda gravemente herido y desaparece. ¿Dónde está Zhinchi y quién lo ayudó a desaparecer?",
     "defeatLine": "Vándalo escapa y Zhinchi queda expuesto a su emboscada."
   },
   {
@@ -517,7 +517,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "skirmish",
     "opponent": "Guardia de Sigumán",
     "openingLine": "OBJETIVO: Recupera la última pista de Zhinchi y llega hasta la sala de Sigumán.",
-    "victoryLine": "Xervias recupera el último testimonio de Zhinchi y llega ante Sigumán. Su mentor sigue desaparecido.",
+    "victoryLine": "Xervias recupera el último testimonio de Zhinchi y llega ante Sigumán. Su mentor sigue desaparecido. ¿Qué intentó advertir Zhinchi antes de desaparecer?",
     "defeatLine": "Bruno Serrat cierra el acceso y se pierde el rastro de Zhinchi.",
     "id": "37"
   },
@@ -529,7 +529,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "final",
     "opponent": "Sigumán",
     "openingLine": "OBJETIVO: Detén a Sigumán y termina con el control de la Falsa Luz.",
-    "victoryLine": "Sigumán muere al derrumbarse la Casa del Sello. La Falsa Luz cae; San Jerónimo y Zhinchi siguen siendo un misterio.",
+    "victoryLine": "Sigumán muere al derrumbarse la Casa del Sello. La Falsa Luz cae; San Jerónimo y Zhinchi siguen siendo un misterio. ¿Dónde está Zhinchi y qué sucedió en San Jerónimo?",
     "defeatLine": "Sigumán conserva la Casa del Sello y el reino continúa sometido a su mentira."
   }
 ];

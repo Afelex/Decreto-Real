@@ -33,8 +33,10 @@ function screenAt(path: string) {
 test('the prologue introduces the named protagonists and eight generals', () => {
   screenAt('/campania/historia');
   expect(screen.getByRole('heading', { name: 'El reino escucha dos verdades' })).toBeTruthy();
-  fireEvent.click(screen.getByRole('button', { name: 'Protagonistas' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Personajes' }));
   expect(screen.getByText('Xervias')).toBeTruthy();
+  expect(screen.getByText(/Soldado\. Busca quién cambió las órdenes/)).toBeTruthy();
+  expect(screen.queryByText(/Los cuatro protagonistas/)).toBeNull();
   expect(screen.getByText('Zhinchi')).toBeTruthy();
   expect(screen.getByText('Vándalo Rojo')).toBeTruthy();
   expect(screen.getByText('Sigumán')).toBeTruthy();

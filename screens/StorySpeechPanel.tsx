@@ -1,10 +1,12 @@
 import React from 'react';
 import type { StorySpeech } from '../campaign/combatDialogues.ts';
+import { MAIN_CHARACTERS } from '../campaign/characters.ts';
 import './story-speech.css';
 
 type Props = Readonly<{
   speech: StorySpeech;
   rivalName: string;
+  rivalRole: string;
   playerPortrait: string;
   rivalPortrait: string;
   step: number;
@@ -14,7 +16,7 @@ type Props = Readonly<{
 
 /** One speech bubble at a time, never scrolling the combat field. */
 const StorySpeechPanel: React.FC<Props> = ({
-  speech, rivalName, playerPortrait, rivalPortrait, step, total, onContinue,
+  speech, rivalName, rivalRole, playerPortrait, rivalPortrait, step, total, onContinue,
 }) => {
   const isSystem = speech.speaker === 'system';
   const player = speech.speaker === 'player';
@@ -28,7 +30,7 @@ const StorySpeechPanel: React.FC<Props> = ({
         <div className="dr-story-dialogue__speaker">
           {!isSystem && <img src={portrait} alt="" draggable={false} />}
           <div>
-            <small>{isSystem ? 'COMBATE · HISTORIA' : player ? 'PROTAGONISTA' : 'ADVERSARIO'}</small>
+            <small>{isSystem ? 'COMBATE · HISTORIA' : player ? MAIN_CHARACTERS.hero.role : rivalRole}</small>
             <h2 id="dr-story-speaker">{name}</h2>
           </div>
         </div>

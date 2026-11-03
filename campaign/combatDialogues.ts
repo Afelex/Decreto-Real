@@ -7,6 +7,7 @@ import { enemyForMission } from './characters.ts';
 export type StorySpeech = Readonly<{ speaker: 'opponent' | 'player' | 'system'; text: string }>;
 export type CombatConversation = Readonly<{
   opponentName: string;
+  opponentRole: string;
   intro: readonly StorySpeech[];
   midpoint: readonly StorySpeech[];
   critical: readonly StorySpeech[];
@@ -365,11 +366,13 @@ const speech = (speaker: StorySpeech['speaker'], text: string): StorySpeech => (
 export function combatConversationForMission(missionId: string): CombatConversation | undefined {
   const stage = STORY_STAGES.find(stage => stage.id === missionId);
   const lines = script[missionId];
-  if (!stage || !lines) return undefined;
+  const opponent = enemyForMission(missionId);
+  if (!stage || !lines || !opponent) return undefined;
   const [first, reply, challenge, critical, midpoint, defeat, finalReply] = lines;
   const isBoss = stage.kind === 'subboss' || stage.kind === 'boss' || stage.kind === 'final';
   return {
-    opponentName: enemyForMission(missionId)?.name ?? stage.opponent,
+    opponentName: opponent.name,
+    opponentRole: opponent.role,
     isBoss,
     intro: [speech('opponent', first), speech('player', reply), speech('opponent', challenge), speech('system', 'Inicia el combate')],
     midpoint: isBoss ? [speech('opponent', midpoint)] : [],
