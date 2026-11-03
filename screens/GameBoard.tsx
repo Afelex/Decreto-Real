@@ -260,6 +260,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     announcementBusy.current = true;
     if (user === 'PLAYER') setShowSpecialSelection(false);
     setComboAnnouncement({ id: ++announcementCount.current, level, ability, isPlayer: user === 'PLAYER' });
+    playSound('IMPACT');
     const active = await waitForCue(comboEffectCue(ability, level).durationMs);
     setComboAnnouncement(null);
     announcementBusy.current = false;
@@ -267,7 +268,6 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
 
     // The bonus is resolved only AFTER the chosen combo animation finishes.
     const value = level === 2 ? 1 : SPECIAL_VALUE;
-    playSound('IMPACT');
     if (user === 'PLAYER') {
       if (level === 3) { setPlayerGauge(0); setPlayerLastType(null); }
       if (ability === 'DAMAGE') setOpponentHP(p => Math.max(0, p - value));
@@ -314,6 +314,10 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     else setOpponentHand(prev => prev.filter(c => c.id !== card.id));
 
     setCardAnnouncement({ id: ++announcementCount.current, card, isPlayer });
+    // Sound accompanies the card animation; actual HP/draw effects still wait.
+    if (card.type === 'ATTACK') playSound('ATTACK');
+    else if (card.type === 'DEFENSE') playSound('DEFENSE');
+    else if (card.type === 'ORDER') playSound('FLIP');
     const active = await waitForCue(cardEffectCue(card.type).durationMs);
     if (!active) return; // Unmounted/cancelled: do not mutate the match.
     setCardAnnouncement(null);
@@ -321,13 +325,10 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     if (gameOverRef.current) return;
 
     if (card.type === 'ATTACK') {
-      playSound('ATTACK');
       if (isPlayer) setOpponentHP(p => Math.max(0, p - ATTACK_DAMAGE)); else setPlayerHP(p => Math.max(0, p - ATTACK_DAMAGE));
     } else if (card.type === 'DEFENSE') {
-      playSound('DEFENSE');
       if (isPlayer) setPlayerHP(p => Math.min(MAX_HP, p + 1)); else setOpponentHP(p => Math.min(MAX_HP, p + 1));
     } else if (card.type === 'ORDER') {
-      playSound('FLIP'); // The supplied Order clip has no soundtrack.
       drawCards(isPlayer ? 'PLAYER' : 'OPPONENT', 1);
     } else if (card.type === 'IMPACT') {
       playSound('IMPACT'); triggerVisualEffect('IMPACT', 'GLOBAL');
