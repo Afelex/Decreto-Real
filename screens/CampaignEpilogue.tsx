@@ -28,16 +28,16 @@ const CampaignEpilogue: React.FC = () => {
     </header>
     <article className="dc-full-scene dc-ending-scene" aria-labelledby="dc-epilogue-title">
       <div className="dc-full-art dc-full-art-ending" aria-hidden="true">✥</div>
-      <span className="dc-scene-label">{page === 0 ? 'FIN DE LA PRIMERA CAMPAÑA' : 'EL SECRETO PERMANECE'}</span>
+      <span className="dc-scene-label">{page === 0 ? 'LA FALSA LUZ HA CAÍDO' : 'EL SECRETO PERMANECE'}</span>
       <h2 id="dc-epilogue-title">{page === 0 ? 'El Sello permanece' : 'Una promesa inconclusa'}</h2>
       {page === 0 ? <>
         <p>Vándalo Rojo ha sido derrotado y capturado. Los documentos originales muestran cómo el Escribano cambió las órdenes. Ahora los afectados pueden contar lo que pasó.</p>
         <p>Sigumán, que conocía parte del engaño y aun así lo sostuvo, muere cuando se derrumba la Casa del Sello. La rebelión acaba, pero las familias todavía necesitan recuperar lo perdido.</p>
       </> : <>
         <p>Zhinchi desapareció gravemente herido después de salvar a Xervias. Nadie sabe dónde está. Xervias está a salvo, pero no piensa abandonar a su maestro.</p>
-        <p>En una carta aparece el nombre de San Jerónimo. Zhinchi conocía ese secreto, pero nunca explicó qué significaba. Xervias tendrá que descubrirlo.</p>
+        <p>En una carta aparece el nombre de San Jerónimo. Zhinchi conocía ese secreto, pero nunca explicó qué significaba. Xervias guarda la carta sin olvidarlo, mientras ayuda al reino a reconstruirse.</p>
         <blockquote className="dc-story-quote">«Ganar un combate no arregla todo. Todavía queda gente a la que debemos ayudar».</blockquote>
-        <strong className="dc-ending-next">CONTINUARÁ EN DECRETO REAL II</strong>
+        <strong className="dc-ending-next">FIN</strong>
       </>}
     </article>
     <footer className="dc-page-footer">
