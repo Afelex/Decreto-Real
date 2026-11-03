@@ -3,7 +3,9 @@ export type BattleEndReason =
   | 'RIVAL_HP_ZERO'
   | 'PLAYER_HP_ZERO'
   | 'PLAYER_FINAL_DECREE'
-  | 'OPPONENT_FINAL_DECREE';
+  | 'OPPONENT_FINAL_DECREE'
+  | 'PLAYER_SURRENDER'
+  | 'DEVELOPMENT_VICTORY';
 
 export type BattleEndResult = Readonly<{
   phase: 'VICTORY' | 'DEFEAT';
@@ -30,4 +32,14 @@ export function resolveBattleEnd(state: BattleEndSnapshot): BattleEndResult | nu
   if (state.opponentHP <= 0)
     return { phase: 'VICTORY', reason: 'RIVAL_HP_ZERO', title: 'Victoria', message: 'Los puntos de vida de tu rival llegaron a 0' };
   return null;
+}
+
+/** Voluntary surrender always produces a defeat without altering HP or Impactos. */
+export function resolveSurrender(): BattleEndResult {
+  return { phase: 'DEFEAT', reason: 'PLAYER_SURRENDER', title: 'Derrota', message: 'Te has rendido.' };
+}
+
+/** Temporary development-only outcome: not a normal game rule. */
+export function resolveDevelopmentVictory(): BattleEndResult {
+  return { phase: 'VICTORY', reason: 'DEVELOPMENT_VICTORY', title: 'Victoria', message: 'Victoria automática de prueba.' };
 }

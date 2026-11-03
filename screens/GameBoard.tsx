@@ -11,7 +11,7 @@ import { cardEffectCue, comboEffectCue } from '../game/effectCues';
 import { TurnIndicator, TurnAnnouncement, ComboChoicePanel, CoinTossPanel } from './CombatEventUI';
 import { resolveBattleScenery } from '../game/battleScenery';
 import { getRoyalCardText } from '../game/royalCardText';
-import { resolveBattleEnd, type BattleEndResult } from '../game/battleEnd';
+import { resolveBattleEnd, resolveSurrender, resolveDevelopmentVictory, type BattleEndResult } from '../game/battleEnd';
 import { BattleSceneryLayer } from './BattleSceneryLayer';
 
 // --- GAME CONFIGURATION ---
@@ -20,6 +20,12 @@ const INITIAL_HAND_SIZE = 3;
 const ATTACK_DAMAGE = 2;
 const GAUGE_MAX = 3;
 const SPECIAL_VALUE = 3;
+/** TODO BEFORE RELEASE: remove this QA-only win control and outcome.
+ * Visible automatically in Vite dev or only on an explicit hosted test URL
+ * such as ?drDev=1#/game (including campaign missions).
+ */
+const SHOW_DEV_WIN = import.meta.env.DEV ||
+  (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('drDev') === '1');
 
 /** DR-HUD-V3 — arte renderizado en el DOM, no como fondo CSS.
  * Tres celdas del atlas: retrato (0), FIN TURNO activo (1) y desactivado (2).
@@ -185,16 +191,17 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   }, []);
 
   const handleCoinToss = () => {
-    if (isCoinFlipping) return;
+    if (isCoinFlipping || gameOverRef.current) return;
     playSound('FLIP');
     setIsCoinFlipping(true);
     // One tap, a single short flip, then the result before battle begins.
     setTimeout(() => {
+      if (gameOverRef.current) return; // A surrender during the toss must remain a defeat.
       const isHeads = Math.random() > 0.5;
       setCoinSide(isHeads ? 'CARA' : 'SELLO');
       setWhoStarted(isHeads ? 'PLAYER' : 'OPPONENT');
       setIsCoinFlipping(false);
-      setTimeout(() => setPhase('START_BANNER'), 450);
+      setTimeout(() => { if (!gameOverRef.current) setPhase('START_BANNER'); }, 450);
     }, 500);
   };
 
@@ -487,7 +494,31 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
 
   const handleMenuToggle = () => { playSound('CLICK'); setIsMenuOpen(!isMenuOpen); setShowSurrenderConfirm(false); };
   const handleSurrenderRequest = () => { playSound('CLICK'); setShowSurrenderConfirm(true); };
-  const handleSurrenderConfirm = () => { playSound('CLICK'); if (onReturn) onReturn(); else navigate('/'); };
+  /** Use the normal battle-end banner and Continue action, never exit directly. */
+  const finishManually = (result: BattleEndResult) => {
+    if (gameOverRef.current) return;
+    gameOverRef.current = true;
+    aiController.current?.cancel();
+    announcementClock.current.cancel();
+    cueFinished.current?.();
+    cueFinished.current = null;
+    announcementBusy.current = false;
+    setCardAnnouncement(null);
+    setComboAnnouncement(null);
+    setShowSpecialSelection(false);
+    setSelectedCardId(null);
+    setDragAt(null);
+    setIsMenuOpen(false);
+    setShowSurrenderConfirm(false);
+    setBattleEnd(result);
+    setPhase(result.phase);
+  };
+  const handleSurrenderConfirm = () => { playSound('CLICK'); finishManually(resolveSurrender()); };
+  const handleDevelopmentWin = () => {
+    if (!SHOW_DEV_WIN) return;
+    playSound('CLICK');
+    finishManually(resolveDevelopmentVictory());
+  };
   const handleSurrenderCancel = () => { playSound('CLICK'); setShowSurrenderConfirm(false); };
 
   const endTurnUnavailable = phase !== 'PLAYER_TURN' || showSpecialSelection || !!comboAnnouncement || isMenuOpen || !!cardAnnouncement || announcementBusy.current;
@@ -601,6 +632,9 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
                 <>
                   <button onClick={handleMenuToggle} className="w-full py-3 bg-gold-dark text-black font-bold uppercase text-sm rounded">Continuar Batalla</button>
                   <button onClick={handleSurrenderRequest} className="w-full py-3 border border-red-900/50 text-red-500 uppercase text-sm rounded">Rendirse</button>
+                  {SHOW_DEV_WIN && <button type="button" data-testid="dev-auto-win"
+                    onClick={handleDevelopmentWin} className="w-full py-2 border border-amber-600/50 text-amber-300 uppercase text-xs rounded"
+                    title="Temporal: eliminar antes del lanzamiento">⚙ Victoria automática · DEV</button>}
                 </>
               ) : (
                 <div className="text-center bg-red-900/10 p-4 rounded border border-red-900/30">
