@@ -32,9 +32,9 @@ const CampaignEpilogue: React.FC = () => {
       <h2 id="dc-epilogue-title">{page === 0 ? 'El Sello permanece' : 'Una promesa inconclusa'}</h2>
       {page === 0 ? <>
         <p>Vándalo Rojo ha sido derrotado y capturado. Las falsificaciones del Escribano del Alba quedan al descubierto.</p>
-        <p>Sigmar, que conocía parte del engaño y aun así lo sostuvo, muere durante el derrumbe de la Casa del Sello.</p>
+        <p>Sigumán, que conocía parte del engaño y aun así lo sostuvo, muere durante el derrumbe de la Casa del Sello.</p>
       </> : <>
-        <p>La rebelión termina, pero Zerión desapareció gravemente herido. Nadie conoce su destino.</p>
+        <p>La rebelión termina, pero Zhinchi desapareció gravemente herido. Nadie conoce su destino.</p>
         <p>El misterio de San Jerónimo continúa abierto. Tu próxima misión todavía no ha comenzado.</p>
         <blockquote className="dc-story-quote">«No todas las victorias cierran una historia. Algunas revelan la que viene».</blockquote>
         <strong className="dc-ending-next">CONTINUARÁ EN DECRETO REAL II</strong>

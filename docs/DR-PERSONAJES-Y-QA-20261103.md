@@ -2,9 +2,9 @@
 
 ## Identidades principales
 - **Xervias**: protagonista, joven guerrero y defensor de los inocentes.
-- **Zerión**, «**el Prototipo Cero**»: capitán y mentor. Su pasado queda abierto para próximas campañas.
+- **Zhinchi**, «**el Prototipo Cero**»: capitán y mentor. Su pasado queda abierto para próximas campañas.
 - **Vándalo Rojo**: apodo del antiguo compañero, bandido antagonista.
-- **Sigmar**: antiguo comandante y líder de la Falsa Luz.
+- **Sigumán**: antiguo comandante y líder de la Falsa Luz.
 
 Los ocho generales mantienen sus títulos canónicos, ahora acompañados de un nombre propio.
 
@@ -33,7 +33,7 @@ Los ocho generales mantienen sus títulos canónicos, ahora acompañados de un n
 | 19 | Uriel Huamán | Guardián del sendero | Explorador de frontera con capa verde |
 | 20 | Amaru Llaguno | Explorador renegado | Rastreador selvático con manto oscuro |
 | 21 | Ivo Maldonado | Emisario del Alba | Espía atento con pergamino sellado |
-| 22 | Nayra de Sombras | Fantasma de la Selva | General con velo de hojas y armadura verde |
+| 22 | Nayisa de Sombras | Fantasma de la Selva | General con velo de hojas y armadura verde |
 | 23 | Cristóbal Luján | Guardia de la plaza | Guardia urbano con estandarte dividido |
 | 24 | Pedro Elari | Predicador impostor | Orador ambiguo con túnica y pliego falso |
 | 25 | Rafael de Trejo | Escribano de guardia | Custodio de archivos con tintero |
@@ -48,8 +48,8 @@ Los ocho generales mantienen sus títulos canónicos, ahora acompañados de un n
 | 34 | Gonzalo de Montes | Caballero del Juramento | General de bronce y marfil, gesto solemne |
 | 35 | Leocadio del Alba | Escribano del Alba | Falsificador erudito vestido de negro |
 | 36 | Vándalo Rojo | Bandido escarlata | Rufián de armadura roja desgastada |
-| 37 | Bruno Serrat | Guardia de Sigmar | Guardaespaldas con armadura de sombra |
-| 38 | Sigmar | Señor de la Falsa Luz | Antiguo comandante caído, manto oscuro y oro falso |
+| 37 | Bruno Serrat | Guardia de Sigumán | Guardaespaldas con armadura de sombra |
+| 38 | Sigumán | Señor de la Falsa Luz | Antiguo comandante caído, manto oscuro y oro falso |
 
 ## Guía de imágenes
 
