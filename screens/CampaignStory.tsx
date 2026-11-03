@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { STORY_CHAPTERS } from '../campaign/story.ts';
-import { generalForChapter } from '../campaign/characters.ts';
+import { generalForChapter, MAIN_CHARACTERS } from '../campaign/characters.ts';
 import './campaign.css';
 import './one-screen-ui.css';
 
@@ -12,7 +12,7 @@ import './one-screen-ui.css';
 const CampaignStory: React.FC = () => {
   const navigate = useNavigate();
   const [page, setPage] = React.useState(0);
-  const headings = ['La Falsa Luz', 'Protagonistas', 'Ocho generales'];
+  const headings = ['La Falsa Luz', 'Personajes', 'Ocho generales'];
   return <main className="dc-page dc-full-page dc-story-page dc-prologue">
     <header className="dc-header">
       <button type="button" onClick={() => navigate('/campania')}>‹ Mapa</button>
@@ -31,21 +31,21 @@ const CampaignStory: React.FC = () => {
         <h2 id="dc-story-paged-title">El reino escucha dos verdades</h2>
         <p>Un decreto es una orden escrita. Un día llegan dos decretos con el mismo sello: uno manda liberar a unas familias y el otro, arrestarlas. Xervias quiere saber cuál es verdadero antes de que alguien salga herido.</p>
         <p>Su mentor, Zhinchi, le pide seguir las cartas y escuchar a la gente. Detrás aparece <strong>la Falsa Luz</strong>, el movimiento de Sigumán: utiliza problemas reales para convencer al reino de obedecer órdenes falsas.</p>
-        <blockquote className="dc-story-quote">Zhinchi: «Si una orden hace daño y nadie explica por qué, investiga antes de obedecer».</blockquote>
+        <blockquote className="dc-story-quote">Zhinchi: «Si una orden hace daño y nadie explica por qué, investiga antes de obedecer». Pero ¿quién cambió las palabras sin alterar el sello?</blockquote>
       </>}
       {page === 1 && <>
         <span className="dc-scene-label">PERSONAJES · ELENCO PRINCIPAL</span>
-        <h2 id="dc-story-paged-title">Los cuatro protagonistas</h2>
+        <h2 id="dc-story-paged-title">Cuatro destinos, un mismo secreto</h2>
         <div className="dc-full-cast">
-          <div><span>⚔</span><strong>Xervias</strong><small>Joven soldado que busca quién cambió las órdenes y protege a las familias.</small></div>
-          <div><span>✦</span><strong>Zhinchi</strong><small>Mentor de Xervias. Le enseña a pensar antes de obedecer y guarda un secreto.</small></div>
-          <div><span>♜</span><strong>Vándalo Rojo</strong><small>Antiguo amigo de Xervias. Ayuda a Sigumán porque quiere poder.</small></div>
-          <div><span>♛</span><strong>Sigumán</strong><small>Comandante que falsifica órdenes porque cree que solo él puede imponer la paz.</small></div>
+          <div><span>⚔</span><strong>Xervias</strong><small>{MAIN_CHARACTERS.hero.role}. Busca quién cambió las órdenes y protege a las familias.</small></div>
+          <div><span>✦</span><strong>Zhinchi</strong><small>{MAIN_CHARACTERS.mentor.role}. Enseña a Xervias a pensar antes de obedecer, pero guarda un secreto.</small></div>
+          <div><span>♜</span><strong>Vándalo Rojo</strong><small>{MAIN_CHARACTERS.outlaw.role}. Fue amigo de Xervias, pero ahora ayuda a Sigumán para conseguir poder.</small></div>
+          <div><span>♛</span><strong>Sigumán</strong><small>{MAIN_CHARACTERS.antagonist.role}. Ordena falsificar decretos porque cree que solo él puede imponer la paz.</small></div>
         </div>
       </>}
       {page === 2 && <>
         <span className="dc-scene-label">OCHO REGIONES · OCHO GENERALES</span>
-        <h2 id="dc-story-paged-title">Guardianes del camino</h2>
+        <h2 id="dc-story-paged-title">Ocho generales, ocho decisiones</h2>
         <div className="dc-general-list dc-full-generals">
           {STORY_CHAPTERS.filter(chapter => chapter.general).map(chapter =>
             <div key={chapter.id}><span className="dc-general-emblem" aria-hidden="true">✥</span><div><strong>{generalForChapter(chapter.id)?.name ?? chapter.general}</strong><small>{chapter.general} · {chapter.region}</small></div></div>)}
