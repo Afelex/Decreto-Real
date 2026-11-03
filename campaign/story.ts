@@ -1,5 +1,5 @@
 /** DR-C02 · Lore and 38 missions of Decreto Real I: El Sello y la Falsa Luz.
- * Xervias, Zerión, Vándalo Rojo and Sigmar are the definitive protagonists and antagonists. Regional minor opponents
+ * Xervias, Zhinchi, Vándalo Rojo and Sigumán are the definitive protagonists and antagonists. Regional minor opponents
  * and the connecting dialogue are UI adaptations pending final editorial review.
  * The eight general names, regions, special cards, canonical subbosses, original 2+32+4 layout and overarching conclusion
  * preserve the agreed narrative. No combat cards or abilities are added here.
@@ -20,7 +20,7 @@ export const STORY_CHAPTERS: readonly StoryChapter[] = [
     "title": "El llamado del Sello",
     "region": "Los primeros caminos",
     "subtitle": "Prólogo · El rumor de la Falsa Luz",
-    "summary": "Un soldado joven recibe una misión de Zerión. Decretos contradictorios anuncian una rebelión que mezcla agravios reales y documentos falsos.",
+    "summary": "Un soldado joven recibe una misión de Zhinchi. Decretos contradictorios anuncian una rebelión que mezcla agravios reales y documentos falsos.",
     "color": "#caa873"
   },
   {
@@ -88,7 +88,7 @@ export const STORY_CHAPTERS: readonly StoryChapter[] = [
     "title": "El cóndor y las cumbres",
     "region": "Fortaleza de las Cumbres",
     "subtitle": "General VII · Cóndor de los Andes",
-    "summary": "Las montañas separan las fuerzas de Zerión de la verdad. El paso de las cumbres es la última defensa del interior.",
+    "summary": "Las montañas separan las fuerzas de Zhinchi de la verdad. El paso de las cumbres es la última defensa del interior.",
     "general": "Cóndor de los Andes",
     "specialCard": "Ataque de las cumbres",
     "color": "#8aadd0"
@@ -98,7 +98,7 @@ export const STORY_CHAPTERS: readonly StoryChapter[] = [
     "title": "La casa del juramento",
     "region": "Casa del Juramento",
     "subtitle": "General VIII · Caballero del Juramento",
-    "summary": "El último general guarda promesas y documentos que conducen hasta Sigmar. ¿Es posible mantener un juramento fundado en una mentira?",
+    "summary": "El último general guarda promesas y documentos que conducen hasta Sigumán. ¿Es posible mantener un juramento fundado en una mentira?",
     "general": "Caballero del Juramento",
     "specialCard": "Último juramento",
     "color": "#c8af7d"
@@ -107,8 +107,8 @@ export const STORY_CHAPTERS: readonly StoryChapter[] = [
     "id": "f",
     "title": "La Falsa Luz",
     "region": "Casa del Sello",
-    "subtitle": "Final · Vándalo Rojo, el Escribano y Sigmar",
-    "summary": "Tras los generales llegan Vándalo Rojo, las falsificaciones del Escribano del Alba y la confrontación con Sigmar. El secreto de San Jerónimo permanece.",
+    "subtitle": "Final · Vándalo Rojo, el Escribano y Sigumán",
+    "summary": "Tras los generales llegan Vándalo Rojo, las falsificaciones del Escribano del Alba y la confrontación con Sigumán. El secreto de San Jerónimo permanece.",
     "color": "#ba8394"
   }
 ];
@@ -121,7 +121,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "description": "Una proclamación contradictoria llega al puesto de guardia.",
     "kind": "skirmish",
     "opponent": "Guardia del pregón",
-    "openingLine": "Zerión te llama: «No repitas una orden cuyo origen no conoces».",
+    "openingLine": "Zhinchi te llama: «No repitas una orden cuyo origen no conoces».",
     "victoryLine": "Has protegido a los testigos. La primera contradicción ya no puede ocultarse.",
     "defeatLine": "El pregón se extiende antes de que puedas investigar."
   },
@@ -132,7 +132,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "description": "Una orden llega sin la marca que debería autenticarla.",
     "kind": "skirmish",
     "opponent": "Mensajero encapuchado",
-    "openingLine": "Zerión: «Un sello puede legitimar una orden; su ausencia también dice mucho».",
+    "openingLine": "Zhinchi: «Un sello puede legitimar una orden; su ausencia también dice mucho».",
     "victoryLine": "Encuentras una pista que señala hacia la costa.",
     "defeatLine": "La pista desaparece entre los mensajeros."
   },
@@ -143,7 +143,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "description": "Los muelles ocultan un cargamento de pólvora.",
     "kind": "skirmish",
     "opponent": "Guardia del muelle",
-    "openingLine": "«Lo que entra por mar puede alimentar una guerra», advierte Zerión.",
+    "openingLine": "«Lo que entra por mar puede alimentar una guerra», advierte Zhinchi.",
     "victoryLine": "Aparecen órdenes firmadas por distintas autoridades.",
     "defeatLine": "Los muelles vuelven a quedar bajo vigilancia enemiga."
   },
@@ -187,7 +187,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "description": "Un convoy lleva decretos sellados hacia el interior.",
     "kind": "skirmish",
     "opponent": "Escolta del camino",
-    "openingLine": "«Cada ruta conduce a la misma voz», murmura Zerión.",
+    "openingLine": "«Cada ruta conduce a la misma voz», murmura Zhinchi.",
     "victoryLine": "Interceptas un mensaje con un sello sospechoso.",
     "defeatLine": "El convoy escapa hacia la sierra."
   },
@@ -231,7 +231,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "description": "Los mineros denuncian abusos reales, mezclados con proclamas falsas.",
     "kind": "skirmish",
     "opponent": "Guardia de la mina",
-    "openingLine": "«Escucha primero a quienes sufrieron», aconseja Zerión.",
+    "openingLine": "«Escucha primero a quienes sufrieron», aconseja Zhinchi.",
     "victoryLine": "Las quejas auténticas quedan separadas de las falsificaciones.",
     "defeatLine": "La confusión mantiene a los trabajadores enfrentados."
   },
@@ -275,7 +275,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "description": "La artillería impide llegar al bastión.",
     "kind": "skirmish",
     "opponent": "Explorador artillero",
-    "openingLine": "«Avanza cuando calle el trueno», ordena Zerión.",
+    "openingLine": "«Avanza cuando calle el trueno», ordena Zhinchi.",
     "victoryLine": "Superas el primer cinturón defensivo.",
     "defeatLine": "El avance queda detenido."
   },
@@ -319,7 +319,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "description": "Las rutas de la frontera no aparecen en los mapas reales.",
     "kind": "skirmish",
     "opponent": "Guardián del sendero",
-    "openingLine": "«Seguir el rastro exige aprender a perderse», dice Zerión.",
+    "openingLine": "«Seguir el rastro exige aprender a perderse», dice Zhinchi.",
     "victoryLine": "Encuentras una ruta usada por los emisarios de la Falsa Luz.",
     "defeatLine": "El sendero se desvanece antes de completarlo."
   },
@@ -407,7 +407,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "description": "El ejército debe atravesar un sendero de altura.",
     "kind": "skirmish",
     "opponent": "Guardián de altura",
-    "openingLine": "«La altura exige paciencia», advierte Zerión.",
+    "openingLine": "«La altura exige paciencia», advierte Zhinchi.",
     "victoryLine": "El paso queda asegurado.",
     "defeatLine": "El frío y los guardias obligan a retroceder."
   },
@@ -459,7 +459,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "id": "32",
     "chapterId": "8",
     "title": "El teniente de la Guardia",
-    "description": "El teniente protege los registros y juramentos que conducen hasta Sigmar.",
+    "description": "El teniente protege los registros y juramentos que conducen hasta Sigumán.",
     "kind": "subboss",
     "opponent": "Teniente de la Guardia",
     "openingLine": "Teniente: «La Casa del Juramento no reconoce tus preguntas».",
@@ -485,7 +485,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "boss",
     "opponent": "Caballero del Juramento",
     "openingLine": "Caballero: «Todo juramento exige un sacrificio».",
-    "victoryLine": "La Casa del Juramento abre el camino hasta Sigmar y la Falsa Luz.",
+    "victoryLine": "La Casa del Juramento abre el camino hasta Sigumán y la Falsa Luz.",
     "defeatLine": "El Caballero sigue guardando el acceso a la verdad."
   },
   {
@@ -495,7 +495,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "description": "La falsificación queda expuesta: agravios reales fueron usados para fabricar una causa falsa.",
     "kind": "subboss",
     "opponent": "Escribano del Alba",
-    "openingLine": "«Sigmar conoció parte del engaño y aun así continuó», revela un testimonio.",
+    "openingLine": "«Sigumán conoció parte del engaño y aun así continuó», revela un testimonio.",
     "victoryLine": "El fraude del Escribano queda descubierto y la Casa del Sello se abre.",
     "defeatLine": "Los documentos vuelven a ocultar el origen de la Falsa Luz."
   },
@@ -507,29 +507,29 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "subboss",
     "opponent": "Vándalo Rojo",
     "openingLine": "Vándalo Rojo: «No me importa la verdad. Me importa quién quede de pie».",
-    "victoryLine": "Vándalo Rojo es derrotado y capturado, pero Zerión desaparece gravemente herido tras protegerte.",
-    "defeatLine": "Vándalo Rojo escapa y Zerión queda a merced de su ataque."
+    "victoryLine": "Vándalo Rojo es derrotado y capturado, pero Zhinchi desaparece gravemente herido tras protegerte.",
+    "defeatLine": "Vándalo Rojo escapa y Zhinchi queda a merced de su ataque."
   },
   {
     "chapterId": "f",
-    "title": "La última promesa de Zerión",
-    "description": "Tras la captura de Vándalo Rojo, Zerión permanece desaparecido y gravemente herido. Su última orden conduce hasta la entrada de la Casa del Sello.",
+    "title": "La última promesa de Zhinchi",
+    "description": "Tras la captura de Vándalo Rojo, Zhinchi permanece desaparecido y gravemente herido. Su última orden conduce hasta la entrada de la Casa del Sello.",
     "kind": "skirmish",
-    "opponent": "Guardia de Sigmar",
-    "openingLine": "Zerión (recuerdo): «Si no regreso, sigue la verdad, no mi sombra».",
-    "victoryLine": "Rescatas el último testimonio de Zerión y llegas ante Sigmar. No hay certeza sobre el paradero de tu capitán.",
-    "defeatLine": "La guardia de Sigmar oculta todavía las últimas pistas sobre Zerión.",
+    "opponent": "Guardia de Sigumán",
+    "openingLine": "Zhinchi (recuerdo): «Si no regreso, sigue la verdad, no mi sombra».",
+    "victoryLine": "Rescatas el último testimonio de Zhinchi y llegas ante Sigumán. No hay certeza sobre el paradero de tu capitán.",
+    "defeatLine": "La guardia de Sigumán oculta todavía las últimas pistas sobre Zhinchi.",
     "id": "37"
   },
   {
     "id": "38",
     "chapterId": "f",
     "title": "La Casa del Sello",
-    "description": "Sigmar se presenta como redentor y pretende imponer autoridad mediante la Falsa Luz.",
+    "description": "Sigumán se presenta como redentor y pretende imponer autoridad mediante la Falsa Luz.",
     "kind": "final",
-    "opponent": "Sigmar",
-    "openingLine": "Sigmar: «Si la verdad no une al reino, mi voluntad lo hará».",
-    "victoryLine": "Sigmar muere en el derrumbe de la Casa del Sello. La rebelión termina; San Jerónimo y el destino de Zerión permanecen abiertos.",
+    "opponent": "Sigumán",
+    "openingLine": "Sigumán: «Si la verdad no une al reino, mi voluntad lo hará».",
+    "victoryLine": "Sigumán muere en el derrumbe de la Casa del Sello. La rebelión termina; San Jerónimo y el destino de Zhinchi permanecen abiertos.",
     "defeatLine": "La Falsa Luz domina todavía la Casa del Sello."
   }
 ];

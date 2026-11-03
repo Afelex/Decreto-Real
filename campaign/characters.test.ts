@@ -11,9 +11,9 @@ test('38 unique challengers have portrait identities', () => {
 
 test('eight named generals and four central names', () => {
   assert.deepEqual(Array.from({ length: 8 }, (_, i) => generalForChapter(String(i + 1))?.name),
-    ['Baltasar de Fierro', 'Leandro Valcázar', 'Octavio Argento', 'Jerónimo Arrellano', 'Nayra de Sombras', 'Isabela Valdierra', 'Aukan del Cóndor', 'Gonzalo de Montes']);
+    ['Baltasar de Fierro', 'Leandro Valcázar', 'Octavio Argento', 'Jerónimo Arrellano', 'Nayisa de Sombras', 'Isabela Valdierra', 'Aukan del Cóndor', 'Gonzalo de Montes']);
   assert.equal(MAIN_CHARACTERS.hero.name, 'Xervias');
-  assert.equal(MAIN_CHARACTERS.mentor.name, 'Zerión');
+  assert.equal(MAIN_CHARACTERS.mentor.name, 'Zhinchi');
   assert.equal(MAIN_CHARACTERS.outlaw.name, 'Vándalo Rojo');
-  assert.equal(MAIN_CHARACTERS.antagonist.name, 'Sigmar');
+  assert.equal(MAIN_CHARACTERS.antagonist.name, 'Sigumán');
 });

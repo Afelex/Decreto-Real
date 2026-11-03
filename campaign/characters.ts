@@ -1,9 +1,9 @@
 /** Definitive cast and one original identity for each of the 38 encounters. */
 export const MAIN_CHARACTERS = {
   hero: { name: 'Xervias', role: 'Soldado joven y protagonista' },
-  mentor: { name: 'Zerión', role: 'El Prototipo Cero; capitán y mentor' },
+  mentor: { name: 'Zhinchi', role: 'El Prototipo Cero; capitán y mentor' },
   outlaw: { name: 'Vándalo Rojo', role: 'Alias del bandido y antiguo compañero' },
-  antagonist: { name: 'Sigmar', role: 'Antiguo comandante y líder de la Falsa Luz' },
+  antagonist: { name: 'Sigumán', role: 'Antiguo comandante y líder de la Falsa Luz' },
 } as const;
 
 export type EnemyIdentity = Readonly<{
@@ -35,7 +35,7 @@ export const ENEMY_ROSTER: readonly EnemyIdentity[] = [
   { missionId: '19', name: 'Uriel Huamán', alias: 'Guardián del sendero', portraitDirection: 'Explorador de frontera con capa verde' },
   { missionId: '20', name: 'Amaru Llaguno', alias: 'Explorador renegado', portraitDirection: 'Rastreador selvático con manto oscuro' },
   { missionId: '21', name: 'Ivo Maldonado', alias: 'Emisario del Alba', portraitDirection: 'Espía atento con pergamino sellado' },
-  { missionId: '22', name: 'Nayra de Sombras', alias: 'Fantasma de la Selva', portraitDirection: 'General con velo de hojas y armadura verde' },
+  { missionId: '22', name: 'Nayisa de Sombras', alias: 'Fantasma de la Selva', portraitDirection: 'General con velo de hojas y armadura verde' },
   { missionId: '23', name: 'Cristóbal Luján', alias: 'Guardia de la plaza', portraitDirection: 'Guardia urbano con estandarte dividido' },
   { missionId: '24', name: 'Pedro Elari', alias: 'Predicador impostor', portraitDirection: 'Orador ambiguo con túnica y pliego falso' },
   { missionId: '25', name: 'Rafael de Trejo', alias: 'Escribano de guardia', portraitDirection: 'Custodio de archivos con tintero' },
@@ -50,8 +50,8 @@ export const ENEMY_ROSTER: readonly EnemyIdentity[] = [
   { missionId: '34', name: 'Gonzalo de Montes', alias: 'Caballero del Juramento', portraitDirection: 'General de bronce y marfil, gesto solemne' },
   { missionId: '35', name: 'Leocadio del Alba', alias: 'Escribano del Alba', portraitDirection: 'Falsificador erudito vestido de negro' },
   { missionId: '36', name: 'Vándalo Rojo', alias: 'Bandido escarlata', portraitDirection: 'Rufián de armadura roja desgastada' },
-  { missionId: '37', name: 'Bruno Serrat', alias: 'Guardia de Sigmar', portraitDirection: 'Guardaespaldas con armadura de sombra' },
-  { missionId: '38', name: 'Sigmar', alias: 'Señor de la Falsa Luz', portraitDirection: 'Antiguo comandante caído, manto oscuro y oro falso' },
+  { missionId: '37', name: 'Bruno Serrat', alias: 'Guardia de Sigumán', portraitDirection: 'Guardaespaldas con armadura de sombra' },
+  { missionId: '38', name: 'Sigumán', alias: 'Señor de la Falsa Luz', portraitDirection: 'Antiguo comandante caído, manto oscuro y oro falso' },
 ] as const;
 
 export function enemyForMission(missionId: string): EnemyIdentity | undefined {
