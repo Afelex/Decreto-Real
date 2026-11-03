@@ -4,6 +4,21 @@ test.describe.configure({ timeout: 20_000 });
 
 const route = (name: string) => `/Decreto-Real/#/${name}`;
 
+async function advanceStoryPrelude(page: import('@playwright/test').Page) {
+  const dialog = page.getByTestId('story-combat-dialogue');
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByRole('heading', { name: /.+/ })).toBeVisible();
+  for (const speaker of ['ADVERSARIO', 'PROTAGONISTA', 'ADVERSARIO']) {
+    await expect(dialog.getByText(speaker, { exact: true })).toBeVisible();
+    await dialog.getByRole('button', { name: /Siguiente/ }).click();
+  }
+  await expect(dialog.getByText('Inicia el combate')).toBeVisible();
+  await dialog.getByRole('button', { name: /Continuar/ }).click();
+  await expect(dialog).toBeHidden();
+  await expect(page.getByRole('button', { name: 'Lanzar Moneda' })).toBeVisible();
+}
+
+
 async function fits(page: Page, selector: string) {
   const result = await page.locator(selector).evaluate(element => {
     const box = element.getBoundingClientRect();
@@ -75,9 +90,9 @@ test('mission briefing and battle keep their last action visible', async ({ page
   await expect(page.getByRole('heading', { name: 'El pregón alterado' })).toBeVisible();
   await fits(page, '.dc-briefing-actions');
   await noPageScroll(page);
-  await page.getByRole('button', { name: /Comenzar duelo/ }).click();
+  await page.getByRole('button', { name: /Preparar combate/ }).click();
+  await advanceStoryPrelude(page);
   await expect(page.getByText('¿Quién comienza?')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Lanzar Moneda' })).toBeVisible();
   await fits(page, '.dr-classic-screen');
   await noPageScroll(page);
   await page.screenshot({ path: testInfo.outputPath('original-ritual-one-screen.png'), fullPage: true });
