@@ -24,11 +24,11 @@ const CampaignEpilogue: React.FC = () => {
   return <main className="dc-page dc-full-page dc-story-page">
     <header className="dc-header">
       <button onClick={() => navigate('/campania')}>‹ Mapa</button>
-      <div><small>DECRETO REAL I · EPÍLOGO</small><h1>Después de la Falsa Luz</h1></div>
+      <div><small>DECRETO REAL I · EPÍLOGO</small><h1>Después de la Revolución Solar</h1></div>
     </header>
     <article className="dc-full-scene dc-ending-scene" aria-labelledby="dc-epilogue-title">
       <div className="dc-full-art dc-full-art-ending" aria-hidden="true">✥</div>
-      <span className="dc-scene-label">{page === 0 ? 'LA FALSA LUZ HA CAÍDO' : 'EL SECRETO PERMANECE'}</span>
+      <span className="dc-scene-label">{page === 0 ? 'LA REVOLUCIÓN SOLAR HA CAÍDO' : 'EL SECRETO PERMANECE'}</span>
       <h2 id="dc-epilogue-title">{page === 0 ? 'El Sello permanece' : 'Una promesa inconclusa'}</h2>
       {page === 0 ? <>
         <p>Vándalo Rojo ha sido derrotado y capturado. Los documentos originales muestran cómo el Escribano cambió las órdenes. Ahora los afectados pueden contar lo que pasó.</p>
