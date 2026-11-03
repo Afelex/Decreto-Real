@@ -46,7 +46,7 @@ test('a reachable mission opens a story briefing before the battle', () => {
   screenAt('/campania/mision/01');
   expect(screen.getByRole('heading', { name: 'El pregón alterado' })).toBeTruthy();
   expect(screen.getByText(/Combate original: 20 de vida/)).toBeTruthy();
-  expect(screen.getByRole('button', { name: /Comenzar duelo/ })).toBeTruthy();
+  expect(screen.getByRole('button', { name: /Preparar combate/ })).toBeTruthy();
 });
 
 test('a locked boss cannot be opened by manually navigating to the URL', () => {
@@ -102,14 +102,14 @@ test('the campaign opens the original game, not the newly created DuelBoard', ()
   screenAt('/campania/mision/06');
   expect(screen.getByRole('heading', { name: 'El Almirante de Hierro' })).toBeTruthy();
   expect(screen.getByText(/20 de vida, 10 ataques, 10 defensas, 4 Impactos y 4 Órdenes/)).toBeTruthy();
-  fireEvent.click(screen.getByRole('button', { name: /Comenzar duelo/ }));
+  fireEvent.click(screen.getByRole('button', { name: /Preparar combate/ }));
   expect(screen.getByTestId('original-board')).toBeTruthy();
   expect(screen.getByRole('heading', { name: 'Ritual de Inicio' })).toBeTruthy();
 });
 
 test('a real original-game victory unlocks the next mission and gives achievable stars', () => {
   screenAt('/campania/mision/01');
-  fireEvent.click(screen.getByRole('button', { name: /Comenzar duelo/ }));
+  fireEvent.click(screen.getByRole('button', { name: /Preparar combate/ }));
   fireEvent.click(screen.getByRole('button', { name: 'Victoria original de prueba' }));
   expect(screen.getByRole('heading', { name: '¡Misión superada!' })).toBeTruthy();
   const saved = JSON.parse(window.localStorage.getItem(CAMPAIGN_STORAGE_KEY)!);
@@ -120,7 +120,7 @@ test('a real original-game victory unlocks the next mission and gives achievable
 
 test('a defeat with the original game cannot unlock the next challenge', () => {
   screenAt('/campania/mision/01');
-  fireEvent.click(screen.getByRole('button', { name: /Comenzar duelo/ }));
+  fireEvent.click(screen.getByRole('button', { name: /Preparar combate/ }));
   fireEvent.click(screen.getByRole('button', { name: 'Derrota original de prueba' }));
   expect(screen.getByRole('heading', { name: 'Misión fallida' })).toBeTruthy();
   expect(window.localStorage.getItem(CAMPAIGN_STORAGE_KEY)).toBeNull();
