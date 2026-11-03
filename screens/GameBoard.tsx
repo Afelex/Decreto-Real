@@ -240,7 +240,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     });
     const active = await Promise.race([
       mediaEnded,
-      announcementClock.current.wait(durationMs + 400),
+      announcementClock.current.wait(durationMs),
     ]);
     cueFinished.current = null;
     return active;
