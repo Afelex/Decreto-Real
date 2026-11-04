@@ -36,9 +36,9 @@ Los nueve grupos ejecutados son: `prologo` (2), `region-2` a `region-8` (7 grupo
 
 Se tuvieron en cuenta las capas reales del duelo, con un tablero vertical 2:3 en una sola pantalla y dos filas de cartas. Los fondos de combate se generan sin cartas, barras de vida, botones ni retratos dibujados dentro de la ilustración.
 
-- **Zona superior (0–25 %):** reservada a retrato, mano rival e indicadores. Mantener detalles secundarios y evitar textos o símbolos importantes detrás de controles.
-- **Zona central (aprox. 35–65 %):** campo con dos filas de cartas y espacios de impacto. Mantener fondo relativamente sereno, con siluetas amplias y contraste moderado.
-- **Zona inferior (65–100 %):** retrato, mano y botones del jugador. Evitar elementos clave que quedarían ocultos.
+- **Zona superior (0–35 % aprox.):** retrato y mano rival, más indicadores. Mantener detalles secundarios y evitar textos o símbolos importantes detrás de controles.
+- **Zona central (aprox. 35–63 %):** campo con dos filas de cartas y espacios de impacto. Mantener fondo relativamente sereno, con siluetas amplias y contraste moderado.
+- **Zona inferior (63–100 %):** retrato, mano y botones del jugador. Evitar elementos clave que quedarían ocultos.
 - **Bordes y horizonte:** ubicar fortalezas, cañones, barcos y puntos distintivos hacia laterales y parte alta, protegidos contra el recorte de `background-size: cover` en teléfonos.
 
 Estos porcentajes son **guías de dirección artística**, no una máscara exacta; la interfaz adapta su disposición a cada dispositivo. Los fondos de jefe deben ser espacios distintos pero pertenecientes a la misma región, y conservar el estilo anime 2D y la heráldica coherente (aspa de Borgoña donde corresponda).
