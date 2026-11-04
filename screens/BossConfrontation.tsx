@@ -7,6 +7,7 @@ import {
   mysticPowerText,
 } from '../game/mysticCards.ts';
 import { GeneralPortrait } from './GeneralPortrait';
+import { campaignLandscape } from '../campaign/regionAssets.ts';
 import './boss-confrontation.css';
 
 type Props = Readonly<{
@@ -90,7 +91,7 @@ const BossConfrontation: React.FC<Props> = ({ mission, alreadyDefeated, legacyAw
       </header>
 
       <section className="dcb-hero" aria-label={mission.title}>
-        <img src={`${import.meta.env.BASE_URL}campania/regiones/region-${mission.chapterId}.svg`}
+        <img src={campaignLandscape(mission.chapterId)}
           alt={`Escenario de ${chapter.region}`} draggable={false} className="dcb-scenery" />
         <div className="dcb-atmosphere" aria-hidden="true" />
         <div className="dcb-portrait">
