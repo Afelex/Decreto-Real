@@ -145,7 +145,7 @@ test('the chosen territory changes only campaign scenery, not the original battl
   const view = screenAt('/campania/mision/27');
   expect(screen.getByRole('heading', { name: 'El paso de las nubes' })).toBeTruthy();
   fireEvent.click(screen.getByRole('button', { name: /Preparar combate/ }));
-  expect(screen.getByTestId('original-board').getAttribute('data-background')).toContain('regiones/region-7.svg');
+  expect(screen.getByTestId('original-board').getAttribute('data-background')).toContain('arte/fondos/region-7-base.webp');
   view.unmount();
 });
 
