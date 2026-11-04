@@ -95,3 +95,21 @@
 .dbs-art-actions {display:flex;align-items:center;justify-content:space-between;gap:5px;font:700 clamp(8px,1.2dvh,11px) system-ui,sans-serif;}
 .dbs-art-actions button {min-height:clamp(22px,3.2dvh,34px);border:1px solid #f7d99b;border-radius:6px;padding:3px 10px;background:linear-gradient(#aa3734,#682027);color:#fff4d4;font:800 clamp(9px,1.4dvh,13px) Georgia,serif;cursor:pointer;}
 .dbs-art-replay {position:absolute;z-index:4;top:78%;right:2%;padding:2px 7px;font-size:clamp(12px,2dvh,20px);}
+
+
+/* Central destination stays sealed until all eight four-mission regions are won. */
+.dbs-art-center{position:absolute;z-index:4;left:37%;top:43%;width:26%;height:16%;padding:3px;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1px;
+  border:2px ridge #d4b978;border-radius:50%;color:#fff2c8;
+  text-shadow:0 2px 3px #000;box-shadow:0 3px 15px #000a;
+  background:radial-gradient(ellipse at 50% 40%,#452f38e8,#151b2be8);
+  cursor:pointer;font-family:Georgia,serif}
+.dbs-art-center>span{font-size:clamp(18px,3.8dvh,37px);line-height:1}
+.dbs-art-center small{font:700 clamp(8px,1.3dvh,13px)/1.05 Georgia,serif;text-align:center}
+.dbs-art-center.locked{border-color:#8b8278;color:#d4c7ac;filter:saturate(.4);cursor:not-allowed}
+.dbs-art-center.open{border-color:#ffefb2;box-shadow:0 0 22px #f6d16f,0 0 0 3px #ffdb8280;background:radial-gradient(ellipse at center,#9e663fe8,#36213aef)}
+.dbs-art-center:focus-visible{outline:3px solid #fff8bb;outline-offset:2px}
+.dbs-art-freed{position:absolute;z-index:4;left:3%;top:78%;padding:3px 7px;
+  border:1px solid #c7a16b;border-radius:6px;background:#171a29e8;
+  color:#f4dfad;font:800 clamp(9px,1.3dvh,12px) system-ui,sans-serif}
+.dbs-art-heading button{font-size:clamp(9px,1.4dvh,13px)}
