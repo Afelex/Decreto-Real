@@ -1,0 +1,196 @@
+name: "Decreto Real · GENERAR TODO (42 imágenes pendientes)"
+run-name: "Campaña · 42 pendientes · ${{ inputs.modo }} · ${{ inputs.calidad }}"
+
+on:
+  workflow_dispatch:
+    inputs:
+      modo:
+        description: "plan GRATIS (default) o generar 42 IMÁGENES con costo real"
+        type: choice
+        required: true
+        default: plan
+        options:
+          - plan
+          - generar
+      calidad:
+        description: "low es la calidad de las pruebas aprobadas; medium puede costar bastante más"
+        type: choice
+        required: true
+        default: low
+        options:
+          - low
+          - medium
+      confirmar:
+        description: "Para gastar en las 42 imágenes, escribe exactamente GENERAR_42"
+        type: string
+        required: true
+        default: "NO"
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: arte-todo-pendiente-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verificar:
+    name: "Comprobar catálogo, clave y 5 imágenes existentes ANTES de cobrar"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Comprobar que hay exactamente 42 pendientes y 5 aprobadas
+        run: node --experimental-strip-types --test tools/art-github.test.mjs tools/art-bundle.test.mjs
+      - name: Comprobar consentimiento explícito y clave API
+        env:
+          ART_MODE: ${{ inputs.modo }}
+          ART_CONFIRM: ${{ inputs.confirmar }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          if [ "$ART_MODE" = "generar" ]; then
+            if [ "$ART_CONFIRM" != "GENERAR_42" ]; then
+              echo "::error::Para gastar en 42 imágenes hay que escribir GENERAR_42. No se ha llamado a la API."
+              exit 1
+            fi
+            if [ -z "$OPENAI_API_KEY" ]; then
+              echo "::error::Falta OPENAI_API_KEY en GitHub Secrets. No se ha llamado a la API."
+              exit 1
+            fi
+            echo "Confirmadas 42 solicitudes de imagen (tienen costo variable según consumo)."
+          else
+            echo "Modo PLAN GRATIS. Ninguna solicitud pagada."
+          fi
+      - name: Recuperar fondo Callao base aprobado (prevalidación)
+        if: ${{ inputs.modo == 'generar' }}
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 41907373674
+          name: decreto-real-arte-3
+          github-token: ${{ github.token }}
+          path: aprobados/callao-base
+      - name: Recuperar fondo Baltasar jefe aprobado (prevalidación)
+        if: ${{ inputs.modo == 'generar' }}
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 41912890625
+          name: decreto-real-arte-5
+          github-token: ${{ github.token }}
+          path: aprobados/callao-jefe
+      - name: Recuperar tres rivales Callao aprobados (prevalidación)
+        if: ${{ inputs.modo == 'generar' }}
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 41918052921
+          name: decreto-real-arte-7
+          github-token: ${{ github.token }}
+          path: aprobados/callao-rivales
+      - name: Verificar archivos aprobados antes de producir cualquier otra imagen
+        if: ${{ inputs.modo == 'generar' }}
+        shell: bash
+        run: |
+          test -s aprobados/callao-base/fondos/region-1-base.webp
+          test -s aprobados/callao-jefe/fondos/region-1-jefe.webp
+          test -s aprobados/callao-rivales/retratos/rival-03-elias-renteria.webp
+          test -s aprobados/callao-rivales/retratos/rival-04-bartolome-de-aviles.webp
+          test -s aprobados/callao-rivales/retratos/rival-05-tomas-arciniega.webp
+          echo "Las 5 imágenes originales están disponibles. No se volverán a generar."
+
+  producir:
+    needs: verificar
+    name: "Imágenes · ${{ matrix.grupo }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: true
+      max-parallel: 1
+      matrix:
+        grupo:
+          - prologo
+          - region-2
+          - region-3
+          - region-4
+          - region-5
+          - region-6
+          - region-7
+          - region-8
+          - final
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Crear las imágenes del lote o su plan sin gasto
+        env:
+          ART_GROUP: ${{ matrix.grupo }}
+          ART_MODE: ${{ inputs.modo }}
+          ART_QUALITY: ${{ inputs.calidad }}
+          ART_CONFIRM: "SI"
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: node --experimental-strip-types tools/art-github.mjs
+      - name: Guardar cada lote incluso si hubo errores
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arte-42-${{ matrix.grupo }}
+          path: art-output/
+          if-no-files-found: warn
+          retention-days: 30
+
+  descargar:
+    name: "Un solo ZIP final con las 47 imágenes"
+    needs: [verificar, producir]
+    if: ${{ always() && needs.verificar.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Recuperar los nueve lotes producidos
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          pattern: arte-42-*
+          path: lotes
+      - name: Recuperar el fondo Callao base ya aprobado
+        if: ${{ inputs.modo == 'generar' }}
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 41907373674
+          name: decreto-real-arte-3
+          github-token: ${{ github.token }}
+          path: aprobados/callao-base
+      - name: Recuperar el fondo de Baltasar ya aprobado
+        if: ${{ inputs.modo == 'generar' }}
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 41912890625
+          name: decreto-real-arte-5
+          github-token: ${{ github.token }}
+          path: aprobados/callao-jefe
+      - name: Recuperar los retratos Callao ya aprobados
+        if: ${{ inputs.modo == 'generar' }}
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 41918052921
+          name: decreto-real-arte-7
+          github-token: ${{ github.token }}
+          path: aprobados/callao-rivales
+      - name: Preparar paquete único y galería de 47 recursos
+        env:
+          ART_MODE: ${{ inputs.modo }}
+        run: node --experimental-strip-types tools/art-bundle.mjs
+      - name: Entregar ZIP descargable (completo o parcial si hubo errores)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: DECRETO-REAL-47-IMAGENES
+          path: art-pack/
+          if-no-files-found: warn
+          retention-days: 30
