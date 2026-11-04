@@ -4,6 +4,7 @@ import { CAMPAIGN_MISSIONS, bestStars, isMissionUnlocked, loadCampaignProgress }
 import { STORY_CHAPTERS } from '../campaign/story.ts';
 import { GeneralPortrait } from './GeneralPortrait';
 import { CENTER_REVEAL_KEY } from './CampaignAfterVictory';
+import { campaignLandscape } from '../campaign/regionAssets.ts';
 import { hasSeenRegionMoment, REGION_ENTRANCES_KEY } from '../campaign/regionJourney.ts';
 import './campaign-boss-select.css';
 
@@ -176,7 +177,7 @@ const CampaignBossSelect: React.FC = () => {
        </button>
        <section className="dbs-art-details" aria-live="polite" aria-labelledby="dbs-detail-title">
         <img className="dbs-art-region-preview"
-          src={`${import.meta.env.BASE_URL}campania/regiones/region-${selected.id}.svg`}
+          src={campaignLandscape(selected.id)}
           alt="" aria-hidden="true" draggable={false} />
         <div className="dbs-art-meta"><strong>{selected.name}</strong><span>{selected.title} · {completionFor(selected.id).percent}% derrotado</span></div>
         <p>{selected.story}</p>
