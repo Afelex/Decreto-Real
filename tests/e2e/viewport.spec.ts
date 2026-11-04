@@ -148,3 +148,38 @@ test('general liberation, sealed card and next-region action fit one screen', as
   await fits(page, '.dcmoment-actions');
   await noPageScroll(page);
 });
+
+
+test('general confrontation portrait and mystical card fit one screen before the actual duel', async ({ page }) => {
+  await page.goto(route('campania'));
+  await page.evaluate(() => localStorage.setItem('decreto-real.campania.v1',
+    JSON.stringify({ version: 1, stars: Object.fromEntries(Array.from({ length: 5 }, (_, i) =>
+      [String(i + 1).padStart(2, '0'), 1])) })));
+  await page.goto(route('campania/mision/06'));
+  await page.getByRole('button', { name: /Preparar combate/ }).click();
+  await expect(page.getByRole('heading', { name: 'Enfrentamiento con el general' })).toBeVisible();
+  await expect(page.getByText('Marea de Hierro')).toBeVisible();
+  await fits(page, '.dcb-shell');
+  await fits(page, '.dcb-power');
+  await fits(page, '.dcb-dialogue');
+  await fits(page, '.dcb-actions');
+  await noPageScroll(page);
+  await page.getByRole('button', { name: 'Omitir presentación' }).click();
+  await expect(page.locator('.dr-classic-screen')).toBeVisible();
+});
+
+test('final confrontation shows Sigumán and three powers without scrolling', async ({ page }) => {
+  await page.goto(route('campania'));
+  await page.evaluate(() => localStorage.setItem('decreto-real.campania.v1',
+    JSON.stringify({ version: 1, stars: Object.fromEntries(Array.from({ length: 37 }, (_, i) =>
+      [String(i + 1).padStart(2, '0'), 1])) })));
+  await page.goto(route('campania/mision/38'));
+  await page.getByRole('button', { name: /Preparar combate/ }).click();
+  await expect(page.getByRole('heading', { name: 'El Señor de la Falsa Luz' })).toBeVisible();
+  await expect(page.getByText(/Renacimiento Solar/)).toBeVisible();
+  await expect(page.getByText(/Juicio del Eclipse/)).toBeVisible();
+  await expect(page.getByText(/Decreto del Sol Negro/)).toBeVisible();
+  await fits(page, '.dcb-shell');
+  await fits(page, '.dcb-actions');
+  await noPageScroll(page);
+});
