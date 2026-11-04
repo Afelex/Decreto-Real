@@ -13,6 +13,7 @@ import { REGION_VISUALS } from '../campaign/regionVisuals.ts';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const OUTPUT = join(ROOT, 'art-output');
+const STYLE_VERSION = 'anime-2D-borgona-v2';
 const MODEL = 'gpt-image-2.5-flare';
 const GENERAL_IDS = new Set(['06','10','14','18','22','26','30','34','38']);
 const REGION_DETAILS = {
@@ -135,6 +136,7 @@ async function generar(item,quality,apiKey,baseImage=null) {
 }
 export async function ejecutar({grupo='una-imagen',modo='plan',calidad='low',confirmar='',apiKey=process.env.OPENAI_API_KEY}={}) {
   const items=seleccion(grupo);
+  console.log('Versión artística: '+STYLE_VERSION+' (anime 2D, aspa de Borgoña)');
   if (!['plan','generar'].includes(modo)) throw Error('Modo inválido');
   if (!['low','medium'].includes(calidad)) throw Error('Calidad inválida');
   if (items.length>5) throw Error('Máximo de cinco imágenes por ejecución.');
@@ -164,7 +166,7 @@ export async function ejecutar({grupo='una-imagen',modo='plan',calidad='low',con
     }
     if (results.some(r=>r.status==='error')) process.exitCode=1;
   } else console.log('Plan gratis: '+items.length+' imágenes. No se ha llamado a la API.');
-  writeFileSync(join(OUTPUT,'LEEME.txt'),'Decreto Real: '+grupo+' / '+modo+' / '+calidad+'\nImágenes planificadas: '+items.length+'\nPara ver imágenes, abre galeria.html una vez descargado el artefacto.\n');
+  writeFileSync(join(OUTPUT,'LEEME.txt'),'Decreto Real: '+grupo+' / '+modo+' / '+calidad+'\nVersión artística: '+STYLE_VERSION+'\nImágenes planificadas: '+items.length+'\nPara ver imágenes, abre galeria.html una vez descargado el artefacto.\n');
   generarGaleria(items,results);
   console.log('Recursos seleccionados: '+items.map(i=>i.id).join(', '));
   return {items,results};
