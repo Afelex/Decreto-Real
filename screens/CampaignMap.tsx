@@ -149,6 +149,11 @@ const CampaignMap: React.FC = () => {
           <small>{chapterIndex === 0 ? 'PRÓLOGO' : chapterIndex === STORY_CHAPTERS.length - 1 ? 'CAPÍTULO FINAL' : `REGIÓN ${chapterIndex} DE 8`}</small>
           <strong>{chapter.title}</strong>
           <span>{chapterCompleted}/{missions.length} retos · ★ {earnedStars}/{journey.maximumStars}</span>
+          {chapterId && chapter.id !== 'p' && chapter.id !== 'f' &&
+            <button type="button" className="dcm-region-replay"
+              aria-label="Volver a ver la presentación de la región"
+              title="Volver a ver la presentación"
+              onClick={() => navigate(`/campania/entrada/${chapter.id}?repetir=1`)}>↺</button>}
           <div className="dcm-journey-progress" role="progressbar" aria-label="Retos superados" aria-valuemin={0} aria-valuemax={journey.total} aria-valuenow={journey.completed}>
             <span style={{ width: `${journey.percentage}%` }} />
           </div>
