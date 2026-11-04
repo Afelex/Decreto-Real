@@ -44,6 +44,7 @@ test('each general is introduced and a player can freely open the chosen regiona
 test('the center unlocks only after all 8 bosses and 32 region missions are defeated', () => {
   save(34);
   window.localStorage.setItem('decreto-real.campania.generales-presentados.v1', '1');
+  window.localStorage.setItem('decreto-real.campania.centro-revelado.v1', '1');
   openBosses();
   expect(screen.getByRole('button', { name: 'Entrar al escenario central desbloqueado' }).hasAttribute('disabled')).toBe(false);
   expect(screen.getByLabelText('8 de 8 generales derrotados')).toBeTruthy();
