@@ -374,26 +374,8 @@
 .dcm-prologue-map{background:#d2b784}
 .dcm-prologue-map .dcm-map-art{display:none}
 .dcm-prologue-map .dcm-region-wash,.dcm-prologue-map .dcm-region-watermark{display:none}
-.dcm-prologue-scene{position:absolute;inset:0;overflow:hidden;z-index:0;
-  background:radial-gradient(ellipse at 76% 15%,#f8dea0 0%,transparent 35%),
-    linear-gradient(180deg,#a7bed0 0%,#e9c787 36%,#a2805b 100%)}
-.dcm-prologue-scene:before{content:'';position:absolute;inset:0;
-  background:repeating-linear-gradient(80deg,transparent 0 31px,#583c2112 32px 33px);
-  opacity:.2}
-.dcm-prologue-sun{position:absolute;right:9%;top:6%;font:700 clamp(40px,11vw,65px) Georgia,serif;color:#fff3ba;text-shadow:0 0 40px #fff5bc}
-.dcm-prologue-ridge{position:absolute;left:0;right:0;bottom:0;pointer-events:none}
-.dcm-prologue-ridge-far{height:80%;background:linear-gradient(150deg,#e9d5a0,#92785d 72%);
-  clip-path:polygon(0 47%,9% 34%,18% 40%,29% 20%,41% 32%,56% 8%,72% 27%,85% 14%,100% 31%,100% 100%,0 100%);opacity:.85}
-.dcm-prologue-ridge-near{height:61%;background:linear-gradient(145deg,#8e785f,#523f38);
-  clip-path:polygon(0 58%,21% 42%,36% 57%,49% 30%,65% 46%,79% 25%,100% 44%,100% 100%,0 100%);opacity:.66}
-.dcm-prologue-sea{position:absolute;left:-9%;bottom:-2%;width:52%;height:56%;
-  background:repeating-linear-gradient(165deg,#cbe2dc91 0 3px,#568b9a75 5px 21px);
-  clip-path:polygon(0 18%,34% 7%,59% 22%,70% 39%,58% 52%,79% 69%,75% 100%,0 100%);opacity:.82}
-.dcm-prologue-village,.dcm-prologue-fort{position:absolute;display:flex;flex-direction:column;align-items:center;gap:2px;
-  font:700 clamp(26px,6vw,37px)/1 Georgia,serif;color:#4e3b31;text-shadow:0 1px 0 #ffe8b0}
-.dcm-prologue-village{top:15%;left:9%}.dcm-prologue-fort{bottom:12%;right:9%}
-.dcm-prologue-village span,.dcm-prologue-fort span{font:italic 700 clamp(10px,2.2vw,13px) Georgia,serif;background:#f5d9a6cc;padding:2px 5px;border-radius:5px}
-.dcm-prologue-stamp{position:absolute;right:19%;top:49%;font:700 65px Georgia,serif;color:#704c35;opacity:.14;transform:rotate(-20deg)}
+.dcm-prologue-map .dcm-map-art{display:block;object-fit:cover;object-position:center 49%;filter:saturate(.88) contrast(1.04)}
+.dcm-prologue-map .dcm-map-wash{background:radial-gradient(ellipse at center,transparent 42%,#402a1944 100%)}
 .dcm-prologue-map .dcm-route{z-index:2;filter:drop-shadow(0 0 2px #fff0c9)}
 .dcm-prologue-map .dcm-marker{z-index:5;width:clamp(49px,13vw,65px);height:clamp(49px,13vw,65px)}
 .dcm-prologue-map .dcm-map-label{z-index:5;font-style:normal;letter-spacing:.04em;text-transform:uppercase}
