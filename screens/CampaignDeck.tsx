@@ -4,6 +4,7 @@ import { bestStars, loadCampaignProgress } from '../campaign/campaign.ts';
 import { collectedMystics, hasZhinchiLegacy, loadMysticSlots, saveMysticSlots } from '../campaign/mysticDeck.ts';
 import {
   GENERAL_MYSTICS, ZHINCHI_MYSTIC, mysticDisplayName,
+  mysticPower, mysticPowerText, MYSTIC_ABILITIES,
   type MysticSlot, type MysticId, type ReplaceableKind,
 } from '../game/mysticCards.ts';
 import './mystic-deck.css';
@@ -31,6 +32,7 @@ const CampaignDeck: React.FC = () => {
   });
   const [notice, setNotice] = React.useState('');
   const [dirty, setDirty] = React.useState(false);
+  const [detail, setDetail] = React.useState<MysticId | null>(null);
 
   const choose = (index: number, mysticId: string) => {
     setDraft(prev => prev.map((slot, i) => i === index
@@ -75,21 +77,24 @@ const CampaignDeck: React.FC = () => {
       {page === 'collection' && <section className="mdc-main" aria-label="Cartas de los generales">
         <h2>{awakened ? 'El legado ha despertado' : 'Poderes que aún no puedes usar'}</h2>
         <p className="mdc-intro">{awakened
-          ? 'Puedes equipar hasta tres cartas obtenidas. Sus nombres y efectos específicos se definirán más adelante.'
+          ? 'Puedes equipar hasta tres poderes obtenidos. Toca una carta para conocer su efecto y sus combos.'
           : 'Al derrotar a un general recibes una de sus cartas místicas. Permanecen selladas hasta el legado de Zhinchi en la misión 36.'}</p>
         <div className="mdc-collection">
           {GENERAL_MYSTICS.map(card => {
             const acquired = bestStars(savedProgress, card.missionId) > 0;
-            return <div key={card.id} className={acquired ? 'mdc-collectible owned' : 'mdc-collectible'}>
-              <strong>{acquired ? '✦' : '🔒'} {card.owner}</strong>
-              <small>{acquired ? awakened ? 'Disponible para equipar' : 'Obtenida · Sellada' : `Recompensa del jefe · Reto ${Number(card.missionId)}`}</small>
-            </div>;
+            return <button type="button" key={card.id} className={acquired ? 'mdc-collectible owned' : 'mdc-collectible'}
+              onClick={() => setDetail(card.id)} aria-label={`Ver habilidad de ${card.owner}`}>
+              <strong>{acquired ? '✦' : '🔒'} {mysticDisplayName(card.id)}</strong>
+              <small>{card.owner}</small>
+              <small>{acquired ? awakened ? 'Disponible para equipar' : 'Obtenida · Sellada' : `Reto ${Number(card.missionId)} · Sin obtener`}</small>
+            </button>;
           })}
         </div>
-        <div className="mdc-legacy">
-          <strong>{awakened ? '✦' : '🔒'} Legado de Zhinchi</strong>
-          <small>{awakened ? mysticDisplayName(ZHINCHI_MYSTIC.id) + ' obtenida' : 'Se despierta tras superar la misión 36'}</small>
-        </div>
+        <button type="button" className="mdc-legacy" onClick={() => setDetail(ZHINCHI_MYSTIC.id)}
+          aria-label="Ver el legado de Zhinchi">
+          <strong>{awakened ? '✦' : '🔒'} {mysticDisplayName(ZHINCHI_MYSTIC.id)} · Zhinchi</strong>
+          <small>{awakened ? 'Obtenida · activa' : 'Se despierta tras superar la misión 36'}</small>
+        </button>
       </section>}
 
       {page === 'editor' && awakened && <section className="mdc-main" aria-label="Editor de baraja mística">
@@ -111,6 +116,9 @@ const CampaignDeck: React.FC = () => {
                 onChange={event => replace(index, event.target.value as ReplaceableKind)}>
                 {REPLACE_OPTIONS.map(item => <option value={item.value} key={item.value}>{item.name}</option>)}
               </select>
+              {slot && <button type="button" className="mdc-slot-info"
+                aria-label={`Ver efectos de ${mysticDisplayName(slot.mysticId)}`}
+                onClick={() => setDetail(slot.mysticId)}>?</button>}
             </div>;
           })}
         </div>
@@ -120,11 +128,22 @@ const CampaignDeck: React.FC = () => {
           Orden: {4 - draft.filter(slot => slot?.replace === 'ORDER').length} ·
           Impacto: 4 · Mística: {draft.filter(Boolean).length}
         </p>
-        <p className="mdc-provisional">Efectos místicos de prueba: 2 de daño y combos ×2/×3. Se reemplazarán tras definir las habilidades de cada general y Sigumán.</p>
+        <p className="mdc-provisional">Cada carta tiene su propio efecto y combos ×2/×3. Toca «?» para verlos. Los valores están sujetos a pruebas de equilibrio.</p>
         <button type="button" className="mdc-save" disabled={!dirty} onClick={save}>Guardar baraja</button>
         <p className="mdc-notice" role="status">{notice || 'La configuración se aplicará en las próximas batallas de la campaña.'}</p>
       </section>}
 
+      {detail && <div className="mdc-detail-veil" onClick={event => { if (event.target === event.currentTarget) setDetail(null); }}>
+        <section role="dialog" aria-modal="true" aria-label={`Habilidad ${mysticDisplayName(detail)}`} className="mdc-detail">
+          <button type="button" className="mdc-detail-close" onClick={() => setDetail(null)} aria-label="Cerrar detalles">×</button>
+          <small>DECRETO MÍSTICO · {MYSTIC_ABILITIES[detail].theme}</small>
+          <h2>{mysticDisplayName(detail)}</h2>
+          <p><strong>Activación</strong>{mysticPowerText(mysticPower(detail, 1))}</p>
+          <p><strong>Combo ×2</strong>{mysticPowerText(mysticPower(detail, 2))}</p>
+          <p><strong>Combo ×3</strong>{mysticPowerText(mysticPower(detail, 3))}</p>
+          <button type="button" className="mdc-detail-ok" onClick={() => setDetail(null)}>Entendido</button>
+        </section>
+      </div>}
       <footer className="mdc-footer">
         <button type="button" onClick={() => navigate('/campania')}>Volver al mapa</button>
         {awakened && page === 'collection' && <button type="button" onClick={() => setPage('editor')}>Editar baraja ›</button>}
