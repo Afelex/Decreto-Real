@@ -52,7 +52,7 @@ test('winning a single challenge unlocks exactly the next but not its region', (
   expect(screen.getByRole('img', { name: '0 de 3 estrellas' })).toBeTruthy();
 });
 
-test('winning the second prologue battle opens the next region and its first challenge only', () => {
+test('winning the second prologue battle makes all eight general chapters selectable', () => {
   save({ '01': 2, '02': 1 });
   openMap();
   expect(screen.getByText('El puerto de hierro')).toBeTruthy();
@@ -62,15 +62,22 @@ test('winning the second prologue battle opens the next region and its first cha
   expect(screen.getByText('El puerto de hierro')).toBeTruthy();
   expect(screen.getByRole('button', { name: /Misión 3:/ }).hasAttribute('disabled')).toBe(false);
   expect(screen.getByRole('button', { name: /Misión 4:/ }).hasAttribute('disabled')).toBe(true);
-  expect(screen.getByRole('button', { name: 'Capítulo siguiente bloqueado' }).hasAttribute('disabled')).toBe(true);
+  expect(screen.getByRole('button', { name: 'Capítulo siguiente' }).hasAttribute('disabled')).toBe(false);
+  fireEvent.click(screen.getByRole('button', { name: 'Capítulo siguiente' }));
+  expect(screen.getByText('Los caminos escarlata')).toBeTruthy();
+  expect(screen.getByRole('button', { name: /Misión 7:/ }).hasAttribute('disabled')).toBe(false);
+  expect(screen.getByRole('button', { name: /Misión 8:/ }).hasAttribute('disabled')).toBe(true);
 });
 
-test('winning a general does not allow skipping any subsequent region', () => {
+test('winning a general leaves other unlocked chapters available', () => {
   save({ '01': 1, '02': 1, '03': 1, '04': 1, '05': 1 });
   openMap();
   expect(screen.getByRole('heading', { name: 'El Almirante de Hierro' })).toBeTruthy();
   expect(screen.getByRole('button', { name: /Misión 6:/ }).hasAttribute('disabled')).toBe(false);
-  expect(screen.getByRole('button', { name: 'Capítulo siguiente bloqueado' }).hasAttribute('disabled')).toBe(true);
+  expect(screen.getByRole('button', { name: 'Capítulo siguiente' }).hasAttribute('disabled')).toBe(false);
+  fireEvent.click(screen.getByRole('button', { name: 'Capítulo siguiente' }));
+  expect(screen.getByText('Los caminos escarlata')).toBeTruthy();
+  expect(screen.getByRole('button', { name: /Misión 7:/ }).hasAttribute('disabled')).toBe(false);
 });
 
 test('invalid or out-of-order saved progression cannot skip the beginning', () => {

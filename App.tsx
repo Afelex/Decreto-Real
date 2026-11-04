@@ -12,6 +12,7 @@ import CampaignMission from './screens/CampaignMission';
 import CampaignStory from './screens/CampaignStory';
 import CampaignEpilogue from './screens/CampaignEpilogue';
 import CampaignDeck from './screens/CampaignDeck';
+import CampaignBossSelect from './screens/CampaignBossSelect';
 import { AudioProvider } from './contexts/AudioContext';
 import './screens/one-screen-ui.css';
 import './screens/duel-viewport.css';
@@ -34,6 +35,7 @@ const App: React.FC = () => {
           <Route path="/game" element={<GameBoard />} />
           <Route path="/duelo-v1" element={<CombatPrototype />} />
           <Route path="/campania" element={<CampaignMap />} />
+          <Route path="/campania/generales" element={<CampaignBossSelect />} />
           <Route path="/campania/historia" element={<CampaignStory />} />
           <Route path="/campania/epilogo" element={<CampaignEpilogue />} />
           <Route path="/campania/baraja" element={<CampaignDeck />} />

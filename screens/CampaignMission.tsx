@@ -105,7 +105,12 @@ const CampaignMission: React.FC = () => {
           primary: true,
           onClick: () => navigate('/campania/epilogo'),
         }] : []),
-        ...(outcome.won && next && outcome.saved ? [{
+        ...(outcome.won && mission.id === '02' && outcome.saved ? [{
+          label: 'Conocer a los generales →',
+          primary: true,
+          onClick: () => navigate('/campania/generales?intro=1'),
+        }] : []),
+        ...(outcome.won && next && outcome.saved && mission.id !== '02' ? [{
           label: nextRegion ? 'Entrar en la nueva región →' : 'Siguiente misión →',
           primary: true,
           onClick: () => {
