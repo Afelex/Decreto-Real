@@ -16,7 +16,7 @@ import BattleResultScreen from './BattleResultScreen';
 import { RegionScene } from './RegionScene';
 import { GeneralPortrait } from './GeneralPortrait';
 import BossConfrontation from './BossConfrontation';
-import { campaignLandscape } from '../campaign/regionAssets.ts';
+import { campaignMissionBackground, campaignOpponentPortrait } from '../campaign/regionAssets.ts';
 import './campaign.css';
 
 type MissionOutcome = {
@@ -119,7 +119,7 @@ const CampaignMission: React.FC = () => {
       <div><small>DECRETO REAL I · HISTORIA</small><h1>{chapter?.title ?? 'Camino de campaña'}</h1></div>
     </header>
     <section className="dc-story-scene dc-briefing-scene" aria-labelledby="dc-scene-title">
-      <RegionScene chapterId={chapter?.id} formidable={mission.kind === 'boss' || mission.kind === 'final'}/>
+      <RegionScene chapterId={chapter?.id} missionId={mission.id} formidable={mission.kind === 'boss' || mission.id === '38'}/>
       {mission.kind === 'boss' && <span className="dc-general-banner"><GeneralPortrait chapterId={chapter?.id ?? ''} className="dc-mini-general"/><span>♛ GENERAL DE LA REGIÓN · {mission.title}</span></span>}
       <span className="dc-scene-label">{mission.kind === 'boss' ? 'ENCUENTRO CON GENERAL' : mission.kind === 'subboss' ? 'ENCUENTRO CON SUBJEFE' : mission.kind === 'final' ? 'ENFRENTAMIENTO FINAL' : 'NUEVA MISIÓN'} · {mission.id}/38</span>
       <h2 id="dc-scene-title">{mission.title}</h2>
@@ -155,9 +155,7 @@ const CampaignMission: React.FC = () => {
     storyConversation={conversation}
     playerMysticSlots={legacyAwakened ? loadMysticSlots(storage, progress) : []}
     opponentMysticSlots={mission ? bossMysticSlots(mission.id) : []}
-    presentation={{ background: chapter?.id && chapter.id !== 'p'
-      ? campaignLandscape(chapter.id)
-      : '/Decreto-Real/escenarios/plaza-virreinal-v2.svg' }}
+    presentation={{ background: campaignMissionBackground(mission.id) ?? '/Decreto-Real/escenarios/plaza-virreinal-v2.svg', opponentPortrait: campaignOpponentPortrait(mission.id) }}
     onReturn={() => navigate(returnToMap)}
   />;
 };
