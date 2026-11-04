@@ -48,7 +48,7 @@ export class AiTurnController {
   }
 }
 
-type AiCard = { id: string; type: 'ATTACK' | 'DEFENSE' | 'IMPACT' | 'ORDER'; rank?: number };
+type AiCard = { id: string; type: 'ATTACK' | 'DEFENSE' | 'IMPACT' | 'ORDER' | 'MYSTIC'; rank?: number };
 type AiSnapshot<C extends AiCard> = { hand: C[]; health: number; impactLevel: number };
 
 /** Keep the existing priority: one legal Impact, defenses below 5 HP, then attacks. */
@@ -79,6 +79,11 @@ export async function runOpponentTurn<C extends AiCard>(
     while ((defense = read().hand.find(card => card.type === 'DEFENSE'))) {
       if (!await perform(defense)) return;
     }
+  }
+  // Los generales canalizan sus cartas místicas; los efectos propios se diseñarán después.
+  let mystic: C | undefined;
+  while ((mystic = read().hand.find(card => card.type === 'MYSTIC'))) {
+    if (!await perform(mystic)) return;
   }
   let attack: C | undefined;
   while ((attack = read().hand.find(card => card.type === 'ATTACK'))) {

@@ -10,6 +10,7 @@ function openMap() {
     <Routes>
       <Route path="/campania" element={<CampaignMap />} />
       <Route path="/campania/historia" element={<h1>Historia de Decreto Real</h1>} />
+      <Route path="/campania/baraja" element={<h1>Colección mística</h1>} />
       <Route path="/campania/mision/:missionId" element={<h1>Duelo de misión</h1>} />
       <Route path="/" element={<h1>Menú principal</h1>} />
     </Routes>

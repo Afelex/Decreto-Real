@@ -76,7 +76,7 @@ test('Order draws one replacement card without changing the starting 28-card dec
   const before = screen.getByLabelText(/Tu mano:/).querySelectorAll('.dr-royal-hand-card').length;
   const deckBefore = Number(document.querySelector('.dr-royal-player-deck span')?.textContent);
   fireEvent.click(screen.getByRole('button', { name: /Decreto de Orden:/ }));
-  fireEvent.click(screen.getByRole('button', { name: 'Campo para activar Ataque o Defensa' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Campo para activar Ataque, Defensa, Orden o Mística' }));
   expect(screen.getByRole('status', {name: /HAS ACTIVADO/})).toBeTruthy();
   const orderVideo = document.querySelector<HTMLVideoElement>('.dr-cinematic-overlay--energy video');
   expect(orderVideo?.querySelector('source')?.getAttribute('src')).toContain('/efectos/orden.webm');

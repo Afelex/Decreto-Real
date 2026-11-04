@@ -9,6 +9,8 @@ import {
 import { chapterForStage } from '../campaign/story.ts';
 import { combatConversationForMission } from '../campaign/combatDialogues.ts';
 import { enemyForMission } from '../campaign/characters.ts';
+import { loadMysticSlots, hasZhinchiLegacy } from '../campaign/mysticDeck.ts';
+import { bossMysticSlots, GENERAL_MYSTICS } from '../game/mysticCards.ts';
 import { missionStarGoals } from '../campaign/progressView.ts';
 import BattleResultScreen from './BattleResultScreen';
 import { RegionScene } from './RegionScene';
@@ -37,7 +39,10 @@ const CampaignMission: React.FC = () => {
   const [view, setView] = React.useState<'briefing' | 'duel'>('briefing');
   const [outcome, setOutcome] = React.useState<MissionOutcome | null>(null);
   const storage = React.useMemo(getStorage, []);
-  const unlocked = !!mission && isMissionUnlocked(loadCampaignProgress(storage), mission.id);
+  const progress = loadCampaignProgress(storage);
+  const unlocked = !!mission && isMissionUnlocked(progress, mission.id);
+  const mysticalReward = GENERAL_MYSTICS.find(card => card.missionId === mission?.id);
+  const legacyAwakened = hasZhinchiLegacy(progress);
   const index = mission ? CAMPAIGN_MISSIONS.findIndex(item => item.id === mission.id) : -1;
   const next = CAMPAIGN_MISSIONS[index + 1];
   const nextRegion = next && next.chapterId !== mission?.chapterId ? chapterForStage(next.id) : null;
@@ -85,8 +90,16 @@ const CampaignMission: React.FC = () => {
         { label: 'Mejor marca', value: `${outcome.best}/3` },
       ]}
       warning={!outcome.saved ? 'No se pudo guardar tu progreso en este navegador.' : undefined}
+      reward={outcome.won && outcome.saved ? mysticalReward
+        ? `Carta mística de ${mysticalReward.owner} añadida a tu colección${legacyAwakened ? '.' : ' (sellada).'}`
+        : mission.id === '36' ? 'El bastón de Zhinchi despierta tus cartas místicas. ¡Editar baraja desbloqueado!' : undefined
+        : undefined}
       narrative={outcome.won ? mission.victoryLine : mission.defeatLine}
       actions={[
+        ...(outcome.won && outcome.saved && (mysticalReward || mission.id === '36') ? [{
+          label: mission.id === '36' || legacyAwakened ? 'Editar baraja mística ✦' : 'Ver mística sellada ✦',
+          onClick: () => navigate('/campania/baraja'),
+        }] : []),
         ...(outcome.won && !next ? [{
           label: 'Leer epílogo ✦',
           primary: true,
@@ -128,7 +141,7 @@ const CampaignMission: React.FC = () => {
         {missionStarGoals(mission).map(goal =>
           <div key={goal.id}><span>★</span> {goal.label}</div>)}
       </div>
-      <p className="dc-note dc-briefing-note">Combate original: 20 de vida, 10 ataques, 10 defensas, 4 Impactos y 4 Órdenes. Los combos x2 y x3 permiten causar daño o curar vida.</p>
+      <p className="dc-note dc-briefing-note">Combate original: 20 de vida, 10 ataques, 10 defensas, 4 Impactos y 4 Órdenes. Los combos x2 y x3 permiten causar daño o curar vida.{mission.kind === 'boss' ? ' Este general tiene 3 místicas.' : mission.kind === 'final' ? ' Sigumán porta 3 místicas distintas.' : ''}</p>
       <div className="dc-briefing-actions">
         <button className="dc-primary" onClick={() => setView('duel')}>Preparar combate ⚔</button>
         <button className="dc-secondary" onClick={() => navigate('/campania')}>Volver al mapa</button>
@@ -140,6 +153,8 @@ const CampaignMission: React.FC = () => {
     key={`${mission.id}-${attempt}`}
     onOutcome={onClassicOutcome}
     storyConversation={conversation}
+    playerMysticSlots={legacyAwakened ? loadMysticSlots(storage, progress) : []}
+    opponentMysticSlots={mission ? bossMysticSlots(mission.id) : []}
     presentation={{ background: '/Decreto-Real/escenarios/plaza-virreinal-v2.svg' }}
     onReturn={() => navigate('/campania')}
   />;

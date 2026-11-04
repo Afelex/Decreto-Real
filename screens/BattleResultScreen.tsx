@@ -10,6 +10,7 @@ type Props = {
   stats: readonly BattleResultStat[];
   actions: readonly BattleResultAction[];
   warning?: string;
+  reward?: string;
   /** Solo campaña: consecuencia narrativa breve; el duelo libre permanece sin texto extra. */
   narrative?: string;
 };
@@ -19,7 +20,7 @@ type Props = {
  * las estadísticas verificables y los botones para continuar.
  * Compartido por el duelo libre y las misiones de campaña.
  */
-const BattleResultScreen: React.FC<Props> = ({ won, heading, stats, actions, warning, narrative }) => (
+const BattleResultScreen: React.FC<Props> = ({ won, heading, stats, actions, warning, narrative, reward }) => (
   <main className={`dr-result-screen ${won ? 'is-victory' : 'is-defeat'}`}
     aria-label={won ? 'Resultado de la partida: victoria' : 'Resultado de la partida: derrota'}>
     <img className="dr-result-screen__scene"
@@ -39,6 +40,7 @@ const BattleResultScreen: React.FC<Props> = ({ won, heading, stats, actions, war
         </dl>
       </section>
       {narrative && <p className="dr-result-screen__narrative" aria-label="Consecuencia narrativa">{narrative}</p>}
+      {reward && <p className="dr-result-screen__reward" role="status">✦ {reward}</p>}
       {warning && <p className="dr-result-screen__warning" role="alert">{warning}</p>}
       <nav className={`dr-result-screen__actions ${actions.length > 2 ? 'has-extra-action' : ''}`}
         aria-label="Acciones después de la partida">

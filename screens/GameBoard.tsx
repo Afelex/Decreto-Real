@@ -15,6 +15,7 @@ import { resolveBattleEnd, resolveSurrender, resolveDevelopmentVictory, type Bat
 import { BattleSceneryLayer } from './BattleSceneryLayer';
 import StorySpeechPanel from './StorySpeechPanel';
 import type { CombatConversation } from '../campaign/combatDialogues.ts';
+import { insertMystics, PROVISIONAL_MYSTIC_DAMAGE, type MysticSlot } from '../game/mysticCards.ts';
 
 // --- GAME CONFIGURATION ---
 const MAX_HP = 20;
@@ -64,7 +65,7 @@ const IMG_ORDER = `${import.meta.env.BASE_URL}cartas/decreto-orden.webp?v=202611
 const IMG_IMPACT = `${import.meta.env.BASE_URL}cartas/decreto-impacto.webp?v=20261103`;
 
 // --- DECK GENERATION & UTILS ---
-const generateDeck = (playerIdPrefix: string): CardData[] => {
+const generateDeck = (playerIdPrefix: string, mysticSlots: readonly MysticSlot[] = []): CardData[] => {
   let deck: CardData[] = [];
   deck.push({ id: `${playerIdPrefix}-imp-1`, type: 'IMPACT', rank: 1, name: 'Impacto I', description: 'Sello + Drenar 1', cost: 0, img: IMG_IMPACT });
   deck.push({ id: `${playerIdPrefix}-imp-2`, type: 'IMPACT', rank: 2, name: 'Impacto II', description: 'Sello + Drenar 1', cost: 0, img: IMG_IMPACT });
@@ -76,7 +77,7 @@ const generateDeck = (playerIdPrefix: string): CardData[] => {
     deck.push({ id: `${playerIdPrefix}-def-${i}`, type: 'DEFENSE', name: 'Decreto de Defensa', description: '+1 HP Propio', cost: 0, img: IMG_DEFEND });
   }
   for (let i = 0; i < 4; i++) deck.push({ id: `${playerIdPrefix}-ord-${i}`, type: 'ORDER', name: 'Decreto de Orden', description: 'Roba 1 carta extra', cost: 0, img: IMG_ORDER });
-  return shuffleArray(deck);
+  return shuffleArray(insertMystics(deck, mysticSlots, playerIdPrefix));
 };
 
 const shuffleArray = <T,>(array: T[]): T[] => {
@@ -117,11 +118,13 @@ type StoryMoment = { kind: 'intro' | 'midpoint' | 'critical' | 'victory'; step: 
 type GameBoardProps = {
   /** Exclusive to story missions; undefined keeps the classic/free duel untouched. */
   storyConversation?: CombatConversation;
+  playerMysticSlots?: readonly MysticSlot[];
+  opponentMysticSlots?: readonly MysticSlot[];
   onOutcome?: (result: OriginalBattleOutcome) => void;
   onReturn?: () => void;
   presentation?: BattlePresentation;
 };
-const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation, storyConversation }) => {
+const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation, storyConversation, playerMysticSlots, opponentMysticSlots }) => {
   const scenery = resolveBattleScenery(presentation);
   const playerPortrait = presentation?.playerPortrait ?? PLAYER_IMG;
   const rivalPortrait = presentation?.opponentPortrait ?? OPPONENT_IMG;
@@ -201,8 +204,8 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   };
 
   useEffect(() => {
-    const playerCards = generateDeck('p1');
-    const rivalCards = generateDeck('ai');
+    const playerCards = generateDeck('p1', playerMysticSlots);
+    const rivalCards = generateDeck('ai', opponentMysticSlots);
     playerDeckRef.current = playerCards;
     opponentDeckRef.current = rivalCards;
     setPlayerDeck(playerCards);
@@ -342,7 +345,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
 
     setCardAnnouncement({ id: ++announcementCount.current, card, isPlayer });
     // Sound accompanies the card animation; actual HP/draw effects still wait.
-    if (card.type === 'ATTACK') playSound('ATTACK');
+    if (card.type === 'ATTACK' || card.type === 'MYSTIC') playSound('ATTACK');
     else if (card.type === 'DEFENSE') playSound('DEFENSE');
     else if (card.type === 'ORDER') playSound('FLIP');
     const active = await waitForCue(cardEffectCue(card.type).durationMs);
@@ -351,8 +354,10 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     announcementBusy.current = false;
     if (gameOverRef.current) return;
 
-    if (card.type === 'ATTACK') {
-      if (isPlayer) setOpponentHP(p => Math.max(0, p - ATTACK_DAMAGE)); else setPlayerHP(p => Math.max(0, p - ATTACK_DAMAGE));
+    if (card.type === 'ATTACK' || card.type === 'MYSTIC') {
+      // El efecto místico es intencionadamente de prueba hasta aprobar las 9+3 habilidades.
+      const damage = card.type === 'MYSTIC' ? PROVISIONAL_MYSTIC_DAMAGE : ATTACK_DAMAGE;
+      if (isPlayer) setOpponentHP(p => Math.max(0, p - damage)); else setPlayerHP(p => Math.max(0, p - damage));
     } else if (card.type === 'DEFENSE') {
       if (isPlayer) setPlayerHP(p => Math.min(MAX_HP, p + 1)); else setOpponentHP(p => Math.min(MAX_HP, p + 1));
     } else if (card.type === 'ORDER') {
@@ -752,7 +757,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
           </div>
           <button type="button" className="dr-royal-activation-target" onClick={() => placeSelected('field')}
             disabled={!selectedCard || !canHandleCards || selectedCard.type === 'IMPACT'}
-            aria-label="Campo para activar Ataque o Defensa">
+            aria-label="Campo para activar Ataque, Defensa, Orden o Mística">
             <span className="dr-royal-activation-icon" aria-hidden="true">✦</span>
             <span id="dr-royal-help" className="dr-royal-field-prompt" aria-live="polite">{helpText}</span>
           </button>

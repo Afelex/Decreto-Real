@@ -10,6 +10,7 @@ const CARD_CUES: Record<CardType, EffectCue> = {
   ORDER: { file: 'efectos/orden.webm', durationMs: 1000 },
   // No replacement Impact footage was provided; keep the original banner.
   IMPACT: { file: null, durationMs: 2500 },
+  MYSTIC: { file: null, durationMs: 700 },
 };
 
 const COMBO_CUES: Record<'DAMAGE' | 'HEAL', Record<2 | 3, EffectCue>> = {
