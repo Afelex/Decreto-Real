@@ -15,6 +15,7 @@ import { missionStarGoals } from '../campaign/progressView.ts';
 import BattleResultScreen from './BattleResultScreen';
 import { RegionScene } from './RegionScene';
 import { GeneralPortrait } from './GeneralPortrait';
+import BossConfrontation from './BossConfrontation';
 import './campaign.css';
 
 type MissionOutcome = {
@@ -36,7 +37,7 @@ const CampaignMission: React.FC = () => {
   const enemy = enemyForMission(missionId ?? '');
   const conversation = mission ? combatConversationForMission(mission.id) : undefined;
   const [attempt, setAttempt] = React.useState(0);
-  const [view, setView] = React.useState<'briefing' | 'duel'>('briefing');
+  const [view, setView] = React.useState<'briefing' | 'confrontation' | 'duel'>('briefing');
   const [outcome, setOutcome] = React.useState<MissionOutcome | null>(null);
   const storage = React.useMemo(getStorage, []);
   const progress = loadCampaignProgress(storage);
@@ -133,11 +134,19 @@ const CampaignMission: React.FC = () => {
       </div>
       <p className="dc-note dc-briefing-note">Combate original: 20 de vida, 10 ataques, 10 defensas, 4 Impactos y 4 Órdenes. Los combos x2 y x3 permiten causar daño o curar vida.{mission.kind === 'boss' ? ' Este general tiene 3 místicas.' : mission.kind === 'final' ? ' Sigumán porta 3 místicas distintas.' : ''}</p>
       <div className="dc-briefing-actions">
-        <button className="dc-primary" onClick={() => setView('duel')}>Preparar combate ⚔</button>
+        <button className="dc-primary" onClick={() => setView(mission.kind === 'boss' || mission.kind === 'final' ? 'confrontation' : 'duel')}>Preparar combate ⚔</button>
         <button className="dc-secondary" onClick={() => navigate(returnToMap)}>Volver al mapa</button>
       </div>
     </section>
   </main>;
+
+  if (view === 'confrontation') return <BossConfrontation key={mission.id}
+    mission={mission}
+    alreadyDefeated={bestStars(progress, mission.id) > 0}
+    legacyAwakened={legacyAwakened}
+    onBeginBattle={() => setView('duel')}
+    onBack={() => setView('briefing')}
+  />;
 
   return <GameBoard
     key={`${mission.id}-${attempt}`}
