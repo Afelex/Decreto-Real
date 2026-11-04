@@ -42,6 +42,19 @@ GitHub descargará automáticamente la base aprobada del artefacto anterior y en
 
 Para generar solamente los tres oponentes secundarios que realmente aparecen en el Puerto del Callao, usa **grupo = rivales-callao** (Elías Rentería, Bartolomé de Avilés y Tomás Arciniega). Ese grupo envía tres solicitudes y sí consume crédito al elegir generar.
 
+## Corrección de escenarios de jefe · versión v3 (noviembre 2026)
+
+La primera edición de Baltasar de Fierro quedó casi igual que el puerto base: solo cambió la iluminación y los estandartes. La nueva dirección artística exige que **cada jefe tenga una arena distinta dentro de la misma región**, con un primer plano, punto de vista, área de combate y objetos relevantes propios. Se mantienen los paisajes, edificios distintivos y sombreado anime del mundo, pero se reinterpreta al menos una parte importante de la composición.
+
+**Callao:** el fondo base conserva su puerto abierto; la nueva escena del Almirante debe representar una **batería naval de mando**, con grandes cañones en primer plano, parapetos de piedra, una posición de combate ceremonial, el mismo faro/atalaya y barcos reconocibles a lo lejos y un cielo más dramático. La bandera correcta es siempre blanca con aspa roja de Borgoña, sin escudo.
+
+Para una tercera prueba que aproveche el fondo de referencia ya aprobado:
+- En Actions, selecciona grupo `jefe-callao-aprobado`, modo `generar`, calidad `low` y confirmación `SI`.
+- Se realiza **una edición de imagen de pago**. No se vuelve a generar el fondo base.
+- La edición se revisa visualmente antes de seguir con otras regiones; un prompt más fuerte no garantiza que el modelo haga cambios suficientes.
+- En el archivo `LEEME.txt` aparecerá `anime-2D-jefes-v3`.
+- No vuelvas a ejecutar el mismo grupo varias veces sin revisar la imagen ni el consumo del API.
+
 ## Catálogo de las 47 imágenes
 - **18 fondos**: base y jefe para cada una de las 8 regiones y la Casa del Sello.
 - **29 retratos secundarios**: 2 del prólogo, 24 de las regiones y 3 del capítulo final.
@@ -64,7 +77,7 @@ Para generar solamente los tres oponentes secundarios que realmente aparecen en 
 - La primera prueba recomendada después de esta corrección sigue siendo **una-imagen / generar / low / SI**, que envía una sola solicitud pagada. El modo **plan** no genera ni cobra.
 
 ## Cómo reconocer la versión corregida
-En el registro del paso «Crear plan o generar imágenes autorizadas» verás **Versión artística: anime-2D-borgona-v2**. El archivo `LEEME.txt` del ZIP incluye el mismo identificador. La imagen anterior no se modifica automáticamente: para probar el nuevo estilo es necesario realizar una solicitud nueva, con su coste correspondiente.
+En el registro del paso «Crear plan o generar imágenes autorizadas» verás **Versión artística: anime-2D-jefes-v3**. El archivo `LEEME.txt` del ZIP incluye el mismo identificador. La imagen anterior no se modifica automáticamente: para probar el nuevo estilo es necesario realizar una solicitud nueva, con su coste correspondiente.
 
 ## Enlaces útiles
 - [Guardar claves en GitHub Actions](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets)
