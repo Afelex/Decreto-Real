@@ -47,6 +47,7 @@ const CampaignMission: React.FC = () => {
   const next = CAMPAIGN_MISSIONS[index + 1];
   const nextRegion = next && next.chapterId !== mission?.chapterId ? chapterForStage(next.id) : null;
   const accent = { '--dc-accent': chapter?.color ?? '#bfa374' } as React.CSSProperties;
+  const returnToMap = chapter && chapter.id !== 'p' ? `/campania/region/${chapter.id}` : '/campania';
 
   React.useEffect(() => {
     setOutcome(null);
@@ -71,7 +72,7 @@ const CampaignMission: React.FC = () => {
   if (!mission || !unlocked) return <main className="dc-page dc-center dc-full-page">
     <h1>Misión no disponible</h1>
     <p>Completa las misiones anteriores para desbloquear este camino.</p>
-    <button className="dc-primary" onClick={() => navigate('/campania')}>Volver al mapa</button>
+    <button className="dc-primary" onClick={() => navigate(returnToMap)}>Volver al mapa</button>
   </main>;
 
   if (outcome) {
@@ -111,9 +112,10 @@ const CampaignMission: React.FC = () => {
           onClick: () => navigate('/campania/generales?intro=1'),
         }] : []),
         ...(outcome.won && next && outcome.saved && mission.id !== '02' ? [{
-          label: nextRegion ? 'Entrar en la nueva región →' : 'Siguiente misión →',
+          label: nextRegion ? 'Volver al mapa de las ocho zonas →' : 'Siguiente misión →',
           primary: true,
           onClick: () => {
+            if (nextRegion) { navigate('/campania/generales'); return; }
             setOutcome(null);
             setAttempt(0);
             setView('briefing');
@@ -121,14 +123,14 @@ const CampaignMission: React.FC = () => {
           },
         }] : []),
         { label: 'Repetir combate', onClick: retry },
-        { label: 'Volver al mapa', onClick: () => navigate('/campania') },
+        { label: 'Volver al mapa', onClick: () => navigate(returnToMap) },
       ]}
     />;
   }
 
   if (view === 'briefing') return <main className="dc-page dc-full-page dc-story-page dc-mission-briefing" style={accent}>
     <header className="dc-header">
-      <button type="button" onClick={() => navigate('/campania')}>‹ Mapa</button>
+      <button type="button" onClick={() => navigate(returnToMap)}>‹ Mapa</button>
       <div><small>DECRETO REAL I · HISTORIA</small><h1>{chapter?.title ?? 'Camino de campaña'}</h1></div>
     </header>
     <section className="dc-story-scene dc-briefing-scene" aria-labelledby="dc-scene-title">
@@ -149,7 +151,7 @@ const CampaignMission: React.FC = () => {
       <p className="dc-note dc-briefing-note">Combate original: 20 de vida, 10 ataques, 10 defensas, 4 Impactos y 4 Órdenes. Los combos x2 y x3 permiten causar daño o curar vida.{mission.kind === 'boss' ? ' Este general tiene 3 místicas.' : mission.kind === 'final' ? ' Sigumán porta 3 místicas distintas.' : ''}</p>
       <div className="dc-briefing-actions">
         <button className="dc-primary" onClick={() => setView('duel')}>Preparar combate ⚔</button>
-        <button className="dc-secondary" onClick={() => navigate('/campania')}>Volver al mapa</button>
+        <button className="dc-secondary" onClick={() => navigate(returnToMap)}>Volver al mapa</button>
       </div>
     </section>
   </main>;
@@ -161,7 +163,7 @@ const CampaignMission: React.FC = () => {
     playerMysticSlots={legacyAwakened ? loadMysticSlots(storage, progress) : []}
     opponentMysticSlots={mission ? bossMysticSlots(mission.id) : []}
     presentation={{ background: '/Decreto-Real/escenarios/plaza-virreinal-v2.svg' }}
-    onReturn={() => navigate('/campania')}
+    onReturn={() => navigate(returnToMap)}
   />;
 };
 
