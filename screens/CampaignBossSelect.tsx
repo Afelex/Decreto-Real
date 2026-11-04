@@ -71,8 +71,12 @@ const CampaignBossSelect: React.FC = () => {
   const prologueComplete = bestStars(progress, '01') > 0 && bestStars(progress, '02') > 0;
   const centerUnlocked = isMissionUnlocked(progress, '35');
   const liberated = Array.from({ length: 8 }, (_, index) => completionForChapter(progress, String(index + 1))).filter(value => value === 100).length;
-  const [intro, setIntro] = React.useState(() =>
-    search.get('intro') === '1' || (prologueComplete && storage()?.getItem(GENERAL_INTRO_KEY) !== '1'));
+  const [intro, setIntro] = React.useState(() => {
+    if (search.get('intro') === '1') return true;
+    if (!prologueComplete) return false;
+    try { return storage()?.getItem(GENERAL_INTRO_KEY) !== '1'; }
+    catch { return true; }
+  });
   const [introIndex, setIntroIndex] = React.useState(0);
   const [selectedId, setSelectedId] = React.useState('1');
   const selected = GENERALS.find(general => general.id === selectedId) ?? GENERALS[0];
