@@ -732,7 +732,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
         <div className="dr-mystic-combo-overlay" role="status" aria-live="assertive"
           aria-label={`Combo místico por ${mysticComboAnnouncement.level}: ${mysticComboAnnouncement.name}. ${mysticComboAnnouncement.effect}`}>
           <div className="dr-mystic-combo-content">
-            <small>${mysticComboAnnouncement.isPlayer ? 'XERVIAS' : 'PODER RIVAL'}</small>
+            <small>{mysticComboAnnouncement.isPlayer ? 'XERVIAS' : 'PODER RIVAL'}</small>
             <h2>COMBO MÍSTICO ×{mysticComboAnnouncement.level}</h2>
             <strong>{mysticComboAnnouncement.name}</strong>
             <p>{mysticComboAnnouncement.effect}</p>
