@@ -437,3 +437,15 @@
   .dcm-illustrated-region-map .dcm-map-label {max-width:64%;font-size:10px;padding:2px 5px;}
   .dcm-illustrated-region-map .dcm-marker {height:36px;width:36px;}
 }
+
+
+/* Revisit each region's story without blocking the mission path. */
+.dcm-region-chapter-nav .dcm-chapter-title {position:relative;padding-left:31px;padding-right:6px;}
+.dcm-region-replay {
+  position:absolute;left:5px;top:50%;transform:translateY(-50%);
+  display:grid;place-items:center;width:24px;height:26px;min-width:24px;
+  background:#564134;border:1px solid #b59565;border-radius:5px;
+  color:#ffe3a7;font:700 18px/1 Georgia,serif!important;cursor:pointer;
+}
+.dcm-region-replay:focus-visible{outline:2px solid #fff6af;outline-offset:2px;}
+@media(max-width:350px){.dcm-region-chapter-nav .dcm-chapter-title{padding-left:25px}.dcm-region-replay{width:20px;min-width:20px;height:24px;left:2px;font-size:16px!important}}
