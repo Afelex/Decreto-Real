@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CAMPAIGN_MISSIONS, bestStars, isMissionUnlocked, loadCampaignProgress } from '../campaign/campaign.ts';
 import { afterVictoryLines } from '../campaign/afterVictory.ts';
+import { hasSeenRegionMoment, REGION_LIBERATIONS_KEY } from '../campaign/regionJourney.ts';
 import './campaign-after-victory.css';
 
 export const CENTER_REVEAL_KEY = 'decreto-real.campania.centro-revelado.v1';
@@ -32,6 +33,13 @@ const CampaignAfterVictory: React.FC = () => {
     if (!mission) return;
     if (mission.id === '02') { navigate('/campania/generales?intro=1'); return; }
     if (mission.id === '38') { navigate('/campania/epilogo'); return; }
+    if (mission.kind === 'boss' && mission.chapterId !== 'p' && mission.chapterId !== 'f') {
+      const liberationSeen = hasSeenRegionMoment(storage, REGION_LIBERATIONS_KEY, mission.chapterId);
+      if (!liberationSeen) {
+        navigate(`/campania/liberada/${mission.chapterId}`);
+        return;
+      }
+    }
     let centerSeen = false;
     try { centerSeen = safeStorage()?.getItem(CENTER_REVEAL_KEY) === '1'; }
     catch { /* no storage */ }
