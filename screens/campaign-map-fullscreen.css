@@ -390,3 +390,50 @@
 .dcm-selected-actions .dcm-revisit-dialogue{flex:0 0 auto;border:1px solid #b78751;border-radius:5px;padding:3px 1px;background:#e6c99b;color:#744123;font:700 clamp(9px,2.2vw,10px) Georgia,serif;cursor:pointer}
 .dcm-selected-actions .dcm-revisit-dialogue:hover{background:#f2dbb1}
 @media(max-height:530px){.dcm-selected-actions{gap:2px}.dcm-selected-actions .dcm-revisit-dialogue{padding:1px}}
+
+
+/* DR-CAMP-REGIONS: nine authored landscapes are true background layers.
+   Paths, mission markers and goals remain separate, accessible controls. */
+.dcm-illustrated-region-map {
+  background:var(--rv-earth, #6d675e);
+  border-color:var(--dcm-accent, #b48b65);
+}
+.dcm-illustrated-region-map .dcm-map-art {
+  display:block;
+  object-fit:cover;
+  object-position:center 46%;
+  filter:saturate(.94) contrast(1.05);
+}
+.dcm-illustrated-region-map .dcm-map-wash {
+  background:radial-gradient(ellipse at 51% 49%,transparent 33%,#1a17274d 100%),
+    linear-gradient(to top,#11192433,transparent 34%);
+}
+.dcm-illustrated-region-map .dcm-route {
+  filter:drop-shadow(0 0 2px #241923) drop-shadow(0 0 2px #fff3c6);
+}
+.dcm-illustrated-region-map .dcm-route polyline {
+  stroke-width:2.1;
+}
+.dcm-illustrated-region-map .dcm-map-label {
+  background:#ebd9b9f0;
+  border:1px solid var(--dcm-accent,#ad855c);
+  box-shadow:0 3px 10px #1e1b2480;
+  max-width:72%;
+}
+.dcm-illustrated-region-map .dcm-region-wash,
+.dcm-illustrated-region-map .dcm-region-watermark { display:none; }
+.dcm-illustrated-region-map .dcm-marker.completed {
+  background:linear-gradient(#d0a64c,#795624);
+  box-shadow:0 0 0 3px #f8db945c,0 6px 11px #1b1b1a8c;
+}
+.dcm-illustrated-region-map .dcm-marker.available {
+  box-shadow:0 0 0 3px #ffe9b681,0 3px 17px #1d1a169c;
+}
+.dcm-illustrated-region-map .dcm-map-legend {
+  background:#fae4bccc;
+  backdrop-filter:blur(2px);
+}
+@media (max-height:530px) {
+  .dcm-illustrated-region-map .dcm-map-label {max-width:64%;font-size:10px;padding:2px 5px;}
+  .dcm-illustrated-region-map .dcm-marker {height:36px;width:36px;}
+}
