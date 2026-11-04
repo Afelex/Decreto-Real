@@ -104,6 +104,10 @@ test('boss is presented in briefing and on the duel board', async ({ page }) => 
   await page.goto('/Decreto-Real/#/campania/mision/06');
   await expect(page.getByRole('heading', { name: 'El Almirante de Hierro' })).toBeVisible();
   await page.getByRole('button', { name: /Preparar combate/ }).click();
+  await expect(page.getByRole('heading', { name: 'Enfrentamiento con el general' })).toBeVisible();
+  await expect(page.getByText('Marea de Hierro')).toBeVisible();
+  await page.getByRole('button', { name: 'Responder ›' }).click();
+  await page.getByRole('button', { name: /Comenzar duelo/ }).click();
   await expect(page.locator('.dr-classic-screen')).toBeVisible();
   await advanceStoryPrelude(page);
   await expect(page.getByText('¿Quién comienza?')).toBeVisible();
