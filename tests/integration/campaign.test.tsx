@@ -94,10 +94,32 @@ test('corrupt local save opens a safe first challenge', () => {
   expect(screen.getByRole('button', { name: /Misión 2:/ }).hasAttribute('disabled')).toBe(true);
 });
 
-test('the story and back buttons remain available without unlocking any mission', () => {
+test('the prologue removes redundant links and shows a direct return to the menu', () => {
   openMap();
-  fireEvent.click(screen.getByRole('button', { name: 'Ver la historia' }));
-  expect(screen.getByText('Historia de Decreto Real')).toBeTruthy();
+  expect(screen.queryByRole('button', { name: 'Ver la historia' })).toBeNull();
+  expect(screen.queryByRole('button', { name: 'Elegir capítulo por general' })).toBeNull();
+  fireEvent.click(screen.getByRole('button', { name: 'Volver al Menú' }));
+  expect(screen.getByRole('heading', { name: 'Menú principal' })).toBeTruthy();
+});
+
+
+test('each selected general opens a dedicated four-mission region with an eight-zone return', () => {
+  save({ '01': 1, '02': 1 });
+  render(<MemoryRouter initialEntries={['/campania/region/2']}>
+    <Routes>
+      <Route path="/campania/region/:chapterId" element={<CampaignMap />} />
+      <Route path="/campania/generales" element={<h1>Ocho regiones</h1>} />
+      <Route path="/campania/mision/:missionId" element={<h1>Duelo de misión</h1>} />
+      <Route path="/" element={<h1>Menú principal</h1>} />
+    </Routes>
+  </MemoryRouter>);
+  expect(screen.getByText('Los caminos escarlata')).toBeTruthy();
+  expect(document.querySelectorAll('.dcm-marker')).toHaveLength(4);
+  expect(screen.getByRole('button', { name: /Misión 7:/ }).hasAttribute('disabled')).toBe(false);
+  expect(screen.getByRole('button', { name: /Misión 8:/ }).hasAttribute('disabled')).toBe(true);
+  expect(screen.queryByRole('button', { name: 'Capítulo siguiente' })).toBeNull();
+  fireEvent.click(screen.getByRole('button', { name: 'Volver al mapa de las ocho zonas' }));
+  expect(screen.getByRole('heading', { name: 'Ocho regiones' })).toBeTruthy();
 });
 
 test('selected mission shows all three star objectives without leaving the map', () => {
