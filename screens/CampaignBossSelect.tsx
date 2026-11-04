@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { CAMPAIGN_MISSIONS, bestStars, isMissionUnlocked, loadCampaignProgress } from '../campaign/campaign.ts';
 import { STORY_CHAPTERS } from '../campaign/story.ts';
 import { GeneralPortrait } from './GeneralPortrait';
@@ -53,6 +53,11 @@ const GENERALS: readonly GeneralEntry[] = [
     zhinchi:'Gonzalo empieza a descubrir las consecuencias de su lealtad a un señor corrupto.' },
 ];
 
+const completionForChapter = (progress: ReturnType<typeof loadCampaignProgress>, chapterId: string): number => {
+  const missions = CAMPAIGN_MISSIONS.filter(mission => mission.chapterId === chapterId);
+  return Math.round(missions.filter(mission => bestStars(progress, mission.id) > 0).length / missions.length * 100);
+};
+
 const storage = (): Storage | null => {
   try { return typeof window === 'undefined' ? null : window.localStorage; } catch { return null; }
 };
@@ -61,6 +66,9 @@ const CampaignBossSelect: React.FC = () => {
   const navigate = useNavigate();
   const [search] = useSearchParams();
   const [progress] = React.useState(() => loadCampaignProgress(storage()));
+  const prologueComplete = bestStars(progress, '01') > 0 && bestStars(progress, '02') > 0;
+  const centerUnlocked = isMissionUnlocked(progress, '35');
+  const liberated = Array.from({ length: 8 }, (_, index) => completionForChapter(progress, String(index + 1))).filter(value => value === 100).length;
   const [intro, setIntro] = React.useState(search.get('intro') === '1');
   const [introIndex, setIntroIndex] = React.useState(0);
   const [selectedId, setSelectedId] = React.useState('1');
@@ -75,15 +83,17 @@ const CampaignBossSelect: React.FC = () => {
     const missions = missionsFor(selected.id);
     const next = missions.find(mission => bestStars(progress, mission.id) === 0 && isMissionUnlocked(progress, mission.id))
       ?? [...missions].reverse().find(mission => isMissionUnlocked(progress, mission.id));
-    if (next) navigate('/campania/mision/' + next.id);
+    if (next) navigate('/campania/region/' + selected.id);
   };
+
+  if (!prologueComplete) return <Navigate to="/campania" replace />;
 
   if (intro) {
     const general = GENERALS[introIndex];
     const chapter = STORY_CHAPTERS.find(item => item.id === general.id);
     return <main className="dbs-screen dbs-intro-screen" style={{ '--dbs-accent': chapter?.color ?? '#c9a85e' } as React.CSSProperties}>
       <header className="dbs-header">
-        <button type="button" onClick={() => navigate('/campania')}>‹ Campaña</button>
+        <button type="button" onClick={() => navigate('/')}>⌂ Volver al Menú</button>
         <span>CONVERSACIÓN · GENERAL {introIndex + 1} DE 8</span>
       </header>
       <section className="dbs-dialogue" aria-live="polite">
@@ -123,7 +133,7 @@ const CampaignBossSelect: React.FC = () => {
       <img className="dbs-art-selection" src={'/Decreto-Real/campania/seleccion-' + selectedId + '.webp'}
         alt="" aria-hidden="true" draggable={false} />
       <div className="dbs-art-heading">
-        <button type="button" onClick={() => navigate('/campania')}>‹ Campaña</button>
+        <button type="button" onClick={() => navigate('/')}>⌂ Volver al Menú</button>
         <h1>Elige un capítulo</h1>
       </div>
       {GENERALS.map((general, index) => {
@@ -137,18 +147,26 @@ const CampaignBossSelect: React.FC = () => {
           onFocus={() => setSelectedId(general.id)}
           onClick={() => setSelectedId(general.id)} />;
       })}
-      <section className="dbs-art-details" aria-live="polite" aria-labelledby="dbs-detail-title">
+      <button type="button" className={`dbs-art-center ${centerUnlocked ? 'open' : 'locked'}`}
+         disabled={!centerUnlocked}
+         aria-label={centerUnlocked ? 'Entrar al escenario central desbloqueado' : 'Escenario central bloqueado, derrota a los ocho generales'}
+         onClick={() => navigate('/campania/region/f')}>
+         <span aria-hidden="true">{centerUnlocked ? '✦' : '♜'}</span>
+         <small>{centerUnlocked ? 'Entrar al centro' : 'Centro sellado'}</small>
+       </button>
+       <section className="dbs-art-details" aria-live="polite" aria-labelledby="dbs-detail-title">
         <div className="dbs-art-meta"><strong>{selected.name}</strong><span>{selected.title} · {completionFor(selected.id).percent}% derrotado</span></div>
         <p>{selected.story}</p>
         <p><strong>{selected.card}:</strong> {selected.effect}</p>
         <div className="dbs-art-actions">
           <span>{completionFor(selected.id).completed}/4 fases</span>
           <button type="button" onClick={startChapter}>
-            {completionFor(selected.id).percent === 100 ? 'Repetir escenario ⚔' : 'Jugar capítulo ⚔'}
+            {completionFor(selected.id).percent === 100 ? 'Revisar región ⚔' : 'Explorar región ⚔'}
           </button>
         </div>
       </section>
-      <button className="dbs-art-replay" type="button" onClick={() => { setIntroIndex(0); setIntro(true); }}
+      <span className="dbs-art-freed" aria-label={`${liberated} de 8 generales derrotados`}>{liberated}/8 generales</span>
+       <button className="dbs-art-replay" type="button" onClick={() => { setIntroIndex(0); setIntro(true); }}
         aria-label="Volver a escuchar la presentación de los generales">↺</button>
     </div>
   </main>;
