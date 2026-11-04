@@ -7,11 +7,14 @@ const route = (name: string) => `/Decreto-Real/#/${name}`;
 async function advanceStoryPrelude(page: import('@playwright/test').Page) {
   const dialog = page.getByTestId('story-combat-dialogue');
   await expect(dialog).toBeVisible();
-  await expect(dialog.getByRole('heading', { name: /.+/ })).toBeVisible();
-  for (const speaker of ['ADVERSARIO', 'PROTAGONISTA', 'ADVERSARIO']) {
-    await expect(dialog.getByText(speaker, { exact: true })).toBeVisible();
-    await dialog.getByRole('button', { name: /Siguiente/ }).click();
-  }
+  const speaker = dialog.getByRole('heading');
+  const rivalName = await speaker.textContent();
+  await expect(speaker).toHaveText(rivalName!);
+  await dialog.getByRole('button', { name: /Siguiente/ }).click();
+  await expect(speaker).toHaveText('Xervias');
+  await dialog.getByRole('button', { name: /Siguiente/ }).click();
+  await expect(speaker).toHaveText(rivalName!);
+  await dialog.getByRole('button', { name: /Siguiente/ }).click();
   await expect(dialog.getByText('Inicia el combate')).toBeVisible();
   await dialog.getByRole('button', { name: /Continuar/ }).click();
   await expect(dialog).toBeHidden();
@@ -52,7 +55,7 @@ test('home menu stays fully inside one screen', async ({ page }, testInfo) => {
   await fits(page, '.dr-cinematic-brand');
   await fits(page, '.dr-cinematic-actions');
   await expect(page.getByText('Juego de Cartas', { exact: true })).toBeVisible();
-  await expect(page.locator('.dr-cinematic-actions button')).toHaveCount(4);
+  await expect(page.locator('.dr-cinematic-actions button')).toHaveCount(5);
   for (const button of await page.locator('.dr-cinematic-actions button').all()) {
     const bounds = await button.boundingBox();
     expect(bounds).not.toBeNull();
@@ -69,7 +72,7 @@ test('rules are paginated and every navigation control stays visible', async ({ 
   await fits(page, '.dr-guide-footer');
   await noPageScroll(page);
   await page.getByRole('button', { name: 'Impactos' }).click();
-  await expect(page.getByRole('heading', { name: 'Los cuatro sellos' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'El Decreto Final' })).toBeVisible();
   await fits(page, '.dr-guide-points');
 });
 
@@ -78,7 +81,7 @@ test('story pages show all characters and eight generals without vertical scroll
   await expect(page.getByRole('heading', { name: 'El reino escucha dos verdades' })).toBeVisible();
   await fits(page, '.dc-page-footer');
   await noPageScroll(page);
-  await page.getByRole('button', { name: 'Protagonistas' }).click();
+  await page.getByRole('button', { name: 'Personajes' }).click();
   await fits(page, '.dc-full-cast');
   await page.getByRole('button', { name: 'Ocho generales' }).click();
   await expect(page.locator('.dc-full-generals > div')).toHaveCount(8);
@@ -111,7 +114,7 @@ test('options, previous result and original game never create body scrolling', a
   await fits(page, '.dr-options-panel');
   await noPageScroll(page);
   await page.goto(route('victory'));
-  await fits(page, '.dr-victory-actions');
+  await fits(page, '.dr-result-screen__actions');
   await noPageScroll(page);
   await page.goto(route('game'));
   await fits(page, '.dr-classic-screen');
