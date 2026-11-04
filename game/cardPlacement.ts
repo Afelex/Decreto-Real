@@ -45,6 +45,9 @@ export function cardPlacementPrompt(
   impactLevel: number,
 ): string {
   if (!card) return 'Selecciona una carta y arrástrala al campo.';
+  if (card.type === 'MYSTIC' && card.mysticId === 'siguman-3') {
+    return 'Sol Negro sella un Impacto: arrástralo al centro del campo.';
+  }
   if (card.type === 'IMPACT') {
     return card.rank === impactLevel + 1
       ? `Arrastra ${card.name} a la casilla ${card.rank}.`
