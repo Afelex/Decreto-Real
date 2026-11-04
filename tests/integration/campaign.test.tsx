@@ -179,7 +179,7 @@ test('every independent chapter renders its own landscape artwork and four touch
     </MemoryRouter>);
     const map = document.querySelector('.dcm-region-map');
     expect(map?.getAttribute('data-region-art')).toBe(String(chapterId));
-    expect(map?.querySelector('.dcm-map-art')?.getAttribute('src')).toContain(`regiones/region-${chapterId}.svg`);
+    expect(map?.querySelector('.dcm-map-art')?.getAttribute('src')).toContain(`arte/fondos/region-${chapterId}-base.webp`);
     expect(map?.querySelectorAll('.dcm-marker')).toHaveLength(4);
     expect(map?.querySelector('.dcm-map-art')?.getAttribute('alt')?.length).toBeGreaterThan(25);
     view.unmount();
@@ -198,7 +198,7 @@ test('the final chapter has its own Casa del Sello map and is sealed until eight
     <Routes><Route path="/campania/region/:chapterId" element={<CampaignMap />} /></Routes>
   </MemoryRouter>);
   expect(document.querySelector('.dcm-region-map')?.getAttribute('data-region-art')).toBe('f');
-  expect(document.querySelector('.dcm-map-art')?.getAttribute('src')).toContain('regiones/region-f.svg');
+  expect(document.querySelector('.dcm-map-art')?.getAttribute('src')).toContain('arte/fondos/region-f-base.webp');
   expect(document.querySelectorAll('.dcm-marker')).toHaveLength(4);
   unlocked.unmount();
 });
