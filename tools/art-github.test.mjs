@@ -1,5 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {join} from 'node:path';
 import {catalogo,seleccion,ejecutar,construirSolicitud} from './art-github.mjs';
 
 test('existen 18 fondos y 29 retratos canónicos, total 47',()=>{
@@ -96,4 +98,49 @@ test('jefes deben cambiar de escenario, no solo recolorear el fondo base',()=>{
   assert.match(callao.promptEdicion,/CALLAO ADMIRAL BOSS ARENA/);
   assert.match(callao.promptEdicion,/coastal cannons|coastal cannons|coastal|naval command/i);
   assert.match(callao.promptEdicion,/Cross of Burgundy/);
+});
+
+test('se conserva la imagen original de Xervias como referencia de estilo',()=>{
+  const ref=readFileSync(join(import.meta.dirname,'..','art-reference','xervias-estilo.webp'));
+  assert.ok(ref.length>100);
+  assert.equal(ref.subarray(0,4).toString(),'RIFF');
+  const portrait=catalogo().find(i=>i.id==='rival-03');
+  assert.equal(portrait.styleReference,'art-reference/xervias-estilo.webp');
+  assert.match(portrait.prompt,/Xervias/i);
+  assert.match(portrait.prompt,/DO NOT|NEVER|Do not/);
+  assert.match(portrait.prompt,/checkerboard/i);
+  assert.match(portrait.prompt,/Cross of Burgundy/i);
+});
+test('retrato nuevo usa referencia visual sin copiar a Xervias',()=>{
+  const rival=catalogo().find(i=>i.id==='rival-03');
+  assert.throws(()=>construirSolicitud(rival,'low'),/Falta la referencia visual/);
+  const ref=Buffer.from('RIFF-style-reference');
+  const req=construirSolicitud(rival,'low',null,ref);
+  assert.ok(req.url.endsWith('/images/edits'));
+  assert.equal(req.payload.images.length,1);
+  assert.equal(req.payload.images[0].image_url,'data:image/webp;base64,'+ref.toString('base64'));
+  assert.match(req.payload.prompt,/DISTINCT NEW rival/i);
+});
+test('restilización de rivales conserva el retrato original y aplica estilo Xervias',()=>{
+  const rival=catalogo().find(i=>i.id==='rival-03');
+  const ref=Buffer.from('RIFF-Xervias-style');
+  const original=Buffer.from('RIFF-Elias-existing');
+  const req=construirSolicitud(rival,'low',null,ref,original);
+  assert.ok(req.url.endsWith('/images/edits'));
+  assert.equal(req.payload.images.length,2);
+  assert.equal(req.payload.images[0].image_url,'data:image/webp;base64,'+original.toString('base64'));
+  assert.equal(req.payload.images[1].image_url,'data:image/webp;base64,'+ref.toString('base64'));
+  assert.match(req.payload.prompt,/FIRST image.*ALREADY DESIGNED RIVAL/);
+  assert.match(req.payload.prompt,/SECOND image.*XERVIAS PORTRAIT/);
+  assert.match(req.payload.prompt,/DO NOT copy Xervias/);
+});
+test('piloto de un rival y lote de tres rivales se seleccionan sin duplicar',()=>{
+  assert.deepEqual(seleccion('rival-callao-estilo-prueba').map(i=>i.id),['rival-03']);
+  assert.deepEqual(seleccion('rivales-callao-estilo').map(i=>i.id),['rival-03','rival-04','rival-05']);
+});
+test('sin referencias originales se cancela antes de gastar API para el piloto',async()=>{
+  await assert.rejects(
+    ejecutar({grupo:'rival-callao-estilo-prueba',modo:'generar',calidad:'low',confirmar:'SI',apiKey:'solo-prueba'}),
+    /No se encontró el retrato original/
+  );
 });

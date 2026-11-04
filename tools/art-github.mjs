@@ -13,7 +13,7 @@ import { REGION_VISUALS } from '../campaign/regionVisuals.ts';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const OUTPUT = join(ROOT, 'art-output');
-const STYLE_VERSION = 'anime-2D-jefes-v3';
+const STYLE_VERSION = 'anime-retratos-xervias-v4';
 const MODEL = 'gpt-image-2.5-flare';
 const GENERAL_IDS = new Set(['06','10','14','18','22','26','30','34','38']);
 const REGION_DETAILS = {
@@ -42,6 +42,10 @@ const STYLE = "MASTER STYLE: ORIGINAL 2D HAND-DRAWN ANIME VIDEO GAME ART for a f
 const HISTORICAL_FLAGS = "HISTORICAL HERALDRY RULE: Never depict French flags, blue-white-red tricolours, modern national flags, the Spanish national coat of arms, Spanish royal shield, heraldic escutcheons or crowns on banners. When a Spanish royalist/colonial military flag is shown, use ONLY the historical Cross of Burgundy (aspa de Borgoña): a plain ivory/white flag with two broad jagged red diagonal branches making an X from corner to corner, without any other motif. Fictional faction banners elsewhere may be monochrome but never modern tricolours.";
 const CALLAO_FLAGS = "MANDATORY CALLAO FLAG: Put exactly ONE clearly legible rectangular white or off-white flag on the CENTRAL WATCHTOWER. On this cloth paint only TWO JAGGED RED DIAGONAL BRANCHES that intersect into an X from all four corners: the red Cross of Burgundy (aspa de Borgoña). It is a red X on a white field, NOT a red-white-blue design. NO blue stripes, NO vertical or horizontal tricolour, NO French flags, NO coat of arms of Spain, NO crest, NO crown and NO national emblems. Omit all other tiny flags instead of inventing symbols.";
 const BOSS_EDIT_RULES = "PROVIDED BASE IMAGE is a visual REFERENCE for the established region and its 2D anime style, NOT a pixel-for-pixel layout to preserve. Create a CLEARLY DIFFERENT BOSS BATTLE ARENA, a new nearby viewpoint or more imposing space WITHIN THE SAME geographic setting. Change the foreground architecture, camera distance and angle, arena props, composition and dramatic sky so the difference is unmistakable at a glance. Preserve recognisable regional LANDMARKS in the distance (e.g. the same watchtower, ships and coastline), palette, historical materials, ink outlines, and cell shading, but DO NOT keep the original object positions or simply change lighting and add tiny flags. Recompose at least 40 percent of the visible scene, especially foreground and side framing; keep the middle clear for two rows of cards and the lower HUD readable. Avoid figures, people, readable text, modern flags, modern machinery, UI and cards.";
+
+const PORTRAIT_STYLE = "PORTRAIT VISUAL STYLE — This series belongs in the SAME illustrated fantasy card game as the attached original portrait of XERVIAS. Match the Xervias STYLE rather than his identity: precise bold black outlines, sharp expressive anime eyes, strong stylized eyebrows, clear geometric facial shadows, thick well-grouped hair clumps, clean two/three-tone cel shading, intense yet controlled red/blue/gold-era fantasy palette with each rival's own regional colors, and a tightly framed centered upper-body profile for the mobile duel HUD. Do not duplicate the protagonist's exact facial structure, eye color, youthful age, spiky brown hairstyle, red mantle, navy-and-gold uniform, gold ornaments or expression. Keep each canonical rival's own apparent age, facial proportions, hairstyle or beard, historical costume, occupation, gear and silhouette. Character must feel drawn by the SAME anime illustrator as Xervias, NOT a softly painted realistic historical sailor. Head-and-shoulders bust, matching Xervias portrait framing and eye prominence; original period costume. No writing, no app UI, no logos, no 3D, no photorealism. IMPORTANT: checkerboard squares around the Xervias reference are a raster background artifact, NOT an art direction. NEVER reproduce checkerboard, fake transparency, grids or modern flags. No Peruvian republican tricolor or French flag; if any colonial royalist flag is visible it may only have a red jagged Cross of Burgundy on white cloth, without heraldic shield, otherwise omit flags.";
+const PORTRAIT_RESTYLE = "CHARACTER RE-ILLUSTRATION / TWO REFERENCE IMAGES. The FIRST image is the ALREADY DESIGNED RIVAL. Re-illustrate THIS SAME RIVAL and retain his identity: exact adult age impression, face structure, hairstyle and beard if present, profession-specific original historical uniform or outfit, accessories, distinctive props, color scheme, and personality. Do NOT change or replace the rival with a new character. The SECOND image is the ORIGINAL XERVIAS PORTRAIT. Use SECOND IMAGE FOR GRAPHIC DRAWING STYLE ONLY: bolder crisp black outlines, stronger anime eyes and angular eyebrows, more expressive shapes, geometric cell-shading with higher contrast, larger face-to-frame ratio like a trading-card rival. DO NOT copy Xervias's facial identity, youth, spiky hairstyle, red mantle, blue-and-gold ornaments, or pose. Match the second image's illustrator style while keeping the first image's person recognizable. The finished illustration must be a NEW drawing, not a soft photo filter. Eliminate blurred realistic painting. Reframe face and shoulders closer to camera with entire top of head intact; preserve period props where useful. Use a plain low-detail dark gradient or softly drawn regional backdrop with NO FLAGS; specifically no Peru red-white-red state flag, no French tricolor, no national coats of arms. No checkerboard transparency graphic from reference. No names, captions, logos, UI, cards or text. Vertical 2:3 portrait.";
+const XERVIAS_REFERENCE = 'art-reference/xervias-estilo.webp';
 
 const slug = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
@@ -79,7 +83,9 @@ export function catalogo() {
       chapterId: stage.chapterId,
       kind: 'retrato',
       title: enemy.name + ' — ' + enemy.alias,
-      prompt: STYLE + ' DRAW AN ORIGINAL INK-OUTLINED 2D ANIME CEL-SHADED CHARACTER, NOT A REALISTIC PHOTO, NOT 3D, NOT A PHOTOREALISTIC PORTRAIT. RETRATO ORIGINAL DE OPONENTE. Nombre de referencia para producción (NO escribirlo): ' + enemy.name + '. Papel: ' + enemy.role + '. Alias: ' + enemy.alias + '. Dirección canónica: ' + enemy.portraitDirection + '. Lugar: ' + (chapter?.region || 'Virreinato del Perú') + '. Misión: ' + stage.title + '. Mostrar rostro y torso, silueta distintiva, expresión decidida pero neutral, vestimenta de su oficio y época, fondo regional desenfocado, encuadre vertical 2:3 adecuado para el HUD, rostro completo sin cortes. Sin letras ni logotipos.'
+      styleReference: XERVIAS_REFERENCE,
+      prompt: STYLE + ' ' + PORTRAIT_STYLE + ' IMAGE REFERENCE: The ONLY supplied image is the Xervias portrait. Invent a DISTINCT NEW rival, never redraw Xervias. CANONICAL RIVAL: ' + enemy.name + '. Job: ' + enemy.role + '. Alias: ' + enemy.alias + '. Unique design direction: ' + enemy.portraitDirection + '. Region: ' + (chapter?.region || 'Virreinato del Perú') + '. Mission: ' + stage.title + '. Create a strong ink-lined anime bust with a visibly different individual face and profession, no flags, no text.',
+      promptRestilizar: PORTRAIT_RESTYLE + ' Canonical existing rival to preserve: ' + enemy.name + ', ' + enemy.alias + '. Distinctive job: ' + enemy.role + '. Unique costume and role direction: ' + enemy.portraitDirection + '. Preserve person in FIRST reference while matching anime drawing style of SECOND reference. Do not make them Xervias.'
     });
   }
   const fondos=images.filter(i=>i.kind==='fondo').length;
@@ -91,6 +97,8 @@ export function seleccion(grupo, images=catalogo()) {
   if (grupo==='una-imagen') return images.filter(i=>i.id==='fondo-1-base');
   if (grupo==='jefe-callao-aprobado') return images.filter(i=>i.id==='fondo-1-jefe');
   if (grupo==='rivales-callao') return images.filter(i=>['rival-03','rival-04','rival-05'].includes(i.id));
+  if (grupo==='rival-callao-estilo-prueba') return images.filter(i=>i.id==='rival-03');
+  if (grupo==='rivales-callao-estilo') return images.filter(i=>['rival-03','rival-04','rival-05'].includes(i.id));
   if (grupo==='piloto-4') return images.filter(i=>['fondo-1-base','fondo-1-jefe','rival-01','rival-03'].includes(i.id));
   if (grupo==='prologo') return images.filter(i=>i.chapterId==='p');
   if (grupo==='final') return images.filter(i=>i.chapterId==='f');
@@ -107,17 +115,23 @@ function generarGaleria(items,results) {
   }).join('');
   writeFileSync(join(OUTPUT,'galeria.html'),'<!doctype html><html lang="es"><meta charset="UTF-8"><title>Decreto Real | Arte</title><style>body{background:#10141d;color:#faf1dc;font:16px system-ui;padding:24px}main{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}article{background:#1d2330;padding:16px;border-radius:12px}img{display:block;width:100%;border-radius:8px}h2{font-size:16px}</style><h1>Decreto Real · Galería de producción</h1><p>Solo archivos del lote. La publicación del juego no se modifica.</p><main>'+body+'</main></html>');
 }
-export function construirSolicitud(item,quality,baseImage=null) {
+export function construirSolicitud(item,quality,baseImage=null,styleImage=null,originalPortrait=null) {
   const shared = {model:MODEL,n:1,size:'1024x1536',quality,output_format:'webp',output_compression:80,background:'opaque'};
   const boss = item.kind === 'fondo' && item.id.endsWith('-jefe');
   if (boss) {
     if (!Buffer.isBuffer(baseImage) || baseImage.length === 0) throw Error('Falta el fondo base para editar la versión jefe; no se llama a la API.');
     return {url:'https://api.openai.com/v1/images/edits',payload:{...shared,prompt:item.promptEdicion,images:[{image_url:'data:image/webp;base64,'+baseImage.toString('base64')}]}};
   }
+  if (item.kind === 'retrato') {
+    if (!Buffer.isBuffer(styleImage) || styleImage.length === 0) throw Error('Falta la referencia visual de Xervias. No se hará ningún gasto.');
+    const portraitInputs = originalPortrait ? [originalPortrait,styleImage] : [styleImage];
+    const images = portraitInputs.map(bytes=>({image_url:'data:image/webp;base64,'+bytes.toString('base64')}));
+    return {url:'https://api.openai.com/v1/images/edits',payload:{...shared,prompt:originalPortrait?item.promptRestilizar:item.prompt,images}};
+  }
   return {url:'https://api.openai.com/v1/images/generations',payload:{...shared,prompt:item.prompt}};
 }
-async function generar(item,quality,apiKey,baseImage=null) {
-  const request=construirSolicitud(item,quality,baseImage);
+async function generar(item,quality,apiKey,baseImage=null,styleImage=null,originalPortrait=null) {
+  const request=construirSolicitud(item,quality,baseImage,styleImage,originalPortrait);
   const response=await fetch(request.url,{
     method:'POST',
     headers:{Authorization:'Bearer '+apiKey,'Content-Type':'application/json'},
@@ -146,6 +160,9 @@ export async function ejecutar({grupo='una-imagen',modo='plan',calidad='low',con
   writeFileSync(join(OUTPUT,'catalogo-seleccionado.json'),JSON.stringify(items,null,2));
   const results=[];
   const basesDelLote=new Map();
+  const conservarRivalesPrevios=['rival-callao-estilo-prueba','rivales-callao-estilo'].includes(grupo);
+  let referenciaEstilo=null;
+  const retratosOriginales=new Map();
   if (modo==='generar' && grupo==='jefe-callao-aprobado') {
     // Reutilizar el arte producido y aprobado; evita generar de nuevo el mismo fondo base.
     const approvedBase=join(ROOT,'art-input','fondos','region-1-base.webp');
@@ -158,11 +175,30 @@ export async function ejecutar({grupo='una-imagen',modo='plan',calidad='low',con
   if (modo==='generar') {
     if (confirmar!=='SI') throw Error('Para gastar crédito escribe SI en la casilla de confirmación.');
     if (!apiKey) throw Error('Falta el secreto OPENAI_API_KEY en GitHub. No se ha hecho ningún cargo.');
+    // Validación ANTES del primer cobro: ningún lote de retratos se enviará sin Xervias.
+    if (items.some(item=>item.kind==='retrato')) {
+      const file=join(ROOT,XERVIAS_REFERENCE);
+      if (!existsSync(file)) throw Error('No se encontró la referencia Xervias en el repositorio. No se ha llamado a la API.');
+      referenciaEstilo=readFileSync(file);
+      if (referenciaEstilo.length<100 || referenciaEstilo.subarray(0,4).toString()!=='RIFF') throw Error('Referencia de Xervias no válida: se esperaba WebP. No se ha llamado a la API.');
+      console.log('Usando referencia de estilo Xervias desde '+XERVIAS_REFERENCE+'; solo estilo, no identidad.');
+    }
+    if (conservarRivalesPrevios) {
+      // Los originales se descargan desde el run de GitHub que generó los tres retratos.
+      for (const item of items) {
+        const path=join(ROOT,'art-input','anteriores',item.filename);
+        if (!existsSync(path)) throw Error('No se encontró el retrato original de '+item.name+'. No se ha llamado a la API.');
+        const bytes=readFileSync(path);
+        if (bytes.length<100 || bytes.subarray(0,4).toString()!=='RIFF') throw Error('Retrato original inválido para '+item.name+'. No se ha llamado a la API.');
+        retratosOriginales.set(item.id,bytes);
+      }
+      console.log('Conservando el diseño de los '+items.length+' rivales existentes; aplicando estilo de Xervias.');
+    }
     for (const item of items) {
       console.log('Generando '+item.id+' ('+(results.length+1)+'/'+items.length+')');
       try {
         const referencia = item.kind === 'fondo' && item.id.endsWith('-jefe') ? basesDelLote.get(item.chapterId) : null;
-        const generated = await generar(item,calidad,apiKey,referencia);
+        const generated = await generar(item,calidad,apiKey,referencia,referenciaEstilo,retratosOriginales.get(item.id)||null);
         results.push(generated);
         if (item.kind === 'fondo' && item.id.endsWith('-base')) basesDelLote.set(item.chapterId,readFileSync(join(OUTPUT,item.filename)));
         console.log('OK: '+item.filename+' ('+generated.method+')');

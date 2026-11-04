@@ -55,6 +55,34 @@ Para una tercera prueba que aproveche el fondo de referencia ya aprobado:
 - En el archivo `LEEME.txt` aparecerá `anime-2D-jefes-v3`.
 - No vuelvas a ejecutar el mismo grupo varias veces sin revisar la imagen ni el consumo del API.
 
+## V4 · Retratos secundarios en el mismo estilo de Xervias
+
+El usuario proporcionó la imagen **Xervias Neutral** como referencia. Se ha incorporado al repositorio un recorte pequeño (`art-reference/xervias-estilo.webp`) que sirve **únicamente para guiar el lenguaje gráfico** de los personajes: ojos anime angulares, línea oscura firme, cabello construido en mechones y sombreado cel-shading de contraste.
+
+**No se debe copiar la identidad de Xervias** a los rivales. La guía exige conservar la edad aparente, el peinado/barba, la personalidad, la vestimenta, los accesorios y la función narrativa de cada oponente. También prohíbe fondos ajedrezados y banderas nacionales modernas.
+
+### Ensayo de un solo rival (recomendado)
+
+En **[Actions → Generador de arte](https://github.com/Afelex/Decreto-Real/actions/workflows/generar-arte.yml)**, pulsa **Run workflow** y selecciona:
+
+- **Branch:** `main`.
+- **grupo:** `rival-callao-estilo-prueba` — solo Elías Rentería.
+- **modo:** `generar` — sí consume crédito API.
+- **calidad:** `low` — ensayo económico; si el estilo da buenos resultados se puede subir a `medium`.
+- **confirmar:** `SI` — confirmación explícita de una única edición pagada.
+
+El workflow reutiliza el **Elías original** del lote [41914476805](https://github.com/Afelex/Decreto-Real/actions/runs/41914476805) y la referencia visual de Xervias. Envía **dos imágenes de entrada** al endpoint de edición: primero el retrato de Elías (identidad y ropa) y después Xervias (solo estilo), y entrega un WebP nuevo en el artefacto descargable. **No modifica el juego ni los retratos previamente aprobados**.
+
+### Cuando el ensayo esté aprobado
+
+El selector **grupo = `rivales-callao-estilo`** hace lo mismo con Elías, Bartolomé de Avilés y Tomás Arciniega. Repite Elías: si ya tienes una versión aprobada, no uses este grupo entero sin considerar que generará también otra solicitud pagada para él.
+
+Para nuevos rivales de otras regiones, el workflow usa la referencia de Xervias como **primera y única entrada visual** y construye un personaje original a partir de los nombres y descripciones canónicos de cada misión. No tiene aún una ilustración de identidad previa que preservar.
+
+**No caducar:** el artefacto `decreto-real-arte-6` tiene una retención limitada de 14 días desde el 4 de noviembre de 2026. Si GitHub deja de tenerlo, el paso de descarga fallará antes de llamar a la API. Para restilizar después de su caducidad habría que aportar los originales de otra manera. La referencia comprimida de Xervias sí queda guardada de forma permanente en el código.
+
+**Seguridad:** el botón no envía gastos automáticamente; el modo `plan` sigue siendo gratis, `generar` requiere secreto y confirmación `SI`. Nunca pegues claves de API en el chat.
+
 ## Catálogo de las 47 imágenes
 - **18 fondos**: base y jefe para cada una de las 8 regiones y la Casa del Sello.
 - **29 retratos secundarios**: 2 del prólogo, 24 de las regiones y 3 del capítulo final.
@@ -77,7 +105,7 @@ Para una tercera prueba que aproveche el fondo de referencia ya aprobado:
 - La primera prueba recomendada después de esta corrección sigue siendo **una-imagen / generar / low / SI**, que envía una sola solicitud pagada. El modo **plan** no genera ni cobra.
 
 ## Cómo reconocer la versión corregida
-En el registro del paso «Crear plan o generar imágenes autorizadas» verás **Versión artística: anime-2D-jefes-v3**. El archivo `LEEME.txt` del ZIP incluye el mismo identificador. La imagen anterior no se modifica automáticamente: para probar el nuevo estilo es necesario realizar una solicitud nueva, con su coste correspondiente.
+En el registro del paso «Crear plan o generar imágenes autorizadas» verás **Versión artística: anime-retratos-xervias-v4**. El archivo `LEEME.txt` del ZIP incluye el mismo identificador. La imagen anterior no se modifica automáticamente: para probar el nuevo estilo es necesario realizar una solicitud nueva, con su coste correspondiente.
 
 ## Enlaces útiles
 - [Guardar claves en GitHub Actions](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets)
