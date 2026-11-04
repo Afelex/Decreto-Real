@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import type { CardData } from '../types.ts';
 import {
   GENERAL_MYSTICS, SIGUMAN_MYSTICS, MAX_MYSTIC_SLOTS, bossMysticSlots, insertMystics,
-  mysticCard, mysticDisplayName, PROVISIONAL_MYSTIC_DAMAGE,
+  mysticCard, mysticDisplayName, MYSTIC_ABILITIES, mysticPower, mysticPowerText,
+  resolveMysticPower, canActivateMystic,
 } from './mysticCards.ts';
 
 function standardDeck(): CardData[] {
@@ -20,10 +21,11 @@ const count = (cards:CardData[],kind:CardData['type']) => cards.filter(c=>c.type
 test('nueve cartas obtenibles más tres exclusivas de Sigumán, con ids estables',()=>{
   assert.equal(GENERAL_MYSTICS.length,8);
   assert.equal(SIGUMAN_MYSTICS.length,3);
-  assert.equal(mysticDisplayName('general-5'),'Mística de Nayisa de Sombras');
-  assert.equal(mysticDisplayName('legado-zhinchi'),'Mística de Zhinchi');
+  assert.equal(mysticDisplayName('general-5'),'Velo de la Selva');
+  assert.equal(mysticDisplayName('legado-zhinchi'),'Último Juramento');
   assert.equal(MAX_MYSTIC_SLOTS,3);
-  assert.equal(PROVISIONAL_MYSTIC_DAMAGE,2);
+  assert.equal(Object.keys(MYSTIC_ABILITIES).length,12);
+  assert.equal(mysticDisplayName('siguman-2'),'Juicio del Eclipse');
 });
 
 test('cada jefe equipa tres copias y Sigumán tres místicas distintas',()=>{
@@ -58,4 +60,53 @@ test('ni cuatro místicas ni sustitución de Impactos',()=>{
   assert.throws(()=>insertMystics(deck,[{mysticId:'general-1',replace:'IMPACT' as never}],'p1'));
   assert.throws(()=>insertMystics(deck,[{mysticId:'siguman-9' as never,replace:'ORDER'}],'p1'));
   assert.equal(mysticCard('general-1','p1-one').type,'MYSTIC');
+});
+
+test('los ocho generales, Zhinchi y Sigumán tienen doce habilidades y combos distintos', () => {
+  const names = new Set(Object.values(MYSTIC_ABILITIES).map(a=>a.name));
+  assert.equal(names.size, 12);
+  for(const ability of Object.values(MYSTIC_ABILITIES)) {
+    assert.ok(ability.theme.trim().length>5);
+    assert.ok(mysticPowerText(ability.base).length>4);
+    assert.ok(mysticPowerText(ability.combo2).length>4);
+    assert.ok(mysticPowerText(ability.combo3).length>4);
+  }
+  assert.deepEqual(mysticPower('general-4',1), {damage:3});
+  assert.deepEqual(mysticPower('general-4',2), {damage:4});
+  assert.deepEqual(mysticPower('general-4',3), {damage:5,selfDamage:2});
+  assert.equal(mysticCard('general-2','p1-g2').name,'Carga Sangrante');
+  assert.match(mysticCard('siguman-3','ai-s3').description,/Impacto/);
+});
+
+test('heal full, half HP and Sol Negro +5 son poderes distintos del jefe final',()=>{
+ const start={selfHp:3,enemyHp:19,selfSeals:2,impactPlayedThisTurn:false};
+ const rebirth=resolveMysticPower(mysticPower('siguman-1',1),start);
+ assert.equal(rebirth.selfHp,20); assert.equal(rebirth.enemyHp,19);
+ const eclipse=resolveMysticPower(mysticPower('siguman-2',1),start);
+ assert.equal(eclipse.enemyHp,9);
+ const sol=resolveMysticPower(mysticPower('siguman-3',1),start);
+ assert.equal(sol.enemyHp,14);assert.equal(sol.selfSeals,3);
+ assert.equal(sol.impactPlayedThisTurn,true);
+ assert.equal(canActivateMystic('siguman-3',true),false);
+ assert.equal(canActivateMystic('siguman-3',false),true);
+ assert.equal(resolveMysticPower(mysticPower('siguman-3',1), {...start,impactPlayedThisTurn:true}).accepted,false);
+});
+
+test('curación limitada a 20, coste de vida nunca deja a 0 y combos tienen efectos',()=>{
+ const reduced=resolveMysticPower(mysticPower('general-7',3),{
+   selfHp:1,enemyHp:20,selfSeals:0,impactPlayedThisTurn:false,
+ });
+ assert.equal(reduced.selfHp,1);assert.equal(reduced.enemyHp,15);
+ const trade=resolveMysticPower(mysticPower('general-3',1),{
+   selfHp:19,enemyHp:18,selfSeals:1,impactPlayedThisTurn:false,
+ });
+ assert.equal(trade.selfHp,20);assert.equal(trade.enemyHp,19);
+ const stealth=resolveMysticPower(mysticPower('general-5',2),{
+   selfHp:15,enemyHp:20,selfSeals:1,impactPlayedThisTurn:false,
+ });
+ assert.equal(stealth.steal,1);assert.equal(stealth.draw,0);
+ const last=resolveMysticPower(mysticPower('legado-zhinchi',1),{
+   selfHp:10,enemyHp:20,selfSeals:1,impactPlayedThisTurn:false,
+ });
+ assert.equal(last.selfHp,10);assert.equal(last.enemyHp,15);
 });
