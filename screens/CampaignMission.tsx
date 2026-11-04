@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import GameBoard, { type OriginalBattleOutcome } from './GameBoard';
 import { calculateClassicMissionStars } from '../campaign/classicScoring.ts';
 import {
-  CAMPAIGN_MISSIONS, awardMissionStars, bestStars,
+  awardMissionStars, bestStars,
   getCampaignMission, isMissionUnlocked, loadCampaignProgress, saveCampaignProgress,
 } from '../campaign/campaign.ts';
 import { chapterForStage } from '../campaign/story.ts';
@@ -43,9 +43,6 @@ const CampaignMission: React.FC = () => {
   const unlocked = !!mission && isMissionUnlocked(progress, mission.id);
   const mysticalReward = GENERAL_MYSTICS.find(card => card.missionId === mission?.id);
   const legacyAwakened = hasZhinchiLegacy(progress);
-  const index = mission ? CAMPAIGN_MISSIONS.findIndex(item => item.id === mission.id) : -1;
-  const next = CAMPAIGN_MISSIONS[index + 1];
-  const nextRegion = next && next.chapterId !== mission?.chapterId ? chapterForStage(next.id) : null;
   const accent = { '--dc-accent': chapter?.color ?? '#bfa374' } as React.CSSProperties;
   const returnToMap = chapter && chapter.id !== 'p' ? `/campania/region/${chapter.id}` : '/campania';
 
@@ -101,26 +98,10 @@ const CampaignMission: React.FC = () => {
           label: mission.id === '36' || legacyAwakened ? 'Editar baraja mística ✦' : 'Ver mística sellada ✦',
           onClick: () => navigate('/campania/baraja'),
         }] : []),
-        ...(outcome.won && !next ? [{
-          label: 'Leer epílogo ✦',
+        ...(outcome.won && outcome.saved ? [{
+          label: mission.id === '38' ? 'Escuchar diálogo final →' : 'Continuar historia →',
           primary: true,
-          onClick: () => navigate('/campania/epilogo'),
-        }] : []),
-        ...(outcome.won && mission.id === '02' && outcome.saved ? [{
-          label: 'Conocer a los generales →',
-          primary: true,
-          onClick: () => navigate('/campania/generales?intro=1'),
-        }] : []),
-        ...(outcome.won && next && outcome.saved && mission.id !== '02' ? [{
-          label: nextRegion ? 'Volver al mapa de las ocho zonas →' : 'Siguiente misión →',
-          primary: true,
-          onClick: () => {
-            if (nextRegion) { navigate('/campania/generales'); return; }
-            setOutcome(null);
-            setAttempt(0);
-            setView('briefing');
-            navigate(`/campania/mision/${next.id}`);
-          },
+          onClick: () => navigate(`/campania/conversacion/${mission.id}`),
         }] : []),
         { label: 'Repetir combate', onClick: retry },
         { label: 'Volver al mapa', onClick: () => navigate(returnToMap) },
