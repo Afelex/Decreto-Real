@@ -11,6 +11,7 @@ import {
 } from '../campaign/regionJourney.ts';
 import { CENTER_REVEAL_KEY } from './CampaignAfterVictory';
 import { GeneralPortrait } from './GeneralPortrait';
+import { campaignLandscape } from '../campaign/regionAssets.ts';
 import './campaign-region-moments.css';
 
 const storage = (): Storage | null => {
@@ -80,7 +81,7 @@ const CampaignRegionMoment: React.FC<{ mode: RegionMomentMode }> = ({ mode }) =>
       </header>
 
       <section className="dcmoment-landscape" aria-label={visual.landmark}>
-        <img src={`${import.meta.env.BASE_URL}campania/regiones/region-${validId}.svg`}
+        <img src={campaignLandscape(validId)}
           alt={`Paisaje de ${chapter.region}: ${visual.landmark}`} draggable={false}/>
         <div className="dcmoment-landscape-tint" aria-hidden="true"/>
         <div className="dcmoment-portrait" aria-hidden="true"><GeneralPortrait chapterId={validId}/></div>
