@@ -242,6 +242,7 @@ const CampaignMap: React.FC = () => {
           <small>⚔ RETO {Number(selected.id)} DE {journey.total}</small>
           <h2 id="dcm-objectives-title">{selected.title}</h2>
           <p id="dcm-objectives-description">Rival: {enemyForMission(selected.id)?.name ?? selected.opponent} · {selected.opponent} · IA {selected.difficulty}</p>
+          <p className="dcm-objectives-story">{selected.description}</p>
           <div className="dcm-objectives-list" aria-label="Tres objetivos para conseguir las estrellas">
             {missionStarGoals(selected).map((goal, index) => <div key={goal.id}><span aria-hidden="true">★</span>
               <span><strong>Estrella {index + 1}</strong><span>{goal.label}</span></span></div>)}
