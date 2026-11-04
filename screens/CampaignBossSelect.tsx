@@ -58,6 +58,8 @@ const completionForChapter = (progress: ReturnType<typeof loadCampaignProgress>,
   return Math.round(missions.filter(mission => bestStars(progress, mission.id) > 0).length / missions.length * 100);
 };
 
+const GENERAL_INTRO_KEY = 'decreto-real.campania.generales-presentados.v1';
+
 const storage = (): Storage | null => {
   try { return typeof window === 'undefined' ? null : window.localStorage; } catch { return null; }
 };
@@ -69,7 +71,8 @@ const CampaignBossSelect: React.FC = () => {
   const prologueComplete = bestStars(progress, '01') > 0 && bestStars(progress, '02') > 0;
   const centerUnlocked = isMissionUnlocked(progress, '35');
   const liberated = Array.from({ length: 8 }, (_, index) => completionForChapter(progress, String(index + 1))).filter(value => value === 100).length;
-  const [intro, setIntro] = React.useState(search.get('intro') === '1');
+  const [intro, setIntro] = React.useState(() =>
+    search.get('intro') === '1' || (prologueComplete && storage()?.getItem(GENERAL_INTRO_KEY) !== '1'));
   const [introIndex, setIntroIndex] = React.useState(0);
   const [selectedId, setSelectedId] = React.useState('1');
   const selected = GENERALS.find(general => general.id === selectedId) ?? GENERALS[0];
@@ -78,6 +81,10 @@ const CampaignBossSelect: React.FC = () => {
     const missions = missionsFor(chapterId);
     const completed = missions.filter(mission => bestStars(progress, mission.id) > 0).length;
     return { completed, percent: Math.round(completed / missions.length * 100) };
+  };
+  const finishIntroduction = () => {
+    try { storage()?.setItem(GENERAL_INTRO_KEY, '1'); } catch { /* storage unavailable */ }
+    setIntro(false);
   };
   const startChapter = () => {
     const missions = missionsFor(selected.id);
@@ -106,7 +113,7 @@ const CampaignBossSelect: React.FC = () => {
         <p className="dbs-intro-domain">{general.domain}</p>
       </section>
       <footer className="dbs-footer">
-        <button type="button" className="dbs-primary" onClick={() => introIndex < GENERALS.length - 1 ? setIntroIndex(index => index + 1) : setIntro(false)}>
+        <button type="button" className="dbs-primary" onClick={() => introIndex < GENERALS.length - 1 ? setIntroIndex(index => index + 1) : finishIntroduction()}>
           {introIndex < GENERALS.length - 1 ? 'Siguiente general ›' : 'Elegir capítulo ⚔'}
         </button>
       </footer>
