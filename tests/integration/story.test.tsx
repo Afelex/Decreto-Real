@@ -111,6 +111,10 @@ test('the campaign opens the original game, not the newly created DuelBoard', ()
   expect(screen.getByRole('heading', { name: 'El Almirante de Hierro' })).toBeTruthy();
   expect(screen.getByText(/20 de vida, 10 ataques, 10 defensas, 4 Impactos y 4 Órdenes/)).toBeTruthy();
   fireEvent.click(screen.getByRole('button', { name: /Preparar combate/ }));
+  expect(screen.getByRole('heading', { name: 'Enfrentamiento con el general' })).toBeTruthy();
+  expect(screen.getByText('Marea de Hierro')).toBeTruthy();
+  fireEvent.click(screen.getByRole('button', { name: 'Responder ›' }));
+  fireEvent.click(screen.getByRole('button', { name: /Comenzar duelo/ }));
   expect(screen.getByTestId('original-board')).toBeTruthy();
   expect(screen.getByRole('heading', { name: 'Ritual de Inicio' })).toBeTruthy();
 });
