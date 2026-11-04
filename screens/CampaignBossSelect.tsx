@@ -103,48 +103,54 @@ const CampaignBossSelect: React.FC = () => {
     </main>;
   }
 
-  return <main className="dbs-screen">
-    <header className="dbs-header">
-      <button type="button" onClick={() => navigate('/campania')}>‹ Campaña</button>
-      <div><small>EL SELLO Y LA REVOLUCIÓN SOLAR</small><h1>Elige un capítulo</h1></div>
-      <span>OCHO GENERALES</span>
-    </header>
-    <section className="dbs-gallery" aria-label="Capítulos de los ocho generales">
-      {GENERALS.map(general => {
+  const zones = [
+    { left: 0, top: 28.2, width: 31.8, height: 14 },
+    { left: 25, top: 28.2, width: 27.5, height: 14 },
+    { left: 47, top: 28.2, width: 30, height: 14 },
+    { left: 69, top: 28.2, width: 31, height: 14 },
+    { left: 0, top: 60, width: 29.5, height: 16 },
+    { left: 22, top: 60, width: 30, height: 16 },
+    { left: 48, top: 60, width: 31, height: 16 },
+    { left: 72, top: 60, width: 28, height: 16 },
+  ];
+
+  return <main className="dbs-art-screen" aria-label="Selección de generales">
+    <div className="dbs-art-stage">
+      <img className="dbs-art-base" src="/Decreto-Real/campania/salon-generales.webp"
+        alt="Salón de mando andino con ocho retratos de generales alrededor del mapa" draggable={false} />
+      {GENERALS.map((general, index) => completionFor(general.id).percent === 100 &&
+        <span key={general.id} className={'dbs-art-gray dbs-art-gray-' + (index + 1)} aria-hidden="true" />)}
+      <img className="dbs-art-selection" src={'/Decreto-Real/campania/seleccion-' + selectedId + '.webp'}
+        alt="" aria-hidden="true" draggable={false} />
+      <div className="dbs-art-heading">
+        <button type="button" onClick={() => navigate('/campania')}>‹ Campaña</button>
+        <h1>Elige un capítulo</h1>
+      </div>
+      {GENERALS.map((general, index) => {
+        const zone = zones[index];
         const completion = completionFor(general.id);
-        const active = selectedId === general.id;
-        return <button type="button" key={general.id}
-          className={'dbs-general' + (active ? ' selected' : '') + (completion.percent === 100 ? ' defeated' : '')}
-          onClick={() => setSelectedId(general.id)} aria-pressed={active}
-          aria-label={general.title + ', ' + completion.percent + '% derrotado'}>
-          <span className="dbs-portrait"><GeneralPortrait chapterId={general.id} /></span>
-          <span className="dbs-general-name">{general.name}</span>
-          <span className="dbs-general-title">{general.title}</span>
-          <span className="dbs-percent">{completion.percent}% derrotado</span>
-        </button>;
+        return <button type="button" key={general.id} className="dbs-art-hit"
+          style={{ left: zone.left + '%', top: zone.top + '%', width: zone.width + '%', height: zone.height + '%' }}
+          aria-label={general.name + ', ' + general.title + ', ' + completion.percent + '% derrotado'}
+          aria-pressed={selectedId === general.id}
+          onMouseEnter={() => setSelectedId(general.id)}
+          onFocus={() => setSelectedId(general.id)}
+          onClick={() => setSelectedId(general.id)} />;
       })}
-    </section>
-    <section className="dbs-details" aria-live="polite" aria-labelledby="dbs-detail-title">
-      <div className="dbs-detail-copy">
-        <small>{selected.domain}</small><h2 id="dbs-detail-title">{selected.card}</h2>
-        <p>{selected.story}</p><strong>{selected.effect}</strong>
-        <blockquote>«{selected.quote}»</blockquote>
-      </div>
-      <div className="dbs-detail-progress">
-        <span>{completionFor(selected.id).completed}/4 fases superadas</span>
-        <div role="progressbar" aria-label={'Progreso de ' + selected.title} aria-valuemin={0}
-          aria-valuemax={100} aria-valuenow={completionFor(selected.id).percent}>
-          <i style={{ width: completionFor(selected.id).percent + '%' }} />
+      <section className="dbs-art-details" aria-live="polite" aria-labelledby="dbs-detail-title">
+        <div className="dbs-art-meta"><strong>{selected.name}</strong><span>{selected.title} · {completionFor(selected.id).percent}% derrotado</span></div>
+        <p>{selected.story}</p>
+        <p><strong>{selected.card}:</strong> {selected.effect}</p>
+        <div className="dbs-art-actions">
+          <span>{completionFor(selected.id).completed}/4 fases</span>
+          <button type="button" onClick={startChapter}>
+            {completionFor(selected.id).percent === 100 ? 'Repetir escenario ⚔' : 'Jugar capítulo ⚔'}
+          </button>
         </div>
-        <button type="button" className="dbs-primary" onClick={startChapter}>
-          {completionFor(selected.id).percent === 100 ? 'Repetir escenario ⚔' : 'Jugar capítulo ⚔'}
-        </button>
-      </div>
-    </section>
-    <footer className="dbs-gallery-footer">
-      <span>Gana una fase para avanzar un 25 %. Al completar las cuatro, el retrato quedará en gris.</span>
-      <button type="button" onClick={() => { setIntroIndex(0); setIntro(true); }}>Volver a escuchar la presentación</button>
-    </footer>
+      </section>
+      <button className="dbs-art-replay" type="button" onClick={() => { setIntroIndex(0); setIntro(true); }}
+        aria-label="Volver a escuchar la presentación de los generales">↺</button>
+    </div>
   </main>;
 };
 
