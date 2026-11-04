@@ -48,8 +48,8 @@ export class AiTurnController {
   }
 }
 
-type AiCard = { id: string; type: 'ATTACK' | 'DEFENSE' | 'IMPACT' | 'ORDER' | 'MYSTIC'; rank?: number };
-type AiSnapshot<C extends AiCard> = { hand: C[]; health: number; impactLevel: number };
+type AiCard = { id: string; type: 'ATTACK' | 'DEFENSE' | 'IMPACT' | 'ORDER' | 'MYSTIC'; rank?: number; mysticId?: string };
+type AiSnapshot<C extends AiCard> = { hand: C[]; health: number; impactLevel: number; impactPlayedThisTurn?: boolean };
 
 /** Keep the existing priority: one legal Impact, defenses below 5 HP, then attacks. */
 export async function runOpponentTurn<C extends AiCard>(
@@ -80,9 +80,10 @@ export async function runOpponentTurn<C extends AiCard>(
       if (!await perform(defense)) return;
     }
   }
-  // Los generales canalizan sus cartas místicas; los efectos propios se diseñarán después.
+  // Sigumán no puede sellar el Sol Negro si ya activó un Impacto este turno.
   let mystic: C | undefined;
-  while ((mystic = read().hand.find(card => card.type === 'MYSTIC'))) {
+  while ((mystic = read().hand.find(card =>
+    card.type === 'MYSTIC' && (card.mysticId !== 'siguman-3' || !read().impactPlayedThisTurn)))) {
     if (!await perform(mystic)) return;
   }
   let attack: C | undefined;
