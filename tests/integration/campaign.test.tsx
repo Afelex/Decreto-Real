@@ -27,7 +27,7 @@ test('fullscreen campaign starts at challenge one, keeps second and next region 
   expect(screen.getByRole('heading', { name: 'Campaña' })).toBeTruthy();
   expect(screen.getByText('El Sello y la Revolución Solar', { exact: false })).toBeTruthy();
   expect(document.querySelector('.dcm-screen')).toBeTruthy();
-  expect(document.querySelector('.dcm-map-art')?.getAttribute('src')).toContain('virreinato-map.svg');
+  expect(document.querySelector('.dcm-map-art')?.getAttribute('src')).toContain('prologo-ruta.svg');
   expect(screen.getByRole('button', { name: /Misión 1:/ }).hasAttribute('disabled')).toBe(false);
   expect(screen.getByRole('button', { name: /Misión 2:/ }).hasAttribute('disabled')).toBe(true);
   expect(screen.getByRole('button', { name: 'Capítulo siguiente bloqueado' }).hasAttribute('disabled')).toBe(true);
