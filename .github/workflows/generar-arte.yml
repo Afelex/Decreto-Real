@@ -1,0 +1,82 @@
+name: "Decreto Real · Generador de arte (manual)"
+run-name: "Arte · ${{ inputs.grupo }} · ${{ inputs.modo }}"
+
+on:
+  workflow_dispatch:
+    inputs:
+      grupo:
+        description: "Qué imágenes producir (máximo 5 por ejecución)"
+        required: true
+        type: choice
+        default: una-imagen
+        options:
+          - una-imagen
+          - piloto-4
+          - prologo
+          - region-1
+          - region-2
+          - region-3
+          - region-4
+          - region-5
+          - region-6
+          - region-7
+          - region-8
+          - final
+      modo:
+        description: "plan = gratis. generar = usa tus créditos de API"
+        required: true
+        type: choice
+        default: plan
+        options:
+          - plan
+          - generar
+      calidad:
+        description: "low para el primer ensayo; medium para mejorar detalles"
+        required: true
+        type: choice
+        default: low
+        options:
+          - low
+          - medium
+      confirmar:
+        description: "Si eliges generar, escribe SI para autorizar el gasto"
+        required: true
+        type: string
+        default: "NO"
+
+permissions:
+  contents: read
+concurrency:
+  group: arte-manual-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  generar-arte:
+    name: "Generación supervisada de imágenes"
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Descargar código del juego (sin modificarlo)
+        uses: actions/checkout@v4
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Validar catálogo de 38 misiones y 47 recursos
+        run: node --experimental-strip-types --test tools/art-github.test.mjs
+      - name: Crear plan o generar imágenes autorizadas
+        env:
+          ART_GROUP: ${{ inputs.grupo }}
+          ART_MODE: ${{ inputs.modo }}
+          ART_QUALITY: ${{ inputs.calidad }}
+          ART_CONFIRM: ${{ inputs.confirmar }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: node --experimental-strip-types tools/art-github.mjs
+      - name: Entregar imágenes y catálogo descargables
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: decreto-real-arte-${{ github.run_number }}
+          path: art-output/
+          if-no-files-found: warn
+          retention-days: 14
