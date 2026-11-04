@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   CAMPAIGN_MISSIONS, bestStars, isMissionUnlocked, loadCampaignProgress,
   type CampaignMission, type CampaignProgress,
@@ -41,6 +41,7 @@ function MapStars({ count }: { count: number }) {
 
 const CampaignMap: React.FC = () => {
   const navigate = useNavigate();
+  const { chapterId } = useParams<{ chapterId?: string }>();
   const [progress] = React.useState(() => loadCampaignProgress(storage()));
   const journey = React.useMemo(() => campaignOverview(progress), [progress]);
   const [objectivesOpen, setObjectivesOpen] = React.useState(false);
@@ -48,14 +49,22 @@ const CampaignMap: React.FC = () => {
   const closeObjectivesButton = React.useRef<HTMLButtonElement>(null);
   const playObjectivesButton = React.useRef<HTMLButtonElement>(null);
   const firstIncomplete = CAMPAIGN_MISSIONS.find(mission => bestStars(progress, mission.id) === 0);
-  const initialChapterIndex = firstIncomplete
-    ? Math.max(0, STORY_CHAPTERS.findIndex(chapter => stagesForChapter(chapter.id).some(stage => stage.id === firstIncomplete.id)))
-    : STORY_CHAPTERS.length - 1;
+  const preferredChapterIndex = chapterId ? STORY_CHAPTERS.findIndex(item => item.id === chapterId) : -1;
+  const initialChapterIndex = preferredChapterIndex >= 0
+    ? preferredChapterIndex
+    : firstIncomplete
+      ? Math.max(0, STORY_CHAPTERS.findIndex(chapter => stagesForChapter(chapter.id).some(stage => stage.id === firstIncomplete.id)))
+      : STORY_CHAPTERS.length - 1;
   const [chapterIndex, setChapterIndex] = React.useState(initialChapterIndex);
   const chapter = STORY_CHAPTERS[chapterIndex];
   const region = regionVisual(chapter.id);
   const missions = chapterMissions(chapter.id);
   const [selectedId, setSelectedId] = React.useState(() => initialSelection(progress, chapterMissions(STORY_CHAPTERS[initialChapterIndex].id)).id);
+  React.useEffect(() => {
+    if (preferredChapterIndex < 0) return;
+    setChapterIndex(preferredChapterIndex);
+    setSelectedId(initialSelection(progress, chapterMissions(STORY_CHAPTERS[preferredChapterIndex].id)).id);
+  }, [preferredChapterIndex, progress]);
   const earnedStars = journey.stars;
   const chapterCompleted = missions.filter(mission => bestStars(progress, mission.id) > 0).length;
   const selected = missions.find(mission => mission.id === selectedId && isMissionUnlocked(progress, mission.id))
@@ -110,22 +119,30 @@ const CampaignMap: React.FC = () => {
     }
   };
 
+  if (chapterId && (preferredChapterIndex < 0 || !chapterOpen(progress, chapterId))) {
+    return <main className="dcm-screen dcm-locked-region"><div className="dcm-locked-message">
+      <h1>Región aún bloqueada</h1>
+      <p>Completa el prólogo y las regiones necesarias para entrar aquí.</p>
+      <button type="button" onClick={() => navigate('/campania/generales')}>Volver al mapa de zonas</button>
+    </div></main>;
+  }
   return <main className="dcm-screen" style={accent} aria-label="Mapa de campaña de Decreto Real">
     <div className="dcm-shell">
       <header className="dcm-header">
-        <button type="button" className="dcm-back" onClick={() => navigate('/')} aria-label="Volver al menú">‹</button>
+        <button type="button" className="dcm-back" onClick={() => navigate('/')} aria-label="Volver al Menú"><span aria-hidden="true">⌂</span><small>Volver al Menú</small></button>
         <div className="dcm-heading">
           <h1>Campaña</h1>
           <span>Virreinato del Perú · El Sello y la Revolución Solar</span>
         </div>
-        <button type="button" className="dcm-story" onClick={() => navigate('/campania/historia')} aria-label="Ver la historia">▤<span>Historia</span></button>
-        <button type="button" className="dcm-story" onClick={() => navigate('/campania/generales')} aria-label="Elegir capítulo por general">♛<span>Generales</span></button>
         <button type="button" className="dcm-story dcm-deck" onClick={() => navigate('/campania/baraja')} aria-label="Ver cartas místicas y editar baraja">✦<span>Baraja</span></button>
       </header>
 
-      <nav className="dcm-chapter-nav" aria-label="Regiones de campaña">
-        <button type="button" onClick={() => switchChapter(chapterIndex - 1)} disabled={chapterIndex === 0}
-          aria-label="Capítulo anterior">‹</button>
+      <nav className={`dcm-chapter-nav ${chapterId ? 'dcm-region-chapter-nav' : ''}`} aria-label="Regiones de campaña">
+        {chapterId
+          ? <button type="button" className="dcm-zone-back" onClick={() => navigate('/campania/generales')}
+              aria-label="Volver al mapa de las ocho zonas">‹ Zonas</button>
+          : <button type="button" onClick={() => switchChapter(chapterIndex - 1)} disabled={chapterIndex === 0}
+              aria-label="Capítulo anterior">‹</button>}
         <div className="dcm-chapter-title" aria-live="polite">
           <small>{chapterIndex === 0 ? 'PRÓLOGO' : chapterIndex === STORY_CHAPTERS.length - 1 ? 'CAPÍTULO FINAL' : `REGIÓN ${chapterIndex} DE 8`}</small>
           <strong>{chapter.title}</strong>
@@ -134,12 +151,21 @@ const CampaignMap: React.FC = () => {
             <span style={{ width: `${journey.percentage}%` }} />
           </div>
         </div>
-        <button type="button" onClick={() => switchChapter(chapterIndex + 1)} disabled={!canGoNext}
-          aria-label={canGoNext ? 'Capítulo siguiente' : 'Capítulo siguiente bloqueado'}>›</button>
+        {!chapterId && <button type="button" onClick={() => switchChapter(chapterIndex + 1)} disabled={!canGoNext}
+          aria-label={canGoNext ? 'Capítulo siguiente' : 'Capítulo siguiente bloqueado'}>›</button>}
       </nav>
 
-      <section className="dcm-map dcm-region-map" data-region={chapter.id} aria-label={`Mapa de retos de ${chapter.title}`}>
+      <section className={`dcm-map dcm-region-map ${chapter.id === 'p' ? 'dcm-prologue-map' : ''}`} data-region={chapter.id} aria-label={`Mapa de retos de ${chapter.title}`}>
         <img src={mapImage} alt="Mapa antiguo ilustrado del Virreinato del Perú" draggable={false} className="dcm-map-art"/>
+        {chapter.id === 'p' && <div className="dcm-prologue-scene" aria-hidden="true">
+          <div className="dcm-prologue-sun">☼</div>
+          <div className="dcm-prologue-ridge dcm-prologue-ridge-far"/>
+          <div className="dcm-prologue-ridge dcm-prologue-ridge-near"/>
+          <div className="dcm-prologue-sea"/>
+          <div className="dcm-prologue-village">♜ <span>El pregón</span></div>
+          <div className="dcm-prologue-fort">♜ <span>La orden secreta</span></div>
+          <div className="dcm-prologue-stamp">✥</div>
+        </div>}
         <div className="dcm-map-wash" aria-hidden="true" />
         <div className="dcm-region-wash" aria-hidden="true"/>
         <div className="dcm-region-watermark" aria-hidden="true">{region.symbol}</div>
@@ -188,13 +214,15 @@ const CampaignMap: React.FC = () => {
       </section>
 
       <footer className="dcm-footer">
-        <p className="dcm-lock-note" role="status">{journey.completedCampaign
+        {chapter.id === 'p' && chapterCompleted === missions.length
+          ? <button type="button" className="dcm-lock-note dcm-continue-zones" onClick={() => navigate('/campania/generales?intro=1')}>★ Prólogo completado · Conocer a los ocho generales ›</button>
+          : <p className="dcm-lock-note" role="status">{journey.completedCampaign
           ? '★ ¡Campaña superada! Repite retos para mejorar tus estrellas.'
           : chapterCompleted === missions.length && canGoNext
             ? '★ Región superada. La siguiente ya está disponible.'
             : bestStars(progress, selected.id) > 0
               ? '★ Reto superado. Puedes repetirlo para mejorar tu marca.'
-              : '🔒 Derrota este reto para desbloquear el siguiente.'}</p>
+              : '🔒 Derrota este reto para desbloquear el siguiente.'}</p>}
         <button type="button" className="dcm-play" onClick={startSelected} disabled={!isMissionUnlocked(progress, selected.id)}>
           <span aria-hidden="true">⚔</span> Seleccionar reto <span aria-hidden="true">›</span>
         </button>
