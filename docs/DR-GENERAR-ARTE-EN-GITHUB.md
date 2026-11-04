@@ -27,6 +27,21 @@ Cuando la automatización esté incorporada a la rama principal:
 5. Cuando finalice, descarga en **Artifacts** el ZIP con la primera imagen: **fondos/region-1-base.webp**.
 6. Abre la imagen y decide si te gusta. No continúes con más imágenes hasta revisar el estilo.
 
+## Reutilizar el Callao anime aprobado sin pagar otra vez el fondo base
+En la ejecución exitosa [41907373674](https://github.com/Afelex/Decreto-Real/actions/runs/41907373674) se generó `region-1-base.webp`, que ya fue revisado visualmente. El archivo quedó dentro del artefacto **decreto-real-arte-3**.
+
+Para producir solo la variante del Almirante, abre el generador de arte en **Actions** y elige:
+- **grupo** `jefe-callao-aprobado`
+- **modo** `generar`
+- **calidad** `low`
+- **confirmar** `SI`
+
+GitHub descargará automáticamente la base aprobada del artefacto anterior y enviará UNA SOLA llamada pagada de **edición de imagen**. No regenerará la vista general del Callao. El resultado será `fondos/region-1-jefe.webp` en el nuevo artefacto descargable. Para solo revisar el catálogo sin gastar, usa **modo = plan** y **confirmar = NO**.
+
+**Importante:** el artefacto anterior tiene retención de 14 días y puede caducar. Si ya caducó, la acción fallará **antes** de llamar a la API: no intentes generar un jefe sin fondo de referencia. Para conservar la imagen a largo plazo hay que guardarla en los archivos de arte del repositorio.
+
+Para generar solamente los tres oponentes secundarios que realmente aparecen en el Puerto del Callao, usa **grupo = rivales-callao** (Elías Rentería, Bartolomé de Avilés y Tomás Arciniega). Ese grupo envía tres solicitudes y sí consume crédito al elegir generar.
+
 ## Catálogo de las 47 imágenes
 - **18 fondos**: base y jefe para cada una de las 8 regiones y la Casa del Sello.
 - **29 retratos secundarios**: 2 del prólogo, 24 de las regiones y 3 del capítulo final.
