@@ -120,3 +120,31 @@ test('options, previous result and original game never create body scrolling', a
   await fits(page, '.dr-classic-screen');
   await noPageScroll(page);
 });
+
+test('region introduction and its four mission previews fit on mobile and landscape screens', async ({ page }) => {
+  await page.goto(route('campania'));
+  await page.evaluate(() => localStorage.setItem('decreto-real.campania.v1',
+    JSON.stringify({ version: 1, stars: { '01': 1, '02': 1 } })));
+  await page.goto(route('campania/entrada/5'));
+  await expect(page.getByRole('heading', { name: 'Sombras de la frontera' })).toBeVisible();
+  await expect(page.locator('.dcmoment-missions li')).toHaveCount(4);
+  await fits(page, '.dcmoment-shell');
+  await fits(page, '.dcmoment-landscape');
+  await fits(page, '.dcmoment-actions');
+  await noPageScroll(page);
+  await page.getByRole('button', { name: 'Ver las cuatro misiones ›' }).click();
+  await expect(page.locator('.dcm-marker')).toHaveCount(4);
+});
+
+test('general liberation, sealed card and next-region action fit one screen', async ({ page }) => {
+  await page.goto(route('campania'));
+  await page.evaluate(() => localStorage.setItem('decreto-real.campania.v1',
+    JSON.stringify({ version: 1, stars: Object.fromEntries(Array.from({ length: 6 }, (_, i) =>
+      [String(i + 1).padStart(2, '0'), 1])) })));
+  await page.goto(route('campania/liberada/1'));
+  await expect(page.getByRole('heading', { name: 'Región liberada' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Marea de Hierro' })).toBeVisible();
+  await fits(page, '.dcmoment-reward');
+  await fits(page, '.dcmoment-actions');
+  await noPageScroll(page);
+});
