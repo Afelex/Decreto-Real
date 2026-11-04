@@ -267,3 +267,43 @@ test('four Impact placements are ordered, and hands remain visible without numer
     await page.screenshot({ path: testInfo.outputPath('new-royal-board-layout.png'), fullPage:true });
   }
 });
+
+
+test('campaign begins with three paragraphs and continues to the compact two-stop prologue', async ({ page }) => {
+  await page.goto('/Decreto-Real/#/');
+  await page.getByRole('button', { name: 'Empezar campaña' }).click();
+  await expect(page.getByRole('heading', { name: 'El reino escucha dos verdades' })).toBeVisible();
+  await expect(page.locator('.dci-story p')).toHaveCount(3);
+  await page.getByRole('button', { name: /Continuar al prólogo/ }).click();
+  await expect(page.locator('.dcm-prologue-map')).toBeVisible();
+  await expect(page.locator('.dcm-marker')).toHaveCount(2);
+  await expect(page.getByRole('button', { name: 'Volver al Menú' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Ver la historia' })).toHaveCount(0);
+});
+
+test('the general hub opens any region and only unlocks the center after eight generals', async ({ page }) => {
+  await page.goto(campaign);
+  await page.evaluate(() => {
+    localStorage.setItem('decreto-real.campania.v1', JSON.stringify({
+      version: 1, stars: { '01': 1, '02': 1 },
+    }));
+    localStorage.setItem('decreto-real.campania.generales-presentados.v1', '1');
+  });
+  await page.goto('/Decreto-Real/#/campania/generales');
+  await expect(page.getByRole('button', { name: /Escenario central bloqueado/ })).toBeDisabled();
+  await page.getByRole('button', { name: /Nayisa de Sombras/ }).click();
+  await page.getByRole('button', { name: 'Explorar región ⚔' }).click();
+  await expect(page.locator('.dcm-marker')).toHaveCount(4);
+  await expect(page.getByText('Sombras de la frontera')).toBeVisible();
+  await page.getByRole('button', { name: 'Volver al mapa de las ocho zonas' }).click();
+  await page.evaluate(() => {
+    localStorage.setItem('decreto-real.campania.v1', JSON.stringify({
+      version: 1,
+      stars: Object.fromEntries(Array.from({ length: 34 }, (_, i) => [String(i + 1).padStart(2, '0'), 1])),
+    }));
+  });
+  await page.reload();
+  await expect(page.getByRole('button', { name: 'Entrar al escenario central desbloqueado' })).toBeEnabled();
+  await page.getByRole('button', { name: 'Entrar al escenario central desbloqueado' }).click();
+  await expect(page.getByText('La Revolución Solar')).toBeVisible();
+});
