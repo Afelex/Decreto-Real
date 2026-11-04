@@ -303,6 +303,11 @@ test('the general hub opens any region and only unlocks the center after eight g
     }));
   });
   await page.reload();
+  await expect(page.getByRole('heading', { name: 'El centro ha despertado' })).toBeVisible();
+  for (let index = 0; index < 3; index++) {
+    await page.getByRole('button', { name: 'Continuar diálogo ›' }).click();
+  }
+  await page.getByRole('button', { name: /Ver el mapa y elegir el centro/ }).click();
   await expect(page.getByRole('button', { name: 'Entrar al escenario central desbloqueado' })).toBeEnabled();
   await page.getByRole('button', { name: 'Entrar al escenario central desbloqueado' }).click();
   await expect(page.getByText('La Revolución Solar')).toBeVisible();
