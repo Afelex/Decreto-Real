@@ -73,6 +73,8 @@ const CampaignRegionMoment: React.FC<{ mode: RegionMomentMode }> = ({ mode }) =>
     style={{ '--dcmoment-accent': chapter.color, '--dcmoment-dark': visual.horizon } as React.CSSProperties}>
     <div className="dcmoment-shell">
       <header className="dcmoment-header">
+        {!isLiberation && <button type="button" className="dcmoment-menu"
+          aria-label="Volver al Menú" onClick={() => navigate('/')}>⌂</button>}
         <small>{isLiberation ? `REGIÓN ${validId} DE 8 · CONQUISTADA` : `REGIÓN ${validId} DE 8 · NUEVO TERRITORIO`}</small>
         <h1>{isLiberation ? 'Región liberada' : chapter.title}</h1>
       </header>
