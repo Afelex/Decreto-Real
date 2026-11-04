@@ -90,3 +90,18 @@ test('AI plays Orders, draws their replacements and then attacks', async t => {
   await run;
   assert.deepEqual(played, ['order1', 'order2', 'attack', 'finished']);
 });
+
+test('IA reserva Sol Negro para un turno sin Impacto y no entra en bucle',async t=>{
+ t.mock.timers.enable({apis:['setTimeout','Date']});
+ type C={id:string;type:'MYSTIC'|'ATTACK';mysticId?:string};
+ const state={hand:[{id:'sun',type:'MYSTIC',mysticId:'siguman-3'},{id:'atk',type:'ATTACK'}] as C[],
+   health:10,impactLevel:2,impactPlayedThisTurn:true};
+ const used:string[]=[];
+ const run=runOpponentTurn(new AiTurnController(),()=>state,c=>{
+   used.push(c.id);state.hand=state.hand.filter(card=>card.id!==c.id);
+ },()=>used.push('end'));
+ t.mock.timers.tick(1000);await flush();
+ t.mock.timers.tick(1500);await run;
+ assert.deepEqual(used,['atk','end']);
+ assert.equal(state.hand.length,1);
+});
