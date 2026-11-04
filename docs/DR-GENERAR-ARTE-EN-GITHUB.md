@@ -41,7 +41,15 @@ Cuando la automatización esté incorporada a la rama principal:
 - El saldo de 5 USD no equivale a un límite global absoluto de gasto; controla también la facturación de OpenAI.
 - Nunca publiques la clave en el repositorio. GitHub Actions la recibe desde su almacén de secretos.
 - Este generador no modifica ni despliega el juego. Las imágenes son un artefacto ZIP descargable.
-- Las variantes de jefe usan prompts relacionados con la base, pero dos generaciones independientes pueden diferir en arquitectura; usa la base aprobada como referencia más adelante.
+- **Estilo anime 2D corregido (noviembre de 2026):** líneas de contorno visibles, superficies simplificadas y sombreado por capas, sin apariencia fotográfica ni render 3D.
+- **Puerto del Callao:** una única bandera claramente visible de fondo blanco o marfil y un aspa roja de Borgoña (dos ramas diagonales dentadas formando una X). Nunca tricolor francesa ni escudo nacional de España.
+- **Versión del jefe:** cuando generas `region-1` a `region-8`, `final` o `piloto-4`, el programa genera primero el fondo base y después **edita esa misma imagen** para crear la variante de jefe, usando el endpoint de edición. Son **dos solicitudes de imagen** que pueden consumir crédito, pero se preserva mejor la arquitectura.
+- La imagen base obtenida en una ejecución anterior **no se reutiliza automáticamente** en otra ejecución. Por eso, si vuelves a generar una región entera, se generará una nueva base y después se editará para la versión jefe.
+- El diseño de una bandera producido por IA debe revisarse visualmente: un prompt estricto reduce los errores, pero no garantiza símbolos históricos perfectos.
+- La primera prueba recomendada después de esta corrección sigue siendo **una-imagen / generar / low / SI**, que envía una sola solicitud pagada. El modo **plan** no genera ni cobra.
+
+## Cómo reconocer la versión corregida
+En el registro del paso «Crear plan o generar imágenes autorizadas» verás **Versión artística: anime-2D-borgona-v2**. El archivo `LEEME.txt` del ZIP incluye el mismo identificador. La imagen anterior no se modifica automáticamente: para probar el nuevo estilo es necesario realizar una solicitud nueva, con su coste correspondiente.
 
 ## Enlaces útiles
 - [Guardar claves en GitHub Actions](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets)
