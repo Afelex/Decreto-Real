@@ -59,3 +59,26 @@ test('objectives reflect the current rules for all stage types', () => {
     assert.equal(objectives[2].label, `Gana en ${mission.turnGoal} rondas o menos`);
   }
 });
+
+
+test('wins from a freely selected second region count even if the first general is untouched', () => {
+  let progress = emptyCampaignProgress();
+  for (const id of ['01','02','07','08','09','10']) {
+    progress = awardMissionStars(progress, id, 2);
+  }
+  const summary = campaignOverview(progress);
+  assert.equal(summary.completed, 6);
+  assert.equal(summary.stars, 12);
+  assert.equal(summary.nextMission?.id, '03');
+  assert.equal(summary.completedCampaign, false);
+});
+
+test('the central region remains sealed until all eight four-mission chapters are completed', () => {
+  let progress = emptyCampaignProgress();
+  for (let number = 1; number <= 34; number++) {
+    progress = awardMissionStars(progress, String(number).padStart(2, '0'), 1);
+  }
+  assert.equal(progress.stars['34'], 1);
+  assert.equal(campaignOverview(progress).completed, 34);
+  assert.equal(campaignOverview(progress).nextMission?.id, '35');
+});
