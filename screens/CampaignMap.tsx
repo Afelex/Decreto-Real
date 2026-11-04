@@ -206,11 +206,18 @@ const CampaignMap: React.FC = () => {
           <h2>{selected.title}</h2>
           <p>{selected.description}</p>
         </div>
-        <button type="button" className="dcm-selected-score dcm-objectives-trigger" ref={objectivesButton}
-          aria-label="Ver objetivos del reto" onClick={() => setObjectivesOpen(true)}>
-          <MapStars count={bestStars(progress, selected.id)} />
-          <small>Objetivos ›</small>
-        </button>
+        <div className="dcm-selected-actions">
+          <button type="button" className="dcm-selected-score dcm-objectives-trigger" ref={objectivesButton}
+            aria-label="Ver objetivos del reto" onClick={() => setObjectivesOpen(true)}>
+            <MapStars count={bestStars(progress, selected.id)} />
+            <small>Objetivos ›</small>
+          </button>
+          {bestStars(progress, selected.id) > 0 &&
+            <button type="button" className="dcm-revisit-dialogue"
+              onClick={() => navigate(`/campania/conversacion/${selected.id}`)}>
+              ↺ Diálogo
+            </button>}
+        </div>
       </section>
 
       <footer className="dcm-footer">
@@ -219,7 +226,9 @@ const CampaignMap: React.FC = () => {
           : <p className="dcm-lock-note" role="status">{journey.completedCampaign
           ? '★ ¡Campaña superada! Repite retos para mejorar tus estrellas.'
           : chapterCompleted === missions.length && canGoNext
-            ? '★ Región superada. La siguiente ya está disponible.'
+            ? chapter.id === 'p' ? '★ Prólogo superado. Descubre a los ocho generales.'
+              : chapter.id === 'f' ? '★ Escenario final superado.'
+              : '★ Región liberada. Puedes elegir cualquier otra zona.'
             : bestStars(progress, selected.id) > 0
               ? '★ Reto superado. Puedes repetirlo para mejorar tu marca.'
               : '🔒 Derrota este reto para desbloquear el siguiente.'}</p>}
