@@ -28,6 +28,26 @@
   z-index:2;
 }
 .dc-region-scene::after {display:none!important;}
+
+/* Approved campaign illustrations occupy the existing compact briefing viewport.
+ * Keep the original vector scene for the two prologue missions. */
+.dc-region-scene.dc-region-has-illustration .dc-region-illustration {
+  position:absolute;
+  inset:0;
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:50% 52%;
+  z-index:0;
+}
+.dc-region-scene.dc-region-has-illustration > svg,
+.dc-region-scene.dc-region-has-illustration > .dc-region-sun { display:none; }
+.dc-region-scene.dc-region-has-illustration::before {
+  opacity:1;
+  background:linear-gradient(180deg,transparent 45%,#09152296 100%);
+}
+
 .dc-region-scene .dc-region-sun {
   display:block;
   position:absolute;
