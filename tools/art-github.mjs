@@ -4,7 +4,7 @@
  * SIN ejecuciones automáticas, SIN modificar el juego, SIN escribir claves en archivos.
  * Node 22+; catálogo extraído de los 38 enemigos y de la historia canónica.
  */
-import { mkdirSync, writeFileSync, readFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync, readFileSync, existsSync } from 'node:fs';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ENEMY_ROSTER } from '../campaign/characters.ts';
@@ -89,6 +89,8 @@ export function catalogo() {
 }
 export function seleccion(grupo, images=catalogo()) {
   if (grupo==='una-imagen') return images.filter(i=>i.id==='fondo-1-base');
+  if (grupo==='jefe-callao-aprobado') return images.filter(i=>i.id==='fondo-1-jefe');
+  if (grupo==='rivales-callao') return images.filter(i=>['rival-03','rival-04','rival-05'].includes(i.id));
   if (grupo==='piloto-4') return images.filter(i=>['fondo-1-base','fondo-1-jefe','rival-01','rival-03'].includes(i.id));
   if (grupo==='prologo') return images.filter(i=>i.chapterId==='p');
   if (grupo==='final') return images.filter(i=>i.chapterId==='f');
@@ -144,6 +146,15 @@ export async function ejecutar({grupo='una-imagen',modo='plan',calidad='low',con
   writeFileSync(join(OUTPUT,'catalogo-seleccionado.json'),JSON.stringify(items,null,2));
   const results=[];
   const basesDelLote=new Map();
+  if (modo==='generar' && grupo==='jefe-callao-aprobado') {
+    // Reutilizar el arte producido y aprobado; evita generar de nuevo el mismo fondo base.
+    const approvedBase=join(ROOT,'art-input','fondos','region-1-base.webp');
+    if (!existsSync(approvedBase)) throw Error('No se encontró el fondo aprobado del Callao desde el artefacto de GitHub. No se ha llamado a la API.');
+    const bytes=readFileSync(approvedBase);
+    if (bytes.length===0 || bytes.subarray(0,4).toString()!=='RIFF') throw Error('El fondo aprobado no es un WebP válido. No se ha llamado a la API.');
+    basesDelLote.set('1',bytes);
+    console.log('Reutilizando fondo de Callao aprobado desde GitHub (sin generar fondo base).');
+  }
   if (modo==='generar') {
     if (confirmar!=='SI') throw Error('Para gastar crédito escribe SI en la casilla de confirmación.');
     if (!apiKey) throw Error('Falta el secreto OPENAI_API_KEY en GitHub. No se ha hecho ningún cargo.');

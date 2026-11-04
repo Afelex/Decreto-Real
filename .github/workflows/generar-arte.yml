@@ -11,6 +11,8 @@ on:
         default: una-imagen
         options:
           - una-imagen
+          - jefe-callao-aprobado
+          - rivales-callao
           - piloto-4
           - prologo
           - region-1
@@ -46,6 +48,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 concurrency:
   group: arte-manual-${{ github.ref }}
   cancel-in-progress: false
@@ -64,6 +67,14 @@ jobs:
           node-version: "24"
       - name: Validar catálogo de 38 misiones y 47 recursos
         run: node --experimental-strip-types --test tools/art-github.test.mjs
+      - name: Recuperar el fondo Callao ya aprobado (no se vuelve a generar)
+        if: ${{ inputs.grupo == 'jefe-callao-aprobado' && inputs.modo == 'generar' }}
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 41907373674
+          name: decreto-real-arte-3
+          github-token: ${{ github.token }}
+          path: art-input
       - name: Crear plan o generar imágenes autorizadas
         env:
           ART_GROUP: ${{ inputs.grupo }}
