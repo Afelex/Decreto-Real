@@ -41,7 +41,7 @@ export function resolveVisualDropZone(
 }
 
 export function cardPlacementPrompt(
-  card: Pick<CardData, 'type' | 'name' | 'rank'> | null,
+  card: Pick<CardData, 'type' | 'name' | 'rank' | 'mysticId'> | null,
   impactLevel: number,
 ): string {
   if (!card) return 'Selecciona una carta y arrástrala al campo.';
