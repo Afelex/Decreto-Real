@@ -23,7 +23,8 @@ const CampaignAfterVictory: React.FC = () => {
   const centerUnlocked = isMissionUnlocked(progress, '35');
   const following = mission ? CAMPAIGN_MISSIONS.find(item => item.chapterId === mission.chapterId
     && Number(item.id) === Number(mission.id) + 1 && isMissionUnlocked(progress, item.id)) : undefined;
-  const returnRoute = mission?.chapterId === 'p' ? '/campania'
+  const returnRoute = mission?.chapterId === 'p'
+    ? bestStars(progress, '02') > 0 ? '/campania/generales' : '/campania'
     : mission?.chapterId === 'f' ? '/campania/region/f'
     : '/campania/generales';
 
