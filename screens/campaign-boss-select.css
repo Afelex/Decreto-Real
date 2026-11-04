@@ -64,3 +64,34 @@
   .dbs-detail-copy p {font-size:10px;}
 }
 @media(prefers-reduced-motion:reduce){.dbs-general,.dbs-detail-progress i{transition:none;}}
+
+/* The supplied artwork and all eight transparent selection layers share one
+   941 × 1672 coordinate system. The scene keeps that aspect ratio on phones. */
+.dbs-art-screen {width:100vw;height:100dvh;overflow:hidden;display:grid;place-items:center;background:#100d18;color:#fff3d4;}
+.dbs-art-stage {position:relative;width:min(100vw,56.28dvh);height:min(100dvh,177.68vw);aspect-ratio:941 / 1672;overflow:hidden;isolation:isolate;}
+.dbs-art-base,.dbs-art-selection,.dbs-art-gray {position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:fill;pointer-events:none;}
+.dbs-art-base {z-index:0;}
+.dbs-art-gray {z-index:1;background:url('/Decreto-Real/campania/salon-generales.webp') center / 100% 100% no-repeat;filter:grayscale(1);}
+.dbs-art-gray-1 {clip-path:polygon(2% 28.3%,25.5% 28.3%,32% 42%,0% 42%);}
+.dbs-art-gray-2 {clip-path:polygon(25.5% 28.3%,52% 28.3%,49% 42%,32% 42%);}
+.dbs-art-gray-3 {clip-path:polygon(52% 28.3%,76% 28.3%,70% 42%,49% 42%);}
+.dbs-art-gray-4 {clip-path:polygon(76% 28.3%,99% 28.3%,94% 42%,70% 42%);}
+.dbs-art-gray-5 {clip-path:polygon(0% 60%,25% 60%,30% 76%,0% 76%);}
+.dbs-art-gray-6 {clip-path:polygon(25% 60%,51% 60%,51% 76%,23% 76%);}
+.dbs-art-gray-7 {clip-path:polygon(51% 60%,78% 60%,78% 76%,51% 76%);}
+.dbs-art-gray-8 {clip-path:polygon(78% 60%,100% 60%,100% 76%,78% 76%);}
+.dbs-art-selection {z-index:2;}
+.dbs-art-heading {position:absolute;z-index:4;left:1%;right:1%;top:1%;display:flex;align-items:center;justify-content:space-between;gap:4px;text-shadow:0 2px 5px #000;}
+.dbs-art-heading h1 {margin:0;font:700 clamp(12px,2.7dvh,24px)/1 Georgia,serif;text-align:right;color:#fff2c8;}
+.dbs-art-heading button,.dbs-art-replay {border:1px solid #f0cf89;border-radius:7px;background:#191a29c9;color:#fff1c9;padding:6px;font:700 clamp(9px,1.5dvh,13px) system-ui,sans-serif;cursor:pointer;}
+.dbs-art-hit {position:absolute;z-index:3;background:transparent;border:0;padding:0;cursor:pointer;}
+.dbs-art-hit:focus-visible {outline:3px solid #fff2a6;outline-offset:-3px;}
+.dbs-art-details {position:absolute;z-index:4;left:2%;right:2%;bottom:2%;height:19%;box-sizing:border-box;overflow:hidden;padding:clamp(5px,1dvh,10px);border:2px ridge #efd08b;border-radius:8px;background:linear-gradient(145deg,#161b2ce8,#392333ec);box-shadow:0 3px 16px #000c;display:flex;flex-direction:column;justify-content:center;gap:clamp(2px,.4dvh,5px);}
+.dbs-art-meta {display:flex;align-items:baseline;justify-content:space-between;gap:4px;font-size:clamp(9px,1.45dvh,14px);line-height:1.1;}
+.dbs-art-meta strong {color:#ffe4a5;font-family:Georgia,serif;}
+.dbs-art-meta span {font-size:.82em;color:#eee0bb;text-align:right;}
+.dbs-art-details p {margin:0;font:500 clamp(8px,1.22dvh,12px)/1.18 system-ui,sans-serif;color:#f4ecde;}
+.dbs-art-details p strong {color:#ffe1a1;}
+.dbs-art-actions {display:flex;align-items:center;justify-content:space-between;gap:5px;font:700 clamp(8px,1.2dvh,11px) system-ui,sans-serif;}
+.dbs-art-actions button {min-height:clamp(22px,3.2dvh,34px);border:1px solid #f7d99b;border-radius:6px;padding:3px 10px;background:linear-gradient(#aa3734,#682027);color:#fff4d4;font:800 clamp(9px,1.4dvh,13px) Georgia,serif;cursor:pointer;}
+.dbs-art-replay {position:absolute;z-index:4;top:78%;right:2%;padding:2px 7px;font-size:clamp(12px,2dvh,20px);}
