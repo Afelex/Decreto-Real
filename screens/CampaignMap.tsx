@@ -8,7 +8,9 @@ import { STORY_CHAPTERS, stagesForChapter } from '../campaign/story.ts';
 import { campaignOverview, missionStarGoals } from '../campaign/progressView.ts';
 import { enemyForMission } from '../campaign/characters.ts';
 import { regionVisual } from '../campaign/regionVisuals.ts';
-const mapImage = '/Decreto-Real/virreinato-map.svg';
+const mapImageFor = (chapterId: string) =>
+  chapterId === 'p' ? `${import.meta.env.BASE_URL}campania/prologo-ruta.svg`
+    : `${import.meta.env.BASE_URL}campania/regiones/region-${chapterId}.svg`;
 import './campaign-map-fullscreen.css';
 
 const storage = (): Storage | null => {
@@ -155,9 +157,12 @@ const CampaignMap: React.FC = () => {
           aria-label={canGoNext ? 'Capítulo siguiente' : 'Capítulo siguiente bloqueado'}>›</button>}
       </nav>
 
-      <section className={`dcm-map dcm-region-map ${chapter.id === 'p' ? 'dcm-prologue-map' : ''}`} data-region={chapter.id} aria-label={`Mapa de retos de ${chapter.title}`}>
-        <img src={chapter.id === 'p' ? './campania/prologo-ruta.svg' : mapImage}
-          alt={chapter.id === 'p' ? 'Paisaje ilustrado del prólogo, camino desde la costa hacia la fortaleza' : 'Mapa ilustrado del Virreinato del Perú'}
+      <section className={`dcm-map dcm-region-map ${chapter.id === 'p' ? 'dcm-prologue-map' : 'dcm-illustrated-region-map'}`} data-region={chapter.id}
+        data-region-art={chapter.id} aria-label={`Mapa de retos de ${chapter.title}`}>
+        <img src={mapImageFor(chapter.id)}
+          alt={chapter.id === 'p'
+            ? 'Paisaje costero andino con el camino de las dos misiones del prólogo'
+            : `Paisaje propio de ${chapter.region}: ${region.atmosphere.toLowerCase()}, ${region.landmark.toLowerCase()}`}
           draggable={false} className="dcm-map-art"/>
         <div className="dcm-map-wash" aria-hidden="true" />
         <div className="dcm-region-wash" aria-hidden="true"/>
