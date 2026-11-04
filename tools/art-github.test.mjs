@@ -144,3 +144,17 @@ test('sin referencias originales se cancela antes de gastar API para el piloto',
     /No se encontró el retrato original/
   );
 });
+
+test('los 18 fondos respetan la composición del duelo real: HUD, dos filas y manos',()=>{
+  const fondos=catalogo().filter(i=>i.kind==='fondo');
+  assert.equal(fondos.length,18);
+  for(const fondo of fondos){
+    const content=fondo.id.endsWith('-jefe')?fondo.promptEdicion:fondo.prompt;
+    assert.match(content,/DUEL SCREEN COMPATIBILITY/);
+    assert.match(content,/TOP 0–25%/);
+    assert.match(content,/35–65%/);
+    assert.match(content,/BOTTOM 65–100%/);
+    assert.match(content,/1024x1536/);
+    assert.match(content,/Do NOT render any UI/);
+  }
+});
