@@ -34,7 +34,7 @@ const CampaignAfterVictory: React.FC = () => {
     if (mission.id === '02') { navigate('/campania/generales?intro=1'); return; }
     if (mission.id === '38') { navigate('/campania/epilogo'); return; }
     if (mission.kind === 'boss' && mission.chapterId !== 'p' && mission.chapterId !== 'f') {
-      const liberationSeen = hasSeenRegionMoment(storage, REGION_LIBERATIONS_KEY, mission.chapterId);
+      const liberationSeen = hasSeenRegionMoment(safeStorage(), REGION_LIBERATIONS_KEY, mission.chapterId);
       if (!liberationSeen) {
         navigate(`/campania/liberada/${mission.chapterId}`);
         return;
