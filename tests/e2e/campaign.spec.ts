@@ -296,6 +296,9 @@ test('the general hub opens any region and only unlocks the center after eight g
   await expect(page.getByRole('button', { name: /Escenario central bloqueado/ })).toBeDisabled();
   await page.getByRole('button', { name: /Nayisa de Sombras/ }).click();
   await page.getByRole('button', { name: 'Explorar región ⚔' }).click();
+  await expect(page.getByRole('heading', { name: 'Sombras de la frontera' })).toBeVisible();
+  await expect(page.locator('.dcmoment-missions li')).toHaveCount(4);
+  await page.getByRole('button', { name: 'Ver las cuatro misiones ›' }).click();
   await expect(page.locator('.dcm-marker')).toHaveCount(4);
   await expect(page.getByText('Sombras de la frontera')).toBeVisible();
   await page.getByRole('button', { name: 'Volver al mapa de las ocho zonas' }).click();
