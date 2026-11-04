@@ -6,6 +6,7 @@ import { AFTER_VICTORY, afterVictoryLines } from '../../campaign/afterVictory.ts
 import { CAMPAIGN_STORAGE_KEY, CAMPAIGN_MISSIONS } from '../../campaign/campaign.ts';
 import CampaignAfterVictory, { CENTER_REVEAL_KEY } from '../../screens/CampaignAfterVictory';
 import CampaignCenterReveal from '../../screens/CampaignCenterReveal';
+import CampaignRegionMoment from '../../screens/CampaignRegionMoment';
 
 function saveThrough(n: number) {
   window.localStorage.setItem(CAMPAIGN_STORAGE_KEY, JSON.stringify({
@@ -15,6 +16,7 @@ function saveThrough(n: number) {
 const at = (path: string) => render(<MemoryRouter initialEntries={[path]}><Routes>
   <Route path="/campania/conversacion/:missionId" element={<CampaignAfterVictory />} />
   <Route path="/campania/revelacion" element={<CampaignCenterReveal />} />
+  <Route path="/campania/liberada/:chapterId" element={<CampaignRegionMoment mode="liberada" />} />
   <Route path="/campania/mision/:missionId" element={<h1>Próxima misión</h1>} />
   <Route path="/campania/generales" element={<h1>Mapa de los ocho generales</h1>} />
   <Route path="/campania/epilogo" element={<h1>Epílogo de la campaña</h1>} />
@@ -90,4 +92,22 @@ test('after Zhinchi disappears, Xervias speaks alone in mission 37 and the epilo
   fireEvent.click(screen.getByRole('button', { name: 'Siguiente diálogo ›' }));
   fireEvent.click(screen.getByRole('button', { name: 'Ver epílogo ›' }));
   expect(screen.getByRole('heading', { name: 'Epílogo de la campaña' })).toBeTruthy();
+});
+
+test('the fourth victory of a regional chapter gives the player a liberation scene', () => {
+  saveThrough(6);
+  at('/campania/conversacion/06');
+  fireEvent.click(screen.getByRole('button', { name: 'Siguiente diálogo ›' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Continuar historia ›' }));
+  expect(screen.getByRole('heading', { name: 'Región liberada' })).toBeTruthy();
+  expect(screen.getByRole('heading', { name: 'Marea de Hierro' })).toBeTruthy();
+});
+
+test('replaying the final conversation does not repeat an already seen liberation scene', () => {
+  saveThrough(6);
+  window.localStorage.setItem('decreto-real.campania.regiones-liberadas-presentadas.v1', JSON.stringify(['1']));
+  at('/campania/conversacion/06');
+  fireEvent.click(screen.getByRole('button', { name: 'Siguiente diálogo ›' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Continuar historia ›' }));
+  expect(screen.getByRole('heading', { name: 'Mapa de los ocho generales' })).toBeTruthy();
 });
