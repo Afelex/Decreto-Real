@@ -186,13 +186,13 @@ test('original game keeps its rules but activates cards by selection plus target
   await expect(cards).toHaveCount(4, { timeout: 18000 });
   await expect(page.locator('.dr-royal-facedown')).toHaveCount(3);
   await expect(page.locator('.dr-royal-hand-count')).toHaveCount(0);
-  const ordinary = cards.filter({ hasText: /Decreto de Ataque|Decreto de Defensa/ });
+  const ordinary = cards.filter({ hasText: /Ataque|Defensa/ });
   const chosen = ordinary.last();
   const before = await cards.count();
   await chosen.click({ position: { x: 12, y: 26 } });
   await expect(chosen).toHaveAttribute('aria-pressed', 'true');
   await expect(cards).toHaveCount(before); // A tap only selects, it never spends a card.
-  await page.getByRole('button', { name: 'Campo para activar Ataque o Defensa' }).click();
+  await page.getByRole('button', { name: 'Campo para activar Ataque, Defensa, Orden o Mística' }).click();
   await expect(cards).toHaveCount(before - 1);
   await expect(page.getByRole('button', { name: 'Jugar carta' })).toHaveCount(0);
   await expect(page.locator('.dr-mana')).toHaveCount(0);
@@ -232,7 +232,7 @@ test('an attack cannot be wasted by touching it: actual pointer drag activates o
   await page.getByRole('button', { name: 'Lanzar Moneda' }).click();
   await expect(page.locator('.dr-royal-hand-card')).toHaveCount(4, { timeout: 19000 });
   const cards = page.locator('.dr-royal-hand-card');
-  const ordinary = cards.filter({ hasText: /Decreto de Ataque|Decreto de Defensa/ }).last();
+  const ordinary = cards.filter({ hasText: /Ataque|Defensa/ }).last();
   const bounds = await ordinary.boundingBox();
   const target = await page.locator('.dr-royal-activation-target').boundingBox();
   expect(bounds).not.toBeNull(); expect(target).not.toBeNull();
