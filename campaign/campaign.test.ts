@@ -80,14 +80,14 @@ test('unknown keys and invalid star counts are discarded', () => {
 
 test('all eight canonical generals and their special-card labels appear as boss episodes', () => {
   const expected = [
-    ['Almirante de Hierro', 'Bombardeo naval'],
-    ['Jinete Escarlata', 'Carga de caballería'],
-    ['Señor de la Plata', 'Pólvora enterrada'],
-    ['Artillero del Trueno', 'Fuego concentrado'],
-    ['Fantasma de la Selva', 'Sendero secreto'],
-    ['Dama del Estandarte', 'Estandarte de resistencia'],
-    ['Cóndor de los Andes', 'Ataque de las cumbres'],
-    ['Caballero del Juramento', 'Último juramento'],
+    ['Almirante de Hierro', 'Marea de Hierro'],
+    ['Jinete Escarlata', 'Carga Sangrante'],
+    ['Señor de la Plata', 'Pacto de Azogue'],
+    ['Artillero del Trueno', 'Descarga del Trueno'],
+    ['Fantasma de la Selva', 'Velo de la Selva'],
+    ['Dama del Estandarte', 'Estandarte Sagrado'],
+    ['Cóndor de los Andes', 'Picado Celestial'],
+    ['Caballero del Juramento', 'Juramento Eterno'],
   ];
   const generals = STORY_CHAPTERS.filter(chapter => chapter.general);
   assert.equal(generals.length, expected.length);
