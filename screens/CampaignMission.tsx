@@ -90,6 +90,10 @@ const CampaignMission: React.FC = () => {
         { label: 'Mejor marca', value: `${outcome.best}/3` },
       ]}
       warning={!outcome.saved ? 'No se pudo guardar tu progreso en este navegador.' : undefined}
+      reward={outcome.won && outcome.saved ? mysticalReward
+        ? `Carta mística de ${mysticalReward.owner} añadida a tu colección${legacyAwakened ? '.' : ' (sellada).'}`
+        : mission.id === '36' ? 'El bastón de Zhinchi despierta tus cartas místicas. ¡Editar baraja desbloqueado!' : undefined
+        : undefined}
       narrative={outcome.won ? mission.victoryLine : mission.defeatLine}
       actions={[
         ...(outcome.won && outcome.saved && (mysticalReward || mission.id === '36') ? [{
