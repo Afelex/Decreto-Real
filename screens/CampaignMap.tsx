@@ -156,22 +156,20 @@ const CampaignMap: React.FC = () => {
       </nav>
 
       <section className={`dcm-map dcm-region-map ${chapter.id === 'p' ? 'dcm-prologue-map' : ''}`} data-region={chapter.id} aria-label={`Mapa de retos de ${chapter.title}`}>
-        <img src={mapImage} alt="Mapa antiguo ilustrado del Virreinato del Perú" draggable={false} className="dcm-map-art"/>
-        {chapter.id === 'p' && <div className="dcm-prologue-scene" aria-hidden="true">
-          <div className="dcm-prologue-sun">☼</div>
-          <div className="dcm-prologue-ridge dcm-prologue-ridge-far"/>
-          <div className="dcm-prologue-ridge dcm-prologue-ridge-near"/>
-          <div className="dcm-prologue-sea"/>
-          <div className="dcm-prologue-village">♜ <span>El pregón</span></div>
-          <div className="dcm-prologue-fort">♜ <span>La orden secreta</span></div>
-          <div className="dcm-prologue-stamp">✥</div>
-        </div>}
+        <img src={chapter.id === 'p' ? './campania/prologo-ruta.svg' : mapImage}
+          alt={chapter.id === 'p' ? 'Paisaje ilustrado del prólogo, camino desde la costa hacia la fortaleza' : 'Mapa ilustrado del Virreinato del Perú'}
+          draggable={false} className="dcm-map-art"/>
         <div className="dcm-map-wash" aria-hidden="true" />
         <div className="dcm-region-wash" aria-hidden="true"/>
         <div className="dcm-region-watermark" aria-hidden="true">{region.symbol}</div>
         <svg className="dcm-route" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-          <polyline points={linePoints} fill="none" stroke="#674322" strokeWidth="1.65" strokeDasharray="2.3 2.4" strokeLinecap="round" strokeLinejoin="round"/>
-          <polyline points={linePoints} fill="none" stroke="#f9dea5" strokeWidth=".45" strokeDasharray="2.3 2.4" strokeLinecap="round" strokeLinejoin="round"/>
+          {chapter.id === 'p' ? <>
+            <path d="M51 22 C28 37 79 48 58 72" fill="none" stroke="#593c27" strokeWidth="1.8" strokeDasharray="2 2.5" strokeLinecap="round"/>
+            <path d="M51 22 C28 37 79 48 58 72" fill="none" stroke="#f9df9c" strokeWidth=".55" strokeDasharray="2 2.5" strokeLinecap="round"/>
+          </> : <>
+            <polyline points={linePoints} fill="none" stroke="#674322" strokeWidth="1.65" strokeDasharray="2.3 2.4" strokeLinecap="round" strokeLinejoin="round"/>
+            <polyline points={linePoints} fill="none" stroke="#f9dea5" strokeWidth=".45" strokeDasharray="2.3 2.4" strokeLinecap="round" strokeLinejoin="round"/>
+          </>}
         </svg>
         <span className="dcm-map-label" aria-hidden="true">{region.symbol} &nbsp; {chapter.region}</span>
         {missions.map((mission, index) => {
