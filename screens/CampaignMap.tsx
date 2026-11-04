@@ -119,6 +119,7 @@ const CampaignMap: React.FC = () => {
           <span>Virreinato del Perú · El Sello y la Revolución Solar</span>
         </div>
         <button type="button" className="dcm-story" onClick={() => navigate('/campania/historia')} aria-label="Ver la historia">▤<span>Historia</span></button>
+        <button type="button" className="dcm-story" onClick={() => navigate('/campania/generales')} aria-label="Elegir capítulo por general">♛<span>Generales</span></button>
         <button type="button" className="dcm-story dcm-deck" onClick={() => navigate('/campania/baraja')} aria-label="Ver cartas místicas y editar baraja">✦<span>Baraja</span></button>
       </header>
 
