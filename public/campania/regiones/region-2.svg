@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 768 1184" role="img" aria-label="Caminos del Reino">
+<defs>
+<linearGradient id="sky" x1="0" y1="0" x2=".18" y2="1"><stop stop-color="#b77e69"/><stop offset=".58" stop-color="#dcb795"/><stop offset="1" stop-color="#f7e4b7"/></linearGradient>
+<radialGradient id="glow" cx=".68" cy=".19" r=".57"><stop stop-color="#f7e4b7" stop-opacity=".95"/><stop offset=".36" stop-color="#f7e4b7" stop-opacity=".24"/><stop offset="1" stop-color="#dcb795" stop-opacity="0"/></radialGradient>
+<linearGradient id="stone" x1="0" y1="0" x2=".85" y2="1"><stop stop-color="#efd3a2"/><stop offset=".65" stop-color="#9a6950"/><stop offset="1" stop-color="#463536"/></linearGradient>
+<linearGradient id="water" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#dcb795"/><stop offset=".58" stop-color="#9a6950"/><stop offset="1" stop-color="#463536"/></linearGradient>
+<radialGradient id="vignette"><stop offset=".52" stop-color="#261b1c" stop-opacity="0"/><stop offset="1" stop-color="#211a22" stop-opacity=".37"/></radialGradient>
+<pattern id="flecks" width="47" height="51" patternUnits="userSpaceOnUse"><circle cx="7" cy="16" r="1" fill="#463536" opacity=".17"/><path d="M22 45h3m11-13h2" stroke="#463536" stroke-width="1.8" opacity=".2"/></pattern>
+<filter id="shadow" x="-40%" y="-40%" width="200%" height="200%"><feDropShadow dx="0" dy="11" stdDeviation="9" flood-color="#463536" flood-opacity=".4"/></filter>
+</defs>
+<rect width="768" height="1184" fill="url(#sky)"/>
+<rect width="768" height="1184" fill="url(#glow)"/>
+<circle cx="548" cy="189" r="72" fill="#f7e4b7" opacity=".66"/>
+<circle cx="548" cy="189" r="83" fill="none" stroke="#f7e4b7" stroke-width="5" opacity=".23"/>
+<path d="M0 490 103 397 195 459 340 337 439 429 531 374 655 451 768 356V1184H0Z" fill="#b18a75" opacity=".57"/>
+<path d="M0 589 135 522 249 562 365 455 488 551 627 468 768 523V1184H0Z" fill="#9a6950" opacity=".52"/>
+<path d="M-30 540 115 453 247 500 353 385 509 480 663 386 800 484V1050H-30Z" fill="#9d7656" opacity=".8"/>
+ <path d="M-30 780 114 735 235 654 368 722 492 603 646 684 780 623V1184H-30Z" fill="#a7825c"/>
+ <path d="M341 1184Q280 990 376 837T384 520" fill="none" stroke="#f1d4a4" stroke-width="84" opacity=".42"/>
+ <path d="M341 1184Q280 990 376 837T384 520" fill="none" stroke="#60433a" stroke-width="4" stroke-dasharray="4 20" opacity=".4"/>
+ <g transform="translate(40 430)" filter="url(#shadow)"><path d="M0 310v-192l88-86 106 86v192Z" fill="url(#stone)" stroke="#694e41" stroke-width="8"/><path d="M-19 120 91 9 219 120Z" fill="#7a4d46" stroke="#edc18e" stroke-width="7"/><path d="M53 309v-99q38-50 77 0v99Z" fill="#4c3634"/><path d="M158 166v-61" stroke="#c8aa7a" stroke-width="4"/><path d="M159 110l60 16-60 16Z" fill="#af3035"/></g>
+ <g transform="translate(450 705)" fill="#3f3836" opacity=".9"><ellipse cx="70" cy="80" rx="72" ry="39"/><path d="M122 60 157 21l25 10 12 48-26 21-30-24-17 19Z"/><path d="m180 24 7-27 13 27z"/><path d="M18 94 0 164h23l24-60M90 91l12 74h20l-6-77M142 89l19 75h19l-8-85M-1 78q-32-28-36-64" fill="none" stroke="#3f3836" stroke-width="15"/><path d="M62 24h61v31H62z" fill="#a53a35" stroke="#e4b58a" stroke-width="4"/></g>
+ <path d="M80 931q65-43 132 10M521 1045q97-48 173 1" fill="none" stroke="#e5c18c" stroke-width="8" opacity=".35"/>
+<path d="M0 1105Q230 1071 405 1127T768 1084V1184H0Z" fill="#463536" opacity=".23"/>
+<rect width="768" height="1184" fill="url(#flecks)" opacity=".75"/>
+<rect width="768" height="1184" fill="url(#vignette)"/>
+<rect x="15" y="16" width="738" height="1152" rx="18" fill="none" stroke="#efd3a2" stroke-width="3" opacity=".3"/>
+<rect x="23" y="25" width="722" height="1134" rx="11" fill="none" stroke="#463536" stroke-width="2" opacity=".3"/>
+</svg>

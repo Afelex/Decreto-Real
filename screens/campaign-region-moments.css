@@ -1,0 +1,221 @@
+/* DR-CAMP: one-screen region entrance / general liberation, replaceable art. */
+.dcmoment-screen {
+  position:fixed;inset:0;height:100dvh;width:100%;
+  overflow:hidden;overscroll-behavior:none;box-sizing:border-box;
+  color:#ffedc5;font-family:Georgia,'Times New Roman',serif;
+  background:radial-gradient(ellipse at 50% 36%,var(--dcmoment-dark,#425062),#18131c 75%);
+  isolation:isolate;
+}
+.dcmoment-screen * {box-sizing:border-box;}
+.dcmoment-shell {
+  width:min(100%,550px);height:100%;margin:auto;
+  padding:max(7px,env(safe-area-inset-top)) max(9px,env(safe-area-inset-right))
+          max(7px,env(safe-area-inset-bottom)) max(9px,env(safe-area-inset-left));
+  display:grid;grid-template-rows:auto minmax(100px,1fr) auto auto auto;
+  gap:clamp(5px,1dvh,10px);
+  background:linear-gradient(155deg,#352521,#171724);
+  box-shadow:0 0 32px #05060e;
+  min-height:0;
+}
+.dcmoment-header {
+  min-height:clamp(48px,7dvh,70px);
+  padding:clamp(5px,1dvh,10px) 8px;
+  border:2px ridge #c7a06c;border-radius:9px;
+  text-align:center;background:linear-gradient(110deg,#815e40,#e4c898,#b58b5c);
+  color:#563925;display:flex;flex-direction:column;justify-content:center;gap:2px;
+}
+.dcmoment-header small {
+  font:800 clamp(9px,2vw,11px)/1.1 system-ui,sans-serif;letter-spacing:.13em;
+}
+.dcmoment-header h1 {
+  margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font:700 clamp(19px,5vw,28px)/1.1 Georgia,serif;
+}
+.dcmoment-landscape {
+  position:relative;min-height:0;border:3px ridge var(--dcmoment-accent,#d6b57a);
+  border-radius:11px;overflow:hidden;background:#3c4e5a;
+  box-shadow:0 3px 14px #0009;
+}
+.dcmoment-landscape>img {
+  display:block;position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:center 46%;pointer-events:none;
+}
+.dcmoment-landscape-tint {
+  position:absolute;inset:0;background:linear-gradient(0deg,#16121edc,transparent 65%);
+  pointer-events:none;
+}
+.dcmoment-portrait {
+  position:absolute;right:5%;top:clamp(8px,1.5dvh,15px);
+  width:clamp(60px,15dvh,115px);aspect-ratio:1;
+  border:3px ridge #f1cb85;border-radius:50%;overflow:hidden;
+  background:radial-gradient(circle,#7e6c58,#263441);
+  box-shadow:0 0 0 3px #1f1b2b8c,0 5px 21px #0008;
+  animation:dcmoment-appear .35s ease-out both;
+}
+.dcmoment-portrait svg {width:100%;height:100%;display:block;}
+.dcmoment-liberation .dcmoment-portrait {filter:grayscale(.7);opacity:.86;}
+.dcmoment-landscape-tag {
+  position:absolute;left:10px;right:10px;bottom:8px;display:flex;flex-direction:column;
+  align-items:flex-start;gap:2px;text-shadow:0 2px 3px #05050a;
+}
+.dcmoment-landscape-tag small {
+  color:#f7d78f;letter-spacing:.12em;
+  font:800 clamp(8px,1.8vw,10px)/1.1 system-ui,sans-serif;
+}
+.dcmoment-landscape-tag strong {
+  font:700 clamp(14px,4vw,21px)/1.04 Georgia,serif;
+}
+.dcmoment-landscape-tag span {
+  color:#ebd6b3;font:700 clamp(10px,2.3vw,12px)/1.1 Georgia,serif;
+}
+.dcmoment-missions,.dcmoment-reward {
+  min-height:0;border:2px ridge #cca772;border-radius:9px;
+  background:linear-gradient(150deg,#ebd3a2,#bf9767);color:#4e3424;
+  padding:clamp(6px,1.2dvh,10px);
+}
+.dcmoment-missions-title {
+  display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:5px;
+}
+.dcmoment-missions-title strong {
+  font:700 clamp(12px,2.8vw,15px)/1.15 Georgia,serif;
+}
+.dcmoment-missions-title small {
+  font:800 clamp(10px,2.2vw,11px)/1.1 system-ui,sans-serif;white-space:nowrap;
+}
+.dcmoment-missions ol {list-style:none;padding:0;margin:0;display:grid;gap:3px;}
+.dcmoment-missions li {
+  display:grid;grid-template-columns:clamp(24px,5.8dvh,34px) minmax(0,1fr) auto;
+  align-items:center;gap:6px;border:1px solid #a98452;border-radius:5px;
+  background:#f7e7c29e;padding:3px 6px;min-height:clamp(28px,5dvh,40px);
+}
+.dcmoment-missions li.won {background:#e6d59dbb;}
+.dcmoment-stage-number {
+  display:grid;place-items:center;width:100%;aspect-ratio:1;
+  border:1px solid #996c38;border-radius:50%;background:#74543c;color:#ffdda2;
+  font:700 clamp(12px,2.7vw,15px) Georgia,serif;
+}
+.dcmoment-missions li.won .dcmoment-stage-number {background:#997b2e;color:#fff0bd;}
+.dcmoment-stage-copy {display:grid;gap:1px;min-width:0;}
+.dcmoment-stage-copy strong {
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  font:700 clamp(11px,2.5vw,13px)/1.1 Georgia,serif;
+}
+.dcmoment-stage-copy small {
+  white-space:nowrap;text-overflow:ellipsis;overflow:hidden;
+  font:500 clamp(9px,2vw,11px)/1.1 system-ui,sans-serif;
+}
+.dcmoment-stage-type {
+  border:1px solid #a4835e;border-radius:4px;background:#f7e8c7d9;
+  padding:3px 4px;font:800 clamp(8px,1.9vw,10px) system-ui,sans-serif;
+}
+.dcmoment-missions li:last-child .dcmoment-stage-type {
+  color:#7c2430;border-color:#a76756;
+}
+.dcmoment-dialogue {
+  min-height:clamp(85px,15dvh,134px);
+  display:flex;flex-direction:column;justify-content:center;gap:clamp(4px,.8dvh,9px);
+  padding:clamp(7px,1.3dvh,12px);
+  border:2px ridge #cba76f;border-radius:9px;
+  color:#f4e5c5;background:linear-gradient(150deg,#263249,#1d1b2e);
+}
+.dcmoment-dialogue p {
+  margin:0;font:500 clamp(11px,2.7vw,14px)/1.3 system-ui,sans-serif;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+}
+.dcmoment-dialogue strong {color:#f2cd80;}
+.dcmoment-actions {
+  display:grid;grid-template-columns:34% minmax(0,1fr);gap:7px;
+  min-height:clamp(43px,7dvh,59px);
+}
+.dcmoment-actions button {
+  border:2px ridge #e0bc78;border-radius:8px;
+  cursor:pointer;padding:5px 6px;font:700 clamp(11px,2.8vw,15px) Georgia,serif;
+}
+.dcmoment-secondary {
+  background:linear-gradient(#665147,#2e2b35);color:#f9e2b4;
+}
+.dcmoment-primary {
+  background:linear-gradient(#b33739,#6f1b28);color:#fff1ca;
+  box-shadow:inset 0 0 0 1px #f3c98260;
+}
+.dcmoment-screen button:focus-visible {outline:3px solid #fff2aa;outline-offset:2px;}
+.dcmoment-reward {
+  min-height:clamp(90px,15dvh,145px);
+  display:grid;grid-template-columns:clamp(48px,12dvh,80px) minmax(0,1fr);
+  gap:10px;align-items:center;
+}
+.dcmoment-medal {
+  aspect-ratio:1;display:grid;place-items:center;
+  border:3px ridge #eccd84;border-radius:15px;transform:rotate(-5deg);
+  color:#ffe4a2;background:radial-gradient(circle at 30% 20%,#986c4e,#603a46);
+  font:700 clamp(27px,7vw,46px) Georgia,serif;
+  box-shadow:0 3px 8px #0007,0 0 15px #e8cb8877;
+  animation:dcmoment-appear .35s ease-out both;
+}
+.dcmoment-reward-copy {min-width:0;display:flex;flex-direction:column;gap:3px;}
+.dcmoment-reward-copy small {
+  font:800 clamp(8px,1.8vw,10px)/1.14 system-ui,sans-serif;
+  color:#72422c;letter-spacing:.04em;
+}
+.dcmoment-reward-copy h2 {
+  margin:0;font:700 clamp(16px,3.8vw,21px)/1.08 Georgia,serif;
+  color:#5f352a;
+}
+.dcmoment-reward-copy p {
+  margin:0;font:500 clamp(10px,2.3vw,12px)/1.2 system-ui,sans-serif;
+}
+.dcmoment-reward-copy>strong {
+  font:800 clamp(9px,2.1vw,11px)/1.2 system-ui,sans-serif;color:#705039;
+}
+.dcmoment-liberation .dcmoment-landscape:after {
+  content:'✦';position:absolute;left:43%;top:22%;font-size:clamp(28px,8vw,60px);
+  color:#ffedaf;text-shadow:0 0 20px #fce098,0 0 32px #fff9c9;
+  animation:dcmoment-appear .48s ease-out both;pointer-events:none;
+}
+@keyframes dcmoment-appear {
+  from {opacity:0;transform:translateY(7px) scale(.96);}
+  to {opacity:1;transform:translateY(0) scale(1);}
+}
+@media(max-height:650px) {
+  .dcmoment-shell{gap:4px;padding-top:max(4px,env(safe-area-inset-top));padding-bottom:max(4px,env(safe-area-inset-bottom));}
+  .dcmoment-header{min-height:42px;padding:3px 6px;}
+  .dcmoment-missions{padding:4px 6px;}
+  .dcmoment-missions-title{margin-bottom:3px;}
+  .dcmoment-missions li{min-height:26px;gap:4px;padding:2px 4px;}
+  .dcmoment-stage-copy strong{font-size:11px;}
+  .dcmoment-stage-copy small{font-size:9px;}
+  .dcmoment-dialogue{min-height:80px;padding:6px 8px;gap:3px;}
+  .dcmoment-dialogue p{font-size:clamp(10px,2.55vw,12px);line-height:1.19;}
+  .dcmoment-reward{min-height:88px;padding:5px 7px;}
+  .dcmoment-actions{min-height:40px;}
+}
+@media (orientation:landscape) and (max-height:480px) {
+  .dcmoment-shell {
+    width:min(100%,850px);
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    grid-template-rows:auto minmax(0,1fr) auto auto;
+    column-gap:8px;
+  }
+  .dcmoment-header{grid-column:1/-1;min-height:32px;}
+  .dcmoment-landscape{grid-column:1;grid-row:2/4;}
+  .dcmoment-missions,.dcmoment-reward{grid-column:2;grid-row:2;overflow:hidden;}
+  .dcmoment-dialogue{grid-column:2;grid-row:3;min-height:0;}
+  .dcmoment-actions{grid-column:1/-1;min-height:36px;}
+  .dcmoment-portrait{width:clamp(45px,13dvh,80px);}
+}
+@media(prefers-reduced-motion:reduce) {
+  .dcmoment-portrait,.dcmoment-medal,.dcmoment-liberation .dcmoment-landscape:after {animation:none;}
+}
+
+
+/* Direct exit is deliberately separate from the "other regions" back action. */
+.dcmoment-header {position:relative;padding-left:clamp(42px,11vw,62px);padding-right:clamp(42px,11vw,62px);}
+.dcmoment-menu {
+  position:absolute;left:6px;top:50%;transform:translateY(-50%);
+  width:clamp(30px,7vw,40px);height:clamp(30px,7vw,40px);
+  border:1px solid #9f7547;border-radius:7px;
+  background:linear-gradient(#6d4b39,#3d2c32);color:#ffe6b6;
+  font:700 clamp(18px,4.4vw,24px) Georgia,serif;
+  cursor:pointer;
+}
+@media(max-height:650px){.dcmoment-header{padding-left:38px;padding-right:38px}.dcmoment-menu{width:29px;height:29px;left:3px;}}

@@ -13,6 +13,10 @@ import CampaignStory from './screens/CampaignStory';
 import CampaignEpilogue from './screens/CampaignEpilogue';
 import CampaignDeck from './screens/CampaignDeck';
 import CampaignBossSelect from './screens/CampaignBossSelect';
+import CampaignIntro from './screens/CampaignIntro';
+import CampaignAfterVictory from './screens/CampaignAfterVictory';
+import CampaignCenterReveal from './screens/CampaignCenterReveal';
+import CampaignRegionMoment from './screens/CampaignRegionMoment';
 import { AudioProvider } from './contexts/AudioContext';
 import './screens/one-screen-ui.css';
 import './screens/duel-viewport.css';
@@ -35,6 +39,12 @@ const App: React.FC = () => {
           <Route path="/game" element={<GameBoard />} />
           <Route path="/duelo-v1" element={<CombatPrototype />} />
           <Route path="/campania" element={<CampaignMap />} />
+          <Route path="/campania/inicio" element={<CampaignIntro />} />
+          <Route path="/campania/region/:chapterId" element={<CampaignMap />} />
+          <Route path="/campania/entrada/:chapterId" element={<CampaignRegionMoment mode="entrada" />} />
+          <Route path="/campania/liberada/:chapterId" element={<CampaignRegionMoment mode="liberada" />} />
+          <Route path="/campania/conversacion/:missionId" element={<CampaignAfterVictory />} />
+          <Route path="/campania/revelacion" element={<CampaignCenterReveal />} />
           <Route path="/campania/generales" element={<CampaignBossSelect />} />
           <Route path="/campania/historia" element={<CampaignStory />} />
           <Route path="/campania/epilogo" element={<CampaignEpilogue />} />

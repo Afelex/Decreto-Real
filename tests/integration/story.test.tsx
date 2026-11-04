@@ -8,8 +8,8 @@ import CampaignEpilogue from '../../screens/CampaignEpilogue';
 import { CAMPAIGN_STORAGE_KEY } from '../../campaign/campaign.ts';
 
 vi.mock('../../screens/GameBoard', () => ({
-  default: ({ onOutcome }: { onOutcome?: (result: { won: boolean; turns: number; health: number }) => void }) =>
-    <section data-testid="original-board">
+  default: ({ onOutcome, presentation }: { onOutcome?: (result: { won: boolean; turns: number; health: number }) => void; presentation?: { background?: string } }) =>
+    <section data-testid="original-board" data-background={presentation?.background}>
       <h2>Ritual de Inicio</h2>
       <button type="button" onClick={() => onOutcome?.({ won: true, turns: 7, health: 16 })}>Victoria original de prueba</button>
       <button type="button" onClick={() => onOutcome?.({ won: false, turns: 7, health: 0 })}>Derrota original de prueba</button>
@@ -111,6 +111,10 @@ test('the campaign opens the original game, not the newly created DuelBoard', ()
   expect(screen.getByRole('heading', { name: 'El Almirante de Hierro' })).toBeTruthy();
   expect(screen.getByText(/20 de vida, 10 ataques, 10 defensas, 4 Impactos y 4 Órdenes/)).toBeTruthy();
   fireEvent.click(screen.getByRole('button', { name: /Preparar combate/ }));
+  expect(screen.getByRole('heading', { name: 'Enfrentamiento con el general' })).toBeTruthy();
+  expect(screen.getByText('Marea de Hierro')).toBeTruthy();
+  fireEvent.click(screen.getByRole('button', { name: 'Responder ›' }));
+  fireEvent.click(screen.getByRole('button', { name: /Comenzar duelo/ }));
   expect(screen.getByTestId('original-board')).toBeTruthy();
   expect(screen.getByRole('heading', { name: 'Ritual de Inicio' })).toBeTruthy();
 });
@@ -122,7 +126,7 @@ test('a real original-game victory unlocks the next mission and gives achievable
   expect(screen.getByRole('heading', { name: '¡Misión superada!' })).toBeTruthy();
   const saved = JSON.parse(window.localStorage.getItem(CAMPAIGN_STORAGE_KEY)!);
   expect(saved.stars['01']).toBe(3);
-  expect(screen.getByRole('button', { name: 'Siguiente misión →' })).toBeTruthy();
+  expect(screen.getByRole('button', { name: 'Continuar historia →' })).toBeTruthy();
   expect(screen.getByText(/el sello es auténtico, pero alguien ha cambiado sus palabras/)).toBeTruthy();
 });
 
@@ -133,4 +137,20 @@ test('a defeat with the original game cannot unlock the next challenge', () => {
   expect(screen.getByRole('heading', { name: 'Misión fallida' })).toBeTruthy();
   expect(window.localStorage.getItem(CAMPAIGN_STORAGE_KEY)).toBeNull();
   expect(screen.getByText(/Los vecinos quedan expuestos al castigo/)).toBeTruthy();
+});
+
+test('the chosen territory changes only campaign scenery, not the original battle component', () => {
+  window.localStorage.setItem(CAMPAIGN_STORAGE_KEY,
+    JSON.stringify({ version: 1, stars: { '01': 1, '02': 1 } }));
+  const view = screenAt('/campania/mision/27');
+  expect(screen.getByRole('heading', { name: 'El paso de las nubes' })).toBeTruthy();
+  fireEvent.click(screen.getByRole('button', { name: /Preparar combate/ }));
+  expect(screen.getByTestId('original-board').getAttribute('data-background')).toContain('regiones/region-7.svg');
+  view.unmount();
+});
+
+test('the two prologue missions retain their original combat backdrop', () => {
+  screenAt('/campania/mision/01');
+  fireEvent.click(screen.getByRole('button', { name: /Preparar combate/ }));
+  expect(screen.getByTestId('original-board').getAttribute('data-background')).toContain('plaza-virreinal-v2.svg');
 });

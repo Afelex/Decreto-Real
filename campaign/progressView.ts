@@ -1,5 +1,5 @@
 import {
-  CAMPAIGN_MISSIONS, bestStars, type CampaignMission, type CampaignProgress,
+  CAMPAIGN_MISSIONS, bestStars, validatedCampaignProgress, type CampaignMission, type CampaignProgress,
 } from './campaign.ts';
 import { classicHealthGoal } from './classicScoring.ts';
 
@@ -13,18 +13,17 @@ export type CampaignOverview = {
   completedCampaign: boolean;
 };
 
-/** Only count the contiguous sequence of victories. A corrupt, imported or
- * out-of-order save must never imply progress beyond an undefeated challenge. */
+/** Count verified victories across independent chapters, not only a contiguous
+ * global list. The prologue and each region remain internally sequential. */
 export function campaignOverview(progress: CampaignProgress): CampaignOverview {
+  const verified = validatedCampaignProgress(progress);
   let completed = 0;
   let stars = 0;
   for (const mission of CAMPAIGN_MISSIONS) {
-    const score = bestStars(progress, mission.id);
-    if (score < 1) break;
-    completed++;
-    stars += score;
+    const score = bestStars(verified, mission.id);
+    if (score > 0) { completed++; stars += score; }
   }
-
+  const next = CAMPAIGN_MISSIONS.find(mission => bestStars(verified, mission.id) === 0) ?? null;
   const total = CAMPAIGN_MISSIONS.length;
   return {
     completed,
@@ -32,7 +31,7 @@ export function campaignOverview(progress: CampaignProgress): CampaignOverview {
     stars,
     maximumStars: total * 3,
     percentage: Math.round(completed / total * 100),
-    nextMission: CAMPAIGN_MISSIONS[completed] ?? null,
+    nextMission: next,
     completedCampaign: completed === total,
   };
 }

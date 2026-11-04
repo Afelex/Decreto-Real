@@ -5,11 +5,14 @@ const campaign = '/Decreto-Real/#/campania';
 async function advanceStoryPrelude(page: import('@playwright/test').Page) {
   const dialog = page.getByTestId('story-combat-dialogue');
   await expect(dialog).toBeVisible();
-  await expect(dialog.getByRole('heading', { name: /.+/ })).toBeVisible();
-  for (const speaker of ['ADVERSARIO', 'PROTAGONISTA', 'ADVERSARIO']) {
-    await expect(dialog.getByText(speaker, { exact: true })).toBeVisible();
-    await dialog.getByRole('button', { name: /Siguiente/ }).click();
-  }
+  const speaker = dialog.getByRole('heading');
+  const rivalName = await speaker.textContent();
+  await expect(speaker).toHaveText(rivalName!);
+  await dialog.getByRole('button', { name: /Siguiente/ }).click();
+  await expect(speaker).toHaveText('Xervias');
+  await dialog.getByRole('button', { name: /Siguiente/ }).click();
+  await expect(speaker).toHaveText(rivalName!);
+  await dialog.getByRole('button', { name: /Siguiente/ }).click();
   await expect(dialog.getByText('Inicia el combate')).toBeVisible();
   await dialog.getByRole('button', { name: /Continuar/ }).click();
   await expect(dialog).toBeHidden();
@@ -101,6 +104,10 @@ test('boss is presented in briefing and on the duel board', async ({ page }) => 
   await page.goto('/Decreto-Real/#/campania/mision/06');
   await expect(page.getByRole('heading', { name: 'El Almirante de Hierro' })).toBeVisible();
   await page.getByRole('button', { name: /Preparar combate/ }).click();
+  await expect(page.getByRole('heading', { name: 'Enfrentamiento con el general' })).toBeVisible();
+  await expect(page.getByText('Marea de Hierro')).toBeVisible();
+  await page.getByRole('button', { name: 'Responder ›' }).click();
+  await page.getByRole('button', { name: /Comenzar duelo/ }).click();
   await expect(page.locator('.dr-classic-screen')).toBeVisible();
   await advanceStoryPrelude(page);
   await expect(page.getByText('¿Quién comienza?')).toBeVisible();
@@ -112,7 +119,7 @@ test('star goals dialog is complete, keyboard-accessible and fits the phone', as
   const dialog = page.getByRole('dialog', { name: 'El pregón alterado' });
   await expect(dialog).toBeVisible();
   await expect(dialog.getByText('Gana el combate')).toBeVisible();
-  await expect(dialog.getByText('Conserva al menos 6 de vida')).toBeVisible();
+  await expect(dialog.getByText('Conserva al menos 12 de vida')).toBeVisible();
   await expect(dialog.getByText('Gana en 10 rondas o menos')).toBeVisible();
   const bounds = await dialog.boundingBox();
   const viewport = page.viewportSize()!;
@@ -183,13 +190,13 @@ test('original game keeps its rules but activates cards by selection plus target
   await expect(cards).toHaveCount(4, { timeout: 18000 });
   await expect(page.locator('.dr-royal-facedown')).toHaveCount(3);
   await expect(page.locator('.dr-royal-hand-count')).toHaveCount(0);
-  const ordinary = cards.filter({ hasText: /Decreto de Ataque|Decreto de Defensa/ });
+  const ordinary = cards.filter({ hasText: /Ataque|Defensa/ });
   const chosen = ordinary.last();
   const before = await cards.count();
   await chosen.click({ position: { x: 12, y: 26 } });
   await expect(chosen).toHaveAttribute('aria-pressed', 'true');
   await expect(cards).toHaveCount(before); // A tap only selects, it never spends a card.
-  await page.getByRole('button', { name: 'Campo para activar Ataque o Defensa' }).click();
+  await page.getByRole('button', { name: 'Campo para activar Ataque, Defensa, Orden o Mística' }).click();
   await expect(cards).toHaveCount(before - 1);
   await expect(page.getByRole('button', { name: 'Jugar carta' })).toHaveCount(0);
   await expect(page.locator('.dr-mana')).toHaveCount(0);
@@ -216,10 +223,10 @@ test('original game and campaign use the same physical-looking board and audio c
 test('updated rules describe the restored original instead of Mando and shield', async ({ page }) => {
   await page.goto('/Decreto-Real/#/rules');
   await page.getByRole('button', { name: 'Cartas' }).click();
-  await expect(page.getByText(/10 Decretos de Ataque, 10 Decretos de Defensa/)).toBeVisible();
-  await expect(page.getByText(/Sin Mando/)).toBeVisible();
-  await page.getByRole('button', { name: 'Ataque' }).click();
-  await expect(page.getByText(/quita 2 puntos de vida/)).toBeVisible();
+  await expect(page.getByText(/10 Ataques, 10 Defensas, 4 Impactos y 4 Órdenes/)).toBeVisible();
+  await expect(page.getByRole('heading', { name: '28 cartas, cinco clases' })).toBeVisible();
+  await page.getByRole('button', { name: 'Acciones' }).click();
+  await expect(page.getByText(/Ataque: resta 2 puntos de vida/)).toBeVisible();
 });
 
 test('an attack cannot be wasted by touching it: actual pointer drag activates only on a valid drop', async ({ page }, testInfo) => {
@@ -229,7 +236,7 @@ test('an attack cannot be wasted by touching it: actual pointer drag activates o
   await page.getByRole('button', { name: 'Lanzar Moneda' }).click();
   await expect(page.locator('.dr-royal-hand-card')).toHaveCount(4, { timeout: 19000 });
   const cards = page.locator('.dr-royal-hand-card');
-  const ordinary = cards.filter({ hasText: /Decreto de Ataque|Decreto de Defensa/ }).last();
+  const ordinary = cards.filter({ hasText: /Ataque|Defensa/ }).last();
   const bounds = await ordinary.boundingBox();
   const target = await page.locator('.dr-royal-activation-target').boundingBox();
   expect(bounds).not.toBeNull(); expect(target).not.toBeNull();
@@ -266,4 +273,52 @@ test('four Impact placements are ordered, and hands remain visible without numer
   if (testInfo.project.name === 'mobile-390') {
     await page.screenshot({ path: testInfo.outputPath('new-royal-board-layout.png'), fullPage:true });
   }
+});
+
+
+test('campaign begins with three paragraphs and continues to the compact two-stop prologue', async ({ page }) => {
+  await page.goto('/Decreto-Real/#/');
+  await page.getByRole('button', { name: 'Empezar campaña' }).click();
+  await expect(page.getByRole('heading', { name: 'El reino escucha dos verdades' })).toBeVisible();
+  await expect(page.locator('.dci-story p')).toHaveCount(3);
+  await page.getByRole('button', { name: /Continuar al prólogo/ }).click();
+  await expect(page.locator('.dcm-prologue-map')).toBeVisible();
+  await expect(page.locator('.dcm-marker')).toHaveCount(2);
+  await expect(page.getByRole('button', { name: 'Volver al Menú' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Ver la historia' })).toHaveCount(0);
+});
+
+test('the general hub opens any region and only unlocks the center after eight generals', async ({ page }) => {
+  await page.goto(campaign);
+  await page.evaluate(() => {
+    localStorage.setItem('decreto-real.campania.v1', JSON.stringify({
+      version: 1, stars: { '01': 1, '02': 1 },
+    }));
+    localStorage.setItem('decreto-real.campania.generales-presentados.v1', '1');
+  });
+  await page.goto('/Decreto-Real/#/campania/generales');
+  await expect(page.getByRole('button', { name: /Escenario central bloqueado/ })).toBeDisabled();
+  await page.getByRole('button', { name: /Nayisa de Sombras/ }).click();
+  await page.getByRole('button', { name: 'Explorar región ⚔' }).click();
+  await expect(page.getByRole('heading', { name: 'Sombras de la frontera' })).toBeVisible();
+  await expect(page.locator('.dcmoment-missions li')).toHaveCount(4);
+  await page.getByRole('button', { name: 'Ver las cuatro misiones ›' }).click();
+  await expect(page.locator('.dcm-marker')).toHaveCount(4);
+  await expect(page.getByText('Sombras de la frontera')).toBeVisible();
+  await page.getByRole('button', { name: 'Volver al mapa de las ocho zonas' }).click();
+  await page.evaluate(() => {
+    localStorage.setItem('decreto-real.campania.v1', JSON.stringify({
+      version: 1,
+      stars: Object.fromEntries(Array.from({ length: 34 }, (_, i) => [String(i + 1).padStart(2, '0'), 1])),
+    }));
+  });
+  await page.reload();
+  await expect(page.getByRole('heading', { name: 'El centro ha despertado' })).toBeVisible();
+  for (let index = 0; index < 3; index++) {
+    await page.getByRole('button', { name: 'Continuar diálogo ›' }).click();
+  }
+  await page.getByRole('button', { name: /Ver el mapa y elegir el centro/ }).click();
+  await expect(page.getByRole('button', { name: 'Entrar al escenario central desbloqueado' })).toBeEnabled();
+  await page.getByRole('button', { name: 'Entrar al escenario central desbloqueado' }).click();
+  await expect(page.getByText('La Revolución Solar', { exact: true })).toBeVisible();
 });

@@ -268,3 +268,15 @@
     width:min(34cqw,15.5dvh,145px);
   }
 }
+
+
+/* In landscape, the illustrated finish-turn button must remain inside its
+   player footer, even when 100dvh is much shorter than portrait view. */
+@media (orientation:landscape) and (max-height:650px) {
+  .dr-royal-screen .dr-royal-player-area > .dr-royal-finish {
+    width:min(clamp(35px,11dvh,62px),calc(100% - 6px));
+    height:min(clamp(35px,11dvh,62px),calc(100% - 6px));
+    right:3px;
+    bottom:3px;
+  }
+}

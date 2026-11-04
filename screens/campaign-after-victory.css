@@ -1,0 +1,35 @@
+.dca-screen{position:fixed;inset:0;height:100dvh;width:100vw;background:#181421;color:#f8e8c7;font-family:Georgia,serif;overflow:hidden;box-sizing:border-box}
+.dca-screen *{box-sizing:border-box}
+.dca-stage{width:min(100%,550px);height:100%;margin:auto;display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;gap:clamp(6px,1dvh,12px);padding:max(8px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));background:linear-gradient(145deg,#2d1c1c,#151624)}
+.dca-header{min-height:53px;display:flex;gap:9px;align-items:center;background:linear-gradient(90deg,#784c2f,#edd29a,#805433);border:2px ridge #d5b16d;border-radius:9px;padding:4px 8px;color:#5b3425}
+.dca-header button{border:1px solid #af8b57;border-radius:6px;background:#412923;color:#fff0c3;padding:7px;font:700 12px Georgia,serif;white-space:nowrap}
+.dca-header>div{flex:1;min-width:0;text-align:center}
+.dca-header small{display:block;color:#6c4430;font:800 clamp(8px,2vw,10px) system-ui,sans-serif;letter-spacing:.08em}
+.dca-header h1{margin:2px 0;font:700 clamp(16px,4vw,23px)/1.1 Georgia,serif;text-overflow:ellipsis;white-space:nowrap;overflow:hidden}
+.dca-scene{position:relative;min-height:0;overflow:hidden;border:3px ridge #b99a64;border-radius:10px;background:#7c91a7}
+.dca-scene>img{width:100%;height:100%;object-fit:cover;object-position:center}
+.dca-scene-wash{position:absolute;inset:0;background:linear-gradient(0deg,#201520e8,transparent 70%)}
+.dca-scene-mark{position:absolute;left:8%;top:8%;font:700 clamp(36px,9vw,80px) Georgia,serif;color:#f8d789aa;text-shadow:0 2px 6px #2d1b14}
+.dca-victory-note{position:absolute;left:10px;right:10px;bottom:10px;background:#241b29d9;border-left:3px solid #ddbb72;border-radius:6px;padding:clamp(7px,1.3dvh,12px);max-height:54%;overflow:hidden}
+.dca-victory-note strong{color:#fce5ad;font:700 clamp(11px,2.5vw,15px) Georgia,serif}
+.dca-victory-note p{margin:4px 0 0;font:500 clamp(10px,2.45vw,13px)/1.25 system-ui,sans-serif}
+.dca-conversation{border:2px ridge #d8b16e;border-radius:10px;background:linear-gradient(135deg,#f1dba8,#b9905e);color:#483022;padding:clamp(8px,1.6dvh,14px);min-height:clamp(145px,23dvh,230px);display:flex;flex-direction:column;justify-content:center;gap:clamp(5px,1dvh,10px)}
+.dca-speaker{display:flex;align-items:center;gap:10px}
+.dca-speaker img,.dca-mentor-badge{height:clamp(44px,8dvh,70px);width:clamp(44px,8dvh,70px);flex:none;object-fit:cover;border:2px solid #d7b978;border-radius:50%;background:#344056}
+.dca-mentor-badge{display:grid;place-items:center;font:700 34px Georgia,serif;color:#cde0f1;background:radial-gradient(circle,#47718a,#24334c)}
+.dca-speaker small{font:800 clamp(9px,2vw,11px) system-ui,sans-serif;letter-spacing:.1em;color:#7a4c26}
+.dca-speaker h2{margin:2px 0;font:700 clamp(17px,4vw,23px) Georgia,serif}
+.dca-conversation>p{margin:0;font:500 clamp(12px,3.1vw,16px)/1.32 Georgia,serif}
+.dca-actions{display:grid;grid-template-columns:38% minmax(0,1fr);gap:8px}
+.dca-progress{grid-column:1/-1;display:flex;justify-content:center;gap:6px}
+.dca-progress span{width:22px;height:5px;background:#765b4b;border-radius:5px}
+.dca-progress span.active{background:#f2d486;box-shadow:0 0 6px #e9c16f}
+.dca-actions button,.dca-unavailable-card button{min-height:clamp(43px,6dvh,60px);border:2px ridge #dabb79;border-radius:8px;padding:6px;font:700 clamp(11px,2.8vw,15px) Georgia,serif;cursor:pointer}
+.dca-secondary{background:linear-gradient(#635044,#34282a);color:#fbe4b4}
+.dca-primary{background:linear-gradient(#a42b2f,#69151e);color:#fff0c5}
+.dca-screen button:focus-visible{outline:3px solid #fff2a0;outline-offset:2px}
+.dca-unavailable{display:grid;place-items:center;padding:16px}
+.dca-unavailable-card{max-width:400px;background:#e9d3a0;color:#4a3023;border:2px ridge #c8a067;border-radius:12px;padding:20px;text-align:center}
+.dca-unavailable-card button{background:#7e242a;color:#fff0c7}
+@media(max-height:640px){.dca-stage{gap:4px}.dca-header{min-height:44px}.dca-conversation{min-height:119px;padding:6px 10px}.dca-conversation>p{font-size:clamp(11px,2.7vw,13px);line-height:1.2}.dca-victory-note p{font-size:10px;line-height:1.18}.dca-actions button{min-height:40px}}
+@media(prefers-reduced-motion:reduce){.dca-screen *{animation:none!important;transition:none!important}}

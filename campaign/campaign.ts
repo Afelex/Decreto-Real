@@ -53,6 +53,18 @@ export function awardMissionStars(progress: CampaignProgress, id: string, earned
   return { version: 1, stars: { ...progress.stars, [id]: Math.max(bestStars(progress, id), earned) } };
 }
 
+/** Validate chapter-by-chapter without requiring an order between the eight regions.
+ * An out-of-order forged win cannot unlock later stages or the final chapter.
+ */
+export function validatedCampaignProgress(progress: CampaignProgress): CampaignProgress {
+  const verified = emptyCampaignProgress();
+  for (const mission of CAMPAIGN_MISSIONS) {
+    const stars = bestStars(progress, mission.id);
+    if (stars > 0 && isMissionUnlocked(verified, mission.id)) verified.stars[mission.id] = stars;
+  }
+  return verified;
+}
+
 /** Corrupt, unavailable and foreign storage are treated as a fresh campaign. */
 export function loadCampaignProgress(storage: CampaignStorage | null | undefined): CampaignProgress {
   try {
@@ -67,7 +79,7 @@ export function loadCampaignProgress(storage: CampaignStorage | null | undefined
       const score = (value.stars as Record<string, unknown>)[mission.id];
       if (Number.isInteger(score) && typeof score === 'number' && score >= 1 && score <= 3) result.stars[mission.id] = score;
     }
-    return result;
+    return validatedCampaignProgress(result);
   } catch {
     return emptyCampaignProgress();
   }
