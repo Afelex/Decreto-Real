@@ -122,7 +122,7 @@ test('a real original-game victory unlocks the next mission and gives achievable
   expect(screen.getByRole('heading', { name: '¡Misión superada!' })).toBeTruthy();
   const saved = JSON.parse(window.localStorage.getItem(CAMPAIGN_STORAGE_KEY)!);
   expect(saved.stars['01']).toBe(3);
-  expect(screen.getByRole('button', { name: 'Siguiente misión →' })).toBeTruthy();
+  expect(screen.getByRole('button', { name: 'Continuar historia →' })).toBeTruthy();
   expect(screen.getByText(/el sello es auténtico, pero alguien ha cambiado sus palabras/)).toBeTruthy();
 });
 
