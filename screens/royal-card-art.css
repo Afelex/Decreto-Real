@@ -279,3 +279,29 @@
   position:relative;z-index:3;background:#230e39de;color:#ffe5af;
 }
 .dr-royal-screen .dr-royal-drag-ghost.mystic {background:linear-gradient(145deg,#7049a2,#21112e);border:2px solid #f2cb84;}
+
+/* Texto de las místicas con nombre completo; evita cortar el título en móvil. */
+.dr-royal-screen .dr-royal-hand-card.mystic .dr-royal-card-title {
+  font-size:clamp(8px,2.1cqw,11px);line-height:1.08;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.dr-royal-screen .dr-royal-hand-card.mystic .dr-royal-card-effect {
+  font-size:clamp(8px,2cqw,10px);line-height:1.08;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+}
+.dr-mystic-combo-overlay {
+  position:absolute;inset:0;z-index:85;display:grid;place-items:center;
+  pointer-events:none;padding:16px;background:radial-gradient(ellipse at center,#45256bb9,#090716e9 72%);
+}
+.dr-mystic-combo-content {
+  width:min(100%,365px);text-align:center;padding:20px 16px;
+  border:2px solid #f4cf81;border-radius:14px;
+  background:linear-gradient(145deg,#5b2b75,#201234 65%,#4d2637);
+  box-shadow:0 0 32px #d1a36ba0;animation:dr-mystic-pulse .35s ease-out;
+}
+.dr-mystic-combo-content small {font:700 11px system-ui,sans-serif;letter-spacing:.15em;color:#e8caa3;}
+.dr-mystic-combo-content h2 {font:800 clamp(20px,6vw,30px)/1.2 Georgia,serif;color:#ffe6ae;margin:7px 0;}
+.dr-mystic-combo-content strong {display:block;font:700 18px Georgia,serif;color:#fff4dc;}
+.dr-mystic-combo-content p {font:600 13px/1.35 system-ui,sans-serif;color:#f8dfb9;margin:9px 0 0;}
+@keyframes dr-mystic-pulse {from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+@media(prefers-reduced-motion: reduce){.dr-mystic-combo-content{animation:none;}}
