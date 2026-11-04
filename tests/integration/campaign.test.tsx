@@ -166,3 +166,39 @@ test('map atmosphere changes when the next region becomes available', () => {
   expect(map?.getAttribute('data-region')).toBe('1');
   expect(screen.getByRole('button', { name: /Misión 4:/ }).hasAttribute('disabled')).toBe(true);
 });
+
+
+test('every independent chapter renders its own landscape artwork and four touch targets', () => {
+  for (let chapterId = 1; chapterId <= 8; chapterId++) {
+    save({ '01': 1, '02': 1 });
+    const view = render(<MemoryRouter initialEntries={[`/campania/region/${chapterId}`]}>
+      <Routes>
+        <Route path="/campania/region/:chapterId" element={<CampaignMap />} />
+        <Route path="/" element={<h1>Menú principal</h1>} />
+      </Routes>
+    </MemoryRouter>);
+    const map = document.querySelector('.dcm-region-map');
+    expect(map?.getAttribute('data-region-art')).toBe(String(chapterId));
+    expect(map?.querySelector('.dcm-map-art')?.getAttribute('src')).toContain(`regiones/region-${chapterId}.svg`);
+    expect(map?.querySelectorAll('.dcm-marker')).toHaveLength(4);
+    expect(map?.querySelector('.dcm-map-art')?.getAttribute('alt')?.length).toBeGreaterThan(25);
+    view.unmount();
+  }
+});
+
+test('the final chapter has its own Casa del Sello map and is sealed until eight generals fall', () => {
+  save({ '01': 1, '02': 1 });
+  const locked = render(<MemoryRouter initialEntries={['/campania/region/f']}>
+    <Routes><Route path="/campania/region/:chapterId" element={<CampaignMap />} /></Routes>
+  </MemoryRouter>);
+  expect(screen.getByRole('heading', { name: 'Región aún bloqueada' })).toBeTruthy();
+  locked.unmount();
+  save(Object.fromEntries(Array.from({length:34},(_,i)=>[String(i+1).padStart(2,'0'),1])));
+  const unlocked = render(<MemoryRouter initialEntries={['/campania/region/f']}>
+    <Routes><Route path="/campania/region/:chapterId" element={<CampaignMap />} /></Routes>
+  </MemoryRouter>);
+  expect(document.querySelector('.dcm-region-map')?.getAttribute('data-region-art')).toBe('f');
+  expect(document.querySelector('.dcm-map-art')?.getAttribute('src')).toContain('regiones/region-f.svg');
+  expect(document.querySelectorAll('.dcm-marker')).toHaveLength(4);
+  unlocked.unmount();
+});
