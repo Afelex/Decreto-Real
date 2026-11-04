@@ -151,9 +151,9 @@ test('los 18 fondos respetan la composición del duelo real: HUD, dos filas y ma
   for(const fondo of fondos){
     const content=fondo.id.endsWith('-jefe')?fondo.promptEdicion:fondo.prompt;
     assert.match(content,/DUEL SCREEN COMPATIBILITY/);
-    assert.match(content,/TOP 0–25%/);
-    assert.match(content,/35–65%/);
-    assert.match(content,/BOTTOM 65–100%/);
+    assert.match(content,/TOP 0–35%/);
+    assert.match(content,/35–63%/);
+    assert.match(content,/BOTTOM 63–100%/);
     assert.match(content,/1024x1536/);
     assert.match(content,/Do NOT render any UI/);
   }
