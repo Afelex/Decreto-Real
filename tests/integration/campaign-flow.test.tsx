@@ -51,3 +51,13 @@ test('the center unlocks only after all 8 bosses and 32 region missions are defe
   fireEvent.click(screen.getByRole('button', { name: 'Entrar al escenario central desbloqueado' }));
   expect(screen.getByRole('heading', { name: 'Mapa regional' })).toBeTruthy();
 });
+
+
+test('existing advanced saves skip the first-time tour but can replay the eight general explanations', () => {
+  save(6);
+  openBosses();
+  expect(screen.getByRole('button', { name: /Baltasar de Fierro/ })).toBeTruthy();
+  expect(screen.queryByText('CONVERSACIÓN · GENERAL 1 DE 8')).toBeNull();
+  fireEvent.click(screen.getByRole('button', { name: 'Volver a escuchar la presentación de los generales' }));
+  expect(screen.getByText('CONVERSACIÓN · GENERAL 1 DE 8')).toBeTruthy();
+});
