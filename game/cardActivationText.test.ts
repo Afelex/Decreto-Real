@@ -13,3 +13,9 @@ test('support, defense and Impact use clear effect text', () => {
   assert.match(cardActivationCopy({type:'ORDER',name:'Decreto de Orden',description:'Roba 1 carta extra'},false).effect,/rival roba/);
   assert.match(cardActivationCopy({type:'IMPACT',name:'Impacto Final',description:'Sello + Drenar 1',rank:4},true).effect,/victoria/);
 });
+
+test('mystic activation announces exact named effect instead of provisional text',()=>{
+  const c={type:'MYSTIC' as const,name:'Descarga del Trueno',description:'−3 vida rival'};
+  assert.equal(cardActivationCopy(c,true).title,'¡DESCARGA DEL TRUENO!');
+  assert.equal(cardActivationCopy(c,false).effect,'−3 vida rival');
+});
