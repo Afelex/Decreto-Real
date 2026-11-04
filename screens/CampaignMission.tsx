@@ -145,7 +145,9 @@ const CampaignMission: React.FC = () => {
     storyConversation={conversation}
     playerMysticSlots={legacyAwakened ? loadMysticSlots(storage, progress) : []}
     opponentMysticSlots={mission ? bossMysticSlots(mission.id) : []}
-    presentation={{ background: '/Decreto-Real/escenarios/plaza-virreinal-v2.svg' }}
+    presentation={{ background: chapter?.id && chapter.id !== 'p'
+      ? `${import.meta.env.BASE_URL}campania/regiones/region-${chapter.id}.svg`
+      : '/Decreto-Real/escenarios/plaza-virreinal-v2.svg' }}
     onReturn={() => navigate(returnToMap)}
   />;
 };
