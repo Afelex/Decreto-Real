@@ -206,3 +206,16 @@
 @media(prefers-reduced-motion:reduce) {
   .dcmoment-portrait,.dcmoment-medal,.dcmoment-liberation .dcmoment-landscape:after {animation:none;}
 }
+
+
+/* Direct exit is deliberately separate from the "other regions" back action. */
+.dcmoment-header {position:relative;padding-left:clamp(42px,11vw,62px);padding-right:clamp(42px,11vw,62px);}
+.dcmoment-menu {
+  position:absolute;left:6px;top:50%;transform:translateY(-50%);
+  width:clamp(30px,7vw,40px);height:clamp(30px,7vw,40px);
+  border:1px solid #9f7547;border-radius:7px;
+  background:linear-gradient(#6d4b39,#3d2c32);color:#ffe6b6;
+  font:700 clamp(18px,4.4vw,24px) Georgia,serif;
+  cursor:pointer;
+}
+@media(max-height:650px){.dcmoment-header{padding-left:38px;padding-right:38px}.dcmoment-menu{width:29px;height:29px;left:3px;}}
