@@ -1,49 +1,41 @@
-# Decreto Real · sustitución de ilustraciones de campaña
+# Decreto Real · ilustraciones estáticas de campaña
 
-**Los fondos actuales son provisionales.** Toda la navegación ya funciona independientemente del diseño final y no hace falta cambiar el motor ni las misiones para poner arte nuevo.
+## Estado del arte
 
-## Manifiesto único
+La campaña incorpora **47 imágenes WebP** ya generadas, sin realizar nuevas solicitudes a la API:
 
-Los diez paisajes (prólogo, ocho territorios y escenario central) se configuran en `campaign/regionAssets.ts`, propiedad `CAMPAIGN_LANDSCAPE_FILES`.
+- **18 fondos:** nueve regiones (las ocho zonas de generales y la Casa del Sello), con dos versiones por zona: `base` y `jefe`.
+- **29 retratos:** enemigos secundarios de las misiones 01–38, excluyendo los ocho generales y Sigumán.
+- Los **ocho retratos originales de los generales**, la imagen del mapa central `salon-generales.webp`, las ocho capas `seleccion-1..8.webp` y el perfil de Xervias **se conservan**.
+- El **prólogo** conserva el paisaje `prologo-ruta.svg`, porque este paquete no incluía un fondo nuevo para sus dos misiones.
 
-| Pantalla | Recurso actual en `public/campania/` | Tamaño base | Tema |
-|---|---|---|---|
-| Prólogo, 2 misiones | `prologo-ruta.svg` | 768 × 1120 | Camino costero andino |
-| Baltasar, región 1 | `regiones/region-1.svg` | 720 × 1100 | Puerto y barcos |
-| Leandro, región 2 | `regiones/region-2.svg` | 720 × 1100 | Posta y caballería |
-| Octavio, región 3 | `regiones/region-3.svg` | 720 × 1100 | Plata y minas |
-| Jerónimo, región 4 | `regiones/region-4.svg` | 720 × 1100 | Cañones y bastión |
-| Nayisa, región 5 | `regiones/region-5.svg` | 720 × 1100 | Selva y río |
-| Isabela, región 6 | `regiones/region-6.svg` | 720 × 1100 | Ciudad y estandartes |
-| Aukan, región 7 | `regiones/region-7.svg` | 720 × 1100 | Cóndor y nevados |
-| Gonzalo, región 8 | `regiones/region-8.svg` | 720 × 1100 | Casa del Juramento |
-| Sigumán, capítulo final | `regiones/region-f.svg` | 720 × 1100 | Casa del Sello |
+Origen: GitHub Actions [ejecución 41921898124](https://github.com/Afelex/Decreto-Real/actions/runs/41921898124), paquete `DECRETO-REAL-47-IMAGENES`. Se verificaron 47/47 archivos válidos WebP de **1024 × 1536** píxeles.
 
-**Recomendación de entrega final:** WebP optimizado a 1080 × 1650 o 1440 × 2200 para los territorios, manteniendo la proporción aproximada 720:1100; PNG si se necesita transparencia. El archivo original puede ser mucho más grande, pero no conviene cargar imágenes de varios megabytes en cada pantalla.
+## Directorios y selección
 
-**Cómo reemplazar:** colocar el recurso definitivo en `public/campania/regiones/` y cambiar únicamente el valor de la región correspondiente dentro de `campaign/regionAssets.ts` de `.svg` a `.webp` o `.png`. La misma imagen se emplea automáticamente en mapa regional, vista previa del general, escena de entrada/liberación, encuentro antes del combate y fondo del duelo de campaña.
+Todos los nuevos recursos se encuentran dentro de `public/campania/arte/`:
 
-## Retratos de los generales y mapa de selección
+| Ruta | Cantidad | Uso |
+| --- | ---: | --- |
+| `fondos/region-{1..8,f}-base.webp` | 9 | Mapas regionales, pantallas de entrada y liberación, escenas y duelos normales |
+| `fondos/region-{1..8,f}-jefe.webp` | 9 | Presentaciones y duelos de los 8 generales y de Sigumán (misión 38) |
+| `retratos/rival-{misión}-{nombre}.webp` | 29 | Perfil del rival de cada misión secundaria, incluido prólogo y capítulo final |
 
-- Los ocho retratos conceptuales **no son archivos independientes**: están generados como SVG en `screens/GeneralPortrait.tsx` (marco circular interno 120 × 120). Cuando se apruebe el arte, sustituir el componente por imágenes en `public/campania/retratos/` o añadir una tabla de recursos similar al manifiesto.
-- El **mapa general de los ocho retratos** permanece en `public/campania/salon-generales.webp` y está alineado en 941 × 1672 píxeles con las selecciones `public/campania/seleccion-1.webp` ... `seleccion-8.webp`. No cambiar su proporción ni recortar las capas por separado: los botones táctiles y las posiciones comparten coordenadas.
-- Las cartas místicas se presentan con nombre, efecto y estado desde `game/mysticCards.ts`. No hay una dependencia entre el dibujo de cada carta y la lógica de sus poderes.
+El archivo `campaign/regionAssets.ts` establece la correspondencia única entre misión y recurso mediante:
+- `campaignLandscape(chapterId)`: región base para mapas y panorámicas.
+- `campaignMissionBackground(missionId)`: variante `jefe` en las misiones 06, 10, 14, 18, 22, 26, 30, 34 y 38; `base` para las otras misiones regionales; prólogo mantiene su fondo de combate.
+- `campaignOpponentPortrait(missionId)`: retrato generado para los 29 rivales no principales; los generales y Sigumán mantienen sus presentaciones anteriores.
 
-## Indicaciones para la ilustración
+`screens/CampaignMission.tsx` envía los retratos y fondos al combate original, sin modificar el motor. `RegionScene.tsx` muestra el escenario correspondiente en el briefing y `BossConfrontation.tsx` emplea la variante de jefe. La interfaz mantiene sus medidas actuales sin añadir desplazamiento vertical.
 
-- Mantener el centro y los puntos recorridos **libres de textos**: las cuatro misiones, estrellas, porcentajes y controles se dibujan como HTML.
-- Prever legibilidad en móviles: los paisajes se oscurecen ligeramente debajo de los textos. La ilustración no debe contener diálogos ni botones.
-- Arte acorde a fantasía virreinal-andina y anime del juego; sin necesidad de símbolos incas explícitos.
-- En la pantalla de combate, las cartas deben seguir contrastando contra el fondo. Evitar saturación y detalles excesivos detrás de la mano.
-- Al sustituir una ilustración verificar: recorte en vertical, posiciones de los cuatro nodos, claridad del retrato del jefe y ausencia de desplazamiento vertical.
+## Reimportación
 
-## Criterios finales de aceptación
+El script `tools/integrate-campaign-art.mjs` copia el paquete ya generado, después de validar el manifiesto y la firma WebP de **los 47 archivos**. No hace llamadas a ninguna API de generación. El workflow de importación de GitHub Actions descarga el ZIP de la ejecución indicada y confirma la integridad, las pruebas de reglas, pruebas de interfaz y la compilación de producción antes de guardar los WebP en la rama de integración.
 
-1. Probar una partida nueva: introducción, 2 misiones de prólogo y diálogo de los ocho generales.
-2. Entrar a las 8 regiones en cualquier orden. Confirmar 4 etapas, retrato del jefe y carta mística.
-3. Completar una región: conversación, liberación y carta mística sellada (antes del legado de Zhinchi).
-4. Tras 8/8 regiones, verificar la revelación de la Casa del Sello y cuatro misiones finales.
-5. Comprobar que Zhinchi deja de dialogar tras el capítulo correspondiente, que el editor de baraja habilita el máximo de 3 cartas místicas y que Sigumán aparece con sus tres poderes.
-6. Verificar pantalla sin scroll, controles táctiles y guardado de estrellas en Android real antes de fusionar a `main`.
+## Comprobaciones pendientes antes de publicar
 
-[PR de la campaña](https://github.com/Afelex/Decreto-Real/pull/57)
+1. Abrir las 8 regiones, el mapa central y una pantalla de entrada/liberación para verificar encuadres verticales.
+2. Revisar el retrato correcto durante una misión de prólogo, una misión regional y la misión 36 (Vándalo Rojo).
+3. Verificar que el escenario cambia entre la misión 05 y la 06, y entre la misión 37 y la 38.
+4. Comprobar que los retratos de los generales y el mapa de selección previo se conservan.
+5. Revisar en móvil real que las cartas, indicadores y botones siguen siendo legibles y la pantalla no tiene scroll.

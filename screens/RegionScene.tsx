@@ -1,22 +1,25 @@
 import React from 'react';
 import { regionVisual } from '../campaign/regionVisuals.ts';
+import { campaignMissionBackground } from '../campaign/regionAssets.ts';
 import { GeneralPortrait, GENERAL_PORTRAIT_IDS } from './GeneralPortrait';
 
 /** Small original vector landscape reused by the campaign briefings.
  * All paths are decorative. Opponent stats still come from the combat engine. */
-export const RegionScene: React.FC<{ chapterId?: string; formidable?: boolean }> = ({
-  chapterId, formidable = false,
+export const RegionScene: React.FC<{ chapterId?: string; formidable?: boolean; missionId?: string }> = ({
+  chapterId, formidable = false, missionId,
 }) => {
   const visual = regionVisual(chapterId);
   const id = chapterId ?? 'p';
+  const illustration = missionId ? campaignMissionBackground(missionId) : undefined;
   const style = {
     '--rv-sky': visual.sky,
     '--rv-earth': visual.earth,
     '--rv-horizon': visual.horizon,
   } as React.CSSProperties;
 
-  return <div className={`dc-story-art dc-region-scene${formidable ? ' dc-region-formidable' : ''}`}
+  return <div className={`dc-story-art dc-region-scene${formidable ? ' dc-region-formidable' : ''}${illustration ? ' dc-region-has-illustration' : ''}`}
       data-region={id} style={style} aria-hidden="true">
+    {illustration && <img src={illustration} className="dc-region-illustration" alt="" draggable={false} />}
     <span className="dc-region-sun" />
     <svg viewBox="0 0 480 160" preserveAspectRatio="xMidYMid slice" fill="none" aria-hidden="true">
       <g opacity=".22" stroke="#f5dfb2" strokeWidth="2">

@@ -36,7 +36,7 @@ test('each of the eight territories presents four named, distinct missions and i
     expect(screen.getByRole('heading', { name: chapter.title })).toBeTruthy();
     expect(document.querySelectorAll('.dcmoment-missions li')).toHaveLength(4);
     expect(document.querySelector('.dcmoment-landscape>img')?.getAttribute('src'))
-      .toContain(`region-${n}.svg`);
+      .toContain(`arte/fondos/region-${n}-base.webp`);
     expect(screen.getByText('Xervias:')).toBeTruthy();
     expect(screen.getByText('Zhinchi:')).toBeTruthy();
     view.unmount();
