@@ -74,7 +74,7 @@ const CampaignBossSelect: React.FC = () => {
   const liberated = Array.from({ length: 8 }, (_, index) => completionForChapter(progress, String(index + 1))).filter(value => value === 100).length;
   const [intro, setIntro] = React.useState(() => {
     if (search.get('intro') === '1') return true;
-    if (!prologueComplete) return false;
+    if (!prologueComplete || liberated > 0) return false;
     try { return storage()?.getItem(GENERAL_INTRO_KEY) !== '1'; }
     catch { return true; }
   });
