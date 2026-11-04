@@ -150,7 +150,7 @@ export function resolveMysticPower(power: MysticPower, state: MysticSnapshot): M
   let selfHp = power.fullHeal ? MYSTIC_MAX_HP : state.selfHp;
   selfHp = clamp(selfHp + (power.heal ?? 0));
   // El retroceso no mata al lanzador: evita una derrota simultánea ambigua.
-  selfHp = Math.max(1, selfHp - (power.selfDamage ?? 0));
+  if (power.selfDamage) selfHp = Math.max(1, selfHp - power.selfDamage);
   let enemyHp = power.halveEnemy ? Math.floor(state.enemyHp / 2) : state.enemyHp;
   enemyHp = clamp(enemyHp + (power.healEnemy ?? 0) - (power.damage ?? 0));
   return {
