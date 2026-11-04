@@ -43,7 +43,7 @@ test('el bastón desbloquea editor, limita tres espacios y guarda elecciones',()
   save(36);
   renderDeck();
   expect(screen.getByText(/9 cartas obtenidas/)).toBeTruthy();
-  fireEvent.click(screen.getByRole('button',{name:'Editar baraja',exact:true}));
+  fireEvent.click(screen.getByRole('button',{name:/^Editar baraja$/}));
   expect(screen.getByRole('heading',{name:/Editar baraja · 0\/3/})).toBeTruthy();
   const first=screen.getByLabelText('Espacio 1') as HTMLSelectElement;
   fireEvent.change(first,{target:{value:'general-1'}});
@@ -63,7 +63,7 @@ test('el bastón desbloquea editor, limita tres espacios y guarda elecciones',()
 test('no es posible seleccionar en dos espacios una misma mística',()=>{
   save(36);
   renderDeck();
-  fireEvent.click(screen.getByRole('button',{name:'Editar baraja',exact:true}));
+  fireEvent.click(screen.getByRole('button',{name:/^Editar baraja$/}));
   fireEvent.change(screen.getByLabelText('Espacio 1'),{target:{value:'general-1'}});
   const second=screen.getByLabelText('Espacio 2') as HTMLSelectElement;
   expect(Array.from(second.options).some(option=>option.value==='general-1')).toBe(false);
