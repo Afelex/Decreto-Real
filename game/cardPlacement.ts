@@ -1,11 +1,12 @@
 import type { CardData } from '../types.ts';
+import { canActivateMystic } from './mysticCards.ts';
 
 export type CardDropZone = 'field' | 'impact-1' | 'impact-2' | 'impact-3' | 'impact-4';
 
 /** Presentation-only validation. The original game's attack, healing,
  * combo and Impact effects remain in GameBoard.playCard. */
 export function checkCardPlacement(
-  card: Pick<CardData, 'type' | 'rank'>,
+  card: Pick<CardData, 'type' | 'rank' | 'mysticId'>,
   zone: CardDropZone,
   impactLevel: number,
   impactPlayedThisTurn: boolean,
@@ -20,6 +21,9 @@ export function checkCardPlacement(
       return { valid: false, message: `Coloca Impacto ${rank === 4 ? 'Final' : ['I','II','III'][rank - 1]} en la casilla ${rank}.` };
     }
     return { valid: true };
+  }
+  if (card.type === 'MYSTIC' && !canActivateMystic(card.mysticId, impactPlayedThisTurn)) {
+    return { valid: false, message: 'Sol Negro también sella un Impacto. Solo puedes sellar uno por turno.' };
   }
   if (zone !== 'field') {
     return { valid: false, message: 'Arrastra Ataque, Defensa, Orden o Mística al centro del campo.' };
