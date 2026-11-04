@@ -16,6 +16,7 @@ import BattleResultScreen from './BattleResultScreen';
 import { RegionScene } from './RegionScene';
 import { GeneralPortrait } from './GeneralPortrait';
 import BossConfrontation from './BossConfrontation';
+import { campaignLandscape } from '../campaign/regionAssets.ts';
 import './campaign.css';
 
 type MissionOutcome = {
@@ -155,7 +156,7 @@ const CampaignMission: React.FC = () => {
     playerMysticSlots={legacyAwakened ? loadMysticSlots(storage, progress) : []}
     opponentMysticSlots={mission ? bossMysticSlots(mission.id) : []}
     presentation={{ background: chapter?.id && chapter.id !== 'p'
-      ? `${import.meta.env.BASE_URL}campania/regiones/region-${chapter.id}.svg`
+      ? campaignLandscape(chapter.id)
       : '/Decreto-Real/escenarios/plaza-virreinal-v2.svg' }}
     onReturn={() => navigate(returnToMap)}
   />;
