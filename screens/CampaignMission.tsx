@@ -44,7 +44,9 @@ const CampaignMission: React.FC = () => {
   const mysticalReward = GENERAL_MYSTICS.find(card => card.missionId === mission?.id);
   const legacyAwakened = hasZhinchiLegacy(progress);
   const accent = { '--dc-accent': chapter?.color ?? '#bfa374' } as React.CSSProperties;
-  const returnToMap = chapter && chapter.id !== 'p' ? `/campania/region/${chapter.id}` : '/campania';
+  const returnToMap = chapter?.id === 'p'
+    ? bestStars(progress, '02') > 0 ? '/campania/generales' : '/campania'
+    : chapter ? `/campania/region/${chapter.id}` : '/campania';
 
   React.useEffect(() => {
     setOutcome(null);
