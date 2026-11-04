@@ -13,6 +13,8 @@ on:
           - una-imagen
           - jefe-callao-aprobado
           - rivales-callao
+          - rival-callao-estilo-prueba
+          - rivales-callao-estilo
           - piloto-4
           - prologo
           - region-1
@@ -75,6 +77,14 @@ jobs:
           name: decreto-real-arte-3
           github-token: ${{ github.token }}
           path: art-input
+      - name: Recuperar los tres rivales originales para cambiar solo su estilo
+        if: ${{ (inputs.grupo == 'rival-callao-estilo-prueba' || inputs.grupo == 'rivales-callao-estilo') && inputs.modo == 'generar' }}
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 41914476805
+          name: decreto-real-arte-6
+          github-token: ${{ github.token }}
+          path: art-input/anteriores
       - name: Crear plan o generar imágenes autorizadas
         env:
           ART_GROUP: ${{ inputs.grupo }}
