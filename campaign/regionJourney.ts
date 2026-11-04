@@ -70,7 +70,9 @@ export function rememberRegionMoment(storage: CampaignStorage | null | undefined
   if (!isGeneralRegion(id) || !storage) return false;
   try {
     const raw = storage.getItem(key);
-    let previous: unknown = raw ? JSON.parse(raw) : [];
+    let previous: unknown = [];
+    try { previous = raw ? JSON.parse(raw) : []; }
+    catch { previous = []; }
     if (!Array.isArray(previous)) previous = [];
     const valid = previous.filter((item): item is GeneralRegionId => typeof item === 'string' && isGeneralRegion(item));
     storage.setItem(key, JSON.stringify([...new Set([...valid, id])]));
