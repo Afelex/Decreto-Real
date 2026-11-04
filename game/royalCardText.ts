@@ -1,8 +1,9 @@
 import type { CardData } from '../types';
+import { mysticDisplayName, mysticPower, mysticPowerText, type MysticId } from './mysticCards.ts';
 
 /** Dos líneas de texto visibles en la carta: nombre corto y efecto resumido.
  * Las descripciones originales se conservan para lógica, accesibilidad y avisos. */
-export function getRoyalCardText(card: Pick<CardData, 'type' | 'rank'>, attackDamage = 2): {
+export function getRoyalCardText(card: Pick<CardData, 'type' | 'rank' | 'mysticId'>, attackDamage = 2): {
   title: string;
   effect: string;
 } {
@@ -13,8 +14,11 @@ export function getRoyalCardText(card: Pick<CardData, 'type' | 'rank'>, attackDa
       return { title: 'Defensa', effect: '+1 Vida' };
     case 'ORDER':
       return { title: 'Orden', effect: 'Roba 1 carta' };
-    case 'MYSTIC':
-      return { title: 'Mística', effect: '−2 Vida · prueba' };
+    case 'MYSTIC': {
+      if (!card.mysticId) return { title: 'Mística', effect: 'Poder desconocido' };
+      const id = card.mysticId as MysticId;
+      return { title: mysticDisplayName(id), effect: mysticPowerText(mysticPower(id, 1)) };
+    }
     case 'IMPACT': {
       const rankLabel = card.rank === 4 ? 'FINAL' : ['I', 'II', 'III'][Math.max(0, (card.rank ?? 1) - 1)] ?? 'I';
       return { title: `Impacto ${rankLabel}`, effect: card.rank === 4 ? 'Victoria' : 'Drena 1' };

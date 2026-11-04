@@ -30,7 +30,7 @@ export const STORY_CHAPTERS: readonly StoryChapter[] = [
     "subtitle": "General I · Almirante de Hierro",
     "summary": "En el Callao alguien esconde armas en barcos y falsifica sus documentos. Xervias busca los registros que revelan a dónde llevan esas armas.",
     "general": "Almirante de Hierro",
-    "specialCard": "Bombardeo naval",
+    "specialCard": "Marea de Hierro",
     "color": "#6b99ac"
   },
   {
@@ -40,7 +40,7 @@ export const STORY_CHAPTERS: readonly StoryChapter[] = [
     "subtitle": "General II · Jinete Escarlata",
     "summary": "Los solarianos reparten decretos falsos por los caminos. Xervias sigue sus cartas para descubrir quién financia la Revolución Solar.",
     "general": "Jinete Escarlata",
-    "specialCard": "Carga de caballería",
+    "specialCard": "Carga Sangrante",
     "color": "#c47562"
   },
   {
@@ -50,7 +50,7 @@ export const STORY_CHAPTERS: readonly StoryChapter[] = [
     "subtitle": "General III · Señor de la Plata",
     "summary": "Los mineros tienen problemas reales, pero sus jefes utilizan ese sufrimiento para ganar dinero y apoyar a Sigumán. Xervias busca las cuentas.",
     "general": "Señor de la Plata",
-    "specialCard": "Pólvora enterrada",
+    "specialCard": "Pacto de Azogue",
     "color": "#a3a0af"
   },
   {
@@ -60,7 +60,7 @@ export const STORY_CHAPTERS: readonly StoryChapter[] = [
     "subtitle": "General IV · Artillero del Trueno",
     "summary": "Un general amenaza a los pueblos con cañones para mantenerlos callados. Xervias debe liberar a los testigos y encontrar a los mensajeros.",
     "general": "Artillero del Trueno",
-    "specialCard": "Fuego concentrado",
+    "specialCard": "Descarga del Trueno",
     "color": "#cba36b"
   },
   {
@@ -70,7 +70,7 @@ export const STORY_CHAPTERS: readonly StoryChapter[] = [
     "subtitle": "General V · Fantasma de la Selva",
     "summary": "Nayisa protege una región que antes sufrió abusos de los soldados. Xervias necesita su confianza para sacar las pruebas de la selva.",
     "general": "Fantasma de la Selva",
-    "specialCard": "Sendero secreto",
+    "specialCard": "Velo de la Selva",
     "color": "#779e7b"
   },
   {
@@ -80,7 +80,7 @@ export const STORY_CHAPTERS: readonly StoryChapter[] = [
     "subtitle": "General VI · Dama del Estandarte",
     "summary": "Una ciudad está dividida por banderas y promesas falsas. Xervias quiere demostrar que sus habitantes pueden vivir juntos sin obedecer por miedo.",
     "general": "Dama del Estandarte",
-    "specialCard": "Estandarte de resistencia",
+    "specialCard": "Estandarte Sagrado",
     "color": "#b8848c"
   },
   {
@@ -90,7 +90,7 @@ export const STORY_CHAPTERS: readonly StoryChapter[] = [
     "subtitle": "General VII · Cóndor de los Andes",
     "summary": "El Cóndor esconde una carta antigua porque teme descubrir que su juramento fue cambiado. Xervias busca la verdad detrás de esa promesa.",
     "general": "Cóndor de los Andes",
-    "specialCard": "Ataque de las cumbres",
+    "specialCard": "Picado Celestial",
     "color": "#8aadd0"
   },
   {
@@ -100,7 +100,7 @@ export const STORY_CHAPTERS: readonly StoryChapter[] = [
     "subtitle": "General VIII · Caballero del Juramento",
     "summary": "Los juramentos de los soldados fueron alterados. El último general debe decidir si sigue obedeciendo a Sigumán o protege a la gente.",
     "general": "Caballero del Juramento",
-    "specialCard": "Último juramento",
+    "specialCard": "Juramento Eterno",
     "color": "#c8af7d"
   },
   {

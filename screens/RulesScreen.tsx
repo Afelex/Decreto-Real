@@ -15,7 +15,7 @@ const RULE_PAGES = [
     lines: ['Activa dos cartas seguidas del mismo tipo para COMBO ×2: elige entre quitar 1 de vida o curarte 1.', 'Tres cartas seguidas del mismo tipo activan COMBO ×3: elige entre quitar 3 de vida o curarte 3.', 'Valen Ataque, Defensa, Impacto, Orden y Mística. La racha continúa entre turnos, incluso entre dos Impactos consecutivos.'] },
 
   { name: 'Místicas', icon: '✦', title: 'El legado de Zhinchi',
-    lines: ['Cada general tiene tres cartas místicas en su baraja. Al derrotarlo, Xervias conserva una copia sellada.', 'Al superar la misión 36, el bastón de Zhinchi permite activar Editar baraja.', 'Equipa máximo tres místicas, reemplazando Ataque, Defensa u Orden; no puedes retirar Impactos. Los efectos propios aún están en diseño.'] },
+    lines: ['Cada general tiene tres cartas místicas en su baraja. Al derrotarlo, Xervias conserva una copia sellada.', 'Al superar la misión 36, el bastón de Zhinchi permite activar Editar baraja.', 'Equipa máximo tres místicas, reemplazando Ataque, Defensa u Orden; no puedes retirar Impactos. Cada mística tiene su propia habilidad y efectos de combo ×2 y ×3.'] },
 ] as const;
 
 /** Short readable pages rather than a tall scrollable manual. */

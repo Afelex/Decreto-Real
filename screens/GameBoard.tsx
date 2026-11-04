@@ -15,7 +15,10 @@ import { resolveBattleEnd, resolveSurrender, resolveDevelopmentVictory, type Bat
 import { BattleSceneryLayer } from './BattleSceneryLayer';
 import StorySpeechPanel from './StorySpeechPanel';
 import type { CombatConversation } from '../campaign/combatDialogues.ts';
-import { insertMystics, PROVISIONAL_MYSTIC_DAMAGE, type MysticSlot } from '../game/mysticCards.ts';
+import {
+  insertMystics, mysticPower, mysticPowerText, mysticDisplayName, resolveMysticPower,
+  canActivateMystic, type MysticId, type MysticSlot, type MysticPower,
+} from '../game/mysticCards.ts';
 
 // --- GAME CONFIGURATION ---
 const MAX_HP = 20;
@@ -155,6 +158,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   const [showSpecialSelection, setShowSpecialSelection] = useState(false);
   const [comboChoice, setComboChoice] = useState<2 | 3>(3);
   const [comboAnnouncement, setComboAnnouncement] = useState<{ id: number; level: 2 | 3; ability: 'DAMAGE' | 'HEAL'; isPlayer: boolean } | null>(null);
+  const [mysticComboAnnouncement, setMysticComboAnnouncement] = useState<{ id: number; level: 2 | 3; name: string; effect: string; isPlayer: boolean } | null>(null);
 
   const [opponentHP, setOpponentHP] = useState(MAX_HP);
   const [opponentDeck, setOpponentDeck] = useState<CardData[]>([]);
@@ -195,8 +199,10 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
         ? null : { ...current, step: current.step + 1 };
     });
   };
-  const latestOpponent = useRef({ hand: opponentHand, health: opponentHP, impactLevel: opponentImpactLevel, gauge: opponentGauge, lastType: opponentLastType });
-  latestOpponent.current = { hand: opponentHand, health: opponentHP, impactLevel: opponentImpactLevel, gauge: opponentGauge, lastType: opponentLastType };
+  const latestOpponent = useRef({ hand: opponentHand, health: opponentHP, impactLevel: opponentImpactLevel, impactPlayedThisTurn: opponentImpactPlayedThisTurn, gauge: opponentGauge, lastType: opponentLastType });
+  latestOpponent.current = { hand: opponentHand, health: opponentHP, impactLevel: opponentImpactLevel, impactPlayedThisTurn: opponentImpactPlayedThisTurn, gauge: opponentGauge, lastType: opponentLastType };
+  const latestPlayer = useRef({ hand: playerHand, health: playerHP, impactLevel: playerImpactLevel, impactPlayedThisTurn: playerImpactPlayedThisTurn });
+  latestPlayer.current = { hand: playerHand, health: playerHP, impactLevel: playerImpactLevel, impactPlayedThisTurn: playerImpactPlayedThisTurn };
   const handleGlobalAudioToggle = () => {
     playSound('CLICK');
     if (!isMuted) { if (musicEnabled) toggleMusic(); if (sfxEnabled) toggleSfx(); }
@@ -335,10 +341,71 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     }
   };
 
+  /** Move real cards between hands: "arrebatar" never duplicates cards or generates new ones. */
+  const stealMysticCards = (isPlayer: boolean, amount: number) => {
+    if (amount <= 0) return;
+    const rivalHand = isPlayer ? latestOpponent.current.hand : latestPlayer.current.hand;
+    const taken = rivalHand.slice(-amount);
+    if (!taken.length) return;
+    const takenIds = new Set(taken.map(card => card.id));
+    if (isPlayer) {
+      setOpponentHand(prev => prev.filter(card => !takenIds.has(card.id)));
+      setPlayerHand(prev => [...prev, ...taken]);
+    } else {
+      setPlayerHand(prev => prev.filter(card => !takenIds.has(card.id)));
+      setOpponentHand(prev => [...prev, ...taken]);
+      setSelectedCardId(null); // A robbed card must never remain visually selected.
+    }
+  };
+
+  const activateMysticPower = (isPlayer: boolean, power: MysticPower) => {
+    const own = isPlayer ? latestPlayer.current : latestOpponent.current;
+    const enemy = isPlayer ? latestOpponent.current : latestPlayer.current;
+    const result = resolveMysticPower(power, {
+      selfHp: own.health, enemyHp: enemy.health, selfSeals: own.impactLevel,
+      impactPlayedThisTurn: own.impactPlayedThisTurn,
+    });
+    if (!result.accepted) return;
+    if (isPlayer) {
+      setPlayerHP(result.selfHp); setOpponentHP(result.enemyHp);
+      if (power.impact) { setPlayerImpactLevel(result.selfSeals); setPlayerImpactPlayedThisTurn(true); }
+    } else {
+      setOpponentHP(result.selfHp); setPlayerHP(result.enemyHp);
+      if (power.impact) { setOpponentImpactLevel(result.selfSeals); setOpponentImpactPlayedThisTurn(true); }
+    }
+    if (power.impact) { playSound('IMPACT'); triggerVisualEffect('IMPACT', 'GLOBAL'); }
+    if (result.steal) stealMysticCards(isPlayer, result.steal);
+    if (result.draw) drawCards(isPlayer ? 'PLAYER' : 'OPPONENT', result.draw);
+  };
+
+  /** Mystic combos are automatic and unique to the LAST Mystic played. */
+  const triggerMysticCombo = async (isPlayer: boolean, id: MysticId, level: 2 | 3): Promise<void> => {
+    if (gameOverRef.current || announcementBusy.current) return;
+    announcementBusy.current = true;
+    const power = mysticPower(id, level);
+    setMysticComboAnnouncement({
+      id: ++announcementCount.current, level, isPlayer,
+      name: mysticDisplayName(id), effect: mysticPowerText(power),
+    });
+    playSound('IMPACT');
+    const active = await announcementClock.current.wait(950);
+    setMysticComboAnnouncement(null);
+    if (active && !gameOverRef.current) {
+      activateMysticPower(isPlayer, power);
+      if (level === 3) {
+        if (isPlayer) { setPlayerGauge(0); setPlayerLastType(null); }
+        else { setOpponentGauge(0); setOpponentLastType(null); }
+      }
+    }
+    announcementBusy.current = false;
+  };
+
   // Announce a legally placed card BEFORE applying its HP, seal or draw effects.
   // The same pausable clock is used for player and rival animations.
   const playCard = async (card: CardData, isPlayer: boolean): Promise<void> => {
     if (gameOverRef.current || announcementBusy.current) return;
+    if (card.type === 'MYSTIC' && !canActivateMystic(card.mysticId,
+      isPlayer ? latestPlayer.current.impactPlayedThisTurn : latestOpponent.current.impactPlayedThisTurn)) return;
     announcementBusy.current = true;
     if (isPlayer) setPlayerHand(prev => prev.filter(c => c.id !== card.id));
     else setOpponentHand(prev => prev.filter(c => c.id !== card.id));
@@ -354,10 +421,10 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     announcementBusy.current = false;
     if (gameOverRef.current) return;
 
-    if (card.type === 'ATTACK' || card.type === 'MYSTIC') {
-      // El efecto místico es intencionadamente de prueba hasta aprobar las 9+3 habilidades.
-      const damage = card.type === 'MYSTIC' ? PROVISIONAL_MYSTIC_DAMAGE : ATTACK_DAMAGE;
-      if (isPlayer) setOpponentHP(p => Math.max(0, p - damage)); else setPlayerHP(p => Math.max(0, p - damage));
+    if (card.type === 'ATTACK') {
+      if (isPlayer) setOpponentHP(p => Math.max(0, p - ATTACK_DAMAGE)); else setPlayerHP(p => Math.max(0, p - ATTACK_DAMAGE));
+    } else if (card.type === 'MYSTIC' && card.mysticId) {
+      activateMysticPower(isPlayer, mysticPower(card.mysticId as MysticId, 1));
     } else if (card.type === 'DEFENSE') {
       if (isPlayer) setPlayerHP(p => Math.min(MAX_HP, p + 1)); else setOpponentHP(p => Math.min(MAX_HP, p + 1));
     } else if (card.type === 'ORDER') {
@@ -370,8 +437,13 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
 
     const comboLevel = updateGauge(isPlayer, card.type);
     if (comboLevel) {
-      if (isPlayer) { setComboChoice(comboLevel); setShowSpecialSelection(true); }
-      else await triggerSpecialAbility('OPPONENT', latestOpponent.current.health < MAX_HP / 2 ? 'HEAL' : 'DAMAGE', comboLevel);
+      if (card.type === 'MYSTIC' && card.mysticId) {
+        await triggerMysticCombo(isPlayer, card.mysticId as MysticId, comboLevel);
+      } else if (isPlayer) {
+        setComboChoice(comboLevel); setShowSpecialSelection(true);
+      } else {
+        await triggerSpecialAbility('OPPONENT', latestOpponent.current.health < MAX_HP / 2 ? 'HEAL' : 'DAMAGE', comboLevel);
+      }
     }
   };
 
@@ -555,6 +627,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     announcementBusy.current = false;
     setCardAnnouncement(null);
     setComboAnnouncement(null);
+    setMysticComboAnnouncement(null);
     setShowSpecialSelection(false);
     setSelectedCardId(null);
     setDragAt(null);
@@ -572,7 +645,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   };
   const handleSurrenderCancel = () => { playSound('CLICK'); setShowSurrenderConfirm(false); };
 
-  const endTurnUnavailable = phase !== 'PLAYER_TURN' || !!storyMoment || showSpecialSelection || !!comboAnnouncement || isMenuOpen || !!cardAnnouncement || announcementBusy.current;
+  const endTurnUnavailable = phase !== 'PLAYER_TURN' || !!storyMoment || showSpecialSelection || !!comboAnnouncement || !!mysticComboAnnouncement || isMenuOpen || !!cardAnnouncement || announcementBusy.current;
 
   const Board = (
     <div className={`dr-classic-screen dr-royal-screen bg-[#050505] font-body w-full overflow-hidden select-none flex flex-col relative text-white ${shakeScreen ? 'animate-shake' : ''}`} style={{ width: 'min(100vw, 430px)', height: '100dvh' }}>
@@ -654,6 +727,17 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
         <CardActivationBanner key={cardAnnouncement.id} card={cardAnnouncement.card}
           isPlayer={cardAnnouncement.isPlayer} paused={isMenuOpen}
           onEnded={() => cueFinished.current?.()} />
+      )}
+      {mysticComboAnnouncement && (
+        <div className="dr-mystic-combo-overlay" role="status" aria-live="assertive"
+          aria-label={`Combo místico por ${mysticComboAnnouncement.level}: ${mysticComboAnnouncement.name}. ${mysticComboAnnouncement.effect}`}>
+          <div className="dr-mystic-combo-content">
+            <small>{mysticComboAnnouncement.isPlayer ? 'XERVIAS' : 'PODER RIVAL'}</small>
+            <h2>COMBO MÍSTICO ×{mysticComboAnnouncement.level}</h2>
+            <strong>{mysticComboAnnouncement.name}</strong>
+            <p>{mysticComboAnnouncement.effect}</p>
+          </div>
+        </div>
       )}
       {/* The selected combo video completes before the bonus damage/healing applies. */}
       {comboAnnouncement && (
@@ -786,8 +870,9 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
               const distance = i - (playerHand.length - 1) / 2;
               const step = Math.min(15, 60 / Math.max(1, playerHand.length - 1));
               const selected = selectedCardId === card.id;
-              const canUse = canHandleCards && (card.type !== 'IMPACT' ||
-                (!playerImpactPlayedThisTurn && card.rank === playerImpactLevel + 1));
+              const canUse = canHandleCards &&
+                (card.type !== 'IMPACT' || (!playerImpactPlayedThisTurn && card.rank === playerImpactLevel + 1)) &&
+                (card.type !== 'MYSTIC' || canActivateMystic(card.mysticId, playerImpactPlayedThisTurn));
               const display = getRoyalCardText(card, ATTACK_DAMAGE);
               return <button key={card.id} type="button"
                 className={`dr-royal-hand-card ${card.type.toLowerCase()}${selected ? ' selected' : ''}${!canUse ? ' unavailable' : ''}`}

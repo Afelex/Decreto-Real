@@ -1,6 +1,6 @@
 # DR-MYSTICAS-01 · Desbloqueos y edición de baraja
 
-Implementación incremental del acuerdo de campaña. No define todavía los nombres, las imágenes ni los efectos finales de cada habilidad.
+Implementación incremental con primera propuesta JUGABLE de nombres y efectos de 12 habilidades místicas. Los nombres y números podrán afinarse con el usuario después de QA; el arte todavía es provisional.
 
 ## Desbloqueo
 
@@ -18,13 +18,34 @@ Implementación incremental del acuerdo de campaña. No define todavía los nomb
 - Cada jefe general lleva **tres copias idénticas de su mística** durante el duelo. Sigumán lleva tres místicas diferentes, identificadas internamente como `siguman-1`, `siguman-2` y `siguman-3`.
 - Los combos consecutivos del tipo MÍSTICA cuentan para ×2 y ×3, también entre turnos.
 
-## Fase provisional y tareas pendientes
+## Nombres y efectos jugables · primera propuesta de balance
 
-**Importante:** hasta aprobar con el usuario los efectos individuales, todas las cartas MÍSTICAS usan **daño de prueba de 2 puntos**, y el combo actual del tipo místico aplica la elección normal entre daño y curación. No son los efectos finales de los generales ni de Sigumán, y no deben presentarse como tal en el arte oficial.
+Los efectos de los combos se **añaden** al efecto de la carta base. La racha se mide por el tipo MÍSTICA: se puede hacer combo entre místicas distintas, y la **última carta jugada** determina el efecto del combo. Las rachas sobreviven al cambio de turno y se reinician tras ×3.
 
-- Pendiente: definir con el usuario nueve nombres/efectos propios (ocho generales + legado de Zhinchi) y tres habilidades distintas de Sigumán; entonces cambiar la tabla de efectos y el balance.
-- Pendiente: imágenes 2:3, sonido y efectos transparentes para MÍSTICA.
-- La tarjeta de prueba utiliza temporalmente el arte ya alojado de Orden, teñido en violeta por CSS.
+| Portador | Nombre | Activación | Combo ×2 (adicional) | Combo ×3 (adicional) |
+|---|---|---|---|---|
+| Almirante de Hierro | Marea de Hierro | Cura 2 | Daño 2 y cura 1 | Daño 3 y cura 2 |
+| Jinete Escarlata | Carga Sangrante | Daño 3, retroceso 1 | Daño 2 | Daño 4, retroceso 1 |
+| Señor de la Plata | Pacto de Azogue | Cura 4 y cura 1 al rival | Cura 2 y roba 1 | Daño 3, cura 2 y cura 1 al rival |
+| Artillero del Trueno | Descarga del Trueno | Daño 3 | Daño 4 | Daño 5, retroceso 2 |
+| Nayisa de Sombras | Velo de la Selva | Daño 1 y roba 1 | Arrebata 1 carta de la mano rival | Daño 3 y arrebata 1 |
+| Dama del Estandarte | Estandarte Sagrado | Cura 3 y cura 1 al rival | Cura 2 y roba 1 | Cura 3 y daño 2 |
+| Cóndor de los Andes | Picado Celestial | Daño 4, retroceso 1 | Daño 3, retroceso 1 | Daño 5, retroceso 2 |
+| Caballero del Juramento | Juramento Eterno | Daño 2 y cura 2 | Cura 2 y roba 1 | Daño 3 y cura 3 |
+| Zhinchi | Último Juramento | Daño 5, cura 2 y retroceso 2 | Daño 3 y roba 1 | Daño 5 y cura 3 |
+| Sigumán (I) | Renacimiento Solar | Recupera toda su vida hasta 20 | Cura 3 y arrebata 1 | Daño 3 y roba 1 |
+| Sigumán (II) | Juicio del Eclipse | Reduce a la mitad la vida **actual** rival (redondeo hacia abajo) | Arrebata 2 cartas | Daño 3, cura 3 y roba 1 |
+| Sigumán (III) | Decreto del Sol Negro | Sella un Impacto y causa daño 5 | Daño 3 y roba 1 | Daño 5, retroceso 2 |
+
+**Límites de seguridad jugable:** vida máxima 20; el retroceso no mata a quien lo usa (mínimo 1 HP), evita una derrota simultánea; Sol Negro cuenta como uno de los 4 Impactos normales y no puede usarse si ya selló otro ese turno; arrebatar roba cartas **reales de la mano rival**, sin duplicarlas, y si no tiene suficientes solo toma las disponibles.
+
+Las cartas místicas de Sigumán solo aparecen en su baraja como jefe final. Xervias no puede equiparlas por defecto, pero sí puede aprovechar una carta robada durante el duelo.
+
+## Arte y revisión pendientes
+
+- Las habilidades están implementadas funcionalmente, pero son la **primera propuesta para QA**: antes de fijarlas como balance final, revisarlas con el usuario y probarlas contra los 20 HP iniciales.
+- Pendiente: ilustraciones originales 2:3 y animaciones propias (canal alfa) de las doce cartas místicas. De momento se reutiliza arte temporal y un banner de combo místico.
+- La carta sigue limitada a una copia de cada general para Xervias, con posibilidad de combinar místicas diferentes para ×2/×3; no se generan copias de recompensa por repetir jefes.
 - La herramienta de victoria automática de QA debe seguir siendo temporal y eliminarse antes de publicar la versión final del juego.
 
 ## Datos y pruebas
