@@ -3,6 +3,7 @@ import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { CAMPAIGN_MISSIONS, bestStars, isMissionUnlocked, loadCampaignProgress } from '../campaign/campaign.ts';
 import { STORY_CHAPTERS } from '../campaign/story.ts';
 import { GeneralPortrait } from './GeneralPortrait';
+import { CENTER_REVEAL_KEY } from './CampaignAfterVictory';
 import './campaign-boss-select.css';
 
 type GeneralEntry = {
@@ -97,7 +98,10 @@ const CampaignBossSelect: React.FC = () => {
     if (next) navigate('/campania/region/' + selected.id);
   };
 
+  let centerRevealed = false;
+  try { centerRevealed = storage()?.getItem(CENTER_REVEAL_KEY) === '1'; } catch { /* no storage */ }
   if (!prologueComplete) return <Navigate to="/campania" replace />;
+  if (centerUnlocked && !centerRevealed) return <Navigate to="/campania/revelacion" replace />;
 
   if (intro) {
     const general = GENERALS[introIndex];
