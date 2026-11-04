@@ -63,3 +63,21 @@ test('jefe se edita a partir del fondo base en lugar de generar escenario distin
   assert.match(edit.payload.prompt,/provided input|PROVIDED BASE IMAGE/i);
   assert.match(edit.payload.prompt,/CALLAO FLAG/);
 });
+
+test('Callao: un clic prepara solo el jefe y otro los tres rivales reales',()=>{
+ const base=seleccion('jefe-callao-aprobado');
+ assert.deepEqual(base.map(i=>i.id),['fondo-1-jefe']);
+ const rivals=seleccion('rivales-callao');
+ assert.deepEqual(rivals.map(i=>i.id),['rival-03','rival-04','rival-05']);
+});
+test('el modo plan del jefe aprobado no llama a la API y no necesita credenciales',async()=>{
+ const r=await ejecutar({grupo:'jefe-callao-aprobado',modo:'plan',calidad:'low',confirmar:'NO',apiKey:''});
+ assert.equal(r.items.length,1);
+ assert.equal(r.results.length,0);
+});
+test('frena la edición del jefe si no está presente la base aprobada',async()=>{
+ await assert.rejects(
+  ejecutar({grupo:'jefe-callao-aprobado',modo:'generar',calidad:'low',confirmar:'SI',apiKey:'prueba-invalida'}),
+  /No se encontró el fondo aprobado/
+ );
+});
