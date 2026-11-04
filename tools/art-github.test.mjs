@@ -81,3 +81,19 @@ test('frena la edición del jefe si no está presente la base aprobada',async()=
   /No se encontró el fondo aprobado/
  );
 });
+
+test('jefes deben cambiar de escenario, no solo recolorear el fondo base',()=>{
+  const items=catalogo();
+  for (const region of ['1','2','3','4','5','6','7','8','f']){
+    const boss=items.find(i=>i.id==='fondo-'+region+'-jefe');
+    assert.ok(boss?.promptEdicion,region);
+    assert.match(boss.promptEdicion,/CLEARLY DIFFERENT BOSS BATTLE ARENA/);
+    assert.match(boss.promptEdicion,/Recompose at least 40 percent/);
+    assert.match(boss.promptEdicion,/NEW VIEWPOINT|New viewpoint|New camera|new nearby viewpoint/i);
+    assert.match(boss.promptEdicion,/NO|DO NOT/);
+  }
+  const callao=items.find(i=>i.id==='fondo-1-jefe');
+  assert.match(callao.promptEdicion,/CALLAO ADMIRAL BOSS ARENA/);
+  assert.match(callao.promptEdicion,/coastal cannons|coastal cannons|coastal|naval command/i);
+  assert.match(callao.promptEdicion,/Cross of Burgundy/);
+});
