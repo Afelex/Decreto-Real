@@ -4,6 +4,7 @@ import { CAMPAIGN_MISSIONS, bestStars, isMissionUnlocked, loadCampaignProgress }
 import { STORY_CHAPTERS } from '../campaign/story.ts';
 import { GeneralPortrait } from './GeneralPortrait';
 import { CENTER_REVEAL_KEY } from './CampaignAfterVictory';
+import { hasSeenRegionMoment, REGION_ENTRANCES_KEY } from '../campaign/regionJourney.ts';
 import './campaign-boss-select.css';
 
 type GeneralEntry = {
@@ -95,7 +96,11 @@ const CampaignBossSelect: React.FC = () => {
     const missions = missionsFor(selected.id);
     const next = missions.find(mission => bestStars(progress, mission.id) === 0 && isMissionUnlocked(progress, mission.id))
       ?? [...missions].reverse().find(mission => isMissionUnlocked(progress, mission.id));
-    if (next) navigate('/campania/region/' + selected.id);
+    if (next) {
+      const alreadyStarted = missions.some(mission => bestStars(progress, mission.id) > 0);
+      const introductionSeen = hasSeenRegionMoment(storage(), REGION_ENTRANCES_KEY, selected.id);
+      navigate((alreadyStarted || introductionSeen ? '/campania/region/' : '/campania/entrada/') + selected.id);
+    }
   };
 
   let centerRevealed = false;
