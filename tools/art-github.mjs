@@ -4,7 +4,7 @@
  * SIN ejecuciones automáticas, SIN modificar el juego, SIN escribir claves en archivos.
  * Node 22+; catálogo extraído de los 38 enemigos y de la historia canónica.
  */
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync, readFileSync } from 'node:fs';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ENEMY_ROSTER } from '../campaign/characters.ts';
@@ -37,7 +37,10 @@ const BOSS_DETAILS = {
   '8': 'Tribunal principal de la misma columnata, con iluminación ámbar solemne',
   f: 'Salón de Sigumán después de la misma puerta circular y escaleras, luz dorada falsa y sombras violetas'
 };
-const STYLE = 'Ilustración 2D original para videojuego de cartas, anime cinematográfico de fantasía andino-virreinal, Perú ficticio del siglo XVII, dibujo definido y sombreado elegante, materiales de piedra, tela y madera coherentes, profundidad atmosférica, paleta armónica. No plástico ni plastilina, sin caracteres escritos, sin marcas, sin interfaz, sin cartas, sin símbolos incas explícitos.';
+const STYLE = "MASTER STYLE: ORIGINAL 2D HAND-DRAWN ANIME VIDEO GAME SCENERY for a fantasy card battle, matching Decreto Real illustrated game backgrounds, absolutely NOT a photograph. Visible controlled dark ink contour lines around every important building, ship, tree and foreground object, distinctive graphic silhouettes, broad simplified shapes, medium-complexity architecture, flat intentional color patches, 2–3-level cel shading per material, soft color washes only for clouds and distant atmospheric depth, elegant painterly anime finish. Reduce microtexture by 80 percent: stone is defined by large graphic slabs, water by smooth stylized reflections, wood by a few bold lines. Readable on a narrow mobile screen. NO photorealism, NO realistic matte painting, NO photobashing, NO photo filters, NO historical oil painting, NO 3D, NO CGI, NO Unreal Engine, NO realistic wet stone highlights, NO photographic lens effects, NO plastilina, clay or plastic. Fantasy 17th-century colonial Peru with Andean geography and original virreinal-inspired architecture. No modern materials, no explicit Inca glyphs, no lettering, no logos, no watermarks, no game interface or cards.";
+const HISTORICAL_FLAGS = "HISTORICAL HERALDRY RULE: Never depict French flags, blue-white-red tricolours, modern national flags, the Spanish national coat of arms, Spanish royal shield, heraldic escutcheons or crowns on banners. When a Spanish royalist/colonial military flag is shown, use ONLY the historical Cross of Burgundy (aspa de Borgoña): a plain ivory/white flag with two broad jagged red diagonal branches making an X from corner to corner, without any other motif. Fictional faction banners elsewhere may be monochrome but never modern tricolours.";
+const CALLAO_FLAGS = "MANDATORY CALLAO FLAG: Put exactly ONE clearly legible rectangular white or off-white flag on the CENTRAL WATCHTOWER. On this cloth paint only TWO JAGGED RED DIAGONAL BRANCHES that intersect into an X from all four corners: the red Cross of Burgundy (aspa de Borgoña). It is a red X on a white field, NOT a red-white-blue design. NO blue stripes, NO vertical or horizontal tricolour, NO French flags, NO coat of arms of Spain, NO crest, NO crown and NO national emblems. Omit all other tiny flags instead of inventing symbols.";
+const BOSS_EDIT_RULES = "BOSS VARIANT FROM IMAGE REFERENCE: the provided input is the BASE IMAGE of this exact place. Perform a faithful EDIT OF THIS SAME IMAGE, not a new composition. Preserve the camera viewpoint, exact building placement, landmark silhouettes, ships, coastline, horizon, perspective, 2D line-work, 2–3-tone cel-shading and all flag designs. ONLY change time-of-day lighting slightly and add limited atmosphere or small ceremonial decorations at the sides, without changing architecture or any flag. Keep middle clear for card play and bottom clear for HUD; no characters, cards, UI, text or new buildings.";
 
 const slug = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
@@ -58,7 +61,9 @@ export function catalogo() {
         chapterId: chapter.id,
         kind: 'fondo',
         title: chapter.title + ' — ' + version,
-        prompt: STYLE + ' FONDO DE COMBATE SIN PERSONAS. Región: ' + chapter.title + ', ' + chapter.region + '. Hitos invariables: ' + REGION_DETAILS[chapter.id] + '. Atmósfera: ' + REGION_VISUALS[chapter.id].atmosphere + '. ' + focus + ' Composición vertical 2:3; conservar zona central despejada para DOS filas de cartas, banda inferior libre para HUD, detalles sobre los extremos. Sin figuras humanas, texto ni emblemas sueltos.'
+        prompt: [STYLE, 'DRAW AN ACTUAL STYLIZED 2D ANIME BACKGROUND, NEVER PHOTOGRAPHIC. Region: ' + chapter.title + ', ' + chapter.region + '. Permanent geographic and architectural landmarks: ' + REGION_DETAILS[chapter.id] + '. Atmosphere: ' + REGION_VISUALS[chapter.id].atmosphere + '. ' + focus,
+          'VERTICAL 2:3 game environment. TWO rows of combat cards will overlay the middle, so leave a clean quiet center and lower HUD area. Emphasize bold ink-lined shapes, simplified stone and wood textures, drawn stylized water, controlled graphic shading. No people, no text, no HUD, no cards.', HISTORICAL_FLAGS, chapter.id === '1' ? CALLAO_FLAGS : ''].join(' '),
+        promptEdicion: version === 'jefe' ? [STYLE, BOSS_EDIT_RULES, 'Region: ' + chapter.title + '. Same recognizable permanent landmarks: ' + REGION_DETAILS[chapter.id] + '. BOSS DRAMA THROUGH LIGHT AND PROPS ONLY: ' + BOSS_DETAILS[chapter.id] + '.', HISTORICAL_FLAGS, chapter.id === '1' ? CALLAO_FLAGS : ''].join(' ') : null
       });
     }
   }
@@ -73,7 +78,7 @@ export function catalogo() {
       chapterId: stage.chapterId,
       kind: 'retrato',
       title: enemy.name + ' — ' + enemy.alias,
-      prompt: STYLE + ' RETRATO ORIGINAL DE OPONENTE. Nombre de referencia para producción (NO escribirlo): ' + enemy.name + '. Papel: ' + enemy.role + '. Alias: ' + enemy.alias + '. Dirección canónica: ' + enemy.portraitDirection + '. Lugar: ' + (chapter?.region || 'Virreinato del Perú') + '. Misión: ' + stage.title + '. Mostrar rostro y torso, silueta distintiva, expresión decidida pero neutral, vestimenta de su oficio y época, fondo regional desenfocado, encuadre vertical 2:3 adecuado para el HUD, rostro completo sin cortes. Sin letras ni logotipos.'
+      prompt: STYLE + ' DRAW AN ORIGINAL INK-OUTLINED 2D ANIME CEL-SHADED CHARACTER, NOT A REALISTIC PHOTO, NOT 3D, NOT A PHOTOREALISTIC PORTRAIT. RETRATO ORIGINAL DE OPONENTE. Nombre de referencia para producción (NO escribirlo): ' + enemy.name + '. Papel: ' + enemy.role + '. Alias: ' + enemy.alias + '. Dirección canónica: ' + enemy.portraitDirection + '. Lugar: ' + (chapter?.region || 'Virreinato del Perú') + '. Misión: ' + stage.title + '. Mostrar rostro y torso, silueta distintiva, expresión decidida pero neutral, vestimenta de su oficio y época, fondo regional desenfocado, encuadre vertical 2:3 adecuado para el HUD, rostro completo sin cortes. Sin letras ni logotipos.'
     });
   }
   const fondos=images.filter(i=>i.kind==='fondo').length;
@@ -99,11 +104,21 @@ function generarGaleria(items,results) {
   }).join('');
   writeFileSync(join(OUTPUT,'galeria.html'),'<!doctype html><html lang="es"><meta charset="UTF-8"><title>Decreto Real | Arte</title><style>body{background:#10141d;color:#faf1dc;font:16px system-ui;padding:24px}main{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}article{background:#1d2330;padding:16px;border-radius:12px}img{display:block;width:100%;border-radius:8px}h2{font-size:16px}</style><h1>Decreto Real · Galería de producción</h1><p>Solo archivos del lote. La publicación del juego no se modifica.</p><main>'+body+'</main></html>');
 }
-async function generar(item,quality,apiKey) {
-  const response=await fetch('https://api.openai.com/v1/images/generations',{
+export function construirSolicitud(item,quality,baseImage=null) {
+  const shared = {model:MODEL,n:1,size:'1024x1536',quality,output_format:'webp',output_compression:80,background:'opaque'};
+  const boss = item.kind === 'fondo' && item.id.endsWith('-jefe');
+  if (boss) {
+    if (!Buffer.isBuffer(baseImage) || baseImage.length === 0) throw Error('Falta el fondo base para editar la versión jefe; no se llama a la API.');
+    return {url:'https://api.openai.com/v1/images/edits',payload:{...shared,prompt:item.promptEdicion,images:[{image_url:'data:image/webp;base64,'+baseImage.toString('base64')}]}};
+  }
+  return {url:'https://api.openai.com/v1/images/generations',payload:{...shared,prompt:item.prompt}};
+}
+async function generar(item,quality,apiKey,baseImage=null) {
+  const request=construirSolicitud(item,quality,baseImage);
+  const response=await fetch(request.url,{
     method:'POST',
     headers:{Authorization:'Bearer '+apiKey,'Content-Type':'application/json'},
-    body:JSON.stringify({model:MODEL,prompt:item.prompt,n:1,size:'1024x1536',quality,output_format:'webp',output_compression:80,background:'opaque'}),
+    body:JSON.stringify(request.payload),
     signal:AbortSignal.timeout(300000)
   });
   if (!response.ok) {
@@ -116,7 +131,7 @@ async function generar(item,quality,apiKey) {
   const path=join(OUTPUT,item.filename);
   mkdirSync(dirname(path),{recursive:true});
   writeFileSync(path,Buffer.from(b64,'base64'));
-  return {id:item.id,status:'generada',filename:item.filename,usage:data.usage??null};
+  return {id:item.id,status:'generada',filename:item.filename,method:request.url.endsWith('/edits')?'edición con base':'generación nueva',usage:data.usage??null};
 }
 export async function ejecutar({grupo='una-imagen',modo='plan',calidad='low',confirmar='',apiKey=process.env.OPENAI_API_KEY}={}) {
   const items=seleccion(grupo);
@@ -126,14 +141,18 @@ export async function ejecutar({grupo='una-imagen',modo='plan',calidad='low',con
   mkdirSync(OUTPUT,{recursive:true});
   writeFileSync(join(OUTPUT,'catalogo-seleccionado.json'),JSON.stringify(items,null,2));
   const results=[];
+  const basesDelLote=new Map();
   if (modo==='generar') {
     if (confirmar!=='SI') throw Error('Para gastar crédito escribe SI en la casilla de confirmación.');
     if (!apiKey) throw Error('Falta el secreto OPENAI_API_KEY en GitHub. No se ha hecho ningún cargo.');
     for (const item of items) {
       console.log('Generando '+item.id+' ('+(results.length+1)+'/'+items.length+')');
       try {
-        results.push(await generar(item,calidad,apiKey));
-        console.log('OK: '+item.filename);
+        const referencia = item.kind === 'fondo' && item.id.endsWith('-jefe') ? basesDelLote.get(item.chapterId) : null;
+        const generated = await generar(item,calidad,apiKey,referencia);
+        results.push(generated);
+        if (item.kind === 'fondo' && item.id.endsWith('-base')) basesDelLote.set(item.chapterId,readFileSync(join(OUTPUT,item.filename)));
+        console.log('OK: '+item.filename+' ('+generated.method+')');
       } catch (error) {
         results.push({id:item.id,status:'error',message:error.message});
         console.error('No se pudo generar '+item.id+': '+error.message);
