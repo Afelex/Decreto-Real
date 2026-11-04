@@ -3,6 +3,7 @@ import { beforeEach, afterEach, expect, test } from 'vitest';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import CampaignBossSelect from '../../screens/CampaignBossSelect';
+import CampaignRegionMoment from '../../screens/CampaignRegionMoment';
 import { CAMPAIGN_STORAGE_KEY } from '../../campaign/campaign.ts';
 
 const save = (through: number) => {
@@ -14,6 +15,7 @@ const openBosses = () => render(<MemoryRouter initialEntries={['/campania/genera
     <Route path="/campania" element={<h1>Prólogo pendiente</h1>} />
     <Route path="/campania/generales" element={<CampaignBossSelect />} />
     <Route path="/campania/region/:chapterId" element={<h1>Mapa regional</h1>} />
+    <Route path="/campania/entrada/:chapterId" element={<CampaignRegionMoment mode="entrada" />} />
     <Route path="/" element={<h1>Menú principal</h1>} />
   </Routes>
 </MemoryRouter>);
@@ -38,6 +40,9 @@ test('each general is introduced and a player can freely open the chosen regiona
   expect(screen.getByRole('button', { name: /Escenario central bloqueado/ }).hasAttribute('disabled')).toBe(true);
   fireEvent.click(screen.getByRole('button', { name: /Leandro Valcázar, El Jinete Escarlata/ }));
   fireEvent.click(screen.getByRole('button', { name: 'Explorar región ⚔' }));
+  expect(screen.getByRole('heading', { name: 'Los caminos escarlata' })).toBeTruthy();
+  expect(screen.getByText('Tu recorrido: cuatro misiones')).toBeTruthy();
+  fireEvent.click(screen.getByRole('button', { name: 'Ver las cuatro misiones ›' }));
   expect(screen.getByRole('heading', { name: 'Mapa regional' })).toBeTruthy();
 });
 
