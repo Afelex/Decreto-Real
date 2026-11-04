@@ -39,6 +39,18 @@ test('cada general otorga una carta sellada sin habilitar editor',()=>{
   expect(screen.getByRole('button',{name:/Editar baraja/}).hasAttribute('disabled')).toBe(true);
 });
 
+test('los nombres y combos de cada mística se pueden consultar antes de equiparlas',()=>{
+  save(6);
+  renderDeck();
+  fireEvent.click(screen.getByRole('button',{name:'Ver habilidad de Almirante de Hierro'}));
+  expect(screen.getByRole('dialog',{name:'Habilidad Marea de Hierro'})).toBeTruthy();
+  expect(screen.getByText('Combo ×2')).toBeTruthy();
+  expect(screen.getByText('Combo ×3')).toBeTruthy();
+  expect(screen.getByText('−3 vida rival · +2 vida propia')).toBeTruthy();
+  fireEvent.click(screen.getByRole('button',{name:'Cerrar detalles'}));
+  expect(screen.queryByRole('dialog')).toBeNull();
+});
+
 test('el bastón desbloquea editor, limita tres espacios y guarda elecciones',()=>{
   save(36);
   renderDeck();
@@ -47,6 +59,9 @@ test('el bastón desbloquea editor, limita tres espacios y guarda elecciones',()
   expect(screen.getByRole('heading',{name:/Editar baraja · 0\/3/})).toBeTruthy();
   const first=screen.getByLabelText('Espacio 1') as HTMLSelectElement;
   fireEvent.change(first,{target:{value:'general-1'}});
+  fireEvent.click(screen.getByRole('button',{name:'Ver efectos de Marea de Hierro'}));
+  expect(screen.getByText('Marea de Hierro',{selector:'h2'})).toBeTruthy();
+  fireEvent.click(screen.getByRole('button',{name:'Entendido'}));
   fireEvent.change(document.querySelector('#mystic-replace-0')!,{target:{value:'DEFENSE'}});
   fireEvent.change(screen.getByLabelText('Espacio 2'),{target:{value:'general-2'}});
   fireEvent.change(screen.getByLabelText('Espacio 3'),{target:{value:'legado-zhinchi'}});
