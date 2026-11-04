@@ -13,7 +13,7 @@ import { REGION_VISUALS } from '../campaign/regionVisuals.ts';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const OUTPUT = join(ROOT, 'art-output');
-const STYLE_VERSION = 'anime-2D-borgona-v2';
+const STYLE_VERSION = 'anime-2D-jefes-v3';
 const MODEL = 'gpt-image-2.5-flare';
 const GENERAL_IDS = new Set(['06','10','14','18','22','26','30','34','38']);
 const REGION_DETAILS = {
@@ -28,20 +28,20 @@ const REGION_DETAILS = {
   f: 'Casa del Sello: puerta monumental circular con sello real, escalera ascendente, arquitectura de piedra solemne, oro y violeta'
 };
 const BOSS_DETAILS = {
-  '1': 'Muelle del mando del almirante, baterías navales y estandartes tensos por el viento',
-  '2': 'Plataforma de mando de caballería ante la misma posta y cruce de caminos',
-  '3': 'Patio fortificado de la casa de contabilidad, frente a las mismas dos minas',
-  '4': 'Plataforma mayor de cañones sobre el mismo patio de fortaleza',
-  '5': 'Claro secreto de mando bajo las mismas raíces gigantes y el mismo puesto de vigilancia',
-  '6': 'Estrado ceremonial frente a las mismas dos arcadas y fuente central',
-  '7': 'Plataforma del comandante detrás del mismo puente, bajo la tormenta de montaña',
-  '8': 'Tribunal principal de la misma columnata, con iluminación ámbar solemne',
-  f: 'Salón de Sigumán después de la misma puerta circular y escaleras, luz dorada falsa y sombras violetas'
+  '1': 'CALLAO ADMIRAL BOSS ARENA: The fortified naval command BATTERY on the stone terrace of Baltasar de Fierro, viewed noticeably CLOSER than the base harbor view. Enormous antique coastal cannons and angular stone gun embrasures frame left and right foreground; a military command platform and heavy harbor chain mark the boss battlefield. The same unmistakable central watchtower and familiar galleons remain visible in the background, now from a shifted three-quarter viewpoint. Darker sea, storm front and bright sunset breaking through clouds; imminent naval blockade, no combatant figures. One prominent white Cross of Burgundy flag with jagged red X, without coats of arms. It must immediately read as a different playable confrontation area of this SAME port.',
+  '2': 'Royal cavalry BOSS ARENA: New closer viewpoint inside the arched courier-inn courtyard of the familiar road crossing; stone horse troughs, command pavilion, heraldic red cloth banners and hoof-marked parade ground. The recognizable inn and crimson road remain visible in the background, but main battlefield foreground is fundamentally different.',
+  '3': 'Silver lord BOSS ARENA: New camera viewpoint within the guarded stone counting-house terrace overlooking the same twin mine entrances; heavy locked silver chests, ore weighing scales, metallic railings, large silver-lit arches; deep dramatic shadows but no people. Preserve the mountain and twin mine landmarks as distant identifiers.',
+  '4': 'Artillery general BOSS ARENA: New camera viewpoint atop an elevated stone command battery with massive bronze cannons aimed toward the distant valley, powder barrels sheltered along side ramparts, twin fortress gun towers recognizable in the background, storm-lit smoky skies. A different arena, not the original courtyard recolored.',
+  '5': 'Jungle general BOSS ARENA: New viewpoint into a hidden raised command platform reached through the same giant curved tree roots, wooden lookout decks and a stone gate, torch-lit ruins among vines, mist over a winding river behind. Preserve distinctive trees and watchpost as background markers.',
+  '6': 'Banner lady BOSS ARENA: New viewpoint from an elevated ceremonial balcony of the same divided colonial square, twin rival standards and monumental cloth drapes framing the scene, ornate tribunal platform replacing the open plaza foreground; double arcade and fountain still visible beyond.',
+  '7': 'Condor general BOSS ARENA: New viewpoint on the summit defense platform above the same suspension bridge, dramatic sheer cliffs and twin guard towers in background, stone lookout altar with ceremonial ropes in side foreground, cold clouds and snow wind. Different arena, same mountain landmarks.',
+  '8': 'Oath knight BOSS ARENA: New camera inside the central ceremonial judgement court, very large carved oath table and stone bench toward the side foreground, tall marbled colonnade enclosing the space and old court glimpsed behind; strong side lighting. A different boss chamber belonging to the same House of the Oath.',
+  f: 'FINAL SIGUMÁN BOSS ARENA: New viewpoint from INSIDE the grand throne chamber, at the far end of the same giant circular seal-door; dramatic stone throne terrace, enormous archways and looming golden-violet shafts of false sunlight, the distinctive circular seal-door visible behind at a different perspective; no characters. A new final confrontation room, not the base courtyard recolored.'
 };
 const STYLE = "MASTER STYLE: ORIGINAL 2D HAND-DRAWN ANIME VIDEO GAME ART for a fantasy card battle, matching Decreto Real illustrated backgrounds and portraits, absolutely NOT a photograph. Visible controlled dark ink contour lines around major forms, including characters, costumes, buildings, ships, trees and foreground objects, distinctive graphic silhouettes, broad simplified shapes, medium-complexity architecture, flat intentional color patches, 2–3-level cel shading per material, soft color washes only for clouds and distant atmospheric depth, elegant painterly anime finish. Reduce microtexture by 80 percent: stone is defined by large graphic slabs, water by smooth stylized reflections, wood by a few bold lines. Readable on a narrow mobile screen. NO photorealism, NO realistic matte painting, NO photobashing, NO photo filters, NO historical oil painting, NO 3D, NO CGI, NO Unreal Engine, NO realistic wet stone highlights, NO photographic lens effects, NO plastilina, clay or plastic. Fantasy 17th-century colonial Peru with Andean geography and original virreinal-inspired architecture. No modern materials, no explicit Inca glyphs, no lettering, no logos, no watermarks, no game interface or cards.";
 const HISTORICAL_FLAGS = "HISTORICAL HERALDRY RULE: Never depict French flags, blue-white-red tricolours, modern national flags, the Spanish national coat of arms, Spanish royal shield, heraldic escutcheons or crowns on banners. When a Spanish royalist/colonial military flag is shown, use ONLY the historical Cross of Burgundy (aspa de Borgoña): a plain ivory/white flag with two broad jagged red diagonal branches making an X from corner to corner, without any other motif. Fictional faction banners elsewhere may be monochrome but never modern tricolours.";
 const CALLAO_FLAGS = "MANDATORY CALLAO FLAG: Put exactly ONE clearly legible rectangular white or off-white flag on the CENTRAL WATCHTOWER. On this cloth paint only TWO JAGGED RED DIAGONAL BRANCHES that intersect into an X from all four corners: the red Cross of Burgundy (aspa de Borgoña). It is a red X on a white field, NOT a red-white-blue design. NO blue stripes, NO vertical or horizontal tricolour, NO French flags, NO coat of arms of Spain, NO crest, NO crown and NO national emblems. Omit all other tiny flags instead of inventing symbols.";
-const BOSS_EDIT_RULES = "BOSS VARIANT FROM IMAGE REFERENCE: the provided input is the BASE IMAGE of this exact place. Perform a faithful EDIT OF THIS SAME IMAGE, not a new composition. Preserve the camera viewpoint, exact building placement, landmark silhouettes, ships, coastline, horizon, perspective, 2D line-work, 2–3-tone cel-shading and all flag designs. ONLY change time-of-day lighting slightly and add limited atmosphere or small ceremonial decorations at the sides, without changing architecture or any flag. Keep middle clear for card play and bottom clear for HUD; no characters, cards, UI, text or new buildings.";
+const BOSS_EDIT_RULES = "PROVIDED BASE IMAGE is a visual REFERENCE for the established region and its 2D anime style, NOT a pixel-for-pixel layout to preserve. Create a CLEARLY DIFFERENT BOSS BATTLE ARENA, a new nearby viewpoint or more imposing space WITHIN THE SAME geographic setting. Change the foreground architecture, camera distance and angle, arena props, composition and dramatic sky so the difference is unmistakable at a glance. Preserve recognisable regional LANDMARKS in the distance (e.g. the same watchtower, ships and coastline), palette, historical materials, ink outlines, and cell shading, but DO NOT keep the original object positions or simply change lighting and add tiny flags. Recompose at least 40 percent of the visible scene, especially foreground and side framing; keep the middle clear for two rows of cards and the lower HUD readable. Avoid figures, people, readable text, modern flags, modern machinery, UI and cards.";
 
 const slug = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
@@ -55,7 +55,7 @@ export function catalogo() {
     for (const version of ['base','jefe']) {
       const focus = version === 'base'
         ? 'Vista general del mismo lugar, iluminación natural, paisaje explorable y atmósfera de aventura.'
-        : 'Variante del MISMO lugar con idéntica arquitectura principal y horizonte; mayor tensión e iluminación dramática. Punto focal: ' + BOSS_DETAILS[chapter.id] + '.';
+        : 'NUEVA ARENA DEL JEFE DENTRO DE LA MISMA REGIÓN: conservar identidad del lugar, pero cambiar perspectiva, primer plano y punto de combate. NO solo cambiar luz. Escena: ' + BOSS_DETAILS[chapter.id] + '.';
       images.push({
         id: 'fondo-' + chapter.id + '-' + version,
         filename: 'fondos/region-' + chapter.id + '-' + version + '.webp',
