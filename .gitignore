@@ -27,3 +27,6 @@ dist-ssr
 playwright-report/
 test-results/
 coverage/
+
+# Resultados de generación pagada: no publicar originales ni respuestas API
+art-output/
