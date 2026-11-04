@@ -86,7 +86,7 @@ const MainMenu: React.FC = () => {
       ? 'Elige una de las ocho regiones · ★ ' + journey.stars + '/' + journey.maximumStars
       : journey.completed === 0
         ? 'Inicia el recorrido'
-        : 'Reto ' + Number(journey.nextMission!.id) + ' · ' + journey.nextMission!.title;
+        : 'Reto ' + Number(journey.nextMission!.id) + '/38 · ' + journey.nextMission!.title;
 
   return (
     <div className="dr-main-menu-screen dr-cinematic-screen">
