@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loadCampaignProgress } from '../campaign/campaign.ts';
+import { bestStars, loadCampaignProgress } from '../campaign/campaign.ts';
+import { CAMPAIGN_INTRO_KEY } from './CampaignIntro';
 import { campaignOverview } from '../campaign/progressView.ts';
 import './main-menu-cinematic.css';
 
@@ -64,15 +65,28 @@ const MenuButton: React.FC<MenuButtonProps> = ({
 
 const MainMenu: React.FC = () => {
   const navigate = useNavigate();
-  const journey = React.useMemo(() => {
-    try { return campaignOverview(loadCampaignProgress(window.localStorage)); }
-    catch { return campaignOverview(loadCampaignProgress(null)); }
+  const progress = React.useMemo(() => {
+    try { return loadCampaignProgress(window.localStorage); }
+    catch { return loadCampaignProgress(null); }
   }, []);
+  const journey = React.useMemo(() => campaignOverview(progress), [progress]);
+  const prologueComplete = bestStars(progress, '01') > 0 && bestStars(progress, '02') > 0;
+  const openCampaign = () => {
+    if (!prologueComplete) {
+      let introSeen = false;
+      try { introSeen = window.localStorage.getItem(CAMPAIGN_INTRO_KEY) === '1'; } catch { /* private mode */ }
+      navigate(introSeen || journey.completed > 0 ? '/campania' : '/campania/inicio');
+      return;
+    }
+    navigate('/campania/generales');
+  };
   const nextMissionText = journey.completedCampaign
     ? 'Historia completada · ★ ' + journey.stars + '/' + journey.maximumStars
-    : journey.completed === 0
-      ? 'Inicia el recorrido'
-      : 'Reto ' + Number(journey.nextMission!.id) + ' · ' + journey.nextMission!.title;
+    : prologueComplete
+      ? 'Elige una de las ocho regiones · ★ ' + journey.stars + '/' + journey.maximumStars
+      : journey.completed === 0
+        ? 'Inicia el recorrido'
+        : 'Reto ' + Number(journey.nextMission!.id) + ' · ' + journey.nextMission!.title;
 
   return (
     <div className="dr-main-menu-screen dr-cinematic-screen">
@@ -114,7 +128,7 @@ const MainMenu: React.FC = () => {
           artKey="campaign"
           className="dr-cinematic-button-primary"
           ariaLabel="Empezar campaña"
-          onClick={() => navigate('/campania')}
+          onClick={openCampaign}
         >
           <span className="dr-cinematic-button-icon" aria-hidden="true">⚔️</span>
           <span className="dr-cinematic-primary-copy">
