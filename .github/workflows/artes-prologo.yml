@@ -1,0 +1,132 @@
+name: "Decreto Real · Artes del prólogo (23 imágenes)"
+run-name: "Prólogo · ${{ github.event_name == 'push' && 'GENERAR 23' || inputs.modo }}"
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "prologue-art/catalog.json"
+      - "tools/generate-prologue-art.mjs"
+      - ".github/workflows/artes-prologo.yml"
+  workflow_dispatch:
+    inputs:
+      modo:
+        description: "plan no gasta créditos; generar crea los pendientes"
+        required: true
+        type: choice
+        default: plan
+        options: [plan, generar]
+      calidad:
+        description: "Calidad de las imágenes pendientes"
+        required: true
+        type: choice
+        default: medium
+        options: [low, medium, high]
+      confirmar:
+        description: "Para usar créditos escribe GENERAR_23"
+        required: true
+        type: string
+        default: "NO"
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+  actions: read
+concurrency:
+  group: decreto-real-prologue-art
+  cancel-in-progress: false
+
+jobs:
+  produccion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    outputs:
+      complete: ${{ steps.complete.outputs.complete }}
+    steps:
+      - name: Obtener código y referencias artísticas
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Validar catálogo y referencias
+        run: node --test tools/generate-prologue-art.test.mjs
+      - name: Generar las imágenes pendientes
+        id: production
+        continue-on-error: true
+        env:
+          PROLOGUE_MODE: ${{ github.event_name == 'push' && 'generate' || (inputs.modo == 'generar' && 'generate' || 'plan') }}
+          PROLOGUE_QUALITY: ${{ github.event_name == 'push' && 'medium' || inputs.calidad }}
+          PROLOGUE_CONFIRM: ${{ github.event_name == 'push' && 'GENERAR_23' || inputs.confirmar }}
+          PROLOGUE_MAX: "23"
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: node tools/generate-prologue-art.mjs
+      - name: Guardar artes, incluso si el lote no termina
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: decreto-real-prologo-23-${{ github.run_id }}
+          path: art-output/prologo/
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Conservar imágenes generadas para no pagar dos veces
+        if: ${{ always() && (github.event_name == 'push' || inputs.modo == 'generar') }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -d public/campania/prologo ]; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/campania/prologo/
+          if git diff --cached --quiet; then
+            echo "No hay nuevas imágenes."
+          else
+            git commit -m "art(prologo): integrar ilustraciones generadas por API"
+            git push origin HEAD:main
+          fi
+      - name: Confirmar paquete completo
+        id: complete
+        shell: bash
+        run: |
+          if [ "${{ steps.production.outcome }}" != "success" ] || [ ! -s public/campania/prologo/manifest.json ]; then
+            echo "complete=false" >> "$GITHUB_OUTPUT"
+            echo "::error::Paquete incompleto. Se guardaron los archivos válidos; vuelve a ejecutar el flujo para continuar."
+            exit 1
+          fi
+          echo "complete=true" >> "$GITHUB_OUTPUT"
+  build:
+    needs: [produccion]
+    if: ${{ needs.produccion.outputs.complete == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - run: npm ci
+      - name: Construir juego incluyendo las 23 imágenes
+        run: |
+          npm run build
+          test -s dist/campania/prologo/manifest.json
+          test "$(find dist/campania/prologo -name '*.webp' | wc -l)" -eq 23
+          cp -f public/escenarios/gemini_generated_video_b8059a5c.mp4 dist/escenarios/partida-inicial-loop.mp4
+          rm -f dist/escenarios/gemini_generated_video_b8059a5c.mp4
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+  deploy:
+    needs: [produccion, build]
+    if: ${{ needs.produccion.outputs.complete == 'true' }}
+    environment:
+      name: github-pages
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - uses: actions/deploy-pages@v4
