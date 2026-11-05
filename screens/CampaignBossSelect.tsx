@@ -1,3 +1,4 @@
+import { getCampaignStorage } from '../campaign/campaignQA.ts';
 import React from 'react';
 import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { CAMPAIGN_MISSIONS, bestStars, isMissionUnlocked, loadCampaignProgress } from '../campaign/campaign.ts';
@@ -63,9 +64,7 @@ const completionForChapter = (progress: ReturnType<typeof loadCampaignProgress>,
 
 const GENERAL_INTRO_KEY = 'decreto-real.campania.generales-presentados.v1';
 
-const storage = (): Storage | null => {
-  try { return typeof window === 'undefined' ? null : window.localStorage; } catch { return null; }
-};
+const storage = getCampaignStorage;
 
 const CampaignBossSelect: React.FC = () => {
   const navigate = useNavigate();
