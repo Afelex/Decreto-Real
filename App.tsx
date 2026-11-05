@@ -56,7 +56,7 @@ const CampaignRoutes: React.FC = () => {
           <Route path="/victory" element={<VictoryScreen />} />
           <Route path="/rules" element={<RulesScreen />} />
           <Route path="/options" element={<OptionsScreen />} />
-        <
+        </Routes>
     <CampaignQaNavigator />
   </>;
 };
