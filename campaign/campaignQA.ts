@@ -7,6 +7,7 @@ const CAMPAIGN_META_KEYS = [
   CAMPAIGN_STORAGE_KEY,
   'decreto-real.campania.introduccion.v1',
   'decreto-real.campania.prologo-cinematico.v1',
+  'decreto-real.prologo.finalizado.v1',
   'decreto-real.campania.generales-presentados.v1',
   'decreto-real.campania.centro-revelado.v1',
   'decreto-real.campania.regiones-visitadas.v1',
@@ -42,6 +43,11 @@ const destinations: QaDestination[] = [
   { id:'invocacion-anillo',group:'Prólogo cinematográfico',label:'Escena 7 · Anillo y carta mística',path:'/campania/prologo?escena=anillo',won:[] },
   { id:'tutorial-decreto',group:'Prólogo cinematográfico',label:'Escena 8 · Tutorial guiado / Duelo',path:'/campania/prologo?escena=duelo',won:[] },
   { id:'victoria-decreto',group:'Prólogo cinematográfico',label:'Desenlace · Guardia inconsciente',path:'/campania/prologo?escena=desenlace',won:[] },
+  { id:'entrada-zhinchi',group:'Prólogo cinematográfico',label:'Escena 10 · Entrada del capitán Zhinchi',path:'/campania/prologo?escena=zhinchi',won:[] },
+  { id:'verificar-cetro',group:'Prólogo cinematográfico',label:'Escena 11 · Cetro y sello falso',path:'/campania/prologo?escena=cetro',won:[] },
+  { id:'resolver-arresto',group:'Prólogo cinematográfico',label:'Escena 12 · Resolución del caso',path:'/campania/prologo?escena=resolucion',won:[] },
+  { id:'reflexion-final',group:'Prólogo cinematográfico',label:'Escena 13 · Reflexión de Xervias',path:'/campania/prologo?escena=reflexion',won:[] },
+  { id:'fin-prologo',group:'Prólogo cinematográfico',label:'Escena 14 · Fin del Prólogo',path:'/campania/prologo?escena=fin',won:[] },
   { id: 'prologo-mapa', group: 'Prólogo', label: 'Mapa del prólogo', path: '/campania', won: [] },
 ];
 
