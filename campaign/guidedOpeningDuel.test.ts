@@ -1,37 +1,48 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { GUIDED_STEPS, guidedDuelAt, GUIDED_CARD_POOL } from './guidedOpeningDuel.ts';
+import {
+  GUIDED_STEPS, GUIDED_ACTION_CARDS, GUIDED_PLAYER_TOP, GUIDED_RIVAL_TOP,
+  arrangeGuidedDeck, guidedActionForCard,
+} from './guidedOpeningDuel.ts';
 
-test('tutorial starts with four cards, full health, no impacts and no cheated victory',()=>{
-  const s=guidedDuelAt(0);
-  assert.equal(s.playerHp,20);
-  assert.equal(s.rivalHp,20);
-  assert.deepEqual(s.hand,['attack1','attack2','impact1','impact2']);
-  assert.equal(s.won,false);
-  assert.equal(s.impacts,0);
-});
-test('guided cards exist and each step selects a real known card',()=>{
-  for(const step of GUIDED_STEPS.filter(x=>x.action && /^(attack|impact|defense|order)/.test(x.action))){
-    assert.ok(GUIDED_CARD_POOL.find(c=>c.id===step.action),step.id);
+test('opening tutorial maps every guided card action to standard GameBoard IDs', () => {
+  const actions=GUIDED_STEPS.filter(s=>s.action && /^(attack|impact|defense|order)/.test(s.action)).map(s=>s.action!);
+  assert.deepEqual(actions,['attack1','attack2','attack3','impact1','order','impact2','defense','impact3','impact4']);
+  for(const action of actions){
+    const id=GUIDED_ACTION_CARDS[action];
+    assert.ok(id,action);
+    assert.equal(guidedActionForCard(id),action);
   }
 });
-test('every scripted response is nonlethal; final impact guarantees victory',()=>{
-  for(let i=0;i<GUIDED_STEPS.length-1;i++){
-    const s=guidedDuelAt(i);
-    assert.ok(s.playerHp>0,'player dead at step '+i);
-    assert.equal(s.won,false);
-  }
-  const before=guidedDuelAt(GUIDED_STEPS.length-2);
-  assert.equal(before.impacts,3);
-  assert.equal(before.rivalHp,10);
-  const after=guidedDuelAt(GUIDED_STEPS.length-1);
-  assert.equal(after.impacts,4);
-  assert.equal(after.rivalHp,0);
-  assert.equal(after.won,true);
-  assert.ok(after.playerHp>0);
+test('fixed starting hand and draw order uses only real cards from the 28-card deck',()=>{
+  const deck = [
+    ...Array.from({length:10},(_,i)=>({id:'p1-atk-'+i})),
+    ...Array.from({length:10},(_,i)=>({id:'p1-def-'+i})),
+    ...Array.from({length:4},(_,i)=>({id:'p1-ord-'+i})),
+    ...Array.from({length:4},(_,i)=>({id:'p1-imp-'+(i+1)})),
+  ].reverse();
+  const arranged=arrangeGuidedDeck(deck,'player');
+  assert.deepEqual(arranged.slice(0,GUIDED_PLAYER_TOP.length).map(c=>c.id),[...GUIDED_PLAYER_TOP]);
+  assert.equal(arranged.length,28);
+  assert.deepEqual(new Set(arranged.map(c=>c.id)),new Set(deck.map(c=>c.id)));
 });
-test('repeated projection is deterministic and never exceeds maximum HP',()=>{
-  const outputs=GUIDED_STEPS.map((_,i)=>guidedDuelAt(i));
-  assert.deepEqual(outputs,GUIDED_STEPS.map((_,i)=>guidedDuelAt(i)));
-  for(const state of outputs){assert.ok(state.playerHp<=20&&state.rivalHp<=20);}
+test('scripted enemy starts with real Attack cards; deck is still complete',()=>{
+  const ids=[
+    ...Array.from({length:10},(_,i)=>'ai-atk-'+i),
+    ...Array.from({length:10},(_,i)=>'ai-def-'+i),
+    ...Array.from({length:4},(_,i)=>'ai-ord-'+i),
+    ...Array.from({length:4},(_,i)=>'ai-imp-'+(i+1)),
+  ];
+  const cards=ids.map(id=>({id}));
+  const result=arrangeGuidedDeck(cards,'rival');
+  assert.deepEqual(result.slice(0,GUIDED_RIVAL_TOP.length).map(c=>c.id),[...GUIDED_RIVAL_TOP]);
+  assert.equal(new Set(result.map(c=>c.id)).size,28);
+});
+test('invalid decks never create fake cards',()=>{
+  assert.throws(()=>arrangeGuidedDeck([{id:'p1-atk-0'}],'player'));
+});
+test('tutorial climax is the actual fourth Impact, not an automatic forced win',()=>{
+  const finalAction=GUIDED_STEPS.filter(s=>s.action).at(-1);
+  assert.equal(finalAction?.action,'impact4');
+  assert.ok(GUIDED_STEPS.at(-1)?.text.includes('VICTORIA'));
 });
