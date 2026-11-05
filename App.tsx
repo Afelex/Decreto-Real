@@ -35,7 +35,8 @@ import './screens/royal-battle-status.css';
 const CampaignRoutes: React.FC = () => {
   const location = useLocation();
   return <>
-        <Routes key={location.key}>
+    <React.Fragment key={location.key}>
+        <Routes>
           <Route path="/" element={<MainMenu />} />
           <Route path="/game" element={<GameBoard />} />
           <Route path="/duelo-v1" element={<CombatPrototype />} />
@@ -57,6 +58,7 @@ const CampaignRoutes: React.FC = () => {
           <Route path="/rules" element={<RulesScreen />} />
           <Route path="/options" element={<OptionsScreen />} />
         </Routes>
+    </React.Fragment>
     <CampaignQaNavigator />
   </>;
 };
