@@ -104,3 +104,5 @@
 .dcop-scroll-held{inset:8% 6% 30%}
 }
 @media(prefers-reduced-motion:reduce){.dcop-screen *{animation:none!important;transition:none!important}}
+
+.dcop-scene-figures .dcop-civil img{width:100%;max-height:min(44vh,400px);object-fit:contain;object-position:bottom;filter:drop-shadow(0 4px 16px #0009)}
