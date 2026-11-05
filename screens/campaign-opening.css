@@ -134,3 +134,14 @@
   .dr-royal-screen .dr-royal-story-coach p{font-size:11px;line-height:1.17}
   .dr-royal-screen .dr-royal-story-coach button{min-height:27px;padding:3px 10px}
 }
+
+
+/* Guided pause above the coin toss modal (QA button stays on the opposite corner). */
+.dr-royal-screen .dr-royal-guided-pause{
+  position:absolute;z-index:201;top:max(9px,env(safe-area-inset-top));left:max(9px,env(safe-area-inset-left));
+  display:grid;place-items:center;width:43px;height:43px;
+  border:1px solid #e2bd7a;border-radius:10px;
+  background:#101a29ec;color:#f8dcaa;font:800 23px system-ui,sans-serif;
+  box-shadow:0 3px 14px #0009;
+}
+.dr-royal-screen .dr-royal-guided-pause:focus-visible{outline:3px solid #ffe89a;outline-offset:2px}
