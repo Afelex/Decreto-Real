@@ -2,7 +2,8 @@ import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { awardMissionStars, loadCampaignProgress, saveCampaignProgress } from '../campaign/campaign';
 import { getCampaignStorage } from '../campaign/campaignQA';
-import { GUIDED_CARD_POOL, GUIDED_STEPS, guidedDuelAt, type GuidedAction } from '../campaign/guidedOpeningDuel';
+import GameBoard from './GameBoard';
+import { GUIDED_STEPS } from '../campaign/guidedOpeningDuel';
 import { useAudio } from '../contexts/AudioContext';
 import CampaignPauseMenu from './CampaignPauseMenu';
 import './campaign-opening.css';
@@ -65,81 +66,6 @@ const portraits: Record<string,string> = {
   'Xervias':'./retratos/jugador.webp',
   'Domingo Quispe':'./campania/arte/retratos/rival-01-domingo-quispe.webp',
 };
-const cardActions: readonly GuidedAction[] = ['attack1','attack2','attack3','impact1','impact2','impact3','impact4','order','defense'];
-
-const GuidedStoryBattle: React.FC<{value:number;advance:()=>void;finish:()=>void}> = ({value,advance,finish}) => {
-  const {playSound}=useAudio();
-  const state=guidedDuelAt(value);
-  const current=GUIDED_STEPS[value];
-  const action=current?.action;
-  const cardAction=!!action&&cardActions.includes(action);
-  const drag=React.useRef<{x:number;y:number;active:boolean}|null>(null);
-  const [hint,setHint]=React.useState('');
-  React.useEffect(()=>setHint(''),[value]);
-  const perform=(played?:GuidedAction)=>{
-    if (played && action!==played) {setHint('Sigue la indicación de Xervias.');return;}
-    if (!action && played) return;
-    if (played) playSound(played.startsWith('impact')?'IMPACT':played.startsWith('attack')?'ATTACK':played==='defense'?'DEFENSE':'CLICK');
-    else playSound('CLICK');
-    if (value>=GUIDED_STEPS.length-1) finish();
-    else advance();
-  };
-  const handlePointerUp=(event: React.PointerEvent<HTMLButtonElement>,cardId:string)=>{
-    if (!drag.current) return;
-    const moved=Math.hypot(event.clientX-drag.current.x,event.clientY-drag.current.y)>24;
-    drag.current.active=moved;
-    if (moved) {
-      const target=document.elementFromPoint(event.clientX,event.clientY);
-      if (target?.closest('.dcop-duel-field')) perform(cardId as GuidedAction);
-      else setHint('Arrastra la carta hasta el centro del campo.');
-    }
-  };
-  return <section className="dcop-battle" aria-label="Duelo guiado de Xervias contra Domingo Quispe">
-    <div className="dcop-duel-rival">
-      <img src={portraits['Domingo Quispe']} alt="Domingo Quispe" />
-      <div><strong>DOMINGO QUISPE</strong><span>PV {state.rivalHp}/20</span><div className="dcop-hp"><i style={{width:(state.rivalHp/20*100)+'%'}}/></div></div>
-    </div>
-    <div className="dcop-duel-field">
-      <small>{state.won?'¡DECRETO FINAL!':'CAMPO DEL DECRETO REAL'}</small>
-      <div className="dcop-impact-track" aria-label={'Impactos '+state.impacts+' de 4'}>
-        {['I','II','III','FINAL'].map((rank,index)=><div key={rank} className={index<state.impacts?'sealed':''}>{rank}</div>)}
-      </div>
-      {action==='coin' ? <button type="button" className="dcop-coin" onClick={()=>perform('coin')} aria-label="Lanzar moneda">☀<small>Lanzar</small></button> :
-        <span className="dcop-field-emblem" aria-hidden="true">{state.won?'✷':'✦'}</span>}
-      <small>{state.coin?'Moneda: CARA · Comienza Xervias':'Comienzo del duelo'}</small>
-    </div>
-    <div className="dcop-duel-you">
-      <img src={portraits['Xervias']} alt="Xervias"/>
-      <div><strong>XERVIAS · TURNO {state.turn}</strong><span>PV {state.playerHp}/20</span><div className="dcop-hp red"><i style={{width:(state.playerHp/20*100)+'%'}}/></div></div>
-    </div>
-    <div className="dcop-duel-hand" role="group" aria-label="Tu mano de cartas">
-      {state.hand.map(id=>{
-        const card=GUIDED_CARD_POOL.find(item=>item.id===id)!;
-        const playable=cardAction && action===card.id;
-        return <button type="button" key={id} disabled={!playable} aria-label={card.name+' '+card.effect}
-          className={'dcop-card'+(playable?' active':'')}
-          onPointerDown={e=>{drag.current={x:e.clientX,y:e.clientY,active:false};}}
-          onPointerUp={e=>handlePointerUp(e,id)}
-          onClick={()=>{if(drag.current?.active){drag.current=null;return;} perform(id as GuidedAction);}}>
-          <img src={card.image} alt="" draggable={false}/>
-          <span>{card.name}</span><small>{card.effect}</small>
-        </button>;
-      })}
-    </div>
-    <section className="dcop-duel-coach" aria-live="polite">
-      <div className="dcop-coach-person">
-        {portraits[current.speaker] && <img src={portraits[current.speaker]} alt=""/>}
-        <div><small>DUelo guiado · Paso {value+1} de {GUIDED_STEPS.length}</small><strong>{current.speaker}</strong></div>
-      </div>
-      <p>{current.text}</p>
-      {hint && <small className="dcop-hint" role="status">{hint}</small>}
-      {!cardAction && action!=='coin' &&
-        <button type="button" className="dcop-next" onClick={()=>perform()}>{current.label??(value===GUIDED_STEPS.length-1?'Ver desenlace':'Continuar ›')}</button>}
-      {cardAction && <small className="dcop-tap-hint">Toca la carta iluminada o arrástrala al campo.</small>}
-    </section>
-  </section>;
-};
-
 const CampaignOpening:React.FC=()=>{
   const navigate=useNavigate();
   const [query]=useSearchParams();
@@ -152,7 +78,8 @@ const CampaignOpening:React.FC=()=>{
     return saved.beat;
   },[override,saved.beat]);
   const [beat,setBeat]=React.useState(startBeat);
-  const [duel,setDuel]=React.useState(override?0:saved.duel);
+  // A resumed cinematic duel restarts from the same real initial deck, never a fake restored match.
+  const duel=0;
   const [after,setAfter]=React.useState(override?0:saved.after);
   const {playSound}=useAudio();
   React.useEffect(()=>{
@@ -180,7 +107,7 @@ const CampaignOpening:React.FC=()=>{
   };
   return <main className={'dcop-screen dcop-'+scene} aria-label="Prólogo de campaña: El Sello Real">
     <div className="dcop-stage">
-      <CampaignPauseMenu/>
+      {!isBattle && <CampaignPauseMenu/>}
       <div className="dcop-art" aria-hidden="true">
         <img className="dcop-backdrop" src={scene==='pergamino'?'./portada/portada-poster.jpg':'./escenarios/plaza-virreinal-v2.svg'} alt=""/>
         {scene==='pergamino' && <div className="dcop-scroll-held">
@@ -204,7 +131,11 @@ const CampaignOpening:React.FC=()=>{
         </div>}
         {scene==='desenlace'&&<div className="dcop-outcome-art"><img src={portraits['Domingo Quispe']} alt=""/><span>✦</span><img src={portraits['Xervias']} alt=""/></div>}
       </div>
-      {isBattle ? <GuidedStoryBattle value={duel} advance={()=>setDuel(v=>Math.min(GUIDED_STEPS.length-1,v+1))} finish={()=>{setBeat(OPENING_BEATS.length+1);setAfter(0);}}/> :
+      {isBattle ? <GameBoard guidedOpening
+        onReturn={()=>navigate('/')}
+        onOutcome={(result)=>{if(result.won){setBeat(OPENING_BEATS.length+1);setAfter(0);}}}
+        presentation={{background:'./escenarios/plaza-virreinal-v2.svg',backgroundVideo:null,
+          playerPortrait:portraits['Xervias'],opponentPortrait:portraits['Domingo Quispe']}}/> :
         <section className={'dcop-narrative'+(scene==='pergamino'?' parchment-narrative':'')} aria-live="polite">
           <div className="dcop-chapter-title"><small>DECRETO REAL · PRÓLOGO</small><h1>{isAfter?'El precio de la victoria':prologue?.title}</h1></div>
           <div className="dcop-speech">

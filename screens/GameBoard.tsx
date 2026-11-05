@@ -15,6 +15,7 @@ import { resolveBattleEnd, resolveSurrender, resolveDevelopmentVictory, type Bat
 import { BattleSceneryLayer } from './BattleSceneryLayer';
 import StorySpeechPanel from './StorySpeechPanel';
 import type { CombatConversation } from '../campaign/combatDialogues.ts';
+import { GUIDED_STEPS, GUIDED_ACTION_CARDS, arrangeGuidedDeck, guidedActionForCard, type GuidedAction } from '../campaign/guidedOpeningDuel';
 import {
   insertMystics, mysticPower, mysticPowerText, mysticDisplayName, resolveMysticPower,
   canActivateMystic, type MysticId, type MysticSlot, type MysticPower,
@@ -126,8 +127,9 @@ type GameBoardProps = {
   onOutcome?: (result: OriginalBattleOutcome) => void;
   onReturn?: () => void;
   presentation?: BattlePresentation;
+  guidedOpening?: boolean;
 };
-const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation, storyConversation, playerMysticSlots, opponentMysticSlots }) => {
+const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation, storyConversation, playerMysticSlots, opponentMysticSlots, guidedOpening = false }) => {
   const scenery = resolveBattleScenery(presentation);
   const playerPortrait = presentation?.playerPortrait ?? PLAYER_IMG;
   const rivalPortrait = presentation?.opponentPortrait ?? OPPONENT_IMG;
@@ -146,6 +148,21 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   );
   const [battleEnd, setBattleEnd] = useState<BattleEndResult | null>(null);
   const aiController = useRef<AiTurnController | null>(null);
+  const [guideIndex, setGuideIndex] = useState(0);
+  const guideRef = useRef(0);
+  const guideAt = () => guidedOpening ? GUIDED_STEPS[guideRef.current] : undefined;
+  const guideAllows = (action: GuidedAction) => !guidedOpening || guideAt()?.action === action;
+  const guideAdvance = (action?: GuidedAction) => {
+    if (!guidedOpening) return false;
+    const step = guideAt();
+    if (!step || (action ? step.action !== action : !!step.action)) return false;
+    guideRef.current += 1;
+    setGuideIndex(guideRef.current);
+    return true;
+  };
+  const currentGuide = guidedOpening ? GUIDED_STEPS[guideIndex] : undefined;
+  const expectedGuideAction = currentGuide?.action;
+  const guidedCardId = expectedGuideAction ? GUIDED_ACTION_CARDS[expectedGuideAction] : undefined;
 
   const [playerHP, setPlayerHP] = useState(MAX_HP);
   const [playerDeck, setPlayerDeck] = useState<CardData[]>([]);
@@ -210,8 +227,10 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   };
 
   useEffect(() => {
-    const playerCards = generateDeck('p1', playerMysticSlots);
-    const rivalCards = generateDeck('ai', opponentMysticSlots);
+    const playerPool = generateDeck('p1', playerMysticSlots);
+    const rivalPool = generateDeck('ai', opponentMysticSlots);
+    const playerCards = guidedOpening ? arrangeGuidedDeck(playerPool, 'player') : playerPool;
+    const rivalCards = guidedOpening ? arrangeGuidedDeck(rivalPool, 'rival') : rivalPool;
     playerDeckRef.current = playerCards;
     opponentDeckRef.current = rivalCards;
     setPlayerDeck(playerCards);
@@ -220,17 +239,18 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   }, []);
 
   const handleCoinToss = () => {
-    if (isCoinFlipping || gameOverRef.current || storyMoment) return;
+    if (isCoinFlipping || gameOverRef.current || storyMoment || !guideAllows('coin')) return;
     playSound('FLIP');
     setIsCoinFlipping(true);
     // One tap, a single short flip, then the result before battle begins.
     setTimeout(() => {
       if (gameOverRef.current) return; // A surrender during the toss must remain a defeat.
-      const isHeads = Math.random() > 0.5;
+      const isHeads = guidedOpening || Math.random() > 0.5;
       setCoinSide(isHeads ? 'CARA' : 'SELLO');
       setWhoStarted(isHeads ? 'PLAYER' : 'OPPONENT');
       setIsCoinFlipping(false);
-      setTimeout(() => { if (!gameOverRef.current) setPhase('START_BANNER'); }, 450);
+      guideAdvance('coin');
+       setTimeout(() => { if (!gameOverRef.current) setPhase('START_BANNER'); }, 450);
     }, 500);
   };
 
@@ -435,6 +455,10 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
       else { setOpponentImpactLevel(p => p + 1); setOpponentImpactPlayedThisTurn(true); setPlayerHP(p => Math.max(0, p - 1)); setOpponentHP(p => Math.min(MAX_HP, p + 1)); }
     }
 
+    if (isPlayer && guidedOpening) {
+      const action = guidedActionForCard(card.id);
+      if (action) guideAdvance(action);
+    }
     const comboLevel = updateGauge(isPlayer, card.type);
     if (comboLevel) {
       if (card.type === 'MYSTIC' && card.mysticId) {
@@ -455,11 +479,26 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     const controller = new AiTurnController();
     aiController.current = controller;
     if (isMenuOpen) controller.pause();
-    void runOpponentTurn(controller, () => latestOpponent.current, card => {
-      if (!gameOverRef.current) return latestPlayCard.current(card, false);
-    }, () => {
-      if (!gameOverRef.current) { setTurnCount(p => p + 1); setPhase('TURN_BANNER'); }
-    });
+    if (guidedOpening) {
+      // Tactical choice is scripted; HP, combos and animation use normal GameBoard playCard.
+      void (async () => {
+        if (!await controller.wait(380)) return;
+        const attack = latestOpponent.current.hand.find(card => card.type === 'ATTACK');
+        if (!attack) return;
+        await latestPlayCard.current(attack, false);
+        if (!await controller.wait(380) || gameOverRef.current) return;
+        const action = guideAt()?.action;
+        if (action?.startsWith('rival')) guideAdvance(action);
+        setTurnCount(p => p + 1);
+        setPhase('TURN_BANNER');
+      })();
+    } else {
+      void runOpponentTurn(controller, () => latestOpponent.current, card => {
+        if (!gameOverRef.current) return latestPlayCard.current(card, false);
+      }, () => {
+        if (!gameOverRef.current) { setTurnCount(p => p + 1); setPhase('TURN_BANNER'); }
+      });
+    }
     return () => {
       controller.cancel();
       if (aiController.current === controller) aiController.current = null;
@@ -491,7 +530,14 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   }, [storyConversation, storyMoment, phase, opponentHP, playerImpactLevel,
       isMenuOpen, cardAnnouncement, comboAnnouncement, showSpecialSelection]);
 
-  useEffect(() => () => announcementClock.current.cancel(), []);
+  // React StrictMode mounts, cleans up and remounts effects in development.
+  // A cancelled clock must never be reused: otherwise a card leaves the hand
+  // but its animation completes without applying damage, healing or Impact.
+  useEffect(() => {
+    const clock = new AiTurnController();
+    announcementClock.current = clock;
+    return () => clock.cancel();
+  }, []);
 
   // La partida termina en el tablero: no navegar hasta pulsar «Continuar».
   useEffect(() => {
@@ -516,7 +562,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   }, [phase]);
 
   const handleBattleEndContinue = () => {
-    if (!battleEnd || campaignOutcomeReported.current || storyMoment) return;
+    if (!battleEnd || campaignOutcomeReported.current || storyMoment || (guidedOpening && guideIndex !== GUIDED_STEPS.length - 1)) return;
     campaignOutcomeReported.current = true; // Evitar doble avance o doble guardado.
     playSound('CLICK');
     if (onOutcome) {
@@ -529,18 +575,18 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     }
   };
 
-  const canHandleCards = phase === 'PLAYER_TURN' && !storyMoment && !showSpecialSelection && !isMenuOpen && !cardAnnouncement && !comboAnnouncement && !announcementBusy.current && !gameOverRef.current;
+  const canHandleCards = (!guidedOpening || !!guidedCardId) && phase === 'PLAYER_TURN' && !storyMoment && !showSpecialSelection && !isMenuOpen && !cardAnnouncement && !comboAnnouncement && !announcementBusy.current && !gameOverRef.current;
   const selectedCard = playerHand.find(card => card.id === selectedCardId) ?? null;
 
   const selectCard = (card: CardData) => {
-    if (!canHandleCards || spentIds.current.has(card.id)) return;
+    if (!canHandleCards || (guidedOpening && guidedCardId !== card.id) || spentIds.current.has(card.id)) return;
     setSelectedCardId(card.id);
     setPlayHint(null);
     playSound('CLICK');
   };
 
   const placeCard = (card: CardData, zone: CardDropZone) => {
-    if (!canHandleCards || spentIds.current.has(card.id) || !playerHand.some(item => item.id === card.id)) return;
+    if (!canHandleCards || (guidedOpening && guidedCardId !== card.id) || spentIds.current.has(card.id) || !playerHand.some(item => item.id === card.id)) return;
     const check = checkCardPlacement(card, resolveVisualDropZone(card, zone), playerImpactLevel, playerImpactPlayedThisTurn);
     if ('message' in check) { setPlayHint(check.message); return; }
     spentIds.current.add(card.id);
@@ -609,9 +655,11 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     : cardPlacementPrompt(selectedCard, playerImpactLevel));
 
   const handleEndTurn = () => {
-    if (phase !== 'PLAYER_TURN' || storyMoment || showSpecialSelection || !!comboAnnouncement || announcementBusy.current || gameOverRef.current) return;
+    if (phase !== 'PLAYER_TURN' || storyMoment || (guidedOpening && !expectedGuideAction?.startsWith('end')) || showSpecialSelection || !!comboAnnouncement || announcementBusy.current || gameOverRef.current) return;
     setSelectedCardId(null); setPlayHint(null);
-    playSound('CLICK'); setTurnCount(p => p + 1); setPhase('TURN_BANNER');
+    playSound('CLICK');
+    if (guidedOpening && expectedGuideAction?.startsWith('end')) guideAdvance(expectedGuideAction);
+    setTurnCount(p => p + 1); setPhase('TURN_BANNER');
   };
 
   const handleMenuToggle = () => { playSound('CLICK'); setIsMenuOpen(!isMenuOpen); setShowSurrenderConfirm(false); };
@@ -645,7 +693,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   };
   const handleSurrenderCancel = () => { playSound('CLICK'); setShowSurrenderConfirm(false); };
 
-  const endTurnUnavailable = phase !== 'PLAYER_TURN' || !!storyMoment || showSpecialSelection || !!comboAnnouncement || !!mysticComboAnnouncement || isMenuOpen || !!cardAnnouncement || announcementBusy.current;
+  const endTurnUnavailable = (guidedOpening && !expectedGuideAction?.startsWith('end')) || phase !== 'PLAYER_TURN' || !!storyMoment || showSpecialSelection || !!comboAnnouncement || !!mysticComboAnnouncement || isMenuOpen || !!cardAnnouncement || announcementBusy.current;
 
   const Board = (
     <div className={`dr-classic-screen dr-royal-screen bg-[#050505] font-body w-full overflow-hidden select-none flex flex-col relative text-white ${shakeScreen ? 'animate-shake' : ''}`} style={{ width: 'min(100vw, 430px)', height: '100dvh' }}>
@@ -746,6 +794,9 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
           onEnded={() => cueFinished.current?.()} />
       )}
 
+      {guidedOpening && <button type="button" className="dr-royal-guided-pause" onClick={handleMenuToggle}
+        aria-label="Abrir menú de pausa">☰</button>}
+
       {/* --- MENU MODAL --- */}
       {isMenuOpen && (
         <div className="absolute inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
@@ -766,8 +817,9 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
               {!showSurrenderConfirm ? (
                 <>
                   <button onClick={handleMenuToggle} className="w-full py-3 bg-gold-dark text-black font-bold uppercase text-sm rounded">Continuar Batalla</button>
-                  <button onClick={handleSurrenderRequest} className="w-full py-3 border border-red-900/50 text-red-500 uppercase text-sm rounded">Rendirse</button>
-                  {SHOW_DEV_WIN && <button type="button" data-testid="dev-auto-win"
+                  {!guidedOpening && <button onClick={handleSurrenderRequest} className="w-full py-3 border border-red-900/50 text-red-500 uppercase text-sm rounded">Rendirse</button>}
+                  {guidedOpening && onReturn && <button type="button" onClick={onReturn} className="w-full py-3 border border-gold-dark/50 text-amber-200 uppercase text-sm rounded">Volver al menú principal</button>}
+                  {SHOW_DEV_WIN && !guidedOpening && <button type="button" data-testid="dev-auto-win"
                     onClick={handleDevelopmentWin} className="w-full py-2 border border-amber-600/50 text-amber-300 uppercase text-xs rounded"
                     title="Temporal: eliminar antes del lanzamiento">⚙ Victoria automática · DEV</button>}
                 </>
@@ -787,8 +839,14 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
 
       {showSpecialSelection && (
         <ComboChoicePanel level={comboChoice}
-          onDamage={() => triggerSpecialAbility('PLAYER', 'DAMAGE', comboChoice)}
-          onHeal={() => triggerSpecialAbility('PLAYER', 'HEAL', comboChoice)} />
+          onDamage={() => {
+            if (guidedOpening && !guideAllows('combo2')) return;
+            void triggerSpecialAbility('PLAYER', 'DAMAGE', comboChoice).then(() => guideAdvance('combo2'));
+          }}
+          onHeal={() => {
+            if (guidedOpening && !guideAllows('combo3')) return;
+            void triggerSpecialAbility('PLAYER', 'HEAL', comboChoice).then(() => guideAdvance('combo3'));
+          }} />
       )}
 
       {/* DR-C08 — Scenic playfield. Portraits and the backdrop are independent assets. */}
@@ -805,9 +863,9 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
             </div>
 
           </div>
-          <button className="dr-royal-menu-button" type="button" onClick={handleMenuToggle} aria-label="Abrir menú de pausa">
+          {!guidedOpening && <button className="dr-royal-menu-button" type="button" onClick={handleMenuToggle} aria-label="Abrir menú de pausa">
             <span className="material-icons" aria-hidden="true">menu</span>
-          </button>
+          </button>}
         </header>
 
         <section className="dr-royal-rival-hand" aria-label={`Mano del rival: ${opponentHand.length} cartas ocultas`}>
@@ -870,7 +928,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
               const distance = i - (playerHand.length - 1) / 2;
               const step = Math.min(15, 60 / Math.max(1, playerHand.length - 1));
               const selected = selectedCardId === card.id;
-              const canUse = canHandleCards &&
+              const canUse = canHandleCards && (!guidedOpening || card.id === guidedCardId) &&
                 (card.type !== 'IMPACT' || (!playerImpactPlayedThisTurn && card.rank === playerImpactLevel + 1)) &&
                 (card.type !== 'MYSTIC' || canActivateMystic(card.mysticId, playerImpactPlayedThisTurn));
               const display = getRoyalCardText(card, ATTACK_DAMAGE);
@@ -920,6 +978,25 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
         <img src={playerHand.find(card => card.id === dragAt.id)?.img ?? IMG_ATTACK} alt=""/>
       </div>}
 
+      {guidedOpening && currentGuide && (
+        <section className="dr-royal-story-coach" data-testid="campaign-guided-coach" aria-live="polite">
+          <div className="dr-royal-story-coach-header">
+            <strong>{currentGuide.speaker}</strong>
+            <small>Duelo guiado · {guideIndex + 1}/{GUIDED_STEPS.length}</small>
+          </div>
+          <p>{currentGuide.text}</p>
+          {!currentGuide.action
+            ? <button type="button" onClick={() => {
+                if (guideIndex === GUIDED_STEPS.length - 1) handleBattleEndContinue();
+                else guideAdvance();
+              }}>{guideIndex === GUIDED_STEPS.length - 1 ? 'Ver desenlace ›' : 'Continuar ›'}</button>
+            : <small className="dr-royal-story-coach-hint">{currentGuide.action.startsWith('rival') ? 'El guardia responde…' :
+                  guidedCardId ? 'Selecciona la carta iluminada y arrástrala al campo.' :
+                  currentGuide.action === 'coin' ? 'Pulsa la moneda para lanzarla.' :
+                  currentGuide.action.startsWith('combo') ? 'Elige la opción indicada en el menú de Combo.' :
+                  'Pulsa FIN TURNO.'}</small>}
+        </section>
+      )}
       {/* Combat cues are brief overlays; the field remains visible. */}
       {turnOwner && (phase === 'PLAYER_TURN' || phase === 'OPPONENT_TURN') &&
         <TurnIndicator side={turnOwner} />}
@@ -936,7 +1013,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
           onContinue={advanceStorySpeech}/>
       )}
 
-      {battleEnd && (phase === 'VICTORY' || phase === 'DEFEAT') && (
+      {battleEnd && !guidedOpening && (phase === 'VICTORY' || phase === 'DEFEAT') && (
         <div className={`dr-royal-end-banner-stage ${battleEnd.phase === 'VICTORY' ? 'is-victory' : 'is-defeat'}`}>
           <section className="dr-royal-end-banner" role="dialog" aria-modal="true"
             aria-labelledby="dr-royal-end-title" aria-describedby="dr-royal-end-reason">

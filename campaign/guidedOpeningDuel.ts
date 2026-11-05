@@ -48,52 +48,27 @@ export const GUIDED_STEPS: readonly GuidedStep[] = [
   { id:'g31',speaker:'Sistema',text:'¡VICTORIA POR DECRETO FINAL! Has completado los cuatro Impactos.' },
 ];
 
-export const GUIDED_CARD_POOL = [
-  {id:'attack1',name:'Ataque',kind:'ATTACK',effect:'−2 PV',image:'./cartas/decreto-ataque.webp'},
-  {id:'attack2',name:'Ataque',kind:'ATTACK',effect:'−2 PV',image:'./cartas/decreto-ataque.webp'},
-  {id:'attack3',name:'Ataque',kind:'ATTACK',effect:'−2 PV',image:'./cartas/decreto-ataque.webp'},
-  {id:'impact1',name:'Impacto I',kind:'IMPACT',effect:'Drena 1',image:'./cartas/decreto-impacto.webp'},
-  {id:'impact2',name:'Impacto II',kind:'IMPACT',effect:'Drena 1',image:'./cartas/decreto-impacto.webp'},
-  {id:'impact3',name:'Impacto III',kind:'IMPACT',effect:'Drena 1',image:'./cartas/decreto-impacto.webp'},
-  {id:'impact4',name:'Impacto FINAL',kind:'IMPACT',effect:'Victoria',image:'./cartas/decreto-impacto.webp'},
-  {id:'order',name:'Orden',kind:'ORDER',effect:'Roba 1',image:'./cartas/decreto-orden.webp'},
-  {id:'defense',name:'Defensa',kind:'DEFENSE',effect:'+1 PV',image:'./cartas/decreto-defensa.webp'},
+/** Order only the standard 28-card deck. Every action still goes through GameBoard. */
+export const GUIDED_PLAYER_TOP = [
+  'p1-atk-0','p1-atk-1','p1-imp-1','p1-imp-2',
+  'p1-atk-2','p1-ord-0','p1-def-0','p1-imp-3','p1-imp-4',
 ] as const;
-
-export type GuidedDuelState = {
-  playerHp: number; rivalHp: number; impacts: number; turn: number;
-  coin: boolean; won: boolean; hand: string[]; completed: GuidedAction[];
+export const GUIDED_RIVAL_TOP = [
+  'ai-atk-0','ai-atk-1','ai-atk-2','ai-atk-3','ai-atk-4',
+] as const;
+export const GUIDED_ACTION_CARDS: Readonly<Record<string,string>> = {
+  attack1:'p1-atk-0',attack2:'p1-atk-1',attack3:'p1-atk-2',
+  impact1:'p1-imp-1',impact2:'p1-imp-2',impact3:'p1-imp-3',impact4:'p1-imp-4',
+  order:'p1-ord-0',defense:'p1-def-0',
 };
-
-/** Pure projection: reload/repeat always reproduces the same tutorial. */
-export function guidedDuelAt(stepIndex: number): GuidedDuelState {
-  const state: GuidedDuelState = {
-    playerHp:20, rivalHp:20, impacts:0, turn:1, coin:false, won:false,
-    hand:['attack1','attack2','impact1','impact2'], completed:[],
-  };
-  const limit = Math.max(0, Math.min(GUIDED_STEPS.length, Math.floor(stepIndex)));
-  for (const step of GUIDED_STEPS.slice(0,limit)) {
-    const a = step.action;
-    if (!a) continue;
-    state.completed.push(a);
-    if (a === 'coin') state.coin=true;
-    if (a.startsWith('attack')) {state.rivalHp=Math.max(0,state.rivalHp-2); state.hand=state.hand.filter(c=>c!==a);}
-    if (a === 'combo2') state.rivalHp=Math.max(0,state.rivalHp-1);
-    if (a === 'combo3') state.playerHp=Math.min(20,state.playerHp+3);
-    if (a.startsWith('impact')) {
-      state.hand=state.hand.filter(c=>c!==a);
-      state.impacts+=1;
-      if (a === 'impact4') {state.won=true;state.rivalHp=0;}
-      else {state.rivalHp=Math.max(0,state.rivalHp-1);state.playerHp=Math.min(20,state.playerHp+1);}
-    }
-    if (a === 'order') {state.hand=state.hand.filter(c=>c!==a);state.hand.push('defense');}
-    if (a === 'defense') {state.hand=state.hand.filter(c=>c!==a);state.playerHp=Math.min(20,state.playerHp+1);}
-    if (a.startsWith('rival')) {
-      state.playerHp=Math.max(0,state.playerHp-2);
-      state.turn+=1;
-      const draws: Record<string,string> = {rival1:'attack3',rival2:'order',rival3:'impact3',rival4:'impact4'};
-      state.hand.push(draws[a]);
-    }
-  }
-  return state;
+export function guidedActionForCard(id:string): GuidedAction | null {
+  return (Object.entries(GUIDED_ACTION_CARDS).find(([,cardId])=>cardId===id)?.[0] as GuidedAction | undefined)??null;
+}
+export function arrangeGuidedDeck<T extends {id:string}>(cards: readonly T[],side:'player'|'rival'): T[] {
+  const top=side==='player'?GUIDED_PLAYER_TOP:GUIDED_RIVAL_TOP;
+  const ids: Set<string> = new Set(top);
+  if(cards.length!==28 || new Set(cards.map(c=>c.id)).size!==28) throw new Error('El tutorial necesita la baraja estándar de 28 cartas.');
+  const arranged=top.map(id=>cards.find(c=>c.id===id));
+  if(arranged.some(card=>!card))throw new Error('Falta una carta para el tutorial guiado.');
+  return [...arranged as T[],...cards.filter(c=>!ids.has(c.id))];
 }
