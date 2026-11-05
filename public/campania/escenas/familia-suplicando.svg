@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 510" role="img" aria-labelledby="title desc">
+<title id="title">Madre con su hijo pidiendo auxilio</title><desc id="desc">Una mujer con ropa virreinal andina protege a un niño y extiende su mano suplicando que detengan el arresto.</desc>
+<defs>
+<linearGradient id="dress" x2="1" y2=".2"><stop stop-color="#472e54"/><stop offset=".5" stop-color="#88616e"/><stop offset="1" stop-color="#34294e"/></linearGradient>
+<linearGradient id="cape" x2="1" y2=".2"><stop stop-color="#f4cba1"/><stop offset="1" stop-color="#a66657"/></linearGradient>
+<linearGradient id="skin" x2="1" y2="1"><stop stop-color="#ecc59e"/><stop offset="1" stop-color="#a56e51"/></linearGradient>
+<linearGradient id="apron" y2="1" x2=".5"><stop stop-color="#e4d6aa"/><stop offset="1" stop-color="#9c9072"/></linearGradient>
+<filter id="shadow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="8"/></filter>
+</defs>
+<ellipse cx="170" cy="485" rx="130" ry="18" fill="#060913" opacity=".5" filter="url(#shadow)"/>
+<!-- Child standing behind the mother -->
+<path d="M50 368 Q38 325 55 298 L114 292 Q132 342 113 450 L64 452Z" fill="#7c6254" stroke="#372932" stroke-width="5"/>
+<path d="M53 436L49 472Q62 482 83 475L85 430M96 433L96 472Q112 481 128 468L118 422" fill="#463a42" stroke="#2d2530" stroke-width="6"/>
+<path d="M58 283Q43 248 58 222Q80 204 110 217Q135 239 117 286Z" fill="#272332"/>
+<ellipse cx="88" cy="250" rx="32" ry="39" fill="url(#skin)" stroke="#634434" stroke-width="3"/>
+<path d="M55 242Q60 209 95 214Q122 218 122 252Q110 228 101 229Q82 245 55 242" fill="#24232c"/>
+<circle cx="80" cy="255" r="2" fill="#2a2330"/><circle cx="101" cy="255" r="2" fill="#2a2330"/>
+<path d="M85 272Q91 278 99 269" fill="none" stroke="#8a4b44" stroke-width="2"/>
+<!-- mother's full silhouette -->
+<path d="M119 250Q97 277 85 346L60 473Q154 501 285 473L253 323Q240 275 213 251Z" fill="url(#dress)" stroke="#352b37" stroke-width="7" stroke-linejoin="round"/>
+<path d="M120 298Q160 320 229 295L242 475Q163 491 101 474Z" fill="url(#apron)" stroke="#61564b" stroke-width="5"/>
+<path d="M130 309L219 309M123 453Q161 468 227 457" stroke="#87785e" stroke-width="5" fill="none"/>
+<!-- right arm protecting her child -->
+<path d="M127 284Q101 306 81 329Q55 323 58 352Q71 373 92 358L150 332" fill="url(#cape)" stroke="#65483f" stroke-width="6" stroke-linejoin="round"/>
+<path d="M60 349Q55 360 62 373M68 349Q62 362 70 374M77 347Q74 359 80 371" stroke="#7c5146" stroke-width="3" fill="none"/>
+<!-- left arm reaching out towards the soldiers -->
+<path d="M226 281Q249 274 258 242L286 179Q296 166 306 176Q319 184 309 208L288 273Q279 305 245 322" fill="url(#cape)" stroke="#67443c" stroke-width="6" stroke-linejoin="round"/>
+<path d="M288 181Q289 161 303 147Q316 139 322 147L315 166L337 154Q348 154 345 165L325 181L347 171Q356 178 347 185L329 197L341 190Q349 197 338 204L308 213Q289 213 285 197Z" fill="url(#skin)" stroke="#76483f" stroke-width="4" stroke-linecap="round"/>
+<!-- shawl drape -->
+<path d="M117 268Q149 245 203 262Q239 278 258 319L233 345Q211 300 168 306Q130 306 105 342L84 310Z" fill="#b96355" stroke="#773e43" stroke-width="5"/>
+<path d="M103 310Q160 276 242 316" stroke="#e1ad83" stroke-width="5" fill="none"/>
+<!-- head and hair -->
+<path d="M127 189Q116 129 160 113Q209 105 220 154Q235 197 205 238L142 237Z" fill="#202431" stroke="#191a25" stroke-width="4"/>
+<ellipse cx="170" cy="188" rx="52" ry="66" fill="url(#skin)" stroke="#714737" stroke-width="4"/>
+<path d="M116 177Q110 125 157 107Q203 105 229 157Q208 146 194 130Q154 165 116 177Z" fill="#20242d"/>
+<path d="M126 162Q104 211 136 258L120 272Q101 253 98 214L105 158M218 150Q236 198 219 245L231 256Q255 213 237 166" fill="#282333"/>
+<path d="M136 187Q147 182 157 186M184 187Q196 181 206 186" stroke="#53352c" stroke-width="4" fill="none"/>
+<ellipse cx="148" cy="192" rx="3.6" ry="4" fill="#2b2530"/><ellipse cx="194" cy="192" rx="3.6" ry="4" fill="#2b2530"/>
+<path d="M169 190L163 217Q170 220 176 217" fill="none" stroke="#94624b" stroke-width="3"/>
+<path d="M157 232Q170 224 185 233" fill="none" stroke="#8e4c45" stroke-width="3" stroke-linecap="round"/>
+<path d="M146 213Q140 226 149 232" fill="none" stroke="#d39e87" stroke-width="2"/>
+<!-- clothing and scarf -->
+<path d="M150 249L178 272L200 245L218 268L182 308L140 272Z" fill="#ead2ad" stroke="#866950" stroke-width="4"/>
+<path d="M145 288L159 471M214 300L219 466" stroke="#bc9a77" stroke-width="4" fill="none"/>
+</svg>

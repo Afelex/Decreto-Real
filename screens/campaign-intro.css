@@ -18,3 +18,16 @@
 .dci-actions button:focus-visible{outline:3px solid #fff4b1;outline-offset:2px}
 @media(max-height:690px){.dci-stage{grid-template-rows:minmax(110px,23dvh) minmax(0,1fr) auto;gap:5px}.dci-story{padding:8px 12px;gap:4px}.dci-story p{font-size:clamp(10px,2.55vw,12px);line-height:1.22}.dci-landscape-title h1{font-size:clamp(18px,4.5vw,26px)}.dci-actions{min-height:42px}}
 @media(prefers-reduced-motion:reduce){.dci-screen *{scroll-behavior:auto;transition:none!important;animation:none!important}}
+
+
+/* Cinematic campaign cover: the illustration dominates the entire viewport. */
+.dci-stage.dci-stage-cinematic{position:relative;display:block;padding:0;max-width:540px;width:100%;height:100dvh;isolation:isolate;background:#111522}
+.dci-cover-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
+.dci-cover-shade{position:absolute;inset:0;background:linear-gradient(0deg,#080b16 0%,#121624ee 19%,#0c0d1880 46%,transparent 78%,#10172150)}
+.dci-cinematic-title{position:absolute;z-index:2;bottom:clamp(96px,16dvh,160px);left:16px;right:16px;text-align:center;text-shadow:0 3px 9px #000b}
+.dci-cinematic-title small{display:block;font:900 clamp(9px,2.2vw,12px) system-ui,sans-serif;letter-spacing:.21em;color:#edd4a0}
+.dci-cinematic-title h1{font:700 clamp(30px,8vw,46px)/1.04 'Cinzel',Georgia,serif;color:#f9dca1;margin:10px 0}
+.dci-cinematic-title p{margin:0;color:#fff1d9;font:500 clamp(14px,3.8vw,18px)/1.3 Georgia,serif}
+.dci-cinematic-start{position:absolute;z-index:3;bottom:max(26px,env(safe-area-inset-bottom));left:7%;width:86%;min-height:55px;border:2px solid #efc577;border-radius:12px;background:linear-gradient(#b93c34,#781d25);color:#fff4d8;font:800 clamp(17px,4.5vw,21px) Georgia,serif;box-shadow:0 6px 18px #000a}
+.dci-cinematic-start:focus-visible{outline:3px solid #fff2b1;outline-offset:3px}
+@media(max-height:560px){.dci-cinematic-title{bottom:83px}.dci-cinematic-title h1{font-size:clamp(23px,6vw,35px)}.dci-cinematic-start{min-height:47px}}

@@ -115,3 +115,5 @@ export const useAudio = () => {
     }
     return context;
 };
+/** Optional consumer for standalone story component previews and isolated tests. */
+export const useOptionalAudio = () => useContext(AudioContext);

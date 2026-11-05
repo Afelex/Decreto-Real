@@ -14,6 +14,8 @@ import CampaignEpilogue from './screens/CampaignEpilogue';
 import CampaignDeck from './screens/CampaignDeck';
 import CampaignBossSelect from './screens/CampaignBossSelect';
 import CampaignIntro from './screens/CampaignIntro';
+import CampaignOpening from './screens/CampaignOpening';
+import CampaignPauseMenu from './screens/CampaignPauseMenu';
 import CampaignAfterVictory from './screens/CampaignAfterVictory';
 import CampaignCenterReveal from './screens/CampaignCenterReveal';
 import CampaignRegionMoment from './screens/CampaignRegionMoment';
@@ -42,6 +44,7 @@ const CampaignRoutes: React.FC = () => {
           <Route path="/duelo-v1" element={<CombatPrototype />} />
           <Route path="/campania" element={<CampaignMap />} />
           <Route path="/campania/inicio" element={<CampaignIntro />} />
+          <Route path="/campania/prologo" element={<CampaignOpening />} />
           <Route path="/campania/region/:chapterId" element={<CampaignMap />} />
           <Route path="/campania/entrada/:chapterId" element={<CampaignRegionMoment mode="entrada" />} />
           <Route path="/campania/liberada/:chapterId" element={<CampaignRegionMoment mode="liberada" />} />
@@ -59,6 +62,7 @@ const CampaignRoutes: React.FC = () => {
           <Route path="/options" element={<OptionsScreen />} />
         </Routes>
     </React.Fragment>
+    {location.pathname.startsWith('/campania') && location.pathname !== '/campania/inicio' && location.pathname !== '/campania/prologo' && <CampaignPauseMenu />}
     <CampaignQaNavigator />
   </>;
 };

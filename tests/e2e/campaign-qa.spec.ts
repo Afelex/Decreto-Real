@@ -14,7 +14,7 @@ test('QA begins like a new player and jumps to a boss without overwriting the re
   await page.evaluate(([key, value]) => window.localStorage.setItem(key, value), [saveKey, realSave]);
   await openQa(page);
   await page.getByRole('button', { name: /Desde el inicio/ }).click();
-  await expect(page.getByRole('heading', { name: 'El reino escucha dos verdades' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'El Sello y la Revolución Solar' })).toBeVisible();
   await openQa(page);
   await page.getByLabel('Capítulo o sección').selectOption({ label: 'Región 7 · El cóndor y las cumbres' });
   await page.getByRole('button', { name: /M30 · El Cóndor de los Andes/ }).click();
