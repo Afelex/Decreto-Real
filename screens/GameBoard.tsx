@@ -530,7 +530,14 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   }, [storyConversation, storyMoment, phase, opponentHP, playerImpactLevel,
       isMenuOpen, cardAnnouncement, comboAnnouncement, showSpecialSelection]);
 
-  useEffect(() => () => announcementClock.current.cancel(), []);
+  // React StrictMode mounts, cleans up and remounts effects in development.
+  // A cancelled clock must never be reused: otherwise a card leaves the hand
+  // but its animation completes without applying damage, healing or Impact.
+  useEffect(() => {
+    const clock = new AiTurnController();
+    announcementClock.current = clock;
+    return () => clock.cancel();
+  }, []);
 
   // La partida termina en el tablero: no navegar hasta pulsar «Continuar».
   useEffect(() => {
