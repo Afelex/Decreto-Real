@@ -1,0 +1,24 @@
+/* QA only; a single small control keeps the cinematic screens unobstructed. */
+.dr-qa { position: fixed; z-index: 2147483000; right: max(9px, env(safe-area-inset-right)); top: max(9px, env(safe-area-inset-top)); color: #f6f0e4; font-family: system-ui, sans-serif; }
+.dr-qa button, .dr-qa select { font: inherit; cursor: pointer; }
+.dr-qa-trigger { border-radius: 24px; background: rgba(12,17,29,.86); border: 1px solid rgba(238,195,121,.65); color: #f4d9a6; padding: 8px 12px; font-size: 12px; font-weight: 800; box-shadow: 0 3px 16px #0008; }
+.dr-qa-panel { position: absolute; top: calc(100% + 8px); right: 0; width: min(355px, calc(100vw - 18px)); max-height: calc(100dvh - 72px - env(safe-area-inset-bottom)); overflow: hidden; display: flex; flex-direction: column; border-radius: 16px; background: rgba(14,19,31,.97); border: 1px solid #a4895e; box-shadow: 0 12px 42px #000c; padding: 14px; gap: 9px; box-sizing: border-box; text-align: left; }
+.dr-qa-header { display: flex; justify-content: space-between; align-items: center; gap: 9px; }
+.dr-qa-header div { display: grid; line-height: 1.3; }
+.dr-qa-header small { font-size: 9px; letter-spacing: .15em; color: #dcac6b; }
+.dr-qa-header strong { font-size: 16px; color: #fff7eb; }
+.dr-qa-close { background: transparent; color: #fff; border: 0; font-size: 28px !important; line-height: 1; padding: 2px 8px; }
+.dr-qa-help { font-size: 11px; line-height: 1.4; color: #cbd0d8; margin: 0; }
+.dr-qa-steps { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 5px; }
+.dr-qa-steps button, .dr-qa-targets button, .dr-qa-footer button { border: 1px solid rgba(229,199,153,.4); background: rgba(255,255,255,.065); border-radius: 8px; color: #f9ead0; font-size: 11px; padding: 9px 6px; text-align: center; }
+.dr-qa-steps button:disabled { opacity: .32; cursor: default; }
+.dr-qa-label { font-size: 11px; color: #f3d39a; font-weight: 700; }
+.dr-qa select { width: 100%; background: #222b3e; border: 1px solid #ac9269; border-radius: 8px; color: #fff; padding: 10px; font-size: 12px; }
+.dr-qa-targets { overflow-y: auto; overscroll-behavior: contain; display: grid; gap: 5px; min-height: 0; padding: 3px; }
+.dr-qa-targets button { text-align: left; min-height: 37px; padding: 9px 10px; }
+.dr-qa-targets .dr-qa-current { background: rgba(194,153,84,.25); border-color: #f9d79f; }
+.dr-qa-footer { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 5px; border-top: 1px solid rgba(255,255,255,.1); padding-top: 9px; }
+.dr-qa-footer span { font-size: 10px; color: #b7bac1; }
+.dr-qa-footer button { color: #f6c3b3; border-color: rgba(245,149,121,.5); }
+.dr-qa button:focus-visible, .dr-qa select:focus-visible { outline: 2px solid #ffcc6c; outline-offset: 2px; }
+@media (max-height: 550px) { .dr-qa-panel { max-height: calc(100dvh - 54px); padding: 9px; gap: 5px; } .dr-qa-help { display: none; } }
