@@ -6,6 +6,7 @@ const ACTIVE_KEY = 'decreto-real.qa.campania.activa.v1';
 const CAMPAIGN_META_KEYS = [
   CAMPAIGN_STORAGE_KEY,
   'decreto-real.campania.introduccion.v1',
+  'decreto-real.campania.prologo-cinematico.v1',
   'decreto-real.campania.generales-presentados.v1',
   'decreto-real.campania.centro-revelado.v1',
   'decreto-real.campania.regiones-visitadas.v1',
@@ -33,6 +34,14 @@ const after = (chapterId: string, count: number): string[] => {
 
 const destinations: QaDestination[] = [
   { id: 'primer-ingreso', group: 'Inicio', label: 'Primera vez · Introducción', path: '/campania/inicio', won: [] },
+  { id:'pergamino-real',group:'Prólogo cinematográfico',label:'Escena 2 · Pergamino y Sello Real',path:'/campania/prologo?escena=pergamino',won:[] },
+  { id:'arresto-familia',group:'Prólogo cinematográfico',label:'Escena 3 · Arresto de la familia',path:'/campania/prologo?escena=arresto',won:[] },
+  { id:'intervencion-xervias',group:'Prólogo cinematográfico',label:'Escena 4 · Intervención de Xervias',path:'/campania/prologo?escena=xervias',won:[] },
+  { id:'revision-decreto',group:'Prólogo cinematográfico',label:'Escena 5 · Artículo VII y revisión',path:'/campania/prologo?escena=revision',won:[] },
+  { id:'desafio-guardia',group:'Prólogo cinematográfico',label:'Escena 6 · Desafío y honor',path:'/campania/prologo?escena=desafio',won:[] },
+  { id:'invocacion-anillo',group:'Prólogo cinematográfico',label:'Escena 7 · Anillo y carta mística',path:'/campania/prologo?escena=anillo',won:[] },
+  { id:'tutorial-decreto',group:'Prólogo cinematográfico',label:'Escena 8 · Tutorial guiado / Duelo',path:'/campania/prologo?escena=duelo',won:[] },
+  { id:'victoria-decreto',group:'Prólogo cinematográfico',label:'Desenlace · Guardia inconsciente',path:'/campania/prologo?escena=desenlace',won:[] },
   { id: 'prologo-mapa', group: 'Prólogo', label: 'Mapa del prólogo', path: '/campania', won: [] },
 ];
 
