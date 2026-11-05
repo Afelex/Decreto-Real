@@ -968,6 +968,25 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
         <img src={playerHand.find(card => card.id === dragAt.id)?.img ?? IMG_ATTACK} alt=""/>
       </div>}
 
+      {guidedOpening && currentGuide && (
+        <section className="dr-royal-story-coach" data-testid="campaign-guided-coach" aria-live="polite">
+          <div className="dr-royal-story-coach-header">
+            <strong>{currentGuide.speaker}</strong>
+            <small>Duelo guiado · {guideIndex + 1}/{GUIDED_STEPS.length}</small>
+          </div>
+          <p>{currentGuide.text}</p>
+          {!currentGuide.action
+            ? <button type="button" onClick={() => {
+                if (guideIndex === GUIDED_STEPS.length - 1) handleBattleEndContinue();
+                else guideAdvance();
+              }}>{guideIndex === GUIDED_STEPS.length - 1 ? 'Ver desenlace ›' : 'Continuar ›'}</button>
+            : <small className="dr-royal-story-coach-hint">{currentGuide.action.startsWith('rival') ? 'El guardia responde…' :
+                  guidedCardId ? 'Selecciona la carta iluminada y arrástrala al campo.' :
+                  currentGuide.action === 'coin' ? 'Pulsa la moneda para lanzarla.' :
+                  currentGuide.action.startsWith('combo') ? 'Elige la opción indicada en el menú de Combo.' :
+                  'Pulsa FIN TURNO.'}</small>}
+        </section>
+      )}
       {/* Combat cues are brief overlays; the field remains visible. */}
       {turnOwner && (phase === 'PLAYER_TURN' || phase === 'OPPONENT_TURN') &&
         <TurnIndicator side={turnOwner} />}
