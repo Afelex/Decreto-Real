@@ -15,6 +15,7 @@ import { resolveBattleEnd, resolveSurrender, resolveDevelopmentVictory, type Bat
 import { BattleSceneryLayer } from './BattleSceneryLayer';
 import StorySpeechPanel from './StorySpeechPanel';
 import type { CombatConversation } from '../campaign/combatDialogues.ts';
+import { GUIDED_STEPS, GUIDED_ACTION_CARDS, arrangeGuidedDeck, guidedActionForCard, type GuidedAction } from '../campaign/guidedOpeningDuel';
 import {
   insertMystics, mysticPower, mysticPowerText, mysticDisplayName, resolveMysticPower,
   canActivateMystic, type MysticId, type MysticSlot, type MysticPower,
@@ -126,8 +127,9 @@ type GameBoardProps = {
   onOutcome?: (result: OriginalBattleOutcome) => void;
   onReturn?: () => void;
   presentation?: BattlePresentation;
+  guidedOpening?: boolean;
 };
-const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation, storyConversation, playerMysticSlots, opponentMysticSlots }) => {
+const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation, storyConversation, playerMysticSlots, opponentMysticSlots, guidedOpening = false }) => {
   const scenery = resolveBattleScenery(presentation);
   const playerPortrait = presentation?.playerPortrait ?? PLAYER_IMG;
   const rivalPortrait = presentation?.opponentPortrait ?? OPPONENT_IMG;
@@ -146,6 +148,21 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   );
   const [battleEnd, setBattleEnd] = useState<BattleEndResult | null>(null);
   const aiController = useRef<AiTurnController | null>(null);
+  const [guideIndex, setGuideIndex] = useState(0);
+  const guideRef = useRef(0);
+  const guideAt = () => guidedOpening ? GUIDED_STEPS[guideRef.current] : undefined;
+  const guideAllows = (action: GuidedAction) => !guidedOpening || guideAt()?.action === action;
+  const guideAdvance = (action?: GuidedAction) => {
+    if (!guidedOpening) return false;
+    const step = guideAt();
+    if (!step || (action ? step.action !== action : !!step.action)) return false;
+    guideRef.current += 1;
+    setGuideIndex(guideRef.current);
+    return true;
+  };
+  const currentGuide = guidedOpening ? GUIDED_STEPS[guideIndex] : undefined;
+  const expectedGuideAction = currentGuide?.action;
+  const guidedCardId = expectedGuideAction ? GUIDED_ACTION_CARDS[expectedGuideAction] : undefined;
 
   const [playerHP, setPlayerHP] = useState(MAX_HP);
   const [playerDeck, setPlayerDeck] = useState<CardData[]>([]);
@@ -210,8 +227,10 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   };
 
   useEffect(() => {
-    const playerCards = generateDeck('p1', playerMysticSlots);
-    const rivalCards = generateDeck('ai', opponentMysticSlots);
+    const playerPool = generateDeck('p1', playerMysticSlots);
+    const rivalPool = generateDeck('ai', opponentMysticSlots);
+    const playerCards = guidedOpening ? arrangeGuidedDeck(playerPool, 'player') : playerPool;
+    const rivalCards = guidedOpening ? arrangeGuidedDeck(rivalPool, 'rival') : rivalPool;
     playerDeckRef.current = playerCards;
     opponentDeckRef.current = rivalCards;
     setPlayerDeck(playerCards);
@@ -220,17 +239,18 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   }, []);
 
   const handleCoinToss = () => {
-    if (isCoinFlipping || gameOverRef.current || storyMoment) return;
+    if (isCoinFlipping || gameOverRef.current || storyMoment || !guideAllows('coin')) return;
     playSound('FLIP');
     setIsCoinFlipping(true);
     // One tap, a single short flip, then the result before battle begins.
     setTimeout(() => {
       if (gameOverRef.current) return; // A surrender during the toss must remain a defeat.
-      const isHeads = Math.random() > 0.5;
+      const isHeads = guidedOpening || Math.random() > 0.5;
       setCoinSide(isHeads ? 'CARA' : 'SELLO');
       setWhoStarted(isHeads ? 'PLAYER' : 'OPPONENT');
       setIsCoinFlipping(false);
-      setTimeout(() => { if (!gameOverRef.current) setPhase('START_BANNER'); }, 450);
+      guideAdvance('coin');
+       setTimeout(() => { if (!gameOverRef.current) setPhase('START_BANNER'); }, 450);
     }, 500);
   };
 
