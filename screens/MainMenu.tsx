@@ -3,6 +3,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { bestStars, loadCampaignProgress } from '../campaign/campaign.ts';
 import { CAMPAIGN_INTRO_KEY } from './CampaignIntro';
+import { PROLOGUE_COMPLETE_KEY } from '../campaign/prologueArt';
+import { isCampaignQaActive } from '../campaign/campaignQA';
 import { campaignOverview } from '../campaign/progressView.ts';
 import './main-menu-cinematic.css';
 
@@ -73,6 +75,18 @@ const MainMenu: React.FC = () => {
   const journey = React.useMemo(() => campaignOverview(progress), [progress]);
   const prologueComplete = bestStars(progress, '01') > 0 && bestStars(progress, '02') > 0;
   const openCampaign = () => {
+    // Public first release ends after the visual-novel prologue. QA/dev retains the complete unpublished campaign.
+    if (import.meta.env.PROD && !isCampaignQaActive()) {
+      const store=getCampaignStorage();
+      let alreadyFinished=false;
+      let introSeen=false;
+      try {
+        alreadyFinished=store?.getItem(PROLOGUE_COMPLETE_KEY)==='1';
+        introSeen=store?.getItem(CAMPAIGN_INTRO_KEY)==='1';
+      } catch { /* private mode */ }
+      navigate(alreadyFinished?'/campania/prologo?escena=fin':introSeen?'/campania/prologo':'/campania/inicio');
+      return;
+    }
     if (!prologueComplete) {
       let introSeen = false;
       try { introSeen = getCampaignStorage()?.getItem(CAMPAIGN_INTRO_KEY) === '1'; } catch { /* private mode */ }

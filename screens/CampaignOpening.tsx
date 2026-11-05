@@ -6,6 +6,7 @@ import GameBoard from './GameBoard';
 import { GUIDED_STEPS } from '../campaign/guidedOpeningDuel';
 import { useAudio } from '../contexts/AudioContext';
 import CampaignPauseMenu from './CampaignPauseMenu';
+import { isPrologueArtManifest, prologueArtManifestUrl, prologueArtUrl, PROLOGUE_COMPLETE_KEY, type PrologueArtId } from '../campaign/prologueArt';
 import './campaign-opening.css';
 
 export const PROLOGUE_CHECKPOINT_KEY = 'decreto-real.campania.prologo-cinematico.v1';
@@ -37,16 +38,34 @@ export const OPENING_BEATS: readonly OpeningBeat[] = [
 ];
 
 export const AFTER_DUEL_BEATS = [
-  {speaker:'Domingo Quispe',text:'¡¿Qué?! ¡Mi anillo...! ¡No puedo mantener el vínculo!'},
-  {speaker:'Crónica',text:'Una descarga dorada rodea al guardia. Sus cartas desaparecen. Cae de rodillas y pierde el conocimiento.'},
-  {speaker:'Madre',text:'¡Dios mío! ¿Qué le ha ocurrido? ¿Está muerto?'},
-  {speaker:'Xervias',text:'No, tranquila. Sigue vivo. Cuando alguien pierde un Decreto Real, la conexión mística con el anillo se rompe por unos instantes.'},
-  {speaker:'Xervias',text:'Esa descarga puede dejarlo inconsciente un momento. Pronto despertará.'},
-  {speaker:'Domingo Quispe',text:'¿Qué... qué pasó? ¿Por qué no siento la energía de mi anillo?'},
-  {speaker:'Xervias',text:'Has perdido. Mi Decreto Final rompió tu vínculo místico y te hizo perder el conocimiento. El arresto queda suspendido hasta comprobar la orden.'},
-  {speaker:'Domingo Quispe',text:'Está bien... No arrestaremos a la familia. Pero ese documento llevaba el sello de la Corona.'},
-  {speaker:'Madre',text:'Gracias, joven soldado. No sabemos qué habría sido de nosotros.'},
-  {speaker:'Xervias',text:'Todavía no hemos resuelto el misterio. Alguien está utilizando el Sello Real para causar daño... y descubriré quién.'},
+  {phase:'desenlace',speaker:'Domingo Quispe',text:'¡¿Qué?! ¡Mi anillo...! ¡No puedo mantener el vínculo!'},
+  {phase:'desenlace',speaker:'Crónica',text:'Las cartas desaparecen. Domingo cae de rodillas y pierde el conocimiento tras la descarga mística.'},
+  {phase:'desenlace',speaker:'Madre',text:'¡Dios mío! ¿Qué le ocurrió? ¿Está muerto?'},
+  {phase:'desenlace',speaker:'Xervias',text:'No. Está vivo. Al perder un Decreto Real, el vínculo místico con el anillo se rompe por unos instantes.'},
+  {phase:'desenlace',speaker:'Xervias',text:'Esa descarga puede dejar al vencido inconsciente. Pronto despertará.'},
+  {phase:'desenlace',speaker:'Domingo Quispe',text:'¿Qué... qué pasó? ¿Por qué no siento la energía de mi anillo?'},
+  {phase:'desenlace',speaker:'Xervias',text:'Has perdido. Mi Decreto Final rompió tu vínculo místico. Este arresto queda suspendido hasta verificar la orden.'},
+  {phase:'desenlace',speaker:'Domingo Quispe',text:'Pero... el documento tenía el sello de la Corona...'},
+  {phase:'desenlace',speaker:'Madre',text:'Gracias, joven soldado. No sabemos qué habría sido de nosotros.'},
+  {phase:'zhinchi',speaker:'Zhinchi',text:'¡Alto! ¿Qué sucede aquí?'},
+  {phase:'zhinchi',speaker:'Xervias',text:'¡Capitán Zhinchi!'},
+  {phase:'zhinchi',speaker:'Zhinchi',text:'Xervias, explícame esta situación. ¿Por qué hay un soldado derrotado y una familia bajo amenaza?'},
+  {phase:'zhinchi',speaker:'Xervias',text:'Este guardia quiso detenerlos con un decreto sospechoso. Le pedí verificarlo, se negó y tuve que invocar el Decreto Real.'},
+  {phase:'cetro',speaker:'Zhinchi',text:'Déjame examinar esa orden.'},
+  {phase:'cetro',speaker:'Crónica',text:'Zhinchi toma el documento y acerca al sello su pequeño cetro de mando, que lleva sujeto al cinturón.'},
+  {phase:'cetro',speaker:'Zhinchi',text:'La marca parece auténtica... pero mi cetro no percibe ninguna resonancia mística.'},
+  {phase:'cetro',speaker:'Xervias',text:'¡Mi anillo detectó lo mismo, capitán!'},
+  {phase:'cetro',speaker:'Zhinchi',text:'Entonces tenías razón. El sello no es legítimo. Alguien está falsificando las órdenes de la Corona.'},
+  {phase:'resolucion',speaker:'Madre',text:'¿Entonces podemos irnos?'},
+  {phase:'resolucion',speaker:'Zhinchi',text:'Sí. Este arresto queda suspendido. Pueden retirarse en paz.'},
+  {phase:'resolucion',speaker:'Zhinchi',text:'Domingo Quispe, vendrás conmigo. Tendrás que explicar quién te entregó este documento.'},
+  {phase:'resolucion',speaker:'Domingo Quispe',text:'Capitán... yo solo cumplía órdenes.'},
+  {phase:'resolucion',speaker:'Zhinchi',text:'Entonces podrás demostrarlo en tu declaración. No volverás a detener a nadie por esta orden.'},
+  {phase:'resolucion',speaker:'Zhinchi',text:'Xervias, me ocuparé del detenido y del papeleo. Espérame cuando termine. Quiero que me acompañes.'},
+  {phase:'resolucion',speaker:'Xervias',text:'¡Sí, capitán!'},
+  {phase:'reflexion',speaker:'Crónica',text:'La familia se aleja a salvo. El capitán se marcha con el guardia. Xervias queda solo frente a la plaza.'},
+  {phase:'reflexion',speaker:'Xervias',text:'Un sello falso... y, sin embargo, parecía auténtico a simple vista.'},
+  {phase:'reflexion',speaker:'Xervias',text:'¿Quién podría hacer algo así? ¿Y cuántas órdenes más habrán sido alteradas?'},
 ] as const;
 
 function checkpoint() {
@@ -55,7 +74,7 @@ function checkpoint() {
     if (!raw) return {beat:0,duel:0,after:0};
     const p=JSON.parse(raw) as {beat:number;duel:number;after:number};
     return {
-      beat:Number.isInteger(p.beat)?Math.max(0,Math.min(OPENING_BEATS.length+1,p.beat)):0,
+      beat:Number.isInteger(p.beat)?Math.max(0,Math.min(OPENING_BEATS.length+2,p.beat)):0,
       duel:Number.isInteger(p.duel)?Math.max(0,Math.min(GUIDED_STEPS.length-1,p.duel)):0,
       after:Number.isInteger(p.after)?Math.max(0,Math.min(AFTER_DUEL_BEATS.length-1,p.after)):0,
     };
@@ -63,88 +82,146 @@ function checkpoint() {
 }
 
 const portraits: Record<string,string> = {
-  'Xervias':'./retratos/jugador.webp',
+  Xervias:'./retratos/jugador.webp',
   'Domingo Quispe':'./campania/arte/retratos/rival-01-domingo-quispe.webp',
+  Zhinchi:'./retratos/rival.webp',
+  Madre:'./campania/escenas/familia-suplicando.svg',
 };
+const phaseTitles: Record<string,string> = {
+  desenlace:'El precio de la victoria',
+  zhinchi:'La llegada del capitán',
+  cetro:'El sello bajo sospecha',
+  resolucion:'Una decisión justa',
+  reflexion:'El misterio continúa',
+};
+
 const CampaignOpening:React.FC=()=>{
   const navigate=useNavigate();
   const [query]=useSearchParams();
   const saved=React.useMemo(checkpoint,[]);
   const override=query.get('escena');
   const startBeat=React.useMemo(()=>{
-    if (override==='duelo') return OPENING_BEATS.length;
-    if (override==='desenlace') return OPENING_BEATS.length+1;
-    if (override) {const i=OPENING_BEATS.findIndex(row=>row.scene===override);if(i>=0)return i;}
+    if(override==='duelo')return OPENING_BEATS.length;
+    if(override==='fin')return OPENING_BEATS.length+2;
+    if(override==='desenlace'||override==='zhinchi'||override==='cetro'||override==='resolucion'||override==='reflexion')
+      return OPENING_BEATS.length+1;
+    if(override){const index=OPENING_BEATS.findIndex(x=>x.scene===override);if(index>=0)return index;}
     return saved.beat;
   },[override,saved.beat]);
   const [beat,setBeat]=React.useState(startBeat);
-  // A resumed cinematic duel restarts from the same real initial deck, never a fake restored match.
+  // Combat returns to the beginning of the real board if the player leaves mid-duel.
   const duel=0;
-  const [after,setAfter]=React.useState(override?0:saved.after);
+  const initialAfter=override && ['desenlace','zhinchi','cetro','resolucion','reflexion'].includes(override)
+    ? Math.max(0,AFTER_DUEL_BEATS.findIndex(x=>x.phase===override)) : override?0:saved.after;
+  const [after,setAfter]=React.useState(initialAfter);
+  const [artReady,setArtReady]=React.useState(false);
   const {playSound}=useAudio();
   React.useEffect(()=>{
-    try{getCampaignStorage()?.setItem(PROLOGUE_CHECKPOINT_KEY,JSON.stringify({beat,duel,after}));}catch{/* no storage */}
+    if(typeof fetch!=='function')return;
+    const controller=new AbortController();
+    fetch(prologueArtManifestUrl(),{signal:controller.signal,cache:'no-store'})
+      .then(r=>r.ok?r.json():null)
+      .then(m=>{if(!controller.signal.aborted)setArtReady(isPrologueArtManifest(m));})
+      .catch(()=>{/* Original art remains fully functional until complete generation. */});
+    return ()=>controller.abort();
+  },[]);
+  React.useEffect(()=>{
+    try{getCampaignStorage()?.setItem(PROLOGUE_CHECKPOINT_KEY,JSON.stringify({beat,duel,after}));}
+    catch{/* Private browsing may disable storage. */}
   },[beat,duel,after]);
+  const art=(id:PrologueArtId,fallback:string)=>artReady?prologueArtUrl(id):fallback;
   const finish=()=>{
     const store=getCampaignStorage();
     const progress=loadCampaignProgress(store);
-    const awarded=awardMissionStars(progress,'01',3);
-    const savedProgress=saveCampaignProgress(store,awarded);
-    if (!savedProgress){ /* Game remains traversable even if storage is unavailable */ }
-    try{store?.removeItem(PROLOGUE_CHECKPOINT_KEY);}catch{/* private mode */}
-    navigate('/campania/conversacion/01');
+    saveCampaignProgress(store,awardMissionStars(progress,'01',3));
+    try{store?.setItem(PROLOGUE_COMPLETE_KEY,'1');}catch{/* optional storage */}
+    setBeat(OPENING_BEATS.length+2);
   };
   const prologue=beat<OPENING_BEATS.length?OPENING_BEATS[beat]:null;
   const isBattle=beat===OPENING_BEATS.length;
-  const isAfter=beat>OPENING_BEATS.length;
-  const scene=prologue?.scene ?? (isBattle?'duelo':'desenlace');
+  const isAfter=beat===OPENING_BEATS.length+1;
+  const isFinal=beat>=OPENING_BEATS.length+2;
   const story=isAfter?AFTER_DUEL_BEATS[after]:prologue;
+  const scene=prologue?.scene??(isBattle?'duelo':isFinal?'fin':AFTER_DUEL_BEATS[after]?.phase??'desenlace');
   const speaker=story?.speaker??'';
+  const xervias=art(scene==='anillo'?'X02':scene==='reflexion'?'X04':scene==='desafio'?'X02':'X01',portraits.Xervias);
+  const domingo=art(scene==='desenlace'?'D04':scene==='desafio'||scene==='anillo'?'D03':scene==='arresto'?'D01':'D02',portraits['Domingo Quispe']);
+  const zhinchi=art(scene==='cetro'?(after===13?'Z02':'Z03'):scene==='resolucion'?'Z04':'Z01',portraits.Zhinchi);
+  const mother=art(scene==='arresto'?'M02':scene==='desenlace'?'M03':scene==='resolucion'?'M04':'M01',portraits.Madre);
+  const speechPortrait=speaker==='Zhinchi'?zhinchi:
+    speaker==='Xervias'?xervias:speaker==='Domingo Quispe'?domingo:
+    speaker==='Madre'?mother:undefined;
+  const background=scene==='pergamino'?art('F01','./portada/portada-poster.jpg'):
+    scene==='anillo'?art('P02','./escenarios/plaza-virreinal-v2.svg'):
+    scene==='cetro'?art('P03','./escenarios/plaza-virreinal-v2.svg'):
+    art('F02','./escenarios/plaza-virreinal-v2.svg');
   const advance=()=>{
     playSound('CLICK');
-    if (isAfter){if(after>=AFTER_DUEL_BEATS.length-1)finish();else setAfter(v=>v+1);}
-    else setBeat(v=>v+1);
+    if(isAfter){if(after===AFTER_DUEL_BEATS.length-1)finish();else setAfter(i=>i+1);}
+    else if(!isFinal)setBeat(i=>i+1);
   };
   return <main className={'dcop-screen dcop-'+scene} aria-label="Prólogo de campaña: El Sello Real">
     <div className="dcop-stage">
-      {!isBattle && <CampaignPauseMenu/>}
-      <div className="dcop-art" aria-hidden="true">
-        <img className="dcop-backdrop" src={scene==='pergamino'?'./portada/portada-poster.jpg':'./escenarios/plaza-virreinal-v2.svg'} alt=""/>
-        {scene==='pergamino' && <div className="dcop-scroll-held">
-          <div className="dcop-parchment">
+      {!isBattle&&!isFinal&&<CampaignPauseMenu/>}
+      {!isFinal&&<div className="dcop-art" aria-hidden="true">
+        <img className="dcop-backdrop" src={background} alt=""/>
+        {scene==='pergamino'&&<div className="dcop-scroll-held">
+          {artReady&&<img className="dcop-scroll-illustration" src={prologueArtUrl('P01')} alt=""/>}
+          <div className={'dcop-parchment'+(artReady?' dcop-parchment-overlay':'')}>
             <span>† CORONA SOLAR †</span><b>POR ORDEN DE LA CORONA</b>
             <p>Dos órdenes opuestas.<br/>Un mismo Sello Real.<br/>¿Cuál dice la verdad?</p>
-            <div className="dcop-wax">✷</div>
-          </div>
-          <div className="dcop-hand left"/><div className="dcop-hand right"/>
+            {!artReady&&<div className="dcop-wax">✷</div>}
+          </div>{!artReady&&<><div className="dcop-hand left"/><div className="dcop-hand right"/></>}
         </div>}
-        {(scene==='arresto'||scene==='xervias'||scene==='revision'||scene==='desafio')&&
-          <div className="dcop-scene-figures">
-            <div className="dcop-civil" aria-hidden="true"><img src="./campania/escenas/familia-suplicando.svg" alt=""/><small>LA FAMILIA</small></div>
-            <div className="dcop-guard"><img src={portraits['Domingo Quispe']} alt=""/><small>GUARDIA</small></div>
-            {scene!=='arresto' && <div className="dcop-hero"><img src={portraits['Xervias']} alt=""/><small>XERVIAS</small></div>}
+        {['arresto','xervias','revision','desafio'].includes(scene)&&
+          <div className="dcop-scene-figures" key={scene+'-'+speaker}>
+            <div className={'dcop-civil '+(speaker==='Madre'?'dcop-speaking':'dcop-dim')}>
+              <img src={mother} alt=""/>
+              {artReady&&<img className="dcop-child-sprite" src={prologueArtUrl(scene==='resolucion'?'N02':'N01')} alt=""/>}
+            </div>
+            <div className={'dcop-guard '+(speaker==='Domingo Quispe'?'dcop-speaking':'dcop-dim')}>
+              <img src={domingo} alt=""/>
+            </div>
+            {scene!=='arresto'&&<div className={'dcop-hero '+(speaker==='Xervias'?'dcop-speaking':'dcop-dim')}>
+              <img src={xervias} alt=""/>
+            </div>}
           </div>}
-        {scene==='anillo'&&<div className="dcop-ring-hero">
-          <img src={portraits['Xervias']} alt=""/>
-          <span className="dcop-magic-ring">✦</span>
+        {scene==='anillo'&&!artReady&&<div className="dcop-ring-hero">
+          <img src={xervias} alt=""/><span className="dcop-magic-ring">✦</span>
           <img className="dcop-summoned-card" src="./cartas/decreto-impacto.webp" alt=""/>
         </div>}
-        {scene==='desenlace'&&<div className="dcop-outcome-art"><img src={portraits['Domingo Quispe']} alt=""/><span>✦</span><img src={portraits['Xervias']} alt=""/></div>}
-      </div>
-      {isBattle ? <GameBoard guidedOpening
+        {scene==='desenlace'&&<div className="dcop-outcome-art">
+          <img src={domingo} alt=""/><span>✦</span><img src={xervias} alt=""/>
+        </div>}
+        {(scene==='zhinchi'||scene==='resolucion')&&
+          <div className="dcop-scene-figures dcop-after-figures" key={scene+'-'+speaker}>
+            <div className={'dcop-hero '+(speaker==='Xervias'?'dcop-speaking':'dcop-dim')}><img src={xervias} alt=""/></div>
+            <div className={'dcop-guard '+(speaker==='Zhinchi'?'dcop-speaking':'dcop-dim')}><img src={zhinchi} alt=""/></div>
+          </div>}
+        {scene==='reflexion'&&<div className="dcop-reflection-figure"><img src={xervias} alt=""/></div>}
+      </div>}
+      {isFinal?<section className="dcop-final-screen">
+        <h1>Fin del Prólogo</h1>
+        <button type="button" onClick={()=>navigate('/')}>Volver al menú</button>
+      </section>:
+      isBattle?<GameBoard guidedOpening
         onReturn={()=>navigate('/')}
         onOutcome={(result)=>{if(result.won){setBeat(OPENING_BEATS.length+1);setAfter(0);}}}
-        presentation={{background:'./escenarios/plaza-virreinal-v2.svg',backgroundVideo:null,
-          playerPortrait:portraits['Xervias'],opponentPortrait:portraits['Domingo Quispe']}}/> :
-        <section className={'dcop-narrative'+(scene==='pergamino'?' parchment-narrative':'')} aria-live="polite">
-          <div className="dcop-chapter-title"><small>DECRETO REAL · PRÓLOGO</small><h1>{isAfter?'El precio de la victoria':prologue?.title}</h1></div>
-          <div className="dcop-speech">
-            {portraits[speaker] && <img src={portraits[speaker]} alt=""/>}
-            <div><strong>{speaker}</strong><p>{story?.text}</p></div>
-          </div>
-          <footer><span>{isAfter?'DESENLACE '+(after+1)+'/'+AFTER_DUEL_BEATS.length:'ESCENA '+(beat+1)+'/'+OPENING_BEATS.length}</span>
-            <button type="button" onClick={advance}>{(isAfter&&after===AFTER_DUEL_BEATS.length-1)?'Continuar historia ›':beat===OPENING_BEATS.length-1?'Comenzar duelo ⚔':'Continuar ›'}</button></footer>
-        </section>}
+        presentation={{background:art('F02','./escenarios/plaza-virreinal-v2.svg'),backgroundVideo:null,
+          playerPortrait:art('X03',portraits.Xervias),opponentPortrait:art('D03',portraits['Domingo Quispe'])}}/>:
+      <section className={'dcop-narrative'+(scene==='pergamino'?' parchment-narrative':'')} aria-live="polite">
+        <div className="dcop-chapter-title"><small>DECRETO REAL · PRÓLOGO</small>
+          <h1>{isAfter?phaseTitles[scene]??'El precio de la victoria':prologue?.title}</h1>
+        </div>
+        <div className="dcop-speech">
+          {speechPortrait&&<img key={speechPortrait} src={speechPortrait} alt=""/>}
+          <div><strong>{speaker}</strong><p>{story?.text}</p></div>
+        </div>
+        <footer>
+          <span>{isAfter?'DESENLACE '+(after+1)+'/'+AFTER_DUEL_BEATS.length:'ESCENA '+(beat+1)+'/'+OPENING_BEATS.length}</span>
+          <button type="button" onClick={advance}>{beat===OPENING_BEATS.length-1?'Comenzar duelo ⚔':'Continuar ›'}</button>
+        </footer>
+      </section>}
     </div>
   </main>;
 };

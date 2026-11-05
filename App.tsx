@@ -1,5 +1,5 @@
 import React from 'react';
-import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { HashRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import MainMenu from './screens/MainMenu';
 import GameBoard from './screens/GameBoard';
 import VictoryScreen from './screens/VictoryScreen';
@@ -20,6 +20,8 @@ import CampaignAfterVictory from './screens/CampaignAfterVictory';
 import CampaignCenterReveal from './screens/CampaignCenterReveal';
 import CampaignRegionMoment from './screens/CampaignRegionMoment';
 import CampaignQaNavigator from './screens/CampaignQaNavigator';
+import { getCampaignStorage, isCampaignQaActive } from './campaign/campaignQA';
+import { PROLOGUE_COMPLETE_KEY } from './campaign/prologueArt';
 import CampaignCredits from './screens/CampaignCredits';
 import { AudioProvider } from './contexts/AudioContext';
 import './screens/one-screen-ui.css';
@@ -34,6 +36,14 @@ import './screens/royal-card-art.css';
 import './screens/royal-hud-art.css';
 import './screens/royal-battle-status.css';
 
+/** Keep story beyond the prologue private in public builds; QA can still inspect it. */
+const LaterStoryOnlyQa:React.FC<{children:React.ReactNode}> = ({children})=>{
+  if(!import.meta.env.PROD || isCampaignQaActive())return <>{children}</>;
+  let finished=false;
+  try{finished=getCampaignStorage()?.getItem(PROLOGUE_COMPLETE_KEY)==='1';}catch{/* no local storage */}
+  return <Navigate to={finished?'/campania/prologo?escena=fin':'/campania/inicio'} replace/>;
+};
+
 const CampaignRoutes: React.FC = () => {
   const location = useLocation();
   return <>
@@ -42,20 +52,20 @@ const CampaignRoutes: React.FC = () => {
           <Route path="/" element={<MainMenu />} />
           <Route path="/game" element={<GameBoard />} />
           <Route path="/duelo-v1" element={<CombatPrototype />} />
-          <Route path="/campania" element={<CampaignMap />} />
+          <Route path="/campania" element={<LaterStoryOnlyQa><CampaignMap /></LaterStoryOnlyQa>} />
           <Route path="/campania/inicio" element={<CampaignIntro />} />
           <Route path="/campania/prologo" element={<CampaignOpening />} />
-          <Route path="/campania/region/:chapterId" element={<CampaignMap />} />
-          <Route path="/campania/entrada/:chapterId" element={<CampaignRegionMoment mode="entrada" />} />
-          <Route path="/campania/liberada/:chapterId" element={<CampaignRegionMoment mode="liberada" />} />
-          <Route path="/campania/conversacion/:missionId" element={<CampaignAfterVictory />} />
-          <Route path="/campania/revelacion" element={<CampaignCenterReveal />} />
-          <Route path="/campania/generales" element={<CampaignBossSelect />} />
-          <Route path="/campania/historia" element={<CampaignStory />} />
-          <Route path="/campania/epilogo" element={<CampaignEpilogue />} />
-          <Route path="/campania/creditos" element={<CampaignCredits />} />
-          <Route path="/campania/baraja" element={<CampaignDeck />} />
-          <Route path="/campania/mision/:missionId" element={<CampaignMission />} />
+          <Route path="/campania/region/:chapterId" element={<LaterStoryOnlyQa><CampaignMap /></LaterStoryOnlyQa>} />
+          <Route path="/campania/entrada/:chapterId" element={<LaterStoryOnlyQa><CampaignRegionMoment mode="entrada" /></LaterStoryOnlyQa>} />
+          <Route path="/campania/liberada/:chapterId" element={<LaterStoryOnlyQa><CampaignRegionMoment mode="liberada" /></LaterStoryOnlyQa>} />
+          <Route path="/campania/conversacion/:missionId" element={<LaterStoryOnlyQa><CampaignAfterVictory /></LaterStoryOnlyQa>} />
+          <Route path="/campania/revelacion" element={<LaterStoryOnlyQa><CampaignCenterReveal /></LaterStoryOnlyQa>} />
+          <Route path="/campania/generales" element={<LaterStoryOnlyQa><CampaignBossSelect /></LaterStoryOnlyQa>} />
+          <Route path="/campania/historia" element={<LaterStoryOnlyQa><CampaignStory /></LaterStoryOnlyQa>} />
+          <Route path="/campania/epilogo" element={<LaterStoryOnlyQa><CampaignEpilogue /></LaterStoryOnlyQa>} />
+          <Route path="/campania/creditos" element={<LaterStoryOnlyQa><CampaignCredits /></LaterStoryOnlyQa>} />
+          <Route path="/campania/baraja" element={<LaterStoryOnlyQa><CampaignDeck /></LaterStoryOnlyQa>} />
+          <Route path="/campania/mision/:missionId" element={<LaterStoryOnlyQa><CampaignMission /></LaterStoryOnlyQa>} />
           <Route path="/duelo-v1/tutorial" element={<TutorialScreen />} />
           <Route path="/victory" element={<VictoryScreen />} />
           <Route path="/rules" element={<RulesScreen />} />
