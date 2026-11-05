@@ -807,8 +807,9 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
               {!showSurrenderConfirm ? (
                 <>
                   <button onClick={handleMenuToggle} className="w-full py-3 bg-gold-dark text-black font-bold uppercase text-sm rounded">Continuar Batalla</button>
-                  <button onClick={handleSurrenderRequest} className="w-full py-3 border border-red-900/50 text-red-500 uppercase text-sm rounded">Rendirse</button>
-                  {SHOW_DEV_WIN && <button type="button" data-testid="dev-auto-win"
+                  {!guidedOpening && <button onClick={handleSurrenderRequest} className="w-full py-3 border border-red-900/50 text-red-500 uppercase text-sm rounded">Rendirse</button>}
+                  {guidedOpening && onReturn && <button type="button" onClick={onReturn} className="w-full py-3 border border-gold-dark/50 text-amber-200 uppercase text-sm rounded">Volver al menú principal</button>}
+                  {SHOW_DEV_WIN && !guidedOpening && <button type="button" data-testid="dev-auto-win"
                     onClick={handleDevelopmentWin} className="w-full py-2 border border-amber-600/50 text-amber-300 uppercase text-xs rounded"
                     title="Temporal: eliminar antes del lanzamiento">⚙ Victoria automática · DEV</button>}
                 </>
@@ -828,8 +829,14 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
 
       {showSpecialSelection && (
         <ComboChoicePanel level={comboChoice}
-          onDamage={() => triggerSpecialAbility('PLAYER', 'DAMAGE', comboChoice)}
-          onHeal={() => triggerSpecialAbility('PLAYER', 'HEAL', comboChoice)} />
+          onDamage={() => {
+            if (guidedOpening && !guideAllows('combo2')) return;
+            void triggerSpecialAbility('PLAYER', 'DAMAGE', comboChoice).then(() => guideAdvance('combo2'));
+          }}
+          onHeal={() => {
+            if (guidedOpening && !guideAllows('combo3')) return;
+            void triggerSpecialAbility('PLAYER', 'HEAL', comboChoice).then(() => guideAdvance('combo3'));
+          }} />
       )}
 
       {/* DR-C08 — Scenic playfield. Portraits and the backdrop are independent assets. */}
@@ -911,7 +918,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
               const distance = i - (playerHand.length - 1) / 2;
               const step = Math.min(15, 60 / Math.max(1, playerHand.length - 1));
               const selected = selectedCardId === card.id;
-              const canUse = canHandleCards &&
+              const canUse = canHandleCards && (!guidedOpening || card.id === guidedCardId) &&
                 (card.type !== 'IMPACT' || (!playerImpactPlayedThisTurn && card.rank === playerImpactLevel + 1)) &&
                 (card.type !== 'MYSTIC' || canActivateMystic(card.mysticId, playerImpactPlayedThisTurn));
               const display = getRoyalCardText(card, ATTACK_DAMAGE);
@@ -977,7 +984,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
           onContinue={advanceStorySpeech}/>
       )}
 
-      {battleEnd && (phase === 'VICTORY' || phase === 'DEFEAT') && (
+      {battleEnd && !guidedOpening && (phase === 'VICTORY' || phase === 'DEFEAT') && (
         <div className={`dr-royal-end-banner-stage ${battleEnd.phase === 'VICTORY' ? 'is-victory' : 'is-defeat'}`}>
           <section className="dr-royal-end-banner" role="dialog" aria-modal="true"
             aria-labelledby="dr-royal-end-title" aria-describedby="dr-royal-end-reason">
