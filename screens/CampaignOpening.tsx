@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { awardMissionStars, loadCampaignProgress, saveCampaignProgress } from '../campaign/campaign';
 import { getCampaignStorage } from '../campaign/campaignQA';
 import GameBoard from './GameBoard';
+import { GUIDED_STEPS } from '../campaign/guidedOpeningDuel';
 import { useAudio } from '../contexts/AudioContext';
 import CampaignPauseMenu from './CampaignPauseMenu';
 import './campaign-opening.css';
