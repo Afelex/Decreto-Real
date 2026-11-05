@@ -20,11 +20,11 @@ test('All jump targets seed authentic prerequisite progress, without unlocking u
   for (const target of QA_CAMPAIGN_DESTINATIONS) {
     const progress = qaPreviewProgress(target);
     assert.deepEqual(validatedCampaignProgress(progress), progress, target.id);
-    const mission = /\/campania\/mision\/(\\d+)/.exec(target.path);
+    const mission = /\/campania\/mision\/(\d+)/.exec(target.path);
     if (mission) assert.equal(isMissionUnlocked(progress, mission[1]), true, target.id);
-    const conversation = /\/campania\/conversacion\/(\\d+)/.exec(target.path);
+    const conversation = /\/campania\/conversacion\/(\d+)/.exec(target.path);
     if (conversation) assert.ok(bestStars(progress, conversation[1]) > 0, target.id);
-    const region = /\/campania\/liberada\/(\\d+)/.exec(target.path);
+    const region = /\/campania\/liberada\/(\d+)/.exec(target.path);
     if (region) assert.ok(stagesForChapter(region[1]).every(stage => bestStars(progress, stage.id) > 0), target.id);
     if (target.id === 'revelacion-final') assert.equal(isMissionUnlocked(progress, '35'), true);
     if (target.id === 'epilogo') assert.ok(CAMPAIGN_MISSIONS.every(m => bestStars(progress, m.id) > 0));
