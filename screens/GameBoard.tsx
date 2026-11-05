@@ -455,6 +455,10 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
       else { setOpponentImpactLevel(p => p + 1); setOpponentImpactPlayedThisTurn(true); setPlayerHP(p => Math.max(0, p - 1)); setOpponentHP(p => Math.min(MAX_HP, p + 1)); }
     }
 
+    if (isPlayer && guidedOpening) {
+      const action = guidedActionForCard(card.id);
+      if (action) guideAdvance(action);
+    }
     const comboLevel = updateGauge(isPlayer, card.type);
     if (comboLevel) {
       if (card.type === 'MYSTIC' && card.mysticId) {
@@ -475,11 +479,26 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     const controller = new AiTurnController();
     aiController.current = controller;
     if (isMenuOpen) controller.pause();
-    void runOpponentTurn(controller, () => latestOpponent.current, card => {
-      if (!gameOverRef.current) return latestPlayCard.current(card, false);
-    }, () => {
-      if (!gameOverRef.current) { setTurnCount(p => p + 1); setPhase('TURN_BANNER'); }
-    });
+    if (guidedOpening) {
+      // Tactical choice is scripted; HP, combos and animation use normal GameBoard playCard.
+      void (async () => {
+        if (!await controller.wait(380)) return;
+        const attack = latestOpponent.current.hand.find(card => card.type === 'ATTACK');
+        if (!attack) return;
+        await latestPlayCard.current(attack, false);
+        if (!await controller.wait(380) || gameOverRef.current) return;
+        const action = guideAt()?.action;
+        if (action?.startsWith('rival')) guideAdvance(action);
+        setTurnCount(p => p + 1);
+        setPhase('TURN_BANNER');
+      })();
+    } else {
+      void runOpponentTurn(controller, () => latestOpponent.current, card => {
+        if (!gameOverRef.current) return latestPlayCard.current(card, false);
+      }, () => {
+        if (!gameOverRef.current) { setTurnCount(p => p + 1); setPhase('TURN_BANNER'); }
+      });
+    }
     return () => {
       controller.cancel();
       if (aiController.current === controller) aiController.current = null;
@@ -536,7 +555,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   }, [phase]);
 
   const handleBattleEndContinue = () => {
-    if (!battleEnd || campaignOutcomeReported.current || storyMoment) return;
+    if (!battleEnd || campaignOutcomeReported.current || storyMoment || (guidedOpening && guideIndex !== GUIDED_STEPS.length - 1)) return;
     campaignOutcomeReported.current = true; // Evitar doble avance o doble guardado.
     playSound('CLICK');
     if (onOutcome) {
@@ -549,18 +568,18 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     }
   };
 
-  const canHandleCards = phase === 'PLAYER_TURN' && !storyMoment && !showSpecialSelection && !isMenuOpen && !cardAnnouncement && !comboAnnouncement && !announcementBusy.current && !gameOverRef.current;
+  const canHandleCards = (!guidedOpening || !!guidedCardId) && phase === 'PLAYER_TURN' && !storyMoment && !showSpecialSelection && !isMenuOpen && !cardAnnouncement && !comboAnnouncement && !announcementBusy.current && !gameOverRef.current;
   const selectedCard = playerHand.find(card => card.id === selectedCardId) ?? null;
 
   const selectCard = (card: CardData) => {
-    if (!canHandleCards || spentIds.current.has(card.id)) return;
+    if (!canHandleCards || (guidedOpening && guidedCardId !== card.id) || spentIds.current.has(card.id)) return;
     setSelectedCardId(card.id);
     setPlayHint(null);
     playSound('CLICK');
   };
 
   const placeCard = (card: CardData, zone: CardDropZone) => {
-    if (!canHandleCards || spentIds.current.has(card.id) || !playerHand.some(item => item.id === card.id)) return;
+    if (!canHandleCards || (guidedOpening && guidedCardId !== card.id) || spentIds.current.has(card.id) || !playerHand.some(item => item.id === card.id)) return;
     const check = checkCardPlacement(card, resolveVisualDropZone(card, zone), playerImpactLevel, playerImpactPlayedThisTurn);
     if ('message' in check) { setPlayHint(check.message); return; }
     spentIds.current.add(card.id);
@@ -629,9 +648,11 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
     : cardPlacementPrompt(selectedCard, playerImpactLevel));
 
   const handleEndTurn = () => {
-    if (phase !== 'PLAYER_TURN' || storyMoment || showSpecialSelection || !!comboAnnouncement || announcementBusy.current || gameOverRef.current) return;
+    if (phase !== 'PLAYER_TURN' || storyMoment || (guidedOpening && !expectedGuideAction?.startsWith('end')) || showSpecialSelection || !!comboAnnouncement || announcementBusy.current || gameOverRef.current) return;
     setSelectedCardId(null); setPlayHint(null);
-    playSound('CLICK'); setTurnCount(p => p + 1); setPhase('TURN_BANNER');
+    playSound('CLICK');
+    if (guidedOpening && expectedGuideAction?.startsWith('end')) guideAdvance(expectedGuideAction);
+    setTurnCount(p => p + 1); setPhase('TURN_BANNER');
   };
 
   const handleMenuToggle = () => { playSound('CLICK'); setIsMenuOpen(!isMenuOpen); setShowSurrenderConfirm(false); };
@@ -665,7 +686,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
   };
   const handleSurrenderCancel = () => { playSound('CLICK'); setShowSurrenderConfirm(false); };
 
-  const endTurnUnavailable = phase !== 'PLAYER_TURN' || !!storyMoment || showSpecialSelection || !!comboAnnouncement || !!mysticComboAnnouncement || isMenuOpen || !!cardAnnouncement || announcementBusy.current;
+  const endTurnUnavailable = (guidedOpening && !expectedGuideAction?.startsWith('end')) || phase !== 'PLAYER_TURN' || !!storyMoment || showSpecialSelection || !!comboAnnouncement || !!mysticComboAnnouncement || isMenuOpen || !!cardAnnouncement || announcementBusy.current;
 
   const Board = (
     <div className={`dr-classic-screen dr-royal-screen bg-[#050505] font-body w-full overflow-hidden select-none flex flex-col relative text-white ${shakeScreen ? 'animate-shake' : ''}`} style={{ width: 'min(100vw, 430px)', height: '100dvh' }}>
