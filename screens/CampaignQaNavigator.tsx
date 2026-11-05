@@ -27,7 +27,9 @@ const CampaignQaNavigator: React.FC = () => {
     return () => document.removeEventListener('keydown', onKey);
   }, [open]);
 
-  if (!available) return null;
+  // No cubrir controles del duelo libre, tutorial u otras pantallas ajenas a Historia.
+  // El acceso QA se mantiene en el menú y en todas las escenas de campaña.
+  if (!available || (location.pathname !== '/' && !location.pathname.startsWith('/campania'))) return null;
   const launch = (destination: QaDestination) => {
     if (!startCampaignQaAt(destination)) return;
     setOpen(false);
