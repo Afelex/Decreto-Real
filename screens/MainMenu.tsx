@@ -1,3 +1,4 @@
+import { getCampaignStorage } from '../campaign/campaignQA.ts';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { bestStars, loadCampaignProgress } from '../campaign/campaign.ts';
@@ -66,7 +67,7 @@ const MenuButton: React.FC<MenuButtonProps> = ({
 const MainMenu: React.FC = () => {
   const navigate = useNavigate();
   const progress = React.useMemo(() => {
-    try { return loadCampaignProgress(window.localStorage); }
+    try { return loadCampaignProgress(getCampaignStorage()); }
     catch { return loadCampaignProgress(null); }
   }, []);
   const journey = React.useMemo(() => campaignOverview(progress), [progress]);
@@ -74,7 +75,7 @@ const MainMenu: React.FC = () => {
   const openCampaign = () => {
     if (!prologueComplete) {
       let introSeen = false;
-      try { introSeen = window.localStorage.getItem(CAMPAIGN_INTRO_KEY) === '1'; } catch { /* private mode */ }
+      try { introSeen = getCampaignStorage()?.getItem(CAMPAIGN_INTRO_KEY) === '1'; } catch { /* private mode */ }
       navigate(introSeen || journey.completed > 0 ? '/campania' : '/campania/inicio');
       return;
     }

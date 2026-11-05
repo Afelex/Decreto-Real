@@ -1,3 +1,4 @@
+import { getCampaignStorage } from '../campaign/campaignQA.ts';
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
@@ -11,9 +12,7 @@ import { regionVisual } from '../campaign/regionVisuals.ts';
 import { campaignLandscape } from '../campaign/regionAssets.ts';
 import './campaign-map-fullscreen.css';
 
-const storage = (): Storage | null => {
-  try { return window.localStorage; } catch { return null; }
-};
+const storage = getCampaignStorage;
 
 /** Chapter navigation is gated by wins, not by clicks on future regions. */
 const chapterOpen = (progress: CampaignProgress, chapterId: string) =>

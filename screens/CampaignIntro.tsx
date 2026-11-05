@@ -1,3 +1,4 @@
+import { getCampaignStorage } from '../campaign/campaignQA.ts';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './campaign-intro.css';
@@ -8,7 +9,7 @@ export const CAMPAIGN_INTRO_KEY = 'decreto-real.campania.introduccion.v1';
 const CampaignIntro: React.FC = () => {
   const navigate = useNavigate();
   const continueToPrologue = () => {
-    try { window.localStorage.setItem(CAMPAIGN_INTRO_KEY, '1'); } catch { /* private browsing */ }
+    try { getCampaignStorage()?.setItem(CAMPAIGN_INTRO_KEY, '1'); } catch { /* private browsing */ }
     navigate('/campania');
   };
 

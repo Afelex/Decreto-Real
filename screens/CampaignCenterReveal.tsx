@@ -1,3 +1,4 @@
+import { getCampaignStorage } from '../campaign/campaignQA.ts';
 import React from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { isMissionUnlocked, loadCampaignProgress } from '../campaign/campaign.ts';
@@ -15,13 +16,13 @@ const LINES = [
 const CampaignCenterReveal: React.FC = () => {
   const navigate = useNavigate();
   const [progress] = React.useState(() => {
-    try { return loadCampaignProgress(window.localStorage); } catch { return loadCampaignProgress(null); }
+    try { return loadCampaignProgress(getCampaignStorage()); } catch { return loadCampaignProgress(null); }
   });
   const [lineIndex, setLineIndex] = React.useState(0);
   if (!isMissionUnlocked(progress, '35')) return <Navigate to="/campania/generales" replace />;
 
   const finish = () => {
-    try { window.localStorage.setItem(CENTER_REVEAL_KEY, '1'); } catch { /* storage unavailable */ }
+    try { getCampaignStorage()?.setItem(CENTER_REVEAL_KEY, '1'); } catch { /* storage unavailable */ }
     navigate('/campania/generales');
   };
   const current = LINES[lineIndex];

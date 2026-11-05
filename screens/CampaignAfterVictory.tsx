@@ -1,3 +1,4 @@
+import { getCampaignStorage } from '../campaign/campaignQA.ts';
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CAMPAIGN_MISSIONS, bestStars, isMissionUnlocked, loadCampaignProgress } from '../campaign/campaign.ts';
@@ -7,9 +8,7 @@ import './campaign-after-victory.css';
 
 export const CENTER_REVEAL_KEY = 'decreto-real.campania.centro-revelado.v1';
 
-const safeStorage = (): Storage | null => {
-  try { return window.localStorage; } catch { return null; }
-};
+const safeStorage = getCampaignStorage;
 
 /** A chapter-specific conversation after each victory, separate from the duel. */
 const CampaignAfterVictory: React.FC = () => {

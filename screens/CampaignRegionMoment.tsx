@@ -1,3 +1,4 @@
+import { getCampaignStorage } from '../campaign/campaignQA.ts';
 import React from 'react';
 import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { bestStars, isMissionUnlocked, loadCampaignProgress } from '../campaign/campaign.ts';
@@ -14,9 +15,7 @@ import { GeneralPortrait } from './GeneralPortrait';
 import { campaignLandscape } from '../campaign/regionAssets.ts';
 import './campaign-region-moments.css';
 
-const storage = (): Storage | null => {
-  try { return window.localStorage; } catch { return null; }
-};
+const storage = getCampaignStorage;
 
 type RegionMomentMode = 'entrada' | 'liberada';
 
