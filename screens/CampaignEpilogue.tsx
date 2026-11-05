@@ -1,15 +1,17 @@
+import { getCampaignStorage, isCampaignQaActive } from '../campaign/campaignQA.ts';
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CAMPAIGN_MISSIONS, bestStars, loadCampaignProgress } from '../campaign/campaign.ts';
 import './campaign.css';
 import './one-screen-ui.css';
 
 const CampaignEpilogue: React.FC = () => {
   const navigate = useNavigate();
-  const [page, setPage] = React.useState(0);
+  const [search] = useSearchParams();
+  const [page, setPage] = React.useState(() => isCampaignQaActive() && search.get('qaPagina') === '2' ? 1 : 0);
   const finished = React.useMemo(() => {
     try {
-      const progress = loadCampaignProgress(window.localStorage);
+      const progress = loadCampaignProgress(getCampaignStorage());
       return CAMPAIGN_MISSIONS.every(mission => bestStars(progress, mission.id) > 0);
     } catch { return false; }
   }, []);
@@ -46,7 +48,8 @@ const CampaignEpilogue: React.FC = () => {
         <span>Página {page + 1} de 2</span>
         <button disabled={page === 1} onClick={() => setPage(1)}>Siguiente ›</button>
       </div>
-      <button className="dc-primary" onClick={() => navigate('/campania')}>Volver a mi recorrido</button>
+      {page === 1 ? <button className="dc-primary" onClick={() => navigate('/campania/creditos')}>Ver créditos ›</button>
+        : <button className="dc-primary" onClick={() => navigate('/campania')}>Volver a mi recorrido</button>}
     </footer>
   </main>;
 };
