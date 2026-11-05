@@ -1,5 +1,6 @@
+import { getCampaignStorage, isCampaignQaActive } from '../campaign/campaignQA.ts';
 import React from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import GameBoard, { type OriginalBattleOutcome } from './GameBoard';
 import { calculateClassicMissionStars } from '../campaign/classicScoring.ts';
 import {
@@ -24,21 +25,21 @@ type MissionOutcome = {
   changedDifficulty: boolean; turns: number; health: number;
 };
 
-const getStorage = (): Storage | null => {
-  try { return typeof window !== 'undefined' ? window.localStorage : null; }
-  catch { return null; }
-};
+const getStorage = getCampaignStorage;
 
 /** Story presentation connects the untouched original combat to existing mission progression. */
 const CampaignMission: React.FC = () => {
   const navigate = useNavigate();
+  const [search] = useSearchParams();
+  const qaInitialView = isCampaignQaActive() && search.get('qaEscena') === 'combate' ? 'duel'
+    : isCampaignQaActive() && search.get('qaEscena') === 'confrontacion' ? 'confrontation' : 'briefing';
   const { missionId } = useParams<{ missionId: string }>();
   const mission = getCampaignMission(missionId);
   const chapter = chapterForStage(missionId ?? '');
   const enemy = enemyForMission(missionId ?? '');
   const conversation = mission ? combatConversationForMission(mission.id) : undefined;
   const [attempt, setAttempt] = React.useState(0);
-  const [view, setView] = React.useState<'briefing' | 'confrontation' | 'duel'>('briefing');
+  const [view, setView] = React.useState<'briefing' | 'confrontation' | 'duel'>(qaInitialView);
   const [outcome, setOutcome] = React.useState<MissionOutcome | null>(null);
   const storage = React.useMemo(getStorage, []);
   const progress = loadCampaignProgress(storage);
@@ -53,8 +54,8 @@ const CampaignMission: React.FC = () => {
   React.useEffect(() => {
     setOutcome(null);
     setAttempt(0);
-    setView('briefing');
-  }, [missionId]);
+    setView(qaInitialView);
+  }, [missionId, qaInitialView]);
 
   const retry = () => { setAttempt(value => value + 1); setOutcome(null); setView('duel'); };
 
