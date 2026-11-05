@@ -114,7 +114,7 @@ const CampaignMap: React.FC = () => {
 
   const startSelected = () => {
     if (selected && isMissionUnlocked(progress, selected.id)) {
-      navigate(selected.id === '01' && bestStars(progress, '01') === 0 ? '/campania/prologo' : `/campania/mision/${selected.id}`);
+      navigate(`/campania/mision/${selected.id}`);
     }
   };
 
