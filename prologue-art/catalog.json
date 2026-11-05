@@ -1,0 +1,351 @@
+{
+  "version": 1,
+  "product": "Decreto Real",
+  "scope": "Prólogo (14 escenas)",
+  "model": "gpt-image-2.5-flare",
+  "quality": "medium",
+  "outputFormat": "webp",
+  "basePath": "public/campania/prologo/",
+  "license": "Originales generados mediante API del proyecto",
+  "referencePolicy": "Las imágenes existentes se reutilizan como referencia; los personajes nuevos conservan identidad en sus variantes",
+  "items": [
+    {
+      "id": "D01",
+      "kind": "sprite",
+      "character": "Domingo Quispe",
+      "expression": "Neutro serio",
+      "pose": "De pie, recto, decreto enrollado en la mano",
+      "scenes": "3, 4",
+      "batch": "Lote 1",
+      "priority": "Alta",
+      "file": "sprites/domingo_01_neutro.webp",
+      "references": [
+        "public/campania/arte/retratos/rival-01-domingo-quispe.webp",
+        "public/retratos/jugador.webp",
+        "public/retratos/rival.webp"
+      ],
+      "prompt": "Ilustración original para el videojuego Decreto Real, ambientado en un virreinato fantástico del siglo XVII. MISMA BIBLIA VISUAL que los retratos aprobados de Xervias y Zhinchi: anime de fantasía y duelos, dibujo 2D limpio con líneas negras nítidas, contornos legibles, proporciones faciales estilizadas, ojos expresivos, cabello en mechones grandes, cel-shading de sombras geométricas, dorados vivos, detalles de vestuario refinados y consistentes. Sprite de novela visual, medio cuerpo desde cadera o pecho según pose; manos anatómicamente correctas, figura enteramente dentro del lienzo, perspectiva de cámara 3/4 frontal, iluminación coherente. SIN fondo ni decorado: canal alfa verdaderamente transparente (no dibujar patrón de cuadros). Sin texto, números, etiquetas, marco, marca de agua, personajes adicionales ni recortes de manos o cabeza.  Domingo Quispe, guardia adulto joven de menor rango, cabello castaño oscuro en mechones con silueta propia, ojos castaños, mandíbula firme y cejas marcadas. Uniforme azul marino de corte virreinal-fantástico, chaleco sencillo, ribetes dorados modestos, hombros sobrios y pequeño paño rojo; MENOS ornamentado que Zhinchi y diferente del uniforme y rostro de Xervias. No copiar sus rasgos faciales.  ESCENA(S): 3, 4. EXPRESIÓN: Neutro serio. POSE: De pie, recto, decreto enrollado en la mano. DIRECCIÓN ESPECÍFICA: Mirada rígida, controlada, boca cerrada, autoridad formal. Sostiene un decreto sellado sin ocultar el rostro. Composición vertical 2:3; imagen maestra PNG con canal alfa real, preparación para WebP transparente optimizado."
+    },
+    {
+      "id": "D02",
+      "kind": "sprite",
+      "character": "Domingo Quispe",
+      "expression": "Arrogante",
+      "pose": "Inclinado levemente, dedo acusador",
+      "scenes": "4, 5, 6",
+      "batch": "Lote 1",
+      "priority": "Alta",
+      "file": "sprites/domingo_02_arrogante.webp",
+      "references": [
+        "public/campania/prologo/sprites/domingo_01_neutro.webp",
+        "public/retratos/jugador.webp"
+      ],
+      "prompt": "Ilustración original para el videojuego Decreto Real, ambientado en un virreinato fantástico del siglo XVII. MISMA BIBLIA VISUAL que los retratos aprobados de Xervias y Zhinchi: anime de fantasía y duelos, dibujo 2D limpio con líneas negras nítidas, contornos legibles, proporciones faciales estilizadas, ojos expresivos, cabello en mechones grandes, cel-shading de sombras geométricas, dorados vivos, detalles de vestuario refinados y consistentes. Sprite de novela visual, medio cuerpo desde cadera o pecho según pose; manos anatómicamente correctas, figura enteramente dentro del lienzo, perspectiva de cámara 3/4 frontal, iluminación coherente. SIN fondo ni decorado: canal alfa verdaderamente transparente (no dibujar patrón de cuadros). Sin texto, números, etiquetas, marco, marca de agua, personajes adicionales ni recortes de manos o cabeza.  Domingo Quispe, guardia adulto joven de menor rango, cabello castaño oscuro en mechones con silueta propia, ojos castaños, mandíbula firme y cejas marcadas. Uniforme azul marino de corte virreinal-fantástico, chaleco sencillo, ribetes dorados modestos, hombros sobrios y pequeño paño rojo; MENOS ornamentado que Zhinchi y diferente del uniforme y rostro de Xervias. No copiar sus rasgos faciales.  ESCENA(S): 4, 5, 6. EXPRESIÓN: Arrogante. POSE: Inclinado levemente, dedo acusador. DIRECCIÓN ESPECÍFICA: Sonrisa lateral de desprecio, ceja arqueada, señala con una mano al interlocutor como si humillara a un recién graduado. Composición vertical 2:3; imagen maestra PNG con canal alfa real, preparación para WebP transparente optimizado."
+    },
+    {
+      "id": "D03",
+      "kind": "sprite",
+      "character": "Domingo Quispe",
+      "expression": "Furioso",
+      "pose": "Postura de duelo, brazo listo para lanzar cartas",
+      "scenes": "7, 8",
+      "batch": "Lote 1",
+      "priority": "Alta",
+      "file": "sprites/domingo_03_furioso.webp",
+      "references": [
+        "public/campania/prologo/sprites/domingo_01_neutro.webp",
+        "public/retratos/jugador.webp"
+      ],
+      "prompt": "Ilustración original para el videojuego Decreto Real, ambientado en un virreinato fantástico del siglo XVII. MISMA BIBLIA VISUAL que los retratos aprobados de Xervias y Zhinchi: anime de fantasía y duelos, dibujo 2D limpio con líneas negras nítidas, contornos legibles, proporciones faciales estilizadas, ojos expresivos, cabello en mechones grandes, cel-shading de sombras geométricas, dorados vivos, detalles de vestuario refinados y consistentes. Sprite de novela visual, medio cuerpo desde cadera o pecho según pose; manos anatómicamente correctas, figura enteramente dentro del lienzo, perspectiva de cámara 3/4 frontal, iluminación coherente. SIN fondo ni decorado: canal alfa verdaderamente transparente (no dibujar patrón de cuadros). Sin texto, números, etiquetas, marco, marca de agua, personajes adicionales ni recortes de manos o cabeza.  Domingo Quispe, guardia adulto joven de menor rango, cabello castaño oscuro en mechones con silueta propia, ojos castaños, mandíbula firme y cejas marcadas. Uniforme azul marino de corte virreinal-fantástico, chaleco sencillo, ribetes dorados modestos, hombros sobrios y pequeño paño rojo; MENOS ornamentado que Zhinchi y diferente del uniforme y rostro de Xervias. No copiar sus rasgos faciales.  ESCENA(S): 7, 8. EXPRESIÓN: Furioso. POSE: Postura de duelo, brazo listo para lanzar cartas. DIRECCIÓN ESPECÍFICA: Grita con cejas fruncidas y mirada desafiante; pose de combate de cartas, no sostiene espada ni arma de fuego. Composición vertical 2:3; imagen maestra PNG con canal alfa real, preparación para WebP transparente optimizado."
+    },
+    {
+      "id": "D04",
+      "kind": "sprite",
+      "character": "Domingo Quispe",
+      "expression": "Derrotado / incrédulo",
+      "pose": "Arrodillado o con hombros caídos, mano cerca del anillo",
+      "scenes": "9, 12",
+      "batch": "Lote 1",
+      "priority": "Alta",
+      "file": "sprites/domingo_04_derrotado.webp",
+      "references": [
+        "public/campania/prologo/sprites/domingo_01_neutro.webp",
+        "public/retratos/jugador.webp"
+      ],
+      "prompt": "Ilustración original para el videojuego Decreto Real, ambientado en un virreinato fantástico del siglo XVII. MISMA BIBLIA VISUAL que los retratos aprobados de Xervias y Zhinchi: anime de fantasía y duelos, dibujo 2D limpio con líneas negras nítidas, contornos legibles, proporciones faciales estilizadas, ojos expresivos, cabello en mechones grandes, cel-shading de sombras geométricas, dorados vivos, detalles de vestuario refinados y consistentes. Sprite de novela visual, medio cuerpo desde cadera o pecho según pose; manos anatómicamente correctas, figura enteramente dentro del lienzo, perspectiva de cámara 3/4 frontal, iluminación coherente. SIN fondo ni decorado: canal alfa verdaderamente transparente (no dibujar patrón de cuadros). Sin texto, números, etiquetas, marco, marca de agua, personajes adicionales ni recortes de manos o cabeza.  Domingo Quispe, guardia adulto joven de menor rango, cabello castaño oscuro en mechones con silueta propia, ojos castaños, mandíbula firme y cejas marcadas. Uniforme azul marino de corte virreinal-fantástico, chaleco sencillo, ribetes dorados modestos, hombros sobrios y pequeño paño rojo; MENOS ornamentado que Zhinchi y diferente del uniforme y rostro de Xervias. No copiar sus rasgos faciales.  ESCENA(S): 9, 12. EXPRESIÓN: Derrotado / incrédulo. POSE: Arrodillado o con hombros caídos, mano cerca del anillo. DIRECCIÓN ESPECÍFICA: Mirada atónita y agotada, boca entreabierta, consciente a medias; sin heridas sangrientas. Dejar espacio para superponer el efecto místico. Composición vertical 2:3; imagen maestra PNG con canal alfa real, preparación para WebP transparente optimizado."
+    },
+    {
+      "id": "M01",
+      "kind": "sprite",
+      "character": "Madre",
+      "expression": "Protectora / preocupada",
+      "pose": "Cuerpo girado protegiendo a alguien fuera de cuadro",
+      "scenes": "3",
+      "batch": "Lote 1",
+      "priority": "Alta",
+      "file": "sprites/madre_01_protectora.webp",
+      "references": [
+        "public/retratos/jugador.webp",
+        "public/retratos/rival.webp"
+      ],
+      "prompt": "Ilustración original para el videojuego Decreto Real, ambientado en un virreinato fantástico del siglo XVII. MISMA BIBLIA VISUAL que los retratos aprobados de Xervias y Zhinchi: anime de fantasía y duelos, dibujo 2D limpio con líneas negras nítidas, contornos legibles, proporciones faciales estilizadas, ojos expresivos, cabello en mechones grandes, cel-shading de sombras geométricas, dorados vivos, detalles de vestuario refinados y consistentes. Sprite de novela visual, medio cuerpo desde cadera o pecho según pose; manos anatómicamente correctas, figura enteramente dentro del lienzo, perspectiva de cámara 3/4 frontal, iluminación coherente. SIN fondo ni decorado: canal alfa verdaderamente transparente (no dibujar patrón de cuadros). Sin texto, números, etiquetas, marco, marca de agua, personajes adicionales ni recortes de manos o cabeza.  La madre del prólogo: mujer adulta, rostro estilizado y expresivo de aspecto andino, cabello negro recogido en una trenza, vestido borgoña apagado, chal crema, cinturón tejido discreto; vestuario civil sobrio y exactamente idéntico entre versiones. Mantener la misma edad, rostro, peinado y ropa.  ESCENA(S): 3. EXPRESIÓN: Protectora / preocupada. POSE: Cuerpo girado protegiendo a alguien fuera de cuadro. DIRECCIÓN ESPECÍFICA: Abraza con un brazo un espacio libre donde se compondrá al niño como sprite independiente. No dibujar al niño en el mismo recurso. Composición vertical 2:3; imagen maestra PNG con canal alfa real, preparación para WebP transparente optimizado."
+    },
+    {
+      "id": "M02",
+      "kind": "sprite",
+      "character": "Madre",
+      "expression": "Suplicante",
+      "pose": "Brazo extendido, palma abierta",
+      "scenes": "3, 4",
+      "batch": "Lote 1",
+      "priority": "Alta",
+      "file": "sprites/madre_02_suplicante.webp",
+      "references": [
+        "public/campania/prologo/sprites/madre_01_protectora.webp"
+      ],
+      "prompt": "Ilustración original para el videojuego Decreto Real, ambientado en un virreinato fantástico del siglo XVII. MISMA BIBLIA VISUAL que los retratos aprobados de Xervias y Zhinchi: anime de fantasía y duelos, dibujo 2D limpio con líneas negras nítidas, contornos legibles, proporciones faciales estilizadas, ojos expresivos, cabello en mechones grandes, cel-shading de sombras geométricas, dorados vivos, detalles de vestuario refinados y consistentes. Sprite de novela visual, medio cuerpo desde cadera o pecho según pose; manos anatómicamente correctas, figura enteramente dentro del lienzo, perspectiva de cámara 3/4 frontal, iluminación coherente. SIN fondo ni decorado: canal alfa verdaderamente transparente (no dibujar patrón de cuadros). Sin texto, números, etiquetas, marco, marca de agua, personajes adicionales ni recortes de manos o cabeza.  La madre del prólogo: mujer adulta, rostro estilizado y expresivo de aspecto andino, cabello negro recogido en una trenza, vestido borgoña apagado, chal crema, cinturón tejido discreto; vestuario civil sobrio y exactamente idéntico entre versiones. Mantener la misma edad, rostro, peinado y ropa.  ESCENA(S): 3, 4. EXPRESIÓN: Suplicante. POSE: Brazo extendido, palma abierta. DIRECCIÓN ESPECÍFICA: Ojos húmedos, angustia genuina, boca abierta pidiendo ayuda. Mano extendida hacia el espectador, sin deformaciones ni exageración grotesca. Composición vertical 2:3; imagen maestra PNG con canal alfa real, preparación para WebP transparente optimizado."
+    },
+    {
+      "id": "N01",
+      "kind": "sprite",
+      "character": "Niño",
+      "expression": "Asustado",
+      "pose": "Encogido, manos cerca del pecho",
+      "scenes": "3, 4",
+      "batch": "Lote 1",
+      "priority": "Alta",
+      "file": "sprites/nino_01_asustado.webp",
+      "references": [
+        "public/retratos/jugador.webp",
+        "public/retratos/rival.webp"
+      ],
+      "prompt": "Ilustración original para el videojuego Decreto Real, ambientado en un virreinato fantástico del siglo XVII. MISMA BIBLIA VISUAL que los retratos aprobados de Xervias y Zhinchi: anime de fantasía y duelos, dibujo 2D limpio con líneas negras nítidas, contornos legibles, proporciones faciales estilizadas, ojos expresivos, cabello en mechones grandes, cel-shading de sombras geométricas, dorados vivos, detalles de vestuario refinados y consistentes. Sprite de novela visual, medio cuerpo desde cadera o pecho según pose; manos anatómicamente correctas, figura enteramente dentro del lienzo, perspectiva de cámara 3/4 frontal, iluminación coherente. SIN fondo ni decorado: canal alfa verdaderamente transparente (no dibujar patrón de cuadros). Sin texto, números, etiquetas, marco, marca de agua, personajes adicionales ni recortes de manos o cabeza.  El niño del prólogo, de aproximadamente nueve años, rostro y ojos expresivos anime, cabello oscuro corto y ligeramente ondulado, camisa marfil, chaleco azul apagado, pantalón marrón; mismo diseño, edad, proporciones y ropa entre todas sus versiones.  ESCENA(S): 3, 4. EXPRESIÓN: Asustado. POSE: Encogido, manos cerca del pecho. DIRECCIÓN ESPECÍFICA: Mira hacia la madre fuera de cuadro con temor y confusión. No hacerlo caricaturesco o chibi. Composición vertical 2:3; imagen maestra PNG con canal alfa real, preparación para WebP transparente optimizado."
+    },
+    {
+      "id": "M03",
+      "kind": "sprite",
+      "character": "Madre",
+      "expression": "Sobresaltada",
+      "pose": "Una mano sobre el pecho",
+      "scenes": "9",
+      "batch": "Lote 2",
+      "priority": "Media",
+      "file": "sprites/madre_03_asustada.webp",
+      "references": [
+        "public/campania/prologo/sprites/madre_01_protectora.webp"
+      ],
+      "prompt": "Ilustración original para el videojuego Decreto Real, ambientado en un virreinato fantástico del siglo XVII. MISMA BIBLIA VISUAL que los retratos aprobados de Xervias y Zhinchi: anime de fantasía y duelos, dibujo 2D limpio con líneas negras nítidas, contornos legibles, proporciones faciales estilizadas, ojos expresivos, cabello en mechones grandes, cel-shading de sombras geométricas, dorados vivos, detalles de vestuario refinados y consistentes. Sprite de novela visual, medio cuerpo desde cadera o pecho según pose; manos anatómicamente correctas, figura enteramente dentro del lienzo, perspectiva de cámara 3/4 frontal, iluminación coherente. SIN fondo ni decorado: canal alfa verdaderamente transparente (no dibujar patrón de cuadros). Sin texto, números, etiquetas, marco, marca de agua, personajes adicionales ni recortes de manos o cabeza.  La madre del prólogo: mujer adulta, rostro estilizado y expresivo de aspecto andino, cabello negro recogido en una trenza, vestido borgoña apagado, chal crema, cinturón tejido discreto; vestuario civil sobrio y exactamente idéntico entre versiones. Mantener la misma edad, rostro, peinado y ropa.  ESCENA(S): 9. EXPRESIÓN: Sobresaltada. POSE: Una mano sobre el pecho. DIRECCIÓN ESPECÍFICA: Reacción al derrumbe del guardia: ojos abiertos, boca entreabierta, cuerpo levemente retraído; no lágrimas exageradas. Composición vertical 2:3; imagen maestra PNG con canal alfa real, preparación para WebP transparente optimizado."
+    },
+    {
+      "id": "M04",
+      "kind": "sprite",
+      "character": "Madre",
+      "expression": "Agradecida / aliviada",
+      "pose": "Manos reunidas, hombros relajados",
+      "scenes": "12",
+      "batch": "Lote 2",
+      "priority": "Media",
+      "file": "sprites/madre_04_aliviada.webp",
+      "references": [
+        "public/campania/prologo/sprites/madre_01_protectora.webp"
+      ],
+      "prompt": "Ilustración original para el videojuego Decreto Real, ambientado en un virreinato fantástico del siglo XVII. MISMA BIBLIA VISUAL que los retratos aprobados de Xervias y Zhinchi: anime de fantasía y duelos, dibujo 2D limpio con líneas negras nítidas, contornos legibles, proporciones faciales estilizadas, ojos expresivos, cabello en mechones grandes, cel-shading de sombras geométricas, dorados vivos, detalles de vestuario refinados y consistentes. Sprite de novela visual, medio cuerpo desde cadera o pecho según pose; manos anatómicamente correctas, figura enteramente dentro del lienzo, perspectiva de cámara 3/4 frontal, iluminación coherente. SIN fondo ni decorado: canal alfa verdaderamente transparente (no dibujar patrón de cuadros). Sin texto, números, etiquetas, marco, marca de agua, personajes adicionales ni recortes de manos o cabeza.  La madre del prólogo: mujer adulta, rostro estilizado y expresivo de aspecto andino, cabello negro recogido en una trenza, vestido borgoña apagado, chal crema, cinturón tejido discreto; vestuario civil sobrio y exactamente idéntico entre versiones. Mantener la misma edad, rostro, peinado y ropa.  ESCENA(S): 12. EXPRESIÓN: Agradecida / aliviada. POSE: Manos reunidas, hombros relajados. DIRECCIÓN ESPECÍFICA: Pequeña sonrisa conmocionada, ojos brillantes, gratitud sincera y rostro relajado. Composición vertical 2:3; imagen maestra PNG con canal alfa real, preparación para WebP transparente optimizado."
+    },
+    {
+      "id": "N02",
+      "kind": "sprite",
+      "character": "Niño",
+      "expression": "Aliviado",
+      "pose": "Postura menos encogida, pequeña sonrisa",
+      "scenes": "12",
+      "batch": "Lote 2",
+      "priority": "Media",
+      "file": "sprites/nino_02_aliviado.webp",
+      "references": [
+        "public/campania/prologo/sprites/nino_01_asustado.webp"
+      ],
+      "prompt": "Ilustración original para el videojuego Decreto Real, ambientado en un virreinato fantástico del siglo XVII. MISMA BIBLIA VISUAL que los retratos aprobados de Xervias y Zhinchi: anime de fantasía y duelos, dibujo 2D limpio con líneas negras nítidas, contornos legibles, proporciones faciales estilizadas, ojos expresivos, cabello en mechones grandes, cel-shading de sombras geométricas, dorados vivos, detalles de vestuario refinados y consistentes. Sprite de novela visual, medio cuerpo desde cadera o pecho según pose; manos anatómicamente correctas, figura enteramente dentro del lienzo, perspectiva de cámara 3/4 frontal, iluminación coherente. SIN fondo ni decorado: canal alfa verdaderamente transparente (no dibujar patrón de cuadros). Sin texto, números, etiquetas, marco, marca de agua, personajes adicionales ni recortes de manos o cabeza.  El niño del prólogo, de aproximadamente nueve años, rostro y ojos expresivos anime, cabello oscuro corto y ligeramente ondulado, camisa marfil, chaleco azul apagado, pantalón marrón; mismo diseño, edad, proporciones y ropa entre todas sus versiones.  ESCENA(S): 12. EXPRESIÓN: Aliviado. POSE: Postura menos encogida, pequeña sonrisa. DIRECCIÓN ESPECÍFICA: Mismo niño; mirada tímida y agradecida hacia Xervias, hombros relajados. Composición vertical 2:3; imagen maestra PNG con canal alfa real, preparación para WebP transparente optimizado."
+    },
+    {
+      "id": "Z01",
+      "kind": "sprite",
+      "character": "Zhinchi",
+      "expression": "Autoridad serena",
+      "pose": "Entrada con una mano sobre el cinturón",
+      "scenes": "10",
+      "batch": "Lote 3",
+      "priority": "Alta",
+      "file": "sprites/zhinchi_01_entrada.webp",
+      "references": [
+        "public/retratos/rival.webp"
+      ],
+      "prompt": "Ilustración original para el videojuego Decreto Real, ambientado en un virreinato fantástico del siglo XVII. MISMA BIBLIA VISUAL que los retratos aprobados de Xervias y Zhinchi: anime de fantasía y duelos, dibujo 2D limpio con líneas negras nítidas, contornos legibles, proporciones faciales estilizadas, ojos expresivos, cabello en mechones grandes, cel-shading de sombras geométricas, dorados vivos, detalles de vestuario refinados y consistentes. Sprite de novela visual, medio cuerpo desde cadera o pecho según pose; manos anatómicamente correctas, figura enteramente dentro del lienzo, perspectiva de cámara 3/4 frontal, iluminación coherente. SIN fondo ni decorado: canal alfa verdaderamente transparente (no dibujar patrón de cuadros). Sin texto, números, etiquetas, marco, marca de agua, personajes adicionales ni recortes de manos o cabeza.  ZHINCHI, capitán y mentor, identidad facial EXACTAMENTE igual a las referencias adjuntas: cabello rubio dorado voluminoso y puntiagudo, ojos azul acero, uniforme azul real con ornamentación dorada, cuello alto con flores de lis, gran pañuelo blanco, gema azul central, capa azul lateral y hombrera dorada. No cambiar rostro, peinado, insignias ni colores. Pequeño cetro de mando oficial sujeto al cinturón, oro y núcleo azul, solo cuando se vea el cinturón.  ESCENA(S): 10. EXPRESIÓN: Autoridad serena. POSE: Entrada con una mano sobre el cinturón. DIRECCIÓN ESPECÍFICA: Entrada imponente y discreta, mirada severa pero controlada, alto rango evidente. Cetro pequeño enfundado al cinturón. Composición vertical 2:3; imagen maestra PNG con canal alfa real, preparación para WebP transparente optimizado."
+    },
+    {
+      "id": "Z02",
+      "kind": "sprite",
+      "character": "Zhinchi",
+      "expression": "Concentrado",
+      "pose": "Examina un decreto abierto",
+      "scenes": "11",
+      "batch": "Lote 3",
+      "priority": "Media",
+      "file": "sprites/zhinchi_02_investiga.webp",
+      "references": [
+        "public/retratos/rival.webp"
+      ],
+      "prompt": "Ilustración original para el videojuego Decreto Real, ambientado en un virreinato fantástico del siglo XVII. MISMA BIBLIA VISUAL que los retratos aprobados de Xervias y Zhinchi: anime de fantasía y duelos, dibujo 2D limpio con líneas negras nítidas, contornos legibles, proporciones faciales estilizadas, ojos expresivos, cabello en mechones grandes, cel-shading de sombras geométricas, dorados vivos, detalles de vestuario refinados y consistentes. Sprite de novela visual, medio cuerpo desde cadera o pecho según pose; manos anatómicamente correctas, figura enteramente dentro del lienzo, perspectiva de cámara 3/4 frontal, iluminación coherente. SIN fondo ni decorado: canal alfa verdaderamente transparente (no dibujar patrón de cuadros). Sin texto, números, etiquetas, marco, marca de agua, personajes adicionales ni recortes de manos o cabeza.  ZHINCHI, capitán y mentor, identidad facial EXACTAMENTE igual a las referencias adjuntas: cabello rubio dorado voluminoso y puntiagudo, ojos azul acero, uniforme azul real con ornamentación dorada, cuello alto con flores de lis, gran pañuelo blanco, gema azul central, capa azul lateral y hombrera dorada. No cambiar rostro, peinado, insignias ni colores. Pequeño cetro de mando oficial sujeto al cinturón, oro y núcleo azul, solo cuando se vea el cinturón.  ESCENA(S): 11. EXPRESIÓN: Concentrado. POSE: Examina un decreto abierto. DIRECCIÓN ESPECÍFICA: Sostiene el pergamino legible visualmente pero SIN texto generado; mirada analítica y ceño ligeramente fruncido. Composición vertical 2:3; imagen maestra PNG con canal alfa real, preparación para WebP transparente optimizado."
+    },
+    {
+      "id": "Z03",
+      "kind": "sprite",
+      "character": "Zhinchi",
+      "expression": "Analítico / alerta",
+      "pose": "Una mano con cetro corto cerca de sello",
+      "scenes": "11",
+      "batch": "Lote 3",
+      "priority": "Alta",
+      "file": "sprites/zhinchi_03_cetro.webp",
+      "references": [
+        "public/retratos/rival.webp"
+      ],
+      "prompt": "Ilustración original para el videojuego Decreto Real, ambientado en un virreinato fantástico del siglo XVII. MISMA BIBLIA VISUAL que los retratos aprobados de Xervias y Zhinchi: anime de fantasía y duelos, dibujo 2D limpio con líneas negras nítidas, contornos legibles, proporciones faciales estilizadas, ojos expresivos, cabello en mechones grandes, cel-shading de sombras geométricas, dorados vivos, detalles de vestuario refinados y consistentes. Sprite de novela visual, medio cuerpo desde cadera o pecho según pose; manos anatómicamente correctas, figura enteramente dentro del lienzo, perspectiva de cámara 3/4 frontal, iluminación coherente. SIN fondo ni decorado: canal alfa verdaderamente transparente (no dibujar patrón de cuadros). Sin texto, números, etiquetas, marco, marca de agua, personajes adicionales ni recortes de manos o cabeza.  ZHINCHI, capitán y mentor, identidad facial EXACTAMENTE igual a las referencias adjuntas: cabello rubio dorado voluminoso y puntiagudo, ojos azul acero, uniforme azul real con ornamentación dorada, cuello alto con flores de lis, gran pañuelo blanco, gema azul central, capa azul lateral y hombrera dorada. No cambiar rostro, peinado, insignias ni colores. Pequeño cetro de mando oficial sujeto al cinturón, oro y núcleo azul, solo cuando se vea el cinturón.  ESCENA(S): 11. EXPRESIÓN: Analítico / alerta. POSE: Una mano con cetro corto cerca de sello. DIRECCIÓN ESPECÍFICA: Sostiene un cetro de mando pequeño en oro y gema azul, lo aproxima a un sello de cera rojo del decreto. La gema resplandece tenuemente; el sello NO brilla. Composición vertical 2:3; imagen maestra PNG con canal alfa real, preparación para WebP transparente optimizado."
+    },
+    {
+      "id": "Z04",
+      "kind": "sprite",
+      "character": "Zhinchi",
+      "expression": "Severo",
+      "pose": "Señala hacia el detenido al dar una orden",
+      "scenes": "12",
+      "batch": "Lote 3",
+      "priority": "Media",
+      "file": "sprites/zhinchi_04_ordena.webp",
+      "references": [
+        "public/retratos/rival.webp"
+      ],
+      "prompt": "Ilustración original para el videojuego Decreto Real, ambientado en un virreinato fantástico del siglo XVII. MISMA BIBLIA VISUAL que los retratos aprobados de Xervias y Zhinchi: anime de fantasía y duelos, dibujo 2D limpio con líneas negras nítidas, contornos legibles, proporciones faciales estilizadas, ojos expresivos, cabello en mechones grandes, cel-shading de sombras geométricas, dorados vivos, detalles de vestuario refinados y consistentes. Sprite de novela visual, medio cuerpo desde cadera o pecho según pose; manos anatómicamente correctas, figura enteramente dentro del lienzo, perspectiva de cámara 3/4 frontal, iluminación coherente. SIN fondo ni decorado: canal alfa verdaderamente transparente (no dibujar patrón de cuadros). Sin texto, números, etiquetas, marco, marca de agua, personajes adicionales ni recortes de manos o cabeza.  ZHINCHI, capitán y mentor, identidad facial EXACTAMENTE igual a las referencias adjuntas: cabello rubio dorado voluminoso y puntiagudo, ojos azul acero, uniforme azul real con ornamentación dorada, cuello alto con flores de lis, gran pañuelo blanco, gema azul central, capa azul lateral y hombrera dorada. No cambiar rostro, peinado, insignias ni colores. Pequeño cetro de mando oficial sujeto al cinturón, oro y núcleo azul, solo cuando se vea el cinturón.  ESCENA(S): 12. EXPRESIÓN: Severo. POSE: Señala hacia el detenido al dar una orden. DIRECCIÓN ESPECÍFICA: Postura firme de capitán, mano extendida dando instrucción, semblante severo sin ira descontrolada. Composición vertical 2:3; imagen maestra PNG con canal alfa real, preparación para WebP transparente optimizado."
+    },
+    {
+      "id": "X01",
+      "kind": "sprite",
+      "character": "Xervias",
+      "expression": "Decidido",
+      "pose": "Pide revisar un decreto con palma abierta",
+      "scenes": "4, 5",
+      "batch": "Lote 3",
+      "priority": "Alta",
+      "file": "sprites/xervias_01_objecion.webp",
+      "references": [
+        "public/retratos/jugador.webp"
+      ],
+      "prompt": "Ilustración original para el videojuego Decreto Real, ambientado en un virreinato fantástico del siglo XVII. MISMA BIBLIA VISUAL que los retratos aprobados de Xervias y Zhinchi: anime de fantasía y duelos, dibujo 2D limpio con líneas negras nítidas, contornos legibles, proporciones faciales estilizadas, ojos expresivos, cabello en mechones grandes, cel-shading de sombras geométricas, dorados vivos, detalles de vestuario refinados y consistentes. Sprite de novela visual, medio cuerpo desde cadera o pecho según pose; manos anatómicamente correctas, figura enteramente dentro del lienzo, perspectiva de cámara 3/4 frontal, iluminación coherente. SIN fondo ni decorado: canal alfa verdaderamente transparente (no dibujar patrón de cuadros). Sin texto, números, etiquetas, marco, marca de agua, personajes adicionales ni recortes de manos o cabeza.  XERVIAS, joven protagonista, identidad EXACTAMENTE igual a las referencias adjuntas: cabello castaño oscuro voluminoso, ojos castaños, uniforme azul marino con bordados dorados y paño/capa roja, cuello alto, corbatín blanco y broche dorado solar. No cambiar rostro, peinado, esquema de color ni insignias. Anillo real visible al invocar.  ESCENA(S): 4, 5. EXPRESIÓN: Decidido. POSE: Pide revisar un decreto con palma abierta. DIRECCIÓN ESPECÍFICA: Mirada firme, mano extendida de forma respetuosa pero inequívoca; pose de objeción legal. Composición vertical 2:3; imagen maestra PNG con canal alfa real, preparación para WebP transparente optimizado."
+    },
+    {
+      "id": "X02",
+      "kind": "sprite",
+      "character": "Xervias",
+      "expression": "Heroico / invocación",
+      "pose": "Muestra el anillo al frente",
+      "scenes": "6, 7",
+      "batch": "Lote 3",
+      "priority": "Alta",
+      "file": "sprites/xervias_02_invoca.webp",
+      "references": [
+        "public/retratos/jugador.webp"
+      ],
+      "prompt": "Ilustración original para el videojuego Decreto Real, ambientado en un virreinato fantástico del siglo XVII. MISMA BIBLIA VISUAL que los retratos aprobados de Xervias y Zhinchi: anime de fantasía y duelos, dibujo 2D limpio con líneas negras nítidas, contornos legibles, proporciones faciales estilizadas, ojos expresivos, cabello en mechones grandes, cel-shading de sombras geométricas, dorados vivos, detalles de vestuario refinados y consistentes. Sprite de novela visual, medio cuerpo desde cadera o pecho según pose; manos anatómicamente correctas, figura enteramente dentro del lienzo, perspectiva de cámara 3/4 frontal, iluminación coherente. SIN fondo ni decorado: canal alfa verdaderamente transparente (no dibujar patrón de cuadros). Sin texto, números, etiquetas, marco, marca de agua, personajes adicionales ni recortes de manos o cabeza.  XERVIAS, joven protagonista, identidad EXACTAMENTE igual a las referencias adjuntas: cabello castaño oscuro voluminoso, ojos castaños, uniforme azul marino con bordados dorados y paño/capa roja, cuello alto, corbatín blanco y broche dorado solar. No cambiar rostro, peinado, esquema de color ni insignias. Anillo real visible al invocar.  ESCENA(S): 6, 7. EXPRESIÓN: Heroico / invocación. POSE: Muestra el anillo al frente. DIRECCIÓN ESPECÍFICA: El anillo en primer plano emite energía dorada y una carta mística comienza a manifestarse. Cara y mano visibles; sin saturar la ilustración con efectos. Composición vertical 2:3; imagen maestra PNG con canal alfa real, preparación para WebP transparente optimizado."
+    },
+    {
+      "id": "X03",
+      "kind": "sprite",
+      "character": "Xervias",
+      "expression": "Concentrado / didáctico",
+      "pose": "Gestos pequeños de explicación táctica",
+      "scenes": "8",
+      "batch": "Lote 3",
+      "priority": "Media",
+      "file": "sprites/xervias_03_tutorial.webp",
+      "references": [
+        "public/retratos/jugador.webp"
+      ],
+      "prompt": "Ilustración original para el videojuego Decreto Real, ambientado en un virreinato fantástico del siglo XVII. MISMA BIBLIA VISUAL que los retratos aprobados de Xervias y Zhinchi: anime de fantasía y duelos, dibujo 2D limpio con líneas negras nítidas, contornos legibles, proporciones faciales estilizadas, ojos expresivos, cabello en mechones grandes, cel-shading de sombras geométricas, dorados vivos, detalles de vestuario refinados y consistentes. Sprite de novela visual, medio cuerpo desde cadera o pecho según pose; manos anatómicamente correctas, figura enteramente dentro del lienzo, perspectiva de cámara 3/4 frontal, iluminación coherente. SIN fondo ni decorado: canal alfa verdaderamente transparente (no dibujar patrón de cuadros). Sin texto, números, etiquetas, marco, marca de agua, personajes adicionales ni recortes de manos o cabeza.  XERVIAS, joven protagonista, identidad EXACTAMENTE igual a las referencias adjuntas: cabello castaño oscuro voluminoso, ojos castaños, uniforme azul marino con bordados dorados y paño/capa roja, cuello alto, corbatín blanco y broche dorado solar. No cambiar rostro, peinado, esquema de color ni insignias. Anillo real visible al invocar.  ESCENA(S): 8. EXPRESIÓN: Concentrado / didáctico. POSE: Gestos pequeños de explicación táctica. DIRECCIÓN ESPECÍFICA: Explica mecánicas durante un duelo real: actitud serena y decidida, mano indicando las cartas sin salir del personaje. Composición vertical 2:3; imagen maestra PNG con canal alfa real, preparación para WebP transparente optimizado."
+    },
+    {
+      "id": "X04",
+      "kind": "sprite",
+      "character": "Xervias",
+      "expression": "Reflexivo",
+      "pose": "Mira el decreto con preocupación",
+      "scenes": "13",
+      "batch": "Lote 3",
+      "priority": "Media",
+      "file": "sprites/xervias_04_reflexion.webp",
+      "references": [
+        "public/retratos/jugador.webp"
+      ],
+      "prompt": "Ilustración original para el videojuego Decreto Real, ambientado en un virreinato fantástico del siglo XVII. MISMA BIBLIA VISUAL que los retratos aprobados de Xervias y Zhinchi: anime de fantasía y duelos, dibujo 2D limpio con líneas negras nítidas, contornos legibles, proporciones faciales estilizadas, ojos expresivos, cabello en mechones grandes, cel-shading de sombras geométricas, dorados vivos, detalles de vestuario refinados y consistentes. Sprite de novela visual, medio cuerpo desde cadera o pecho según pose; manos anatómicamente correctas, figura enteramente dentro del lienzo, perspectiva de cámara 3/4 frontal, iluminación coherente. SIN fondo ni decorado: canal alfa verdaderamente transparente (no dibujar patrón de cuadros). Sin texto, números, etiquetas, marco, marca de agua, personajes adicionales ni recortes de manos o cabeza.  XERVIAS, joven protagonista, identidad EXACTAMENTE igual a las referencias adjuntas: cabello castaño oscuro voluminoso, ojos castaños, uniforme azul marino con bordados dorados y paño/capa roja, cuello alto, corbatín blanco y broche dorado solar. No cambiar rostro, peinado, esquema de color ni insignias. Anillo real visible al invocar.  ESCENA(S): 13. EXPRESIÓN: Reflexivo. POSE: Mira el decreto con preocupación. DIRECCIÓN ESPECÍFICA: La tensión del combate se convierte en preocupación y curiosidad: rostro pensativo, mirada baja, una mano cerca del mentón. Composición vertical 2:3; imagen maestra PNG con canal alfa real, preparación para WebP transparente optimizado."
+    },
+    {
+      "id": "F01",
+      "kind": "background",
+      "title": "Mesa antigua",
+      "scenes": "2",
+      "batch": "Lote ambiental",
+      "priority": "Alta",
+      "file": "fondos/fondo_01_mesa.webp",
+      "references": [],
+      "prompt": "Ilustración original para el videojuego Decreto Real, ambientado en un virreinato fantástico del siglo XVII. MISMA BIBLIA VISUAL que los retratos aprobados de Xervias y Zhinchi: anime de fantasía y duelos, dibujo 2D limpio con líneas negras nítidas, contornos legibles, proporciones faciales estilizadas, ojos expresivos, cabello en mechones grandes, cel-shading de sombras geométricas, dorados vivos, detalles de vestuario refinados y consistentes. Sin texto, números, etiquetas, marco, marca de agua, personajes adicionales ni recortes de manos o cabeza. Interior virreinal fantástico de siglo XVII, mesa de madera vista de arriba, luz lateral de vela y ventana, espacio libre central para superponer un pergamino, sombras cinematográficas, ilustración anime 2D cel shading limpio y colores cálidos, sin personas ni objetos con texto, composición vertical."
+    },
+    {
+      "id": "F02",
+      "kind": "background",
+      "title": "Plaza virreinal",
+      "scenes": "3–7, 9–13",
+      "batch": "Lote ambiental",
+      "priority": "Alta",
+      "file": "fondos/fondo_02_plaza.webp",
+      "references": [],
+      "prompt": "Ilustración original para el videojuego Decreto Real, ambientado en un virreinato fantástico del siglo XVII. MISMA BIBLIA VISUAL que los retratos aprobados de Xervias y Zhinchi: anime de fantasía y duelos, dibujo 2D limpio con líneas negras nítidas, contornos legibles, proporciones faciales estilizadas, ojos expresivos, cabello en mechones grandes, cel-shading de sombras geométricas, dorados vivos, detalles de vestuario refinados y consistentes. Sin texto, números, etiquetas, marco, marca de agua, personajes adicionales ni recortes de manos o cabeza. Plaza histórica de ciudad andina virreinal fantástica siglo XVII, fachadas de piedra y adobe, arquerías coloniales y suelo empedrado; fondo ilustrado anime con perspectiva profunda, buena zona libre inferior para personajes tipo visual novel, luz diurna cálida, sin personas, banderas ni texto; vertical."
+    },
+    {
+      "id": "P01",
+      "kind": "closeup",
+      "title": "Pergamino y sello",
+      "scenes": "2, 5",
+      "batch": "Lote ambiental",
+      "priority": "Alta",
+      "file": "planos/plano_01_pergamino.webp",
+      "references": [
+        "public/campania/prologo/fondos/fondo_01_mesa.webp"
+      ],
+      "prompt": "Ilustración original para el videojuego Decreto Real, ambientado en un virreinato fantástico del siglo XVII. MISMA BIBLIA VISUAL que los retratos aprobados de Xervias y Zhinchi: anime de fantasía y duelos, dibujo 2D limpio con líneas negras nítidas, contornos legibles, proporciones faciales estilizadas, ojos expresivos, cabello en mechones grandes, cel-shading de sombras geométricas, dorados vivos, detalles de vestuario refinados y consistentes. Sin texto, números, etiquetas, marco, marca de agua, personajes adicionales ni recortes de manos o cabeza. Primer plano cinematográfico anime: manos sostienen un pergamino antiguo abierto con sello de cera rojo de la Corona Solar; sin palabras legibles dentro de la imagen para incorporar texto de forma programática; mesa de madera cálida, dibujo 2D cel-shading limpio, encuadre vertical."
+    },
+    {
+      "id": "P02",
+      "kind": "closeup",
+      "title": "Mano y anillo de Xervias",
+      "scenes": "7",
+      "batch": "Lote ambiental",
+      "priority": "Alta",
+      "file": "planos/plano_02_anillo.webp",
+      "references": [
+        "public/retratos/jugador.webp"
+      ],
+      "prompt": "Ilustración original para el videojuego Decreto Real, ambientado en un virreinato fantástico del siglo XVII. MISMA BIBLIA VISUAL que los retratos aprobados de Xervias y Zhinchi: anime de fantasía y duelos, dibujo 2D limpio con líneas negras nítidas, contornos legibles, proporciones faciales estilizadas, ojos expresivos, cabello en mechones grandes, cel-shading de sombras geométricas, dorados vivos, detalles de vestuario refinados y consistentes. Sin texto, números, etiquetas, marco, marca de agua, personajes adicionales ni recortes de manos o cabeza. Primerísimo plano de mano de Xervias con un anillo de oro oficial que irradia energía mística dorada y manifiesta una carta de duelo; iluminación controlada, anime visual novel de fantasía virreinal, sin rostro, sin texto, sin fondo verde y sin corona flotante, vertical."
+    },
+    {
+      "id": "P03",
+      "kind": "closeup",
+      "title": "Cetro y sello falso",
+      "scenes": "11",
+      "batch": "Lote ambiental",
+      "priority": "Alta",
+      "file": "planos/plano_03_cetro.webp",
+      "references": [
+        "public/retratos/rival.webp"
+      ],
+      "prompt": "Ilustración original para el videojuego Decreto Real, ambientado en un virreinato fantástico del siglo XVII. MISMA BIBLIA VISUAL que los retratos aprobados de Xervias y Zhinchi: anime de fantasía y duelos, dibujo 2D limpio con líneas negras nítidas, contornos legibles, proporciones faciales estilizadas, ojos expresivos, cabello en mechones grandes, cel-shading de sombras geométricas, dorados vivos, detalles de vestuario refinados y consistentes. Sin texto, números, etiquetas, marco, marca de agua, personajes adicionales ni recortes de manos o cabeza. Primerísimo plano de mano enguantada del capitán Zhinchi sosteniendo un cetro de mando corto de oro y gema azul, acercándolo al sello rojo de un pergamino; la gema emite tenue luz azul pero el sello no brilla ni reacciona, estética anime cel-shading limpia, sin texto, vertical."
+    }
+  ]
+}
