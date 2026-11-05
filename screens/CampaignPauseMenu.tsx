@@ -1,12 +1,16 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAudio } from '../contexts/AudioContext';
+import { useOptionalAudio } from '../contexts/AudioContext';
 import './campaign-opening.css';
 
 /** Compact pause/settings control shared by narrative and guided combat. */
 export default function CampaignPauseMenu() {
   const navigate=useNavigate();
-  const {musicEnabled,sfxEnabled,toggleMusic,toggleSfx}=useAudio();
+  const audio=useOptionalAudio();
+  const musicEnabled=audio?.musicEnabled??true;
+  const sfxEnabled=audio?.sfxEnabled??true;
+  const toggleMusic=()=>audio?.toggleMusic();
+  const toggleSfx=()=>audio?.toggleSfx();
   const [open,setOpen]=React.useState(false);
   const [exitHelp,setExitHelp]=React.useState(false);
   React.useEffect(()=>{
