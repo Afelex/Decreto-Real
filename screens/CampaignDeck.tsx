@@ -1,3 +1,4 @@
+import { getCampaignStorage } from '../campaign/campaignQA.ts';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { bestStars, loadCampaignProgress } from '../campaign/campaign.ts';
@@ -9,9 +10,7 @@ import {
 } from '../game/mysticCards.ts';
 import './mystic-deck.css';
 
-const storage = (): Storage | null => {
-  try { return window.localStorage; } catch { return null; }
-};
+const storage = getCampaignStorage;
 
 type SlotDraft = MysticSlot | null;
 const EMPTY_SLOTS: readonly SlotDraft[] = [null, null, null];
