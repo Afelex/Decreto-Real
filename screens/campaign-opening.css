@@ -165,3 +165,17 @@
 .dcop-final-screen button{width:min(88%,360px);min-height:51px;padding:13px 18px;border:2px solid #edc77e;border-radius:10px;background:linear-gradient(#ae3836,#711d29);color:#fff1d5;font:800 17px Georgia,serif}
 .dcop-final-screen button:focus-visible{outline:3px solid #ffe6a2;outline-offset:3px}
 @media(prefers-reduced-motion:reduce){.dcop-screen .dcop-scene-figures>div{transition:none}}
+
+
+/* P01: the actual generated parchment and hands, with short readable UI text. */
+.dcop-scroll-held .dcop-scroll-illustration{position:absolute;z-index:1;inset:0;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 7px 20px #0009)}
+.dcop-scroll-held .dcop-parchment-overlay{
+  z-index:3;width:70%;height:43%;margin-top:2%;padding:7px;
+  background:linear-gradient(180deg,#f3dcabeb,#ead1a1ed);
+  border:1px solid #b28d57;border-radius:8px;
+  box-shadow:0 2px 10px #432a2366;
+  transform:rotate(1deg)
+}
+.dcop-scroll-held .dcop-parchment-overlay span{font-size:8px}
+.dcop-scroll-held .dcop-parchment-overlay b{font-size:clamp(12px,3.4vw,17px)}
+.dcop-scroll-held .dcop-parchment-overlay p{font-size:clamp(11px,3.15vw,16px)}
