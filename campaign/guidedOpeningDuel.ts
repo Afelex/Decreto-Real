@@ -66,7 +66,7 @@ export function guidedActionForCard(id:string): GuidedAction | null {
 }
 export function arrangeGuidedDeck<T extends {id:string}>(cards: readonly T[],side:'player'|'rival'): T[] {
   const top=side==='player'?GUIDED_PLAYER_TOP:GUIDED_RIVAL_TOP;
-  const ids=new Set(top);
+  const ids: Set<string> = new Set(top);
   if(cards.length!==28 || new Set(cards.map(c=>c.id)).size!==28) throw new Error('El tutorial necesita la baraja estándar de 28 cartas.');
   const arranged=top.map(id=>cards.find(c=>c.id===id));
   if(arranged.some(card=>!card))throw new Error('Falta una carta para el tutorial guiado.');
