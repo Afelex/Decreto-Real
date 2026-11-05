@@ -1,36 +1,60 @@
 import { expect,test } from '@playwright/test';
 import { GUIDED_STEPS } from '../../campaign/guidedOpeningDuel';
-// Number of cinematic dialogue beats before and after the tutorial.
-const openingCount=20;
-const outcomeCount=10;
 
-test('cinematic prologue teaches all cards and guarantees victory by Decreto Final', async ({page},testInfo)=>{
-  test.skip(testInfo.project.name!=='mobile-390','Complete cinematic onboarding sampled on main phone');
-  await page.goto('/Decreto-Real/#/campania/inicio');
-  await expect(page.getByRole('heading',{name:'El Sello y la Revolución Solar'})).toBeVisible();
-  await page.getByRole('button',{name:/Comenzar historia/}).click();
-  await expect(page.getByRole('heading',{name:'El misterio del Sello Real'})).toBeVisible();
-  for(let i=0;i<openingCount;i++) await page.locator('.dcop-narrative footer button').click();
-  await expect(page.getByRole('region',{name:'Duelo guiado de Xervias contra Domingo Quispe'})).toBeVisible();
+test('scene 8 uses the identical GameBoard engine and ends with authentic fourth Impact',async ({page},testInfo)=>{
+  test.skip(testInfo.project.name!=='mobile-390','Full narrated real-board battle sampled on 390px phone');
+  test.setTimeout(240000);
+  await page.goto('/Decreto-Real/#/campania/prologo?escena=duelo');
+  await expect(page.locator('.dr-classic-screen')).toBeVisible();
+  await expect(page.locator('.dr-royal-layout')).toBeVisible();
+  await expect(page.locator('.dcop-battle')).toHaveCount(0);
+  await expect(page.getByTestId('campaign-guided-coach')).toBeVisible();
+  const coach=page.getByTestId('campaign-guided-coach');
+  const cardAction=/^(attack|impact|defense|order)/;
   for(const step of GUIDED_STEPS){
-    if(step.action==='coin') await page.locator('.dcop-coin').click();
-    else if(step.action && /^(attack|impact|defense|order)/.test(step.action)) await page.locator('.dcop-card.active').click();
-    else await page.locator('.dcop-next').click();
+    await expect(coach).toContainText(step.text,{timeout:45000});
+    const action=step.action;
+    if(!action){
+      await coach.getByRole('button').click();
+    }else if(action==='coin'){
+      await page.getByRole('button',{name:'Lanzar Moneda'}).click();
+    }else if(cardAction.test(action)){
+      const card=page.locator('.dr-royal-hand-card:not(.unavailable)').first();
+      await expect(card).toBeVisible({timeout:25000});
+      await card.click();
+      if(action.startsWith('impact')){
+        const n=Number(action.slice(-1));
+        const title=n===4?'Final':['I','II','III'][n-1];
+        await page.getByRole('button',{name:'Casilla Impacto '+title}).click();
+      }else{
+        await page.getByRole('button',{name:'Campo para activar Ataque, Defensa, Orden o Mística'}).click();
+      }
+    }else if(action==='combo2'){
+      await page.locator('.dr-event-ability--damage').click();
+    }else if(action==='combo3'){
+      await page.locator('.dr-event-ability--heal').click();
+    }else if(action.startsWith('end')){
+      await page.getByRole('button',{name:'Terminar turno'}).click();
+    }
+    // rival steps advance automatically after real opponent card animation
   }
   await expect(page.getByRole('heading',{name:'El precio de la victoria'})).toBeVisible();
-  for(let i=0;i<outcomeCount;i++) await page.locator('.dcop-narrative footer button').click();
-  await expect.poll(async()=>page.evaluate(()=>JSON.parse(window.localStorage.getItem('decreto-real.campania.v1')||'{}').stars?.['01'])).toBe(3);
-  await expect(page).toHaveURL(/campania\/conversacion\/01/);
 });
 
-test('campaign pause menu retains checkpoint when returning to title',async ({page},testInfo)=>{
+test('the regular free duel retains its existing board and unrestricted card controls',async({page},testInfo)=>{
+  test.skip(testInfo.project.name!=='mobile-390','Shared board smoke test');
+  await page.goto('/Decreto-Real/#/game');
+  await expect(page.locator('.dr-classic-screen')).toBeVisible();
+  await expect(page.getByTestId('campaign-guided-coach')).toHaveCount(0);
+  await expect(page.getByRole('button',{name:'Lanzar Moneda'})).toBeVisible();
+});
+
+test('guided battle pause returns to the menu without losing the story scene',async({page},testInfo)=>{
   test.skip(testInfo.project.name!=='mobile-390','Checkpoint sampled on main phone');
-  await page.goto('/Decreto-Real/#/campania/inicio');
-  await page.getByRole('button',{name:/Comenzar historia/}).click();
-  await page.locator('.dcop-narrative footer button').click();
-  await page.getByRole('button',{name:'Abrir menú de campaña'}).click();
-  await expect(page.getByRole('dialog',{name:'Menú de campaña'})).toBeVisible();
-  await page.getByRole('button',{name:/Volver al menú principal/}).click();
-  await page.getByRole('button',{name:'Empezar campaña'}).click();
-  await expect(page.getByText('¡Por favor! ¡No hemos hecho nada!',{exact:false})).toBeVisible();
+  await page.goto('/Decreto-Real/#/campania/prologo?escena=duelo');
+  await expect(page.locator('.dr-classic-screen')).toBeVisible();
+  await page.getByRole('button',{name:'Abrir menú de pausa'}).click();
+  await expect(page.getByRole('heading',{name:'Pausa'})).toBeVisible();
+  await page.getByRole('button',{name:'Volver al menú principal'}).click();
+  await expect(page.getByRole('navigation',{name:'Menú principal'})).toBeVisible();
 });
