@@ -15,6 +15,7 @@ import CampaignDeck from './screens/CampaignDeck';
 import CampaignBossSelect from './screens/CampaignBossSelect';
 import CampaignIntro from './screens/CampaignIntro';
 import CampaignOpening from './screens/CampaignOpening';
+import CampaignPauseMenu from './screens/CampaignPauseMenu';
 import CampaignAfterVictory from './screens/CampaignAfterVictory';
 import CampaignCenterReveal from './screens/CampaignCenterReveal';
 import CampaignRegionMoment from './screens/CampaignRegionMoment';
@@ -61,6 +62,7 @@ const CampaignRoutes: React.FC = () => {
           <Route path="/options" element={<OptionsScreen />} />
         </Routes>
     </React.Fragment>
+    {location.pathname.startsWith('/campania') && location.pathname !== '/campania/inicio' && location.pathname !== '/campania/prologo' && <CampaignPauseMenu />}
     <CampaignQaNavigator />
   </>;
 };
