@@ -25,7 +25,7 @@ test('scene 8 uses the identical GameBoard engine and ends with authentic fourth
       if(action.startsWith('impact')){
         const n=Number(action.slice(-1));
         const title=n===4?'Final':['I','II','III'][n-1];
-        await page.getByRole('button',{name:'Casilla Impacto '+title}).click();
+        await page.getByRole('button',{name:'Casilla Impacto '+title,exact:true}).click();
       }else{
         await page.getByRole('button',{name:'Campo para activar Ataque, Defensa, Orden o Mística'}).click();
       }
