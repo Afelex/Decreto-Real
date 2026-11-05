@@ -1,5 +1,5 @@
 import React from 'react';
-import { HashRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import MainMenu from './screens/MainMenu';
 import GameBoard from './screens/GameBoard';
 import VictoryScreen from './screens/VictoryScreen';
@@ -17,6 +17,8 @@ import CampaignIntro from './screens/CampaignIntro';
 import CampaignAfterVictory from './screens/CampaignAfterVictory';
 import CampaignCenterReveal from './screens/CampaignCenterReveal';
 import CampaignRegionMoment from './screens/CampaignRegionMoment';
+import CampaignQaNavigator from './screens/CampaignQaNavigator';
+import CampaignCredits from './screens/CampaignCredits';
 import { AudioProvider } from './contexts/AudioContext';
 import './screens/one-screen-ui.css';
 import './screens/duel-viewport.css';
@@ -30,11 +32,10 @@ import './screens/royal-card-art.css';
 import './screens/royal-hud-art.css';
 import './screens/royal-battle-status.css';
 
-const App: React.FC = () => {
-  return (
-    <AudioProvider>
-      <HashRouter>
-        <Routes>
+const CampaignRoutes: React.FC = () => {
+  const location = useLocation();
+  return <>
+        <Routes key={location.key}>
           <Route path="/" element={<MainMenu />} />
           <Route path="/game" element={<GameBoard />} />
           <Route path="/duelo-v1" element={<CombatPrototype />} />
@@ -48,16 +49,22 @@ const App: React.FC = () => {
           <Route path="/campania/generales" element={<CampaignBossSelect />} />
           <Route path="/campania/historia" element={<CampaignStory />} />
           <Route path="/campania/epilogo" element={<CampaignEpilogue />} />
+          <Route path="/campania/creditos" element={<CampaignCredits />} />
           <Route path="/campania/baraja" element={<CampaignDeck />} />
           <Route path="/campania/mision/:missionId" element={<CampaignMission />} />
           <Route path="/duelo-v1/tutorial" element={<TutorialScreen />} />
           <Route path="/victory" element={<VictoryScreen />} />
           <Route path="/rules" element={<RulesScreen />} />
           <Route path="/options" element={<OptionsScreen />} />
-        </Routes>
-      </HashRouter>
-    </AudioProvider>
-  );
+        <
+    <CampaignQaNavigator />
+  </>;
 };
+
+const App: React.FC = () => (
+  <AudioProvider>
+    <HashRouter><CampaignRoutes /></HashRouter>
+  </AudioProvider>
+);
 
 export default App;
