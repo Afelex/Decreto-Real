@@ -81,7 +81,7 @@ const MainMenu: React.FC = () => {
       let alreadyFinished=false;
       let introSeen=false;
       try {
-        alreadyFinished=store?.getItem(PROLOGUE_COMPLETE_KEY)==='1' || bestStars(progress,'01')>0;
+        alreadyFinished=store?.getItem(PROLOGUE_COMPLETE_KEY)==='1';
         introSeen=store?.getItem(CAMPAIGN_INTRO_KEY)==='1';
       } catch { /* private mode */ }
       navigate(alreadyFinished?'/campania/prologo?escena=fin':introSeen?'/campania/prologo':'/campania/inicio');
