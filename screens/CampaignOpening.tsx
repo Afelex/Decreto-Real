@@ -146,7 +146,7 @@ const CampaignOpening:React.FC=()=>{
   const speaker=story?.speaker??'';
   const xervias=art(scene==='anillo'?'X02':scene==='reflexion'?'X04':scene==='desafio'?'X02':'X01',portraits.Xervias);
   const domingo=art(scene==='desenlace'?'D04':scene==='desafio'||scene==='anillo'?'D03':scene==='arresto'?'D01':'D02',portraits['Domingo Quispe']);
-  const zhinchi=art(scene==='cetro'?'Z03':scene==='resolucion'?'Z04':'Z01',portraits.Zhinchi);
+  const zhinchi=art(scene==='cetro'?(after===13?'Z02':'Z03'):scene==='resolucion'?'Z04':'Z01',portraits.Zhinchi);
   const mother=art(scene==='arresto'?'M02':scene==='desenlace'?'M03':scene==='resolucion'?'M04':'M01',portraits.Madre);
   const speechPortrait=speaker==='Zhinchi'?zhinchi:
     speaker==='Xervias'?xervias:speaker==='Domingo Quispe'?domingo:
@@ -166,17 +166,18 @@ const CampaignOpening:React.FC=()=>{
       {!isFinal&&<div className="dcop-art" aria-hidden="true">
         <img className="dcop-backdrop" src={background} alt=""/>
         {scene==='pergamino'&&<div className="dcop-scroll-held">
-          <div className="dcop-parchment">
+          {artReady&&<img className="dcop-scroll-illustration" src={prologueArtUrl('P01')} alt=""/>}
+          <div className={'dcop-parchment'+(artReady?' dcop-parchment-overlay':'')}>
             <span>† CORONA SOLAR †</span><b>POR ORDEN DE LA CORONA</b>
             <p>Dos órdenes opuestas.<br/>Un mismo Sello Real.<br/>¿Cuál dice la verdad?</p>
-            <div className="dcop-wax">✷</div>
-          </div><div className="dcop-hand left"/><div className="dcop-hand right"/>
+            {!artReady&&<div className="dcop-wax">✷</div>}
+          </div>{!artReady&&<><div className="dcop-hand left"/><div className="dcop-hand right"/></>}
         </div>}
         {['arresto','xervias','revision','desafio'].includes(scene)&&
           <div className="dcop-scene-figures" key={scene+'-'+speaker}>
             <div className={'dcop-civil '+(speaker==='Madre'?'dcop-speaking':'dcop-dim')}>
               <img src={mother} alt=""/>
-              {artReady&&<img className="dcop-child-sprite" src={prologueArtUrl('N01')} alt=""/>}
+              {artReady&&<img className="dcop-child-sprite" src={prologueArtUrl(scene==='resolucion'?'N02':'N01')} alt=""/>}
             </div>
             <div className={'dcop-guard '+(speaker==='Domingo Quispe'?'dcop-speaking':'dcop-dim')}>
               <img src={domingo} alt=""/>
