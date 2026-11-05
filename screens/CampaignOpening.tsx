@@ -6,6 +6,7 @@ import GameBoard from './GameBoard';
 import { GUIDED_STEPS } from '../campaign/guidedOpeningDuel';
 import { useAudio } from '../contexts/AudioContext';
 import CampaignPauseMenu from './CampaignPauseMenu';
+import { isPrologueArtManifest, prologueArtManifestUrl, prologueArtUrl, PROLOGUE_COMPLETE_KEY, type PrologueArtId } from '../campaign/prologueArt';
 import './campaign-opening.css';
 
 export const PROLOGUE_CHECKPOINT_KEY = 'decreto-real.campania.prologo-cinematico.v1';
@@ -37,16 +38,34 @@ export const OPENING_BEATS: readonly OpeningBeat[] = [
 ];
 
 export const AFTER_DUEL_BEATS = [
-  {speaker:'Domingo Quispe',text:'¡¿Qué?! ¡Mi anillo...! ¡No puedo mantener el vínculo!'},
-  {speaker:'Crónica',text:'Una descarga dorada rodea al guardia. Sus cartas desaparecen. Cae de rodillas y pierde el conocimiento.'},
-  {speaker:'Madre',text:'¡Dios mío! ¿Qué le ha ocurrido? ¿Está muerto?'},
-  {speaker:'Xervias',text:'No, tranquila. Sigue vivo. Cuando alguien pierde un Decreto Real, la conexión mística con el anillo se rompe por unos instantes.'},
-  {speaker:'Xervias',text:'Esa descarga puede dejarlo inconsciente un momento. Pronto despertará.'},
-  {speaker:'Domingo Quispe',text:'¿Qué... qué pasó? ¿Por qué no siento la energía de mi anillo?'},
-  {speaker:'Xervias',text:'Has perdido. Mi Decreto Final rompió tu vínculo místico y te hizo perder el conocimiento. El arresto queda suspendido hasta comprobar la orden.'},
-  {speaker:'Domingo Quispe',text:'Está bien... No arrestaremos a la familia. Pero ese documento llevaba el sello de la Corona.'},
-  {speaker:'Madre',text:'Gracias, joven soldado. No sabemos qué habría sido de nosotros.'},
-  {speaker:'Xervias',text:'Todavía no hemos resuelto el misterio. Alguien está utilizando el Sello Real para causar daño... y descubriré quién.'},
+  {phase:'desenlace',speaker:'Domingo Quispe',text:'¡¿Qué?! ¡Mi anillo...! ¡No puedo mantener el vínculo!'},
+  {phase:'desenlace',speaker:'Crónica',text:'Las cartas desaparecen. Domingo cae de rodillas y pierde el conocimiento tras la descarga mística.'},
+  {phase:'desenlace',speaker:'Madre',text:'¡Dios mío! ¿Qué le ocurrió? ¿Está muerto?'},
+  {phase:'desenlace',speaker:'Xervias',text:'No. Está vivo. Al perder un Decreto Real, el vínculo místico con el anillo se rompe por unos instantes.'},
+  {phase:'desenlace',speaker:'Xervias',text:'Esa descarga puede dejar al vencido inconsciente. Pronto despertará.'},
+  {phase:'desenlace',speaker:'Domingo Quispe',text:'¿Qué... qué pasó? ¿Por qué no siento la energía de mi anillo?'},
+  {phase:'desenlace',speaker:'Xervias',text:'Has perdido. Mi Decreto Final rompió tu vínculo místico. Este arresto queda suspendido hasta verificar la orden.'},
+  {phase:'desenlace',speaker:'Domingo Quispe',text:'Pero... el documento tenía el sello de la Corona...'},
+  {phase:'desenlace',speaker:'Madre',text:'Gracias, joven soldado. No sabemos qué habría sido de nosotros.'},
+  {phase:'zhinchi',speaker:'Zhinchi',text:'¡Alto! ¿Qué sucede aquí?'},
+  {phase:'zhinchi',speaker:'Xervias',text:'¡Capitán Zhinchi!'},
+  {phase:'zhinchi',speaker:'Zhinchi',text:'Xervias, explícame esta situación. ¿Por qué hay un soldado derrotado y una familia bajo amenaza?'},
+  {phase:'zhinchi',speaker:'Xervias',text:'Este guardia quiso detenerlos con un decreto sospechoso. Le pedí verificarlo, se negó y tuve que invocar el Decreto Real.'},
+  {phase:'cetro',speaker:'Zhinchi',text:'Déjame examinar esa orden.'},
+  {phase:'cetro',speaker:'Crónica',text:'Zhinchi toma el documento y acerca al sello su pequeño cetro de mando, que lleva sujeto al cinturón.'},
+  {phase:'cetro',speaker:'Zhinchi',text:'La marca parece auténtica... pero mi cetro no percibe ninguna resonancia mística.'},
+  {phase:'cetro',speaker:'Xervias',text:'¡Mi anillo detectó lo mismo, capitán!'},
+  {phase:'cetro',speaker:'Zhinchi',text:'Entonces tenías razón. El sello no es legítimo. Alguien está falsificando las órdenes de la Corona.'},
+  {phase:'resolucion',speaker:'Madre',text:'¿Entonces podemos irnos?'},
+  {phase:'resolucion',speaker:'Zhinchi',text:'Sí. Este arresto queda suspendido. Pueden retirarse en paz.'},
+  {phase:'resolucion',speaker:'Zhinchi',text:'Domingo Quispe, vendrás conmigo. Tendrás que explicar quién te entregó este documento.'},
+  {phase:'resolucion',speaker:'Domingo Quispe',text:'Capitán... yo solo cumplía órdenes.'},
+  {phase:'resolucion',speaker:'Zhinchi',text:'Entonces podrás demostrarlo en tu declaración. No volverás a detener a nadie por esta orden.'},
+  {phase:'resolucion',speaker:'Zhinchi',text:'Xervias, me ocuparé del detenido y del papeleo. Espérame cuando termine. Quiero que me acompañes.'},
+  {phase:'resolucion',speaker:'Xervias',text:'¡Sí, capitán!'},
+  {phase:'reflexion',speaker:'Crónica',text:'La familia se aleja a salvo. El capitán se marcha con el guardia. Xervias queda solo frente a la plaza.'},
+  {phase:'reflexion',speaker:'Xervias',text:'Un sello falso... y, sin embargo, parecía auténtico a simple vista.'},
+  {phase:'reflexion',speaker:'Xervias',text:'¿Quién podría hacer algo así? ¿Y cuántas órdenes más habrán sido alteradas?'},
 ] as const;
 
 function checkpoint() {
@@ -55,7 +74,7 @@ function checkpoint() {
     if (!raw) return {beat:0,duel:0,after:0};
     const p=JSON.parse(raw) as {beat:number;duel:number;after:number};
     return {
-      beat:Number.isInteger(p.beat)?Math.max(0,Math.min(OPENING_BEATS.length+1,p.beat)):0,
+      beat:Number.isInteger(p.beat)?Math.max(0,Math.min(OPENING_BEATS.length+2,p.beat)):0,
       duel:Number.isInteger(p.duel)?Math.max(0,Math.min(GUIDED_STEPS.length-1,p.duel)):0,
       after:Number.isInteger(p.after)?Math.max(0,Math.min(AFTER_DUEL_BEATS.length-1,p.after)):0,
     };
