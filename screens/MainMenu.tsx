@@ -76,7 +76,7 @@ const MainMenu: React.FC = () => {
     if (!prologueComplete) {
       let introSeen = false;
       try { introSeen = getCampaignStorage()?.getItem(CAMPAIGN_INTRO_KEY) === '1'; } catch { /* private mode */ }
-      navigate(introSeen || journey.completed > 0 ? '/campania' : '/campania/inicio');
+      navigate(journey.completed > 0 ? '/campania' : introSeen ? '/campania/prologo' : '/campania/inicio');
       return;
     }
     navigate('/campania/generales');
