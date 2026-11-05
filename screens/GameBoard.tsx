@@ -794,6 +794,9 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
           onEnded={() => cueFinished.current?.()} />
       )}
 
+      {guidedOpening && <button type="button" className="dr-royal-guided-pause" onClick={handleMenuToggle}
+        aria-label="Abrir menú de pausa">☰</button>}
+
       {/* --- MENU MODAL --- */}
       {isMenuOpen && (
         <div className="absolute inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
@@ -860,9 +863,9 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
             </div>
 
           </div>
-          <button className="dr-royal-menu-button" type="button" onClick={handleMenuToggle} aria-label="Abrir menú de pausa">
+          {!guidedOpening && <button className="dr-royal-menu-button" type="button" onClick={handleMenuToggle} aria-label="Abrir menú de pausa">
             <span className="material-icons" aria-hidden="true">menu</span>
-          </button>
+          </button>}
         </header>
 
         <section className="dr-royal-rival-hand" aria-label={`Mano del rival: ${opponentHand.length} cartas ocultas`}>
