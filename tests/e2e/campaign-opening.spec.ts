@@ -58,3 +58,18 @@ test('guided battle pause returns to the menu without losing the story scene',as
   await page.getByRole('button',{name:'Volver al menú principal'}).click();
   await expect(page.getByRole('navigation',{name:'Menú principal'})).toBeVisible();
 });
+
+
+test('the post-duel chapter introduces Zhinchi and the final card has only one public button',async({page},info)=>{
+  test.skip(info.project.name!=='mobile-390','Visual-novel end card mobile QA');
+  await page.goto('/Decreto-Real/#/campania/prologo?escena=zhinchi');
+  await expect(page.getByRole('heading',{name:'La llegada del capitán'})).toBeVisible();
+  await expect(page.getByText('¡Alto! ¿Qué sucede aquí?')).toBeVisible();
+  await page.goto('/Decreto-Real/#/campania/prologo?escena=cetro');
+  await expect(page.getByRole('heading',{name:'El sello bajo sospecha'})).toBeVisible();
+  await page.goto('/Decreto-Real/#/campania/prologo?escena=fin');
+  await expect(page.getByRole('heading',{name:'Fin del Prólogo'})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Volver al menú',exact:true})).toBeVisible();
+  await expect(page.locator('.dcop-final-screen button')).toHaveCount(1);
+  await expect(page.getByRole('button',{name:'Continuar ›'})).toHaveCount(0);
+});
