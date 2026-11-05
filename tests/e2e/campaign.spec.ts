@@ -276,16 +276,16 @@ test('four Impact placements are ordered, and hands remain visible without numer
 });
 
 
-test('campaign begins with three paragraphs and continues to the compact two-stop prologue', async ({ page }) => {
+test('campaign begins with a cinematic cover and continues to the Sello Real mystery', async ({ page }) => {
   await page.goto('/Decreto-Real/#/');
   await page.getByRole('button', { name: 'Empezar campaña' }).click();
-  await expect(page.getByRole('heading', { name: 'El reino escucha dos verdades' })).toBeVisible();
-  await expect(page.locator('.dci-story p')).toHaveCount(3);
-  await page.getByRole('button', { name: /Continuar al prólogo/ }).click();
-  await expect(page.locator('.dcm-prologue-map')).toBeVisible();
-  await expect(page.locator('.dcm-marker')).toHaveCount(2);
-  await expect(page.getByRole('button', { name: 'Volver al Menú' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Ver la historia' })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'El Sello y la Revolución Solar' })).toBeVisible();
+  await expect(page.locator('.dci-story p')).toHaveCount(0);
+  await page.getByRole('button', { name: /Comenzar historia/ }).click();
+  await expect(page.getByRole('heading', { name: 'El misterio del Sello Real' })).toBeVisible();
+  await expect(page.getByText(/Virreinato del Perú, siglo XVII/)).toBeVisible();
+  await page.getByRole('button', { name: 'Abrir menú de campaña' }).click();
+  await expect(page.getByRole('dialog', { name: 'Menú de campaña' })).toBeVisible();
 });
 
 test('the general hub opens any region and only unlocks the center after eight generals', async ({ page }) => {
