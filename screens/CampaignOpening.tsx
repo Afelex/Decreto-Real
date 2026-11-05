@@ -193,7 +193,7 @@ const CampaignOpening:React.FC=()=>{
         </div>}
         {(scene==='arresto'||scene==='xervias'||scene==='revision'||scene==='desafio')&&
           <div className="dcop-scene-figures">
-            <div className="dcop-civil" aria-hidden="true"><span>♟</span><small>LA FAMILIA</small></div>
+            <div className="dcop-civil" aria-hidden="true"><img src="./campania/escenas/familia-suplicando.svg" alt=""/><small>LA FAMILIA</small></div>
             <div className="dcop-guard"><img src={portraits['Domingo Quispe']} alt=""/><small>GUARDIA</small></div>
             {scene!=='arresto' && <div className="dcop-hero"><img src={portraits['Xervias']} alt=""/><small>XERVIAS</small></div>}
           </div>}
