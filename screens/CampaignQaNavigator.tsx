@@ -2,7 +2,7 @@ import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   QA_CAMPAIGN_DESTINATIONS, QA_CAMPAIGN_GROUPS,
-  getCampaignStorage, isCampaignQaActive, isCampaignQaAvailable,
+  isCampaignQaActive, isCampaignQaAvailable,
   startCampaignQaAt, stopCampaignQa, type QaDestination,
 } from '../campaign/campaignQA.ts';
 import './campaign-qa.css';
