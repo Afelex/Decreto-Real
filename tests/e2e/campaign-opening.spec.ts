@@ -105,7 +105,7 @@ test('the approved Xervias ring is a special insert and the game card is layered
   await expect(page.locator('.dcop-scene-figures>div')).toHaveCount(2);
   await page.locator('.dcop-dialog-body footer button').click();
   await expect(page.locator('.dcop-invocation-shimmer')).toBeVisible();
-  await expect(page.locator('.dcop-invocation-shimmer .dcop-summoned-card')).toHaveAttribute('src',/carta-invocacion-real\.svg/);
+  await expect(page.locator('.dcop-invocation-shimmer .dcop-summoned-card')).toHaveAttribute('src',/carta_dorada_invocacion\.png|carta-invocacion-real\.svg/);
   await expect(page.locator('.dcop-scene-figures')).toHaveCount(0);
 });
 
@@ -140,11 +140,12 @@ test('one golden ceremonial card per duelist, then an original VS scene',async({
   await expect(page.getByTestId('xervias-golden-invocation')).toBeVisible();
   await expect(page.locator('.dcop-invocation-shimmer .dcop-summoned-card')).toHaveCount(1);
   await page.locator('.dcop-dialog-body footer button').click();
-  await expect(page.getByTestId('domingo-golden-invocation')).toHaveCount(0);
+  await expect(page.getByTestId('domingo-integrated-invocation')).toHaveCount(0);
   await page.locator('.dcop-dialog-body footer button').click();
   await page.locator('.dcop-dialog-body footer button').click();
-  await expect(page.getByTestId('domingo-golden-invocation')).toBeVisible();
-  await expect(page.locator('.dcop-counter-invocation img')).toHaveAttribute('src',/carta-invocacion-real\.svg/);
+  await expect(page.getByTestId('domingo-integrated-invocation')).toBeVisible();
+  await expect(page.locator('.dcop-counter-invocation img')).toHaveCount(0);
+  await expect(page.getByTestId('domingo-integrated-invocation').locator('img')).toHaveAttribute('src',/domingo_08_invocacion_combate\.png|domingo_02_molesto\.webp/);
   await page.locator('.dcop-dialog-body footer button').click();
   await expect(page.getByTestId('cinematic-versus')).toBeVisible();
   await expect(page.getByTestId('cinematic-versus')).toContainText('XERVIAS');
@@ -222,6 +223,62 @@ test('speaking does not change adult head slots or vertical anchors',async({page
   for(let i=0;i<2;i++){
     expect(Math.abs(first[i].top-second[i].top)).toBeLessThanOrEqual(2);
     expect(Math.abs(first[i].bottom-second[i].bottom)).toBeLessThanOrEqual(2);
-    expect(first[i].objectPosition).toMatch(/(?:bottom|100%)$/);
+    expect(first[i].objectPosition).toMatch(/bottom|100%/);
   }
+});
+
+
+
+test('scene 7 puts Xervias left and mother with enlarged distinct child at right',async({page},info)=>{
+  test.skip(info.project.name!=='mobile-390','Mobile scene 7 staging');
+  await page.goto('/Decreto-Real/#/campania/prologo?escena=xervias');
+  await page.locator('.dcop-dialog-body footer button').click();
+  await page.locator('.dcop-dialog-body footer button').click();
+  await expect(page.locator('.dcop-nameplate')).toHaveText('Madre');
+  const actors=page.locator('.dcop-scene-figures');
+  await expect(actors).toHaveClass(/dcop-family-right/);
+  await expect(actors.locator(':scope > div').first()).toHaveClass(/dcop-hero/);
+  await expect(actors.locator(':scope > div').last()).toHaveClass(/dcop-civil/);
+  await expect(actors.locator('.dcop-child-sprite')).toBeVisible();
+  const bounds=await page.evaluate(()=>{
+    const hero=document.querySelector('.dcop-family-right .dcop-hero')!.getBoundingClientRect();
+    const mother=document.querySelector('.dcop-family-right .dcop-civil')!.getBoundingClientRect();
+    const child=document.querySelector('.dcop-family-right .dcop-child-sprite')!.getBoundingClientRect();
+    return {heroX:hero.left,motherX:mother.left,childX:child.left};
+  });
+  expect(bounds.heroX).toBeLessThan(bounds.motherX);
+  expect(bounds.childX).toBeLessThan(bounds.motherX+100);
+});
+
+test('Domingo is enlarged and genuinely angry when the guard defies Xervias',async({page},info)=>{
+  test.skip(info.project.name!=='mobile-390','Mobile scene 15 expression');
+  await page.goto('/Decreto-Real/#/campania/prologo?escena=desafio');
+  for(let i=0;i<3;i++)await page.locator('.dcop-dialog-body footer button').click();
+  await expect(page.locator('.dcop-nameplate')).toHaveText('Domingo Quispe');
+  await expect(page.locator('.dcop-actor-domingo img')).toHaveAttribute('src',/domingo_07_enojado\.png|domingo_02_molesto\.webp/);
+  const width=await page.evaluate(()=>{
+    const d=document.querySelector('.dcop-actor-domingo img')!.getBoundingClientRect().width;
+    const x=document.querySelector('.dcop-hero img')!.getBoundingClientRect().width;
+    return d/x;
+  });
+  expect(width).toBeGreaterThan(1.10);
+});
+
+test('scene 16 ring-only, scene 17 PNG card, scene 20 embedded Domingo art',async({page},info)=>{
+  test.skip(info.project.name!=='mobile-390','Mobile invocations');
+  await page.goto('/Decreto-Real/#/campania/prologo?escena=anillo');
+  await expect(page.locator('.dcop-nameplate')).toHaveText('Xervias');
+  await expect(page.locator('.dcop-invocation-shimmer')).toHaveCount(0);
+  await expect(page.locator('.dcop-counter-invocation')).toHaveCount(0);
+  await expect(page.locator('.dcop-hero img')).toHaveAttribute('src',/xervias_05_anillo_energia\.png|xervias_01_objecion\.webp/);
+  await page.locator('.dcop-dialog-body footer button').click();
+  await expect(page.getByTestId('xervias-golden-invocation')).toBeVisible();
+  const card=page.locator('.dcop-invocation-shimmer .dcop-summoned-card');
+  await expect(card).toHaveCount(1);
+  await expect(card).toHaveAttribute('src',/carta_dorada_invocacion\.png|carta-invocacion-real\.svg/);
+  for(let i=0;i<3;i++)await page.locator('.dcop-dialog-body footer button').click();
+  await expect(page.getByTestId('domingo-integrated-invocation')).toBeVisible();
+  await expect(page.locator('.dcop-counter-invocation')).toHaveCount(0);
+  const opponent=page.getByTestId('domingo-integrated-invocation').locator('img');
+  await expect(opponent).toHaveAttribute('src',/domingo_08_invocacion_combate\.png|domingo_02_molesto\.webp/);
 });

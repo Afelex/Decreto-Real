@@ -1,0 +1,91 @@
+name: Decreto Real · Artes PNG del prólogo v3
+run-name: "Prólogo v3 · ${{ github.event_name == 'push' && 'Seis PNG originales' || inputs.modo }}"
+on:
+  push:
+    branches: [main]
+    paths:
+      - "prologue-art/revision-v3.json"
+      - "tools/generate-prologue-v3.mjs"
+      - ".github/workflows/generate-prologue-v3.yml"
+  workflow_dispatch:
+    inputs:
+      modo:
+        description: "plan no consume créditos, generar sí"
+        type: choice
+        options: [plan, generar]
+        required: true
+        default: plan
+      confirmar:
+        description: "Para generar escribe GENERAR_6_V3"
+        type: string
+        default: NO
+        required: true
+      calidad:
+        type: choice
+        options: [low, medium, high]
+        default: medium
+        required: true
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: decreto-real-prologue-v3-png
+  cancel-in-progress: false
+jobs:
+  artes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validar seis recursos y referencias antes del pago
+        run: node --test tools/generate-prologue-v3.test.mjs
+      - name: Generar PNG con fondo alpha (solo faltantes)
+        id: generate
+        continue-on-error: true
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PROLOGUE_V3_MODE: ${{ github.event_name == 'push' && 'generate' || (inputs.modo == 'generar' && 'generate' || 'plan') }}
+          PROLOGUE_V3_CONFIRM: ${{ github.event_name == 'push' && 'GENERAR_6_V3' || inputs.confirmar }}
+          PROLOGUE_V3_QUALITY: ${{ github.event_name == 'push' && 'medium' || inputs.calidad }}
+        run: node tools/generate-prologue-v3.mjs
+      - name: Preservar resultado parcial y estado
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: prologo-v3-${{ github.run_id }}
+          path: art-output/prologo-v3/
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Guardar PNGs y manifest sin repetir gasto
+        if: ${{ always() && (github.event_name == 'push' || inputs.modo == 'generar') }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -d public/campania/prologo-v3 ]; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/campania/prologo-v3/
+          if ! git diff --cached --quiet; then
+            git commit -m "art(prologo): incorporar 6 PNG v3 con alpha"
+            git fetch origin main
+            git rebase origin/main
+            git push origin HEAD:main
+          fi
+      - name: Confirmar lote completo
+        if: ${{ github.event_name == 'push' || inputs.modo == 'generar' }}
+        run: |
+          if [ "${{ steps.generate.outcome }}" != "success" ] || [ ! -s public/campania/prologo-v3/manifest.json ]; then
+            echo "::error::Generación incompleta. Los PNG ya creados se conservaron; vuelve a ejecutar para continuar."
+            exit 1
+          fi
+      - name: Publicar versión nueva en Pages
+        if: ${{ success() && (github.event_name == 'push' || inputs.modo == 'generar') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy.yml --ref main
