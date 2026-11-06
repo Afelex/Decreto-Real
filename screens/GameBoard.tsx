@@ -128,8 +128,10 @@ type GameBoardProps = {
   onReturn?: () => void;
   presentation?: BattlePresentation;
   guidedOpening?: boolean;
+  /** Overlay illustrations for narrated moments; do not replace the fixed HUD portraits. */
+  guidedNarrativeSprites?: {player:string;opponent:string};
 };
-const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation, storyConversation, playerMysticSlots, opponentMysticSlots, guidedOpening = false }) => {
+const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation, storyConversation, playerMysticSlots, opponentMysticSlots, guidedOpening = false, guidedNarrativeSprites }) => {
   const scenery = resolveBattleScenery(presentation);
   const playerPortrait = presentation?.playerPortrait ?? PLAYER_IMG;
   const rivalPortrait = presentation?.opponentPortrait ?? OPPONENT_IMG;
@@ -978,8 +980,13 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
         <img src={playerHand.find(card => card.id === dragAt.id)?.img ?? IMG_ATTACK} alt=""/>
       </div>}
 
+      {guidedOpening && currentGuide && !currentGuide.action && guideIndex<3 && guidedNarrativeSprites && (
+        <div className={'dr-royal-guided-actor '+(currentGuide.speaker==='Domingo Quispe'?'is-rival':'is-player')} aria-hidden="true" data-testid="guided-large-actor">
+          <img src={currentGuide.speaker==='Domingo Quispe'?guidedNarrativeSprites.opponent:guidedNarrativeSprites.player} alt=""/>
+        </div>
+      )}
       {guidedOpening && currentGuide && (
-        <section className="dr-royal-story-coach" data-testid="campaign-guided-coach" aria-live="polite">
+        <section className={'dr-royal-story-coach '+(currentGuide.speaker==='Domingo Quispe'?'is-rival':'is-player')} data-testid="campaign-guided-coach" aria-live="polite">
           <div className="dr-royal-story-coach-header">
             <strong>{currentGuide.speaker}</strong>
             <small>Duelo guiado · {guideIndex + 1}/{GUIDED_STEPS.length}</small>
