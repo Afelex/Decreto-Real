@@ -11,6 +11,7 @@ import StoryDialogue from './StoryDialogue';
 import { prologueV2Url, prologueV2ManifestUrl, isV2Complete, INVOCATION_CARD_URL, type V2ArtId } from '../campaign/prologueV2';
 import './campaign-opening.css';
 import './story-dialogue.css';
+import './prologue-v2.css';
 
 export const PROLOGUE_CHECKPOINT_KEY = 'decreto-real.campania.prologo-cinematico.v1';
 
@@ -291,7 +292,8 @@ const CampaignOpening:React.FC=()=>{
         <h1>Fin del Prólogo</h1>
         <button type="button" onClick={()=>navigate('/')}>Volver al menú</button>
       </section>:
-      isBattle?<GameBoard guidedOpening
+      isBattle?<GameBoard guidedOpening guidedNarrativeSprites={{player:art('X01',portraits.Xervias),opponent:domingo}}
+
         onReturn={()=>navigate('/')}
         onOutcome={(result)=>{if(result.won){setBeat(OPENING_BEATS.length+1);setAfter(0);}}}
         presentation={{background:art('F02','./escenarios/plaza-virreinal-v2.svg'),backgroundVideo:null,
