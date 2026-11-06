@@ -458,6 +458,9 @@ const CampaignOpening:React.FC=()=>{
         <DecretoRealStudioPanel
           sceneIndex={studioStep}
           total={OPENING_BEATS.length+AFTER_DUEL_BEATS.length}
+          sceneOptions={[...OPENING_BEATS.map(item=>({label:item.speaker+' · '+item.title})),
+            ...AFTER_DUEL_BEATS.map(item=>({label:item.speaker+' · '+(phaseTitles[item.phase]??item.phase)}))]}
+          onJump={studioNavigate}
           title={story?.speaker+' · '+(prologue?.title??phaseTitles[scene]??'Desenlace')}
           sceneKey={studioKey}
           actors={studioActors}
