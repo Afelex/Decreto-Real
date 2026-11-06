@@ -1,22 +1,32 @@
 /* Decreto Real – visual novel staging v2. Overrides older experimental staging only. */
-/* Head top guide: both adult actors share one common slot top, regardless of speaker. */
+/* Keep the dialogue and actor stage on one shared vertical reference line.
+ * The actors' visible feet/robes sit 15px below the dialogue's top edge;
+ * the higher-z-index dialogue panel naturally masks the excess.
+ */
+.dcop-screen{
+  --dcop-story-panel-height:clamp(188px,28dvh,258px);
+  --dcop-actor-panel-overlap:15px;
+}
+.dcop-screen .dcop-narrative{height:var(--dcop-story-panel-height)}
+/* Adult head-top guide: shared scene slot, no speaking scale or vertical movement. */
 .dcop-screen .dcop-scene-figures{
   position:absolute;
   top:clamp(92px,13dvh,145px);
-  bottom:29dvh;
+  bottom:calc(var(--dcop-story-panel-height) - var(--dcop-actor-panel-overlap));
   left:3%;right:3%;z-index:4;
   display:flex;align-items:flex-start;justify-content:space-between;gap:0;
 }
 .dcop-screen .dcop-scene-figures>div{
   flex:0 0 49%;width:49%;max-width:49%;height:100%;margin:0;
-  position:relative;display:flex;align-items:flex-start;justify-content:center;
-  transform:none!important;
+  position:relative;display:flex;align-items:flex-end;justify-content:center;
+  overflow:visible;transform:none!important;
   transition:filter .20s ease,opacity .20s ease!important;
 }
 .dcop-screen .dcop-scene-figures>div:first-child{margin:0}
 .dcop-screen .dcop-scene-figures>div img:not(.dcop-child-sprite){
+  display:block;position:relative;z-index:1;
   width:100%;height:100%;max-height:none;
-  object-fit:contain;object-position:center top;
+  object-fit:contain;object-position:center bottom;
   filter:drop-shadow(0 6px 12px #0008);
 }
 .dcop-screen .dcop-scene-figures>div.dcop-speaking{
@@ -31,7 +41,10 @@
   align-self:flex-start;order:unset!important;
 }
 .dcop-screen .dcop-scene-figures .dcop-child-sprite{
-  position:absolute;bottom:0;left:-2%;width:48%!important;height:41%!important;
+  position:absolute;z-index:5;pointer-events:none;
+  /* The child belongs in FRONT of his mother and is roughly 3/4 her scale. */
+  bottom:0;left:43%;width:78%!important;height:76%!important;
+  max-width:none!important;max-height:none!important;
   object-fit:contain!important;object-position:center bottom!important;
   filter:drop-shadow(0 5px 8px #0009);
 }
@@ -124,7 +137,8 @@
   left:19%;right:7%;max-width:330px;
 }
 @media(max-height:650px){
-  .dcop-screen .dcop-scene-figures{top:68px;bottom:36dvh}
+  .dcop-screen{--dcop-story-panel-height:clamp(150px,35dvh,185px)}
+  .dcop-screen .dcop-scene-figures{top:68px;bottom:calc(var(--dcop-story-panel-height) - var(--dcop-actor-panel-overlap))}
   .dcop-screen .dr-royal-guided-actor.is-player{bottom:26%}
   .dcop-screen .dr-royal-story-coach.is-player{bottom:24%}
 }
