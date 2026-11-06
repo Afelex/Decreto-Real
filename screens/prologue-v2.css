@@ -1,0 +1,132 @@
+/* Decreto Real – visual novel staging v2. Overrides older experimental staging only. */
+/* Head top guide: both adult actors share one common slot top, regardless of speaker. */
+.dcop-screen .dcop-scene-figures{
+  position:absolute;
+  top:clamp(92px,13dvh,145px);
+  bottom:29dvh;
+  left:3%;right:3%;z-index:4;
+  display:flex;align-items:flex-start;justify-content:space-between;gap:0;
+}
+.dcop-screen .dcop-scene-figures>div{
+  flex:0 0 49%;width:49%;max-width:49%;height:100%;margin:0;
+  position:relative;display:flex;align-items:flex-start;justify-content:center;
+  transform:none!important;
+  transition:filter .20s ease,opacity .20s ease!important;
+}
+.dcop-screen .dcop-scene-figures>div:first-child{margin:0}
+.dcop-screen .dcop-scene-figures>div img:not(.dcop-child-sprite){
+  width:100%;height:100%;max-height:none;
+  object-fit:contain;object-position:center top;
+  filter:drop-shadow(0 6px 12px #0008);
+}
+.dcop-screen .dcop-scene-figures>div.dcop-speaking{
+  transform:none!important;filter:brightness(1.11) saturate(1.07);
+  opacity:1;z-index:4;
+}
+.dcop-screen .dcop-scene-figures>div.dcop-dim{
+  transform:none!important;filter:brightness(.64) saturate(.76);
+  opacity:.87;z-index:2;
+}
+.dcop-screen .dcop-civil,.dcop-screen .dcop-guard,.dcop-screen .dcop-hero{
+  align-self:flex-start;order:unset!important;
+}
+.dcop-screen .dcop-scene-figures .dcop-child-sprite{
+  position:absolute;bottom:0;left:-2%;width:48%!important;height:41%!important;
+  object-fit:contain!important;object-position:center bottom!important;
+  filter:drop-shadow(0 5px 8px #0009);
+}
+.dcop-screen .dcop-arresto .dcop-backdrop{
+  filter:saturate(.89) brightness(.78);
+}
+.dcop-screen .dcop-quick-bubble{top:clamp(79px,20dvh,163px);z-index:7}
+.dcop-pergamino .dcop-backdrop{filter:saturate(.86) brightness(.72)}
+.dcop-counter-invocation{
+  position:absolute;z-index:9;top:25%;right:5%;width:min(30%,166px);
+  height:35%;display:grid;place-items:center;pointer-events:none;
+}
+.dcop-counter-invocation img{
+  height:100%;max-width:100%;object-fit:contain;transform:rotate(-10deg);
+  filter:drop-shadow(0 0 10px #fff4be) drop-shadow(0 0 27px #efaa40);
+  animation:dcop-royal-materialize .55s ease-out both;
+}
+.dcop-counter-aura{
+  position:absolute;z-index:-1;inset:-25%;
+  background:radial-gradient(ellipse,#fff1a252 0%,#ffb8342e 36%,transparent 70%);
+}
+.dcop-screen .dcop-invocation-shimmer .dcop-summoned-card{height:43%;max-width:37%;top:22%;right:9%}
+@keyframes dcop-royal-materialize{
+  from{opacity:0;transform:translateY(40px) scale(.64) rotate(5deg)}
+  to{opacity:1;transform:translateY(0) scale(1) rotate(-10deg)}
+}
+/* Cinematic VS: original composition (not Duel Links artwork). */
+.dcop-versus{
+  position:absolute;z-index:6;inset:9% 1% 30%;
+  display:grid;grid-template-rows:1fr 1fr;
+  background:linear-gradient(153deg,#111b3088 43%,#f1c772 50%,#4d112299 56%);
+  overflow:hidden;border:1px solid #e6c08388;border-radius:7px;
+  box-shadow:inset 0 0 50px #0009,0 0 20px #1a0815b8;
+}
+.dcop-versus-side{
+  position:relative;display:flex;align-items:center;gap:12px;
+  padding:12px 6%;overflow:hidden;
+}
+.dcop-versus-side img{
+  height:130%;width:44%;object-fit:contain;object-position:center top;
+  filter:drop-shadow(0 4px 14px #000c);
+}
+.dcop-versus-side strong{
+  position:relative;z-index:2;color:#fff4dc;
+  font:900 clamp(18px,5vw,30px)/1.1 Georgia,serif;letter-spacing:.05em;
+  text-shadow:2px 3px #000c;
+}
+.dcop-versus-xervias{
+  background:linear-gradient(98deg,#76202ac9,#371c36b9);
+  flex-direction:row;
+}
+.dcop-versus-domingo{
+  background:linear-gradient(98deg,#142f56cf,#11365fd9);
+  flex-direction:row-reverse;
+}
+.dcop-versus-mark{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-9deg);
+  z-index:7;padding:2px 15px;color:#fff6d4;
+  font:900 clamp(42px,14vw,74px)/1 Georgia,serif;
+  text-shadow:-3px -3px #8f2037,3px 4px #234b8c,0 0 21px #ffdd81;
+}
+.dcop-screen .dr-royal-character-frame{
+  /* The two fixed HUD frames retain matched size, and never contain full-body art. */
+  max-width:min(27cqw,122px)!important;
+  width:min(27cqw,122px)!important;
+  max-height:min(14dvh,122px)!important;
+  height:min(14dvh,122px)!important;
+  aspect-ratio:4/5;
+}
+.dcop-screen .dr-royal-character-frame > img:first-child{
+  object-fit:cover!important;object-position:center 20%!important;
+}
+.dcop-screen .dr-royal-character.player,
+.dcop-screen .dr-royal-character{justify-content:center}
+.dcop-screen .dr-royal-guided-actor{
+  position:absolute;z-index:55;pointer-events:none;width:clamp(70px,20vw,130px);
+  height:clamp(100px,22dvh,190px);overflow:hidden;
+  filter:drop-shadow(0 5px 12px #000d);
+}
+.dcop-screen .dr-royal-guided-actor img{width:100%;height:100%;object-fit:contain;object-position:top center}
+.dcop-screen .dr-royal-guided-actor.is-rival{top:16%;right:0}
+.dcop-screen .dr-royal-guided-actor.is-player{bottom:22%;left:0}
+.dcop-screen .dr-royal-story-coach.is-rival{
+  top:clamp(115px,20dvh,205px);bottom:auto;
+  left:12%;right:8%;max-width:350px;
+}
+.dcop-screen .dr-royal-story-coach.is-player{
+  bottom:clamp(142px,26dvh,240px);top:auto;
+  left:19%;right:7%;max-width:330px;
+}
+@media(max-height:650px){
+  .dcop-screen .dcop-scene-figures{top:68px;bottom:36dvh}
+  .dcop-screen .dr-royal-guided-actor.is-player{bottom:26%}
+  .dcop-screen .dr-royal-story-coach.is-player{bottom:24%}
+}
+@media(prefers-reduced-motion:reduce){
+  .dcop-counter-invocation img{animation:none!important}
+}
