@@ -60,7 +60,7 @@ export async function produce({mode='plan',quality='medium',confirm='',key=proce
   for(const a of data.items)results[validWebp(join(ROOT_ASSETS,a.file))?'skipped':'generated'].push({id:a.id,file:a.file});
   emit(results);console.log('Plan sin costo:',results.generated.length,'pendientes.');return results;
  }
- if(confirm!=='GENERAR_6')throw Error('Generación con costo requiere confirmación GENERAR_6.');
+ if(confirm!=='GENERAR_7')throw Error('Generación con costo requiere confirmación GENERAR_7.');
  if(!key)throw Error('OPENAI_API_KEY no configurada.');
  for(const a of data.items){
   const dest=join(ROOT_ASSETS,a.file);
