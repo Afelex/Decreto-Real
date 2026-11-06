@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "completed": 6,
+  "files": {
+    "D01": "sprites/domingo_01_serio.webp",
+    "D02": "sprites/domingo_02_molesto.webp",
+    "D03": "sprites/domingo_03_burlon.webp",
+    "D04": "sprites/domingo_04_derrotado.webp",
+    "D05": "retratos/domingo_perfil_duelo.webp",
+    "F01": "fondos/despacho_vacio.webp",
+    "F02": "fondos/plaza_vacia.webp"
+  }
+}
