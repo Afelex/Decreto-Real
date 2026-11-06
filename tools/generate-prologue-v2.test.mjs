@@ -20,6 +20,6 @@ test('free plan cannot consume API credits',async()=>{
  assert.equal(result.mode,'plan');assert.equal(result.generated.length+result.skipped.length,7);
 });
 test('paid API calls require explicit confirmation and an API key',async()=>{
- await assert.rejects(produce({mode:'generate',confirm:'NO',key:'fake'}),/GENERAR_6/);
- await assert.rejects(produce({mode:'generate',confirm:'GENERAR_6',key:''}),/OPENAI_API_KEY/);
+ await assert.rejects(produce({mode:'generate',confirm:'NO',key:'fake'}),/GENERAR_7/);
+ await assert.rejects(produce({mode:'generate',confirm:'GENERAR_7',key:''}),/OPENAI_API_KEY/);
 });
