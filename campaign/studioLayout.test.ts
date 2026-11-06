@@ -6,7 +6,7 @@ import {
   normalizeStudioTransform,
 } from './studioLayout.ts';
 
-test('studio keeps each actor's corrections isolated to its exact narrative beat',()=>{
+test("studio keeps each actor's corrections isolated to its exact narrative beat",()=>{
   const blank=emptyStudioDocument();
   const first=withStudioTransform(blank,studioSceneKey('opening',1),'Niño',{
     x:14.5,y:-2,scale:1.32,mirror:false,layer:7,visible:true,
