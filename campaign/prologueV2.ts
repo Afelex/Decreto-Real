@@ -6,6 +6,7 @@ export const V2_FILES = {
  D04:'sprites/domingo_04_derrotado.webp',
  D05:'retratos/domingo_perfil_duelo.webp',
  F01:'fondos/despacho_vacio.webp',
+ F02:'fondos/plaza_vacia.webp',
 } as const;
 export type V2ArtId=keyof typeof V2_FILES;
 export function prologueV2Url(id:V2ArtId):string {
@@ -17,6 +18,6 @@ export function prologueV2ManifestUrl():string {
 export function isV2Complete(v:unknown):boolean{
  if(!v||typeof v!=='object')return false;
  const obj=v as {version?:number,completed?:number,files?:Record<string,string>};
- return obj.version===2&&obj.completed===6&&!!obj.files&&Object.entries(V2_FILES).every(([id,path])=>obj.files?.[id]===path);
+ return obj.version===2&&obj.completed===7&&!!obj.files&&Object.entries(V2_FILES).every(([id,path])=>obj.files?.[id]===path);
 }
 export const INVOCATION_CARD_URL='./campania/prologo/props/carta-invocacion-real.svg';
