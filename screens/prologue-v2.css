@@ -95,11 +95,12 @@
 }
 .dcop-screen .dr-royal-character-frame{
   /* The two fixed HUD frames retain matched size, and never contain full-body art. */
-  max-width:min(27cqw,122px)!important;
-  width:min(27cqw,122px)!important;
-  max-height:min(14dvh,122px)!important;
-  height:min(14dvh,122px)!important;
-  aspect-ratio:4/5;
+  width:auto!important;
+  height:clamp(82px,13dvh,120px)!important;
+  max-height:120px!important;
+  min-width:0!important;
+  max-width:80px!important;
+  aspect-ratio:2/3!important;
 }
 .dcop-screen .dr-royal-character-frame > img:first-child{
   object-fit:cover!important;object-position:center 20%!important;
