@@ -92,3 +92,15 @@
   .dr-studio-body{max-height:70dvh}
   .dr-studio-panel{top:4px}
 }
+
+/* Hidden actors disappear in QA playback; while editing they remain faint so
+   the author can select them again and change the visibility flag. */
+.dcop-screen:not(.dcop-studio-mode) .dcop-scene-figures .dcop-studio-hidden{
+  opacity:0!important;pointer-events:none!important;
+}
+.dr-qa-panel button.dr-qa-studio{
+  border-color:#f1ce92;
+  background:linear-gradient(110deg,#795033,#342b3d);
+  color:#ffebc4;
+  min-height:44px;font-weight:800;font-size:12px;
+}
