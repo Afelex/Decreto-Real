@@ -29,7 +29,7 @@ test('dialogue advances within a long speech before changing story beat',()=>{
   const button=screen.getByRole('button',{name:'Continuar diálogo'});
   fireEvent.click(button);
   expect(onAdvance).not.toHaveBeenCalled();
-  for(let i=1;i<dialoguePages(text).length;i++) fireEvent.click(screen.getByRole('button',{name:/Continuar/}));
+  for(let i=1;i<dialoguePages(text).length-1;i++) fireEvent.click(screen.getByRole('button',{name:/Continuar/}));
   expect(onAdvance).not.toHaveBeenCalled();
   fireEvent.click(screen.getByRole('button',{name:'Continuar'}));
   expect(onAdvance).toHaveBeenCalledOnce();
