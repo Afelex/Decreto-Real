@@ -1,7 +1,13 @@
 import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { awardMissionStars, loadCampaignProgress, saveCampaignProgress } from '../campaign/campaign';
-import { getCampaignStorage } from '../campaign/campaignQA';
+import { getCampaignStorage, isCampaignQaAvailable } from '../campaign/campaignQA';
+import {
+  readStudioDocument,saveStudioDocument,parseStudioDocument,withStudioTransform,withoutStudioTransform,
+  getStudioTransform,studioSceneKey,STUDIO_ACTORS,
+  type StudioActor,type StudioTransform,type StudioDocument
+} from '../campaign/studioLayout';
+import DecretoRealStudioPanel from './DecretoRealStudioPanel';
 import GameBoard from './GameBoard';
 import { GUIDED_STEPS } from '../campaign/guidedOpeningDuel';
 import { useAudio } from '../contexts/AudioContext';
@@ -107,23 +113,35 @@ const CampaignOpening:React.FC=()=>{
   const [query]=useSearchParams();
   const saved=React.useMemo(checkpoint,[]);
   const override=query.get('escena');
+  const studioEnabled=isCampaignQaAvailable()&&query.get('studio')==='1';
+  const studioRawStep=query.get('studioStep');
+  const parsedStudioStep=studioRawStep===null?NaN:Number(studioRawStep);
+  const studioStep=studioEnabled&&Number.isInteger(parsedStudioStep)&&parsedStudioStep>=0&&
+    parsedStudioStep<OPENING_BEATS.length+AFTER_DUEL_BEATS.length?parsedStudioStep:null;
   const startBeat=React.useMemo(()=>{
+    if(studioStep!==null)return studioStep<OPENING_BEATS.length?studioStep:OPENING_BEATS.length+1;
     if(override==='duelo')return OPENING_BEATS.length;
     if(override==='fin')return OPENING_BEATS.length+2;
     if(override==='desenlace'||override==='zhinchi'||override==='cetro'||override==='resolucion'||override==='reflexion')
       return OPENING_BEATS.length+1;
     if(override){const index=OPENING_BEATS.findIndex(x=>x.scene===override);if(index>=0)return index;}
     return saved.beat;
-  },[override,saved.beat]);
+  },[override,saved.beat,studioStep]);
   const [beat,setBeat]=React.useState(startBeat);
   // Combat returns to the beginning of the real board if the player leaves mid-duel.
   const duel=0;
-  const initialAfter=override && ['desenlace','zhinchi','cetro','resolucion','reflexion'].includes(override)
+  const initialAfter=studioStep!==null&&studioStep>=OPENING_BEATS.length
+    ? studioStep-OPENING_BEATS.length : override && ['desenlace','zhinchi','cetro','resolucion','reflexion'].includes(override)
     ? Math.max(0,AFTER_DUEL_BEATS.findIndex(x=>x.phase===override)) : override?0:saved.after;
   const [after,setAfter]=React.useState(initialAfter);
   // React Router can reuse this screen when only ?escena= changes.
   // QA jumps must update both the story phase and its dialogue index.
   React.useEffect(()=>{
+    if(studioStep!==null){
+      setBeat(studioStep<OPENING_BEATS.length?studioStep:OPENING_BEATS.length+1);
+      setAfter(studioStep>=OPENING_BEATS.length?studioStep-OPENING_BEATS.length:0);
+      return;
+    }
     if(!override)return;
     if(override==='fin'){
       setBeat(OPENING_BEATS.length+2);
@@ -148,10 +166,16 @@ const CampaignOpening:React.FC=()=>{
       setBeat(target);
       setAfter(0);
     }
-  },[override]);
+  },[override,studioStep]);
   const [artReady,setArtReady]=React.useState(false);
   const [v2Ready,setV2Ready]=React.useState(false);
   const [v3Ready,setV3Ready]=React.useState(false);
+  const [studioDoc,setStudioDoc]=React.useState<StudioDocument>(readStudioDocument);
+  const [studioSaved,setStudioSaved]=React.useState(()=>JSON.stringify(readStudioDocument()));
+  const [studioSelected,setStudioSelected]=React.useState<StudioActor|null>(null);
+  const [studioHistory,setStudioHistory]=React.useState<StudioDocument[]>([]);
+  const [studioStatus,setStudioStatus]=React.useState('');
+  const studioDrag=React.useRef<{actor:StudioActor;pointerId:number;startX:number;startY:number;origin:StudioTransform}|null>(null);
   const {playSound}=useAudio();
   React.useEffect(()=>{
     if(typeof fetch!=='function')return;
@@ -179,9 +203,10 @@ const CampaignOpening:React.FC=()=>{
     return ()=>controller.abort();
   },[]);
   React.useEffect(()=>{
+    if(studioEnabled)return; // Studio must never touch actual campaign progress.
     try{getCampaignStorage()?.setItem(PROLOGUE_CHECKPOINT_KEY,JSON.stringify({beat,duel,after}));}
     catch{/* Private browsing may disable storage. */}
-  },[beat,duel,after]);
+  },[beat,duel,after,studioEnabled]);
   const art=(id:PrologueArtId,fallback:string)=>artReady?prologueArtUrl(id):fallback;
   const v2art=(id:V2ArtId,fallback:string)=>v2Ready?prologueV2Url(id):fallback;
   const v3art=(id:V3ArtId,fallback:string)=>v3Ready?prologueV3Url(id):fallback;
@@ -257,6 +282,103 @@ const CampaignOpening:React.FC=()=>{
     else{add('Xervias',xervias);add('Zhinchi',zhinchi);}
   }
   else if(scene==='reflexion'&&speaker==='Xervias'){add('Xervias',xervias);}
+  const studioKey=studioSceneKey(isAfter?'after':'opening',isAfter?after:beat);
+  const studioActors:StudioActor[]=actors.flatMap(actor=>actor.child?
+    [actor.id,'Niño' as const]:[actor.id]);
+  const studioVisibleSelection=studioSelected&&studioActors.includes(studioSelected)?studioSelected:null;
+  const studioDirty=JSON.stringify(studioDoc)!==studioSaved;
+  const currentLayout=(actor:StudioActor)=>isCampaignQaAvailable()?studioDoc.scenes[studioKey]?.[actor]:undefined;
+  const studioStyle=(actor:StudioActor):React.CSSProperties|undefined=>{
+    const layout=currentLayout(actor);
+    if(!layout)return undefined;
+    return {
+      '--studio-x':layout.x+'vw','--studio-y':layout.y+'vh',
+      '--studio-scale':layout.scale,'--studio-mirror':layout.mirror?-1:1,
+      '--studio-layer':layout.layer,
+    } as React.CSSProperties;
+  };
+  const studioClass=(actor:StudioActor)=>(currentLayout(actor)?' dcop-studio-adjusted':'')+
+    (studioEnabled&&studioVisibleSelection===actor?' dcop-studio-selected':'')+
+    (currentLayout(actor)?.visible===false?' dcop-studio-hidden':'');
+  const pushStudioHistory=()=>{
+    setStudioHistory(items=>[...items.slice(-24),studioDoc]);
+  };
+  const changeStudioActor=(actor:StudioActor,next:StudioTransform)=>{
+    pushStudioHistory();
+    setStudioDoc(doc=>withStudioTransform(doc,studioKey,actor,next));
+    setStudioStatus('Cambios sin guardar');
+  };
+  const startStudioDrag=(event:React.PointerEvent<HTMLElement>,actor:StudioActor)=>{
+    if(!studioEnabled)return;
+    event.preventDefault();event.stopPropagation();
+    setStudioSelected(actor);
+    pushStudioHistory();
+    studioDrag.current={
+      actor,pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,
+      origin:getStudioTransform(studioDoc,studioKey,actor)
+    };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+  const moveStudioDrag=(event:React.PointerEvent<HTMLElement>,actor:StudioActor)=>{
+    const drag=studioDrag.current;
+    if(!studioEnabled||!drag||drag.pointerId!==event.pointerId||drag.actor!==actor)return;
+    event.preventDefault();event.stopPropagation();
+    const next={...drag.origin,
+      x:drag.origin.x+100*(event.clientX-drag.startX)/window.innerWidth,
+      y:drag.origin.y+100*(event.clientY-drag.startY)/window.innerHeight
+    };
+    setStudioDoc(doc=>withStudioTransform(doc,studioKey,actor,next));
+    setStudioStatus('Cambios sin guardar');
+  };
+  const endStudioDrag=(event:React.PointerEvent<HTMLElement>,actor:StudioActor)=>{
+    if(studioDrag.current?.pointerId!==event.pointerId||studioDrag.current?.actor!==actor)return;
+    studioDrag.current=null;
+    if(event.currentTarget.hasPointerCapture(event.pointerId))
+      event.currentTarget.releasePointerCapture(event.pointerId);
+  };
+  const studioNavigate=(next:number)=>{
+    if(next<0||next>=OPENING_BEATS.length+AFTER_DUEL_BEATS.length)return;
+    if(studioDirty&&!window.confirm('Hay cambios sin guardar. ¿Cambiar de escena sin guardarlos?'))return;
+    setStudioSelected(null);
+    navigate('/campania/prologo?studio=1&studioStep='+next);
+  };
+  const studioSave=()=>{
+    if(saveStudioDocument(studioDoc)){
+      setStudioSaved(JSON.stringify(studioDoc));
+      setStudioStatus('Borrador guardado en este dispositivo');
+    }else setStudioStatus('No se pudo guardar. Exporta una copia JSON.');
+  };
+  const studioExport=()=>{
+    const blob=new Blob([JSON.stringify(studioDoc,null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const link=document.createElement('a');
+    link.href=url;link.download='decreto-real-studio-v1.json';
+    document.body.appendChild(link);link.click();link.remove();
+    URL.revokeObjectURL(url);
+    setStudioStatus('Configuración exportada');
+  };
+  const studioImport=async(file:File)=>{
+    try{
+      if(file.size>1_000_000)throw new Error('Archivo demasiado grande (máximo 1 MB).');
+      const doc=parseStudioDocument(await file.text());
+      pushStudioHistory();setStudioDoc(doc);
+      setStudioStatus('Importado: revisa las escenas y pulsa Guardar');
+    }catch(err){setStudioStatus(err instanceof Error?err.message:'El archivo no es válido.');}
+  };
+  const studioUndo=()=>{
+    const prev=studioHistory[studioHistory.length-1];if(!prev)return;
+    setStudioDoc(prev);setStudioHistory(h=>h.slice(0,-1));setStudioStatus('Último cambio deshecho');
+  };
+  const studioRestore=()=>{
+    if(!studioVisibleSelection)return;
+    pushStudioHistory();
+    setStudioDoc(doc=>withoutStudioTransform(doc,studioKey,studioVisibleSelection));
+    setStudioStatus('Restaurada la transformación original');
+  };
+  const studioExit=()=>{
+    if(studioDirty&&!window.confirm('Hay cambios sin guardar. ¿Salir del editor?'))return;
+    navigate('/campania/prologo?escena='+scene);
+  };
   const quickBubble=prologue?.scene==='arresto'&&beat===1?'¡Por favor!':
     scene==='xervias'&&speaker==='Xervias'&&beat===4?'¡Un momento!':
     scene==='desafio'&&speaker==='Domingo Quispe'&&story?.text.startsWith('¡Silencio!')?'¡Silencio!':
@@ -270,9 +392,9 @@ const CampaignOpening:React.FC=()=>{
     if(isAfter){if(after===AFTER_DUEL_BEATS.length-1)finish();else setAfter(i=>i+1);}
     else if(!isFinal)setBeat(i=>i+1);
   };
-  return <main className={'dcop-screen dcop-'+scene} aria-label="Prólogo de campaña: El Sello Real">
+  return <main className={'dcop-screen dcop-'+scene+(studioEnabled?' dcop-studio-mode':'')} aria-label="Prólogo de campaña: El Sello Real">
     <div className="dcop-stage">
-      {!isBattle&&!isFinal&&<CampaignPauseMenu/>}
+      {!isBattle&&!isFinal&&!studioEnabled&&<CampaignPauseMenu/>}
       {!isFinal&&!isBattle&&<div className="dcop-art" aria-hidden="true">
         <img className="dcop-backdrop" src={background} alt=""/>
         {scene==='pergamino'&&<div className="dcop-scroll-held">
@@ -289,10 +411,26 @@ const CampaignOpening:React.FC=()=>{
           {actors.map(actor=><div key={actor.id}
             className={(actor.id==='Xervias'?'dcop-hero':actor.id==='Madre'?'dcop-civil':'dcop-guard')+
               (actor.id==='Domingo Quispe'?' dcop-actor-domingo':'')+
-              ' '+(actor.id===speaker?'dcop-speaking':'dcop-dim')}
+              ' '+(actor.id===speaker?'dcop-speaking':'dcop-dim')+studioClass(actor.id)}
+            style={studioStyle(actor.id)}
+            onPointerDown={studioEnabled?event=>{
+              if((event.target as HTMLElement).classList.contains('dcop-child-sprite'))return;
+              startStudioDrag(event,actor.id);
+            }:undefined}
+            onPointerMove={studioEnabled?event=>moveStudioDrag(event,actor.id):undefined}
+            onPointerUp={studioEnabled?event=>endStudioDrag(event,actor.id):undefined}
+            onPointerCancel={studioEnabled?event=>endStudioDrag(event,actor.id):undefined}
+            data-studio-actor={studioEnabled?actor.id:undefined}
             data-testid={actor.id==='Domingo Quispe'&&isCounterInvocationShot?'domingo-integrated-invocation':undefined}>
             <img src={actor.src} alt=""/>
-            {actor.child&&(artReady||v3Ready)&&<img className="dcop-child-sprite"
+            {actor.child&&(artReady||v3Ready)&&<img
+              className={'dcop-child-sprite'+studioClass('Niño')}
+              style={studioStyle('Niño')}
+              data-studio-actor={studioEnabled?'Niño':undefined}
+              onPointerDown={studioEnabled?event=>startStudioDrag(event,'Niño'):undefined}
+              onPointerMove={studioEnabled?event=>moveStudioDrag(event,'Niño'):undefined}
+              onPointerUp={studioEnabled?event=>endStudioDrag(event,'Niño'):undefined}
+              onPointerCancel={studioEnabled?event=>endStudioDrag(event,'Niño'):undefined}
               src={scene==='resolucion'
                 ? v3art('N04',art('N02',portraits.Madre))
                 : v3art('N03',art('N01',portraits.Madre))}
@@ -316,6 +454,32 @@ const CampaignOpening:React.FC=()=>{
         </div>}
         {quickBubble&&<div className={'dcop-quick-bubble '+quickBubbleSide}>{quickBubble}</div>}
       </div>}
+      {studioEnabled&&studioStep!==null&&!isBattle&&!isFinal&&
+        <DecretoRealStudioPanel
+          sceneIndex={studioStep}
+          total={OPENING_BEATS.length+AFTER_DUEL_BEATS.length}
+          sceneOptions={[...OPENING_BEATS.map(item=>({label:item.speaker+' · '+item.title})),
+            ...AFTER_DUEL_BEATS.map(item=>({label:item.speaker+' · '+(phaseTitles[item.phase]??item.phase)}))]}
+          onJump={studioNavigate}
+          title={story?.speaker+' · '+(prologue?.title??phaseTitles[scene]??'Desenlace')}
+          sceneKey={studioKey}
+          actors={studioActors}
+          selected={studioVisibleSelection}
+          transform={studioVisibleSelection?getStudioTransform(studioDoc,studioKey,studioVisibleSelection):null}
+          dirty={studioDirty}
+          status={studioStatus}
+          onSelect={setStudioSelected}
+          onChange={t=>{if(studioVisibleSelection)changeStudioActor(studioVisibleSelection,t);}}
+          onSave={studioSave}
+          onUndo={studioUndo}
+          canUndo={studioHistory.length>0}
+          onRestore={studioRestore}
+          onPrev={()=>studioNavigate(studioStep-1)}
+          onNext={()=>studioNavigate(studioStep+1)}
+          onExport={studioExport}
+          onImport={studioImport}
+          onExit={studioExit}/>
+      }
       {isFinal?<section className="dcop-final-screen">
         <h1>Fin del Prólogo</h1>
         <button type="button" onClick={()=>navigate('/')}>Volver al menú</button>
@@ -335,7 +499,7 @@ const CampaignOpening:React.FC=()=>{
         progress={isAfter?'DESENLACE '+(after+1)+'/'+AFTER_DUEL_BEATS.length:
           'ESCENA '+(beat+1)+'/'+OPENING_BEATS.length}
         lastBeforeDuel={beat===OPENING_BEATS.length-1}
-        onAdvance={advance}/>
+        onAdvance={studioEnabled?()=>{}:advance}/>
       }
     </div>
   </main>;

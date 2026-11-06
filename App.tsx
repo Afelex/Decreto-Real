@@ -20,7 +20,7 @@ import CampaignAfterVictory from './screens/CampaignAfterVictory';
 import CampaignCenterReveal from './screens/CampaignCenterReveal';
 import CampaignRegionMoment from './screens/CampaignRegionMoment';
 import CampaignQaNavigator from './screens/CampaignQaNavigator';
-import { getCampaignStorage, isCampaignQaActive } from './campaign/campaignQA';
+import { getCampaignStorage, isCampaignQaActive, isCampaignQaAvailable } from './campaign/campaignQA';
 import { PROLOGUE_COMPLETE_KEY } from './campaign/prologueArt';
 import CampaignCredits from './screens/CampaignCredits';
 import { AudioProvider } from './contexts/AudioContext';
@@ -54,6 +54,9 @@ const CampaignRoutes: React.FC = () => {
           <Route path="/duelo-v1" element={<CombatPrototype />} />
           <Route path="/campania" element={<LaterStoryOnlyQa><CampaignMap /></LaterStoryOnlyQa>} />
           <Route path="/campania/inicio" element={<CampaignIntro />} />
+          <Route path="/studio" element={isCampaignQaAvailable()
+            ? <Navigate to="/campania/prologo?studio=1&studioStep=1" replace/>
+            : <Navigate to="/" replace/>} />
           <Route path="/campania/prologo" element={<CampaignOpening />} />
           <Route path="/campania/region/:chapterId" element={<LaterStoryOnlyQa><CampaignMap /></LaterStoryOnlyQa>} />
           <Route path="/campania/entrada/:chapterId" element={<LaterStoryOnlyQa><CampaignRegionMoment mode="entrada" /></LaterStoryOnlyQa>} />
