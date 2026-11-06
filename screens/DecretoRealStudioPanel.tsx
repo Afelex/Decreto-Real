@@ -4,6 +4,8 @@ import './decreto-real-studio.css';
 
 type Props={
   sceneIndex:number;total:number;title:string;sceneKey:string;
+  sceneOptions:readonly {label:string}[];
+  onJump:(index:number)=>void;
   actors:readonly StudioActor[];
   selected:StudioActor|null;
   transform:StudioTransform|null;
@@ -43,6 +45,11 @@ export default function DecretoRealStudioPanel(props:Props){
         <div><span>Escena {props.sceneIndex+1} de {props.total}</span><strong>{props.title}</strong></div>
         <button type="button" onClick={props.onNext} disabled={props.sceneIndex>=props.total-1} aria-label="Escena siguiente">›</button>
       </div>
+      <label className="dr-studio-label" htmlFor="dr-studio-step">Ir directamente a una intervención</label>
+      <select id="dr-studio-step" data-testid="studio-step-select" value={props.sceneIndex}
+        onChange={e=>props.onJump(Number(e.target.value))}>
+        {props.sceneOptions.map((item,index)=><option key={index} value={index}>{index+1}. {item.label}</option>)}
+      </select>
       <label className="dr-studio-label" htmlFor="dr-studio-actor">Seleccionar elemento (o tocarlo sobre la escena)</label>
       <select id="dr-studio-actor" data-testid="studio-actor-select"
         value={props.selected??''} onChange={e=>props.onSelect(e.target.value as StudioActor)}>
