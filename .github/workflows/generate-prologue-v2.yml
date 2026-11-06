@@ -1,5 +1,5 @@
 name: "Decreto Real · Corregir arte del prólogo v2"
-run-name: "Prólogo v2 · ${{ github.event_name == 'push' && 'Generar seis artes' || inputs.modo }}"
+run-name: "Prólogo v2 · ${{ github.event_name == 'push' && 'Generar siete artes' || inputs.modo }}"
 on:
   push:
     branches: [main]
@@ -16,7 +16,7 @@ on:
         default: plan
         required: true
       confirmar:
-        description: "Para generar escribe GENERAR_6"
+        description: "Para generar escribe GENERAR_7"
         type: string
         default: "NO"
         required: true
@@ -45,13 +45,13 @@ jobs:
           node-version: '24'
       - name: Validar catálogo y rutas
         run: node --test tools/generate-prologue-v2.test.mjs
-      - name: Generar seis imágenes mediante API (solo faltantes)
+      - name: Generar siete imágenes mediante API (solo faltantes)
         id: generate
         continue-on-error: true
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           PROLOGUE_V2_MODE: ${{ github.event_name == 'push' && 'generate' || (inputs.modo == 'generar' && 'generate' || 'plan') }}
-          PROLOGUE_V2_CONFIRM: ${{ github.event_name == 'push' && 'GENERAR_6' || inputs.confirmar }}
+          PROLOGUE_V2_CONFIRM: ${{ github.event_name == 'push' && 'GENERAR_7' || inputs.confirmar }}
           PROLOGUE_V2_QUALITY: ${{ github.event_name == 'push' && 'medium' || inputs.calidad }}
         run: node tools/generate-prologue-v2.mjs
       - name: Copia de seguridad incluso ante interrupción
