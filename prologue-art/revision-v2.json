@@ -54,6 +54,13 @@
       "kind": "background",
       "prompt": "Vertical 2:3 1024x1536 clean richly painted 17th-century Andean viceregal fantasy archival office, anime visual novel background for Decreto Real. EMPTY ROOM WITH ABSOLUTELY NO PEOPLE, NO HUMAN SILHOUETTES, NO FACES, NO HANDS, NO ARMS, NO BODIES, NO REPRESENTATIONS OF PEOPLE IN PORTRAITS OR PAINTINGS. An unoccupied wooden desk with candle, blank parchment, sealed wax seal, inkwell, scroll shelves, stone walls, warm daylight streaming from upper right leaded glass window, noble but modest colonial historical office, no textual signage, central desk as focal point, space in middle for a separate foreground parchment prop overlay, tasteful clean cinematic painted lines and colors; background only, not a splash character illustration.",
       "refs": []
+    },
+    {
+      "id": "F02",
+      "file": "fondos/plaza_vacia.webp",
+      "kind": "background",
+      "prompt": "Original tall 2:3 1024x1536 anime fantasy visual novel background, elegant clean cel-shaded 17th century Andean viceregal city plaza matching the Decreto Real world: bright clear daytime highland sky, mountains and fortified historic citadel on hillside, Spanish-colonial stone church with bell tower at back, pale adobe facades and balconies along left, a stone fountain to the right, spacious stone paved foreground explicitly RESERVED for removable foreground character sprites. ABSOLUTELY NO PEOPLE, no humans, no faces, no humanoids, no soldiers, no silhouettes, no citizens, no figures, no human-shaped statues, no human artwork or mural, NO bodies in entire image, no embedded characters whatsoever. Empty architecture and scenery ONLY. The image is a compositional backdrop, never a scene illustration with characters. Vibrant but not overpowering Andean light and charming colorful anime linework, high quality, 17th century architecture, no text, no UI, no playing cards.",
+      "refs": []
     }
   ]
 }
