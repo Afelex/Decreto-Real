@@ -203,9 +203,10 @@ const CampaignOpening:React.FC=()=>{
     return ()=>controller.abort();
   },[]);
   React.useEffect(()=>{
+    if(studioEnabled)return; // Studio must never touch actual campaign progress.
     try{getCampaignStorage()?.setItem(PROLOGUE_CHECKPOINT_KEY,JSON.stringify({beat,duel,after}));}
     catch{/* Private browsing may disable storage. */}
-  },[beat,duel,after]);
+  },[beat,duel,after,studioEnabled]);
   const art=(id:PrologueArtId,fallback:string)=>artReady?prologueArtUrl(id):fallback;
   const v2art=(id:V2ArtId,fallback:string)=>v2Ready?prologueV2Url(id):fallback;
   const v3art=(id:V3ArtId,fallback:string)=>v3Ready?prologueV3Url(id):fallback;
@@ -495,7 +496,7 @@ const CampaignOpening:React.FC=()=>{
         progress={isAfter?'DESENLACE '+(after+1)+'/'+AFTER_DUEL_BEATS.length:
           'ESCENA '+(beat+1)+'/'+OPENING_BEATS.length}
         lastBeforeDuel={beat===OPENING_BEATS.length-1}
-        onAdvance={advance}/>
+        onAdvance={studioEnabled?()=>{}:advance}/>
       }
     </div>
   </main>;
