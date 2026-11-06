@@ -89,7 +89,7 @@ export async function produce({mode='plan',quality='medium',confirm='',key=proce
  if(data.items.every(a=>validWebp(join(ROOT_ASSETS,a.file)))){
   mkdirSync(ROOT_ASSETS,{recursive:true});
   writeFileSync(join(ROOT_ASSETS,'manifest.json'),JSON.stringify({
-    version:2,completed:6,files:Object.fromEntries(data.items.map(a=>[a.id,a.file]))
+    version:2,completed:7,files:Object.fromEntries(data.items.map(a=>[a.id,a.file]))
   },null,2)+'\n');
   results.complete=true;console.log('Se completaron los siete artes del prólogo v2.');
  }else results.complete=false;
