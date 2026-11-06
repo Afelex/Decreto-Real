@@ -104,3 +104,9 @@
   color:#ffebc4;
   min-height:44px;font-weight:800;font-size:12px;
 }
+
+/* The prologue's family-right variant has a stronger legacy selector for
+   the child's z-index. Studio's per-beat layer must win over it. */
+.dcop-screen .dcop-scene-figures.dcop-family-right img.dcop-child-sprite.dcop-studio-adjusted{
+  z-index:var(--studio-layer)!important;
+}
