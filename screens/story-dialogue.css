@@ -1,0 +1,188 @@
+/*
+ * Decreto Real · Visual novel UI v1
+ * Original responsive CSS assets (no image API or baked-in dialogue).
+ * Layering follows the game's anime-virreinal art; Duel Links is a layout reference.
+ */
+.dcop-screen .dcop-narrative{
+  position:absolute;inset:auto 0 0;z-index:25;
+  height:clamp(188px,28dvh,258px);
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:0 max(10px,env(safe-area-inset-right)) max(9px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));
+  background:linear-gradient(0deg,#0a1422 0%,#0a1422c9 8%,#0a142200 95%);
+  overflow:visible;
+}
+.dcop-screen .dcop-chapter-title{
+  position:absolute;bottom:calc(100% + 6px);left:12px;right:12px;
+  width:fit-content;max-width:calc(100% - 24px);
+  margin:0;padding:5px 12px;text-align:left;
+  border:1px solid #c9a5726e;border-radius:5px;
+  background:#102035b0;box-shadow:0 2px 8px #0008;
+  pointer-events:none;
+}
+.dcop-screen .dcop-chapter-title small{
+  display:block;font:700 8px system-ui,sans-serif;letter-spacing:.13em;color:#e8c992;
+}
+.dcop-screen .dcop-chapter-title h1{
+  margin:2px 0 0;font:700 clamp(12px,3.3vw,15px)/1.15 Georgia,serif;color:#fff1da;
+  text-shadow:0 1px 4px #060c14;
+}
+.dcop-dialog-box{
+  position:relative;display:flex;flex-direction:column;
+  height:100%;width:100%;min-height:0;
+  background:#f4eee4;border:2px solid #213d57;
+  box-shadow:inset 0 0 0 1px #d9be89,0 -5px 24px #07101ec9;
+  clip-path:polygon(0 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%);
+}
+.dcop-dialog-box::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:3px;z-index:2;
+  background:linear-gradient(90deg,#ab7446,#f5da92 33%,#517ca4 75%,#aa7842);
+}
+.dcop-nameplate{
+  flex:0 0 auto;display:flex;align-items:center;min-height:35px;
+  padding:5px 15px;
+  font:800 clamp(12px,3.5vw,16px)/1.15 system-ui,sans-serif;
+  letter-spacing:.015em;color:#fff7e8;
+  background:linear-gradient(95deg,#20374f,#152538 80%);
+  border-bottom:2px solid #a58b62;
+  text-shadow:0 1px 2px #0009;
+}
+.dcop-nameplate-player{background:linear-gradient(95deg,#8f2a31,#511924 80%);border-color:#e0b779}
+.dcop-nameplate-authority{background:linear-gradient(95deg,#214d88,#142b52 80%);border-color:#dabd7a}
+.dcop-nameplate-neutral{background:linear-gradient(95deg,#4b3d37,#252b33 80%);border-color:#ab9474}
+.dcop-nameplate-system{background:linear-gradient(95deg,#314758,#17283d 80%);border-color:#b7a785}
+.dcop-dialog-body{
+  min-height:0;flex:1;display:flex;flex-direction:column;justify-content:space-between;
+  padding:clamp(9px,2.4vw,14px) clamp(12px,3.6vw,20px) 3px;
+  color:#172637;
+  background:
+    radial-gradient(circle at 96% 85%,#b0c6d219 0 30px,transparent 36px),
+    linear-gradient(#fff9f0,#efe8db);
+}
+.dcop-dialog-body p{
+  margin:0;font:500 clamp(14px,4vw,18px)/1.33 system-ui,sans-serif;
+  overflow-wrap:break-word;hyphens:auto;letter-spacing:-.009em;
+}
+.dcop-dialog-body footer{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  gap:8px;min-height:45px;margin:0!important;
+}
+.dcop-dialog-body footer>span{
+  padding-bottom:10px;font:600 10px system-ui,sans-serif;color:#586779!important;
+}
+.dcop-dialog-body footer>button{
+  min-width:45px;min-height:44px;display:flex;align-items:center;justify-content:flex-end;
+  gap:5px;padding:6px 4px 6px 9px!important;
+  color:#254c66!important;border:0!important;background:transparent!important;
+  box-shadow:none!important;font:700 12px system-ui,sans-serif!important;
+}
+.dcop-dialog-body footer>button svg{
+  color:#b38447;filter:drop-shadow(0 1px 1px #7c6b4c66);
+  animation:dcop-arrow-pulse 1.3s ease-in-out infinite;
+}
+.dcop-dialog-body footer>button:focus-visible{outline:3px solid #a87a44}
+.dcop-dialog-narrator .dcop-dialog-box{
+  border-color:#9a825d;background:#25354a;
+}
+.dcop-dialog-narrator .dcop-dialog-body{
+  background:linear-gradient(120deg,#1a2d42,#27344a);color:#fff1da;
+}
+.dcop-dialog-narrator .dcop-dialog-body footer>span{color:#b9c6d4!important}
+.dcop-dialog-narrator .dcop-dialog-body footer>button{color:#edcf96!important}
+.dcop-dialog-thought .dcop-dialog-box{border-color:#a5a9bc}
+.dcop-dialog-thought .dcop-dialog-body{
+  background:linear-gradient(120deg,#dbe3ec,#f4eedd);
+  color:#2e374a;
+}
+.dcop-dialog-thought .dcop-dialog-body p{font-style:italic}
+.dcop-dialog-thought .dcop-nameplate{background:linear-gradient(95deg,#47516b,#25324d)}
+/* Actor theater: two concurrent actors, with the active speaker close to camera. */
+.dcop-screen .dcop-scene-figures{
+  inset:12% 2% 28%;z-index:3;gap:0;
+  align-items:flex-end;justify-content:space-around;
+}
+.dcop-screen .dcop-scene-figures>div{
+  position:relative;flex:0 0 53%;max-width:53%;min-width:0;
+  transition:transform .26s ease,filter .26s ease,opacity .26s ease;
+  will-change:transform;
+}
+.dcop-screen .dcop-scene-figures>div:first-child{margin-right:-7%}
+.dcop-screen .dcop-scene-figures img{
+  width:100%;max-height:min(55dvh,510px);height:100%;
+  object-fit:contain;object-position:bottom;
+}
+.dcop-screen .dcop-scene-figures>div.dcop-speaking{
+  filter:brightness(1.08) saturate(1.04);opacity:1;
+  transform:translateY(-5px) scale(1.05);z-index:4;
+}
+.dcop-screen .dcop-scene-figures>div.dcop-dim{
+  filter:brightness(.65) saturate(.8);opacity:.88;
+  transform:translateY(4px) scale(.975);z-index:2;
+}
+.dcop-screen .dcop-scene-figures .dcop-child-sprite{left:-4%;height:44%!important}
+.dcop-quick-bubble{
+  position:absolute;z-index:5;top:clamp(85px,17dvh,160px);
+  max-width:43%;padding:8px 13px;
+  border:2px solid #273a50;border-radius:11px;
+  color:#243145;background:#faf4e8;box-shadow:0 4px 13px #0008;
+  font:800 clamp(12px,3.3vw,16px)/1.17 system-ui,sans-serif;
+  transform:rotate(-2deg);pointer-events:none;
+}
+.dcop-quick-bubble.left{left:4%}
+.dcop-quick-bubble.right{right:4%;transform:rotate(2deg)}
+.dcop-quick-bubble::after{
+  content:"";position:absolute;bottom:-11px;left:22px;width:16px;height:16px;
+  background:#faf4e8;border-right:2px solid #273a50;border-bottom:2px solid #273a50;
+  transform:rotate(45deg)
+}
+.dcop-quick-bubble.right::after{left:auto;right:22px}
+.dcop-screen .dcop-backdrop{transition:filter .3s ease,transform .5s ease}
+.dcop-xervias .dcop-backdrop,.dcop-desafio .dcop-backdrop{
+  transform:scale(1.035);filter:saturate(.9) brightness(.77)
+}
+.dcop-reflexion .dcop-backdrop{
+  filter:saturate(.65) brightness(.60);
+}
+@keyframes dcop-arrow-pulse{50%{transform:translateX(3px);opacity:.7}}
+/* The guide uses a separate compact cyan treatment; the real duel remains visible. */
+.dr-royal-screen .dr-royal-story-coach{
+  border:1px solid #7bc4cc;
+  background:linear-gradient(135deg,#112e45f2,#183049f2);
+  box-shadow:inset 0 0 0 1px #4f88a566,0 5px 20px #0009;
+  padding:9px 12px;max-width:400px;
+}
+.dr-royal-screen .dr-royal-story-coach-header strong{color:#b8eef2}
+.dr-royal-screen .dr-royal-story-coach-hint{color:#d4ecfa}
+@media(max-height:650px){
+  .dcop-screen .dcop-narrative{height:clamp(150px,35dvh,185px);padding-bottom:6px}
+  .dcop-screen .dcop-nameplate{min-height:28px;padding:3px 10px;font-size:12px}
+  .dcop-screen .dcop-dialog-body{padding:6px 10px 2px}
+  .dcop-screen .dcop-dialog-body p{font-size:clamp(12px,2.8vw,14px);line-height:1.22}
+  .dcop-screen .dcop-dialog-body footer{min-height:33px}
+  .dcop-screen .dcop-dialog-body footer>button{min-height:33px}
+  .dcop-screen .dcop-scene-figures{inset:9% 2% 34%}
+  .dcop-screen .dcop-chapter-title h1{font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){
+  .dcop-screen .dcop-quick-bubble,.dcop-screen .dcop-dialog-body footer svg{animation:none!important}
+  .dcop-screen .dcop-scene-figures>div{transition:none!important}
+}
+
+
+/* Existing ring close-up remains the hero; one real card is rendered above it. */
+.dcop-invocation-shimmer{
+  position:absolute;inset:7% 4% 29%;z-index:4;pointer-events:none;
+  background:radial-gradient(circle at 55% 54%,#fff4c42c 0%,#e3b96616 24%,transparent 52%);
+}
+.dcop-invocation-shimmer .dcop-summoned-card{
+  position:absolute;top:25%;right:10%;height:36%;width:auto;max-width:30%;
+  object-fit:contain;aspect-ratio:2/3;
+  transform:rotate(11deg);box-shadow:0 0 15px #ffeab9c9,0 0 36px #f8c56c72;
+  animation:dcop-card-rise .55s ease-out both;
+}
+@keyframes dcop-card-rise{
+  from{opacity:0;transform:translateY(20px) scale(.83) rotate(11deg)}
+  to{opacity:1;transform:translateY(0) scale(1) rotate(11deg)}
+}
+@media(prefers-reduced-motion:reduce){
+  .dcop-invocation-shimmer .dcop-summoned-card{animation:none!important}
+}
