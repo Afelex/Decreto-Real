@@ -206,10 +206,11 @@ const CampaignOpening:React.FC=()=>{
   const isVersus=scene==='versus';
   const isScepterShot=scene==='cetro' && (after===14||after===15);
   // Existing first background contains a person and is deliberately retired.
-  const background=scene==='pergamino'?v2art('F01',art('F02','./escenarios/plaza-virreinal-v2.svg')):
-    isInvocationShot?art('P02','./escenarios/plaza-virreinal-v2.svg'):
-    isScepterShot?art('P03','./escenarios/plaza-virreinal-v2.svg'):
-    art('F02','./escenarios/plaza-virreinal-v2.svg');
+  const cleanPlaza=v2art('F02',art('F02','./escenarios/plaza-virreinal-v2.svg'));
+  const background=scene==='pergamino'?v2art('F01',cleanPlaza):
+    isInvocationShot?art('P02',cleanPlaza):
+    isScepterShot?art('P03',cleanPlaza):
+    cleanPlaza;
   type Actor={id:'Xervias'|'Zhinchi'|'Domingo Quispe'|'Madre';src:string;child?:boolean};
   const actors:Actor[]=[];
   const add=(id:Actor['id'],src:string,child=false)=>actors.push({id,src,child});
@@ -296,7 +297,7 @@ const CampaignOpening:React.FC=()=>{
 
         onReturn={()=>navigate('/')}
         onOutcome={(result)=>{if(result.won){setBeat(OPENING_BEATS.length+1);setAfter(0);}}}
-        presentation={{background:art('F02','./escenarios/plaza-virreinal-v2.svg'),backgroundVideo:null,
+        presentation={{background:cleanPlaza,backgroundVideo:null,
           playerPortrait:portraits.Xervias,opponentPortrait:domingoDuelPortrait}}/>:
       <StoryDialogue
         beatKey={isAfter?'desenlace-'+after:'apertura-'+beat}
