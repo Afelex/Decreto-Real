@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Six images only. Paid OpenAI Images API is triggered on the first merge to main;
+ * Seven images only. Paid OpenAI Images API is triggered on the first merge to main;
  * subsequent runs skip existing valid WebP, so recovering after interruption is safe.
  * No secrets or API responses are stored in the repository.
  */
@@ -20,10 +20,10 @@ export const validWebp=path=>{
 };
 export function catalog(){
  const data=JSON.parse(readFileSync(CATALOG_PATH,'utf8'));
- if(data.version!==2||data.items?.length!==6)throw Error('Catálogo v2 debe contener seis imágenes.');
+ if(data.version!==2||data.items?.length!==7)throw Error('Catálogo v2 debe contener siete imágenes.');
  const ids=new Set(),paths=new Set(),previous=new Set();
  for(const a of data.items){
-  if(!/^(D0[1-5]|F01)$/.test(a.id)||ids.has(a.id)||paths.has(a.file))throw Error('Duplicado '+a.id);
+  if(!/^(D0[1-5]|F0[1-2])$/.test(a.id)||ids.has(a.id)||paths.has(a.file))throw Error('Duplicado '+a.id);
   if(!/^(sprites|retratos|fondos)\/[a-z0-9_-]+\.webp$/.test(a.file))throw Error('Ruta no válida '+a.file);
   if(!a.prompt||a.prompt.length<130)throw Error('Prompt incompleto '+a.id);
   for(const ref of a.refs??[]){
@@ -55,7 +55,7 @@ function request(item,quality,model){
 export async function produce({mode='plan',quality='medium',confirm='',key=process.env.OPENAI_API_KEY}={}){
  const data=catalog();
  if(!['plan','generate'].includes(mode)||!['low','medium','high'].includes(quality))throw Error('Parámetros inválidos');
- const results={mode,quality,generated:[],skipped:[],errors:[],total:6};
+ const results={mode,quality,generated:[],skipped:[],errors:[],total:7};
  if(mode==='plan'){
   for(const a of data.items)results[validWebp(join(ROOT_ASSETS,a.file))?'skipped':'generated'].push({id:a.id,file:a.file});
   emit(results);console.log('Plan sin costo:',results.generated.length,'pendientes.');return results;
@@ -91,7 +91,7 @@ export async function produce({mode='plan',quality='medium',confirm='',key=proce
   writeFileSync(join(ROOT_ASSETS,'manifest.json'),JSON.stringify({
     version:2,completed:6,files:Object.fromEntries(data.items.map(a=>[a.id,a.file]))
   },null,2)+'\n');
-  results.complete=true;console.log('Se completaron los seis artes del prólogo v2.');
+  results.complete=true;console.log('Se completaron los siete artes del prólogo v2.');
  }else results.complete=false;
  emit(results);return results;
 }
