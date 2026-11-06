@@ -19,7 +19,7 @@ test('Decreto Real Studio opens from QA and edits the same scene used by the gam
   await expect(page.locator('[data-studio-actor="Niño"]')).toHaveClass(/dcop-studio-adjusted/);
   await expect(page.locator('[data-studio-actor="Niño"]')).toHaveAttribute('style',/12vw/);
   await page.getByTestId('studio-save').click();
-  await expect(page.getByRole('status')).toContainText('guardado');
+  await expect(page.locator('.dr-studio-bottom [role="status"]')).toContainText('guardado');
 
   await page.reload();
   await expect(page.getByTestId('dr-studio')).toBeVisible();
