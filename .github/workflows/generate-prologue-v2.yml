@@ -1,0 +1,86 @@
+name: "Decreto Real · Corregir arte del prólogo v2"
+run-name: "Prólogo v2 · ${{ github.event_name == 'push' && 'Generar seis artes' || inputs.modo }}"
+on:
+  push:
+    branches: [main]
+    paths:
+      - "prologue-art/revision-v2.json"
+      - "tools/generate-prologue-v2.mjs"
+      - ".github/workflows/generate-prologue-v2.yml"
+  workflow_dispatch:
+    inputs:
+      modo:
+        description: "plan no tiene costo; generar llama a API"
+        type: choice
+        options: [plan, generar]
+        default: plan
+        required: true
+      confirmar:
+        description: "Para generar escribe GENERAR_6"
+        type: string
+        default: "NO"
+        required: true
+      calidad:
+        description: "Calidad para los archivos pendientes"
+        type: choice
+        options: [low, medium, high]
+        default: medium
+        required: true
+permissions:
+  contents: write
+concurrency:
+  group: decreto-real-prologue-v2-art
+  cancel-in-progress: false
+jobs:
+  generar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 100
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validar catálogo y rutas
+        run: node --test tools/generate-prologue-v2.test.mjs
+      - name: Generar seis imágenes mediante API (solo faltantes)
+        id: generate
+        continue-on-error: true
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PROLOGUE_V2_MODE: ${{ github.event_name == 'push' && 'generate' || (inputs.modo == 'generar' && 'generate' || 'plan') }}
+          PROLOGUE_V2_CONFIRM: ${{ github.event_name == 'push' && 'GENERAR_6' || inputs.confirmar }}
+          PROLOGUE_V2_QUALITY: ${{ github.event_name == 'push' && 'medium' || inputs.calidad }}
+        run: node tools/generate-prologue-v2.mjs
+      - name: Copia de seguridad incluso ante interrupción
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: prologo-v2-${{ github.run_id }}
+          path: art-output/prologo-v2/
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Conservar imágenes para no repetir el gasto
+        if: ${{ always() && (github.event_name == 'push' || inputs.modo == 'generar') }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -d public/campania/prologo-v2 ]; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/campania/prologo-v2/
+          if git diff --cached --quiet; then
+            echo "Sin recursos nuevos."
+          else
+            git commit -m "art(prologo): integrar Domingo v2 y fondo de despacho vacío"
+            git push origin HEAD:main
+          fi
+      - name: Verificar generación completa
+        if: ${{ github.event_name == 'push' || inputs.modo == 'generar' }}
+        run: |
+          if [ "${{ steps.generate.outcome }}" != "success" ] || [ ! -s public/campania/prologo-v2/manifest.json ]; then
+            echo "::error::Faltan imágenes o la API se interrumpió. Se guardaron los WebP existentes para reanudar."
+            exit 1
+          fi
