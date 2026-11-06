@@ -19,4 +19,4 @@ export function isV2Complete(v:unknown):boolean{
  const obj=v as {version?:number,completed?:number,files?:Record<string,string>};
  return obj.version===2&&obj.completed===6&&!!obj.files&&Object.entries(V2_FILES).every(([id,path])=>obj.files?.[id]===path);
 }
-export const INVOCATION_CARD_URL=import.meta.env.BASE_URL+'campania/prologo/props/carta-invocacion-real.svg';
+export const INVOCATION_CARD_URL='./campania/prologo/props/carta-invocacion-real.svg';
