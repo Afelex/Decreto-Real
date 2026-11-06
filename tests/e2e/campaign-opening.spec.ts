@@ -164,3 +164,64 @@ test('guided duel HUD always shows neutral tiny portraits, not story figures',as
     items.map(x=>x.getBoundingClientRect().width));
   expect(Math.abs(limits[0]-limits[1])).toBeLessThanOrEqual(1);
 });
+
+
+test('mother, child and Domingo are grounded 15px into the dialogue edge',async({page},info)=>{
+  test.skip(info.project.name!=='mobile-390','Mobile visual novel staging regression');
+  for(const scene of ['arresto','desenlace']){
+    await page.goto('/Decreto-Real/#/campania/prologo?escena='+scene);
+    if(scene==='desenlace'){
+      await page.locator('.dcop-dialog-body footer button').click();
+      await page.locator('.dcop-dialog-body footer button').click();
+      await expect(page.locator('.dcop-nameplate')).toHaveText('Madre');
+    }
+    await expect(page.locator('.dcop-scene-figures .dcop-civil .dcop-child-sprite')).toBeVisible();
+    const layout=await page.evaluate(()=>{
+      const panel=document.querySelector('.dcop-narrative')!.getBoundingClientRect();
+      const actors=document.querySelector('.dcop-scene-figures')!.getBoundingClientRect();
+      const mother=document.querySelector('.dcop-civil img:not(.dcop-child-sprite)') as HTMLImageElement;
+      const boy=document.querySelector('.dcop-child-sprite') as HTMLImageElement;
+      const boyRect=boy.getBoundingClientRect();
+      const motherRect=mother.getBoundingClientRect();
+      const styles=getComputedStyle(boy);
+      return {
+        overlap:actors.bottom-panel.top,
+        parentBottom:motherRect.bottom,
+        childBottom:boyRect.bottom,
+        childWidthRatio:boyRect.width/motherRect.width,
+        childInFront:Number(styles.zIndex)>Number(getComputedStyle(mother).zIndex),
+        childAtRight:boyRect.left>motherRect.left,
+        motherAnchor:getComputedStyle(mother).objectPosition,
+        childAnchor:styles.objectPosition,
+        horizontalOverflow:document.documentElement.scrollWidth-innerWidth
+      };
+    });
+    expect(layout.overlap).toBeGreaterThanOrEqual(13);
+    expect(layout.overlap).toBeLessThanOrEqual(17);
+    expect(Math.abs(layout.parentBottom-layout.childBottom)).toBeLessThanOrEqual(2);
+    expect(layout.childWidthRatio).toBeGreaterThanOrEqual(.75);
+    expect(layout.childInFront).toBe(true);
+    expect(layout.childAtRight).toBe(true);
+    expect(layout.motherAnchor).toContain('bottom');
+    expect(layout.childAnchor).toContain('bottom');
+    expect(layout.horizontalOverflow).toBeLessThanOrEqual(1);
+  }
+});
+
+test('speaking does not change adult head slots or vertical anchors',async({page},info)=>{
+  test.skip(info.project.name!=='mobile-390','Mobile adult alignment regression');
+  await page.goto('/Decreto-Real/#/campania/prologo?escena=arresto');
+  const positions=async()=>page.locator('.dcop-scene-figures>div img:not(.dcop-child-sprite)').evaluateAll(imgs=>
+    imgs.map(img=>({top:img.getBoundingClientRect().top,bottom:img.getBoundingClientRect().bottom,
+      objectPosition:getComputedStyle(img).objectPosition})));
+  const first=await positions();
+  await page.locator('.dcop-dialog-body footer button').click();
+  const second=await positions();
+  expect(first).toHaveLength(2);
+  expect(second).toHaveLength(2);
+  for(let i=0;i<2;i++){
+    expect(Math.abs(first[i].top-second[i].top)).toBeLessThanOrEqual(2);
+    expect(Math.abs(first[i].bottom-second[i].bottom)).toBeLessThanOrEqual(2);
+    expect(first[i].objectPosition).toContain('bottom');
+  }
+});
