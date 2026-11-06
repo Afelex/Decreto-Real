@@ -8,12 +8,13 @@ import { useAudio } from '../contexts/AudioContext';
 import CampaignPauseMenu from './CampaignPauseMenu';
 import { isPrologueArtManifest, prologueArtManifestUrl, prologueArtUrl, PROLOGUE_COMPLETE_KEY, type PrologueArtId } from '../campaign/prologueArt';
 import StoryDialogue from './StoryDialogue';
+import { prologueV2Url, prologueV2ManifestUrl, isV2Complete, INVOCATION_CARD_URL, type V2ArtId } from '../campaign/prologueV2';
 import './campaign-opening.css';
 import './story-dialogue.css';
 
 export const PROLOGUE_CHECKPOINT_KEY = 'decreto-real.campania.prologo-cinematico.v1';
 
-type SceneId = 'pergamino' | 'arresto' | 'xervias' | 'revision' | 'desafio' | 'anillo';
+type SceneId = 'pergamino' | 'arresto' | 'xervias' | 'revision' | 'desafio' | 'anillo' | 'versus';
 type OpeningBeat = {scene: SceneId; speaker: string; text: string; title: string};
 
 export const OPENING_BEATS: readonly OpeningBeat[] = [
@@ -37,6 +38,7 @@ export const OPENING_BEATS: readonly OpeningBeat[] = [
   {scene:'anillo',title:'El juramento de Xervias',speaker:'Domingo Quispe',text:'¿Qué estás haciendo? ¡¿Te atreves a declararme un duelo?!'},
   {scene:'anillo',title:'El juramento de Xervias',speaker:'Xervias',text:'He declarado Decreto Real porque tu orden es dudosa y pretendes lastimar a una familia. Defendamos nuestras razones en el duelo.'},
   {scene:'anillo',title:'El juramento de Xervias',speaker:'Domingo Quispe',text:'¡Muy bien! Invocaré mi propio Decreto Real. ¡Ahora estás en problemas!'},
+  {scene:'versus',title:'El duelo comienza',speaker:'Crónica',text:'Las dos Cartas Doradas de Invocación Real responden a la energía de sus portadores. El desafío ha sido aceptado. ¡Comienza el Decreto Real!'},
 ];
 
 export const AFTER_DUEL_BEATS = [
@@ -145,6 +147,7 @@ const CampaignOpening:React.FC=()=>{
     }
   },[override]);
   const [artReady,setArtReady]=React.useState(false);
+  const [v2Ready,setV2Ready]=React.useState(false);
   const {playSound}=useAudio();
   React.useEffect(()=>{
     if(typeof fetch!=='function')return;
@@ -156,10 +159,19 @@ const CampaignOpening:React.FC=()=>{
     return ()=>controller.abort();
   },[]);
   React.useEffect(()=>{
+    const controller=new AbortController();
+    fetch(prologueV2ManifestUrl(),{signal:controller.signal,cache:'no-store'})
+      .then(r=>r.ok?r.json():null)
+      .then(m=>{if(!controller.signal.aborted)setV2Ready(isV2Complete(m));})
+      .catch(()=>{/* Keep original assets until v2 is complete. */});
+    return ()=>controller.abort();
+  },[]);
+  React.useEffect(()=>{
     try{getCampaignStorage()?.setItem(PROLOGUE_CHECKPOINT_KEY,JSON.stringify({beat,duel,after}));}
     catch{/* Private browsing may disable storage. */}
   },[beat,duel,after]);
   const art=(id:PrologueArtId,fallback:string)=>artReady?prologueArtUrl(id):fallback;
+  const v2art=(id:V2ArtId,fallback:string)=>v2Ready?prologueV2Url(id):fallback;
   const finish=()=>{
     const store=getCampaignStorage();
     const progress=loadCampaignProgress(store);
@@ -174,14 +186,26 @@ const CampaignOpening:React.FC=()=>{
   const story=isAfter?AFTER_DUEL_BEATS[after]:prologue;
   const scene=prologue?.scene??(isBattle?'duelo':isFinal?'fin':AFTER_DUEL_BEATS[after]?.phase??'desenlace');
   const speaker=story?.speaker??'';
-  const xervias=art(scene==='anillo'?'X02':scene==='reflexion'?'X04':scene==='desafio'?'X02':'X01',portraits.Xervias);
-  const domingo=art(scene==='desenlace'?'D04':scene==='desafio'||scene==='anillo'?'D03':scene==='arresto'?'D01':'D02',portraits['Domingo Quispe']);
+  const xervias=art(scene==='anillo'?'X02':scene==='reflexion'?'X04':scene==='desafio'?'X01':'X01',portraits.Xervias);
+  // Domingo is a distinct character. Pointing is reserved for the mocking reply,
+  // never for the beginning of the arrest, and he never holds standard cards.
+  const domingoPose:V2ArtId=scene==='desenlace'?'D04':
+    scene==='desafio'&&beat===11?'D03':
+    (scene==='desafio'||scene==='revision'||scene==='anillo')?'D02':'D01';
+  const domingoFallback=art(
+    domingoPose==='D04'?'D04':domingoPose==='D03'?'D02':domingoPose==='D02'?'D03':'D01',
+    portraits['Domingo Quispe']
+  );
+  const domingo=v2art(domingoPose,domingoFallback);
+  const domingoDuelPortrait=v2art('D05',portraits['Domingo Quispe']);
   const zhinchi=art(scene==='cetro'?(after===13?'Z02':'Z03'):scene==='resolucion'?'Z04':'Z01',portraits.Zhinchi);
   const mother=art(scene==='arresto'?'M02':scene==='desenlace'?'M03':scene==='resolucion'?'M04':'M01',portraits.Madre);
-  // Dramatic inserts are separate shots, not a background with painted-in actors.
   const isInvocationShot=scene==='anillo' && story?.speaker==='Xervias' && story.text.includes('¡Activo el DECRETO REAL!');
+  const isCounterInvocationShot=scene==='anillo' && story?.speaker==='Domingo Quispe' && story.text.startsWith('¡Muy bien!');
+  const isVersus=scene==='versus';
   const isScepterShot=scene==='cetro' && (after===14||after===15);
-  const background=scene==='pergamino'?art('F01','./portada/portada-poster.jpg'):
+  // Existing first background contains a person and is deliberately retired.
+  const background=scene==='pergamino'?v2art('F01',art('F02','./escenarios/plaza-virreinal-v2.svg')):
     isInvocationShot?art('P02','./escenarios/plaza-virreinal-v2.svg'):
     isScepterShot?art('P03','./escenarios/plaza-virreinal-v2.svg'):
     art('F02','./escenarios/plaza-virreinal-v2.svg');
@@ -245,8 +269,21 @@ const CampaignOpening:React.FC=()=>{
               src={prologueArtUrl(scene==='resolucion'?'N02':'N01')} alt=""/>}
           </div>)}
         </div>}
-        {isInvocationShot&&<div className="dcop-invocation-shimmer">
-          <img className="dcop-summoned-card" src="./cartas/decreto-ataque.webp" alt=""/>
+        {isInvocationShot&&<div className="dcop-invocation-shimmer" data-testid="xervias-golden-invocation">
+          <img className="dcop-summoned-card" src={INVOCATION_CARD_URL} alt=""/>
+        </div>}
+        {isCounterInvocationShot&&<div className="dcop-counter-invocation" data-testid="domingo-golden-invocation">
+          <img className="dcop-royal-invocation-card" src={INVOCATION_CARD_URL} alt=""/>
+          <span className="dcop-counter-aura" aria-hidden="true"/>
+        </div>}
+        {isVersus&&<div className="dcop-versus" data-testid="cinematic-versus">
+          <div className="dcop-versus-side dcop-versus-xervias">
+            <img src={portraits.Xervias} alt=""/><strong>XERVIAS</strong>
+          </div>
+          <div className="dcop-versus-mark" aria-hidden="true">VS</div>
+          <div className="dcop-versus-side dcop-versus-domingo">
+            <img src={domingoDuelPortrait} alt=""/><strong>DOMINGO QUISPE</strong>
+          </div>
         </div>}
         {quickBubble&&<div className={'dcop-quick-bubble '+quickBubbleSide}>{quickBubble}</div>}
       </div>}
@@ -258,7 +295,7 @@ const CampaignOpening:React.FC=()=>{
         onReturn={()=>navigate('/')}
         onOutcome={(result)=>{if(result.won){setBeat(OPENING_BEATS.length+1);setAfter(0);}}}
         presentation={{background:art('F02','./escenarios/plaza-virreinal-v2.svg'),backgroundVideo:null,
-          playerPortrait:art('X03',portraits.Xervias),opponentPortrait:art('D03',portraits['Domingo Quispe'])}}/>:
+          playerPortrait:portraits.Xervias,opponentPortrait:domingoDuelPortrait}}/>:
       <StoryDialogue
         beatKey={isAfter?'desenlace-'+after:'apertura-'+beat}
         sceneTitle={isAfter?phaseTitles[scene]??'El precio de la victoria':prologue?.title??'Prólogo'}
