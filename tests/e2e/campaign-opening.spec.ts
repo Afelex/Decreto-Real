@@ -73,3 +73,38 @@ test('the post-duel chapter introduces Zhinchi and the final card has only one p
   await expect(page.locator('.dcop-final-screen button')).toHaveCount(1);
   await expect(page.getByRole('button',{name:'Continuar ›'})).toHaveCount(0);
 });
+
+
+test('opening arrest renders character sprites above a clean background and a readable dialogue panel',async ({page},info)=>{
+  test.skip(info.project.name!=='mobile-390','Visual novel mobile staging');
+  await page.goto('/Decreto-Real/#/campania/prologo?escena=arresto');
+  await expect(page.getByRole('heading',{name:'Una orden inesperada'})).toBeVisible();
+  await expect(page.locator('.dcop-scene-figures>div')).toHaveCount(2);
+  await expect(page.locator('.dcop-scene-figures .dcop-speaking')).toHaveCount(1);
+  await expect(page.locator('.dcop-nameplate')).toHaveText('Madre');
+  await expect(page.locator('.dcop-dialog-box img')).toHaveCount(0);
+  const metrics=await page.evaluate(()=>{
+    const panel=document.querySelector('.dcop-dialog-box')!.getBoundingClientRect();
+    const stage=document.querySelector('.dcop-stage')!.getBoundingClientRect();
+    return {top:panel.top,bottom:panel.bottom,left:panel.left,right:panel.right,
+      stageBottom:stage.bottom,width:innerWidth, documentWidth:document.documentElement.scrollWidth};
+  });
+  expect(metrics.top).toBeGreaterThan(0);
+  expect(metrics.bottom).toBeLessThanOrEqual(metrics.stageBottom+1);
+  expect(metrics.left).toBeGreaterThanOrEqual(0);
+  expect(metrics.right).toBeLessThanOrEqual(metrics.width+1);
+  expect(metrics.documentWidth).toBeLessThanOrEqual(metrics.width+1);
+  await page.locator('.dcop-dialog-body footer button').click();
+  await expect(page.locator('.dcop-nameplate')).toHaveText('Domingo Quispe');
+  await expect(page.locator('.dcop-scene-figures .dcop-speaking')).toHaveCount(1);
+});
+
+test('the approved Xervias ring is a special insert and the game card is layered separately',async ({page},info)=>{
+  test.skip(info.project.name!=='mobile-390','Visual novel cut-in on phone');
+  await page.goto('/Decreto-Real/#/campania/prologo?escena=anillo');
+  await expect(page.locator('.dcop-scene-figures>div')).toHaveCount(2);
+  await page.locator('.dcop-dialog-body footer button').click();
+  await expect(page.locator('.dcop-invocation-shimmer')).toBeVisible();
+  await expect(page.locator('.dcop-invocation-shimmer .dcop-summoned-card')).toHaveAttribute('src',/decreto-ataque.webp/);
+  await expect(page.locator('.dcop-scene-figures')).toHaveCount(0);
+});
