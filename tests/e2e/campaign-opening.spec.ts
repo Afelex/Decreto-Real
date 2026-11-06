@@ -202,8 +202,8 @@ test('mother, child and Domingo are grounded 15px into the dialogue edge',async(
     expect(layout.childWidthRatio).toBeGreaterThanOrEqual(.75);
     expect(layout.childInFront).toBe(true);
     expect(layout.childAtRight).toBe(true);
-    expect(layout.motherAnchor).toContain('bottom');
-    expect(layout.childAnchor).toContain('bottom');
+    expect(layout.motherAnchor).toMatch(/(?:bottom|100%)$/);
+    expect(layout.childAnchor).toMatch(/(?:bottom|100%)$/);
     expect(layout.horizontalOverflow).toBeLessThanOrEqual(1);
   }
 });
@@ -222,6 +222,6 @@ test('speaking does not change adult head slots or vertical anchors',async({page
   for(let i=0;i<2;i++){
     expect(Math.abs(first[i].top-second[i].top)).toBeLessThanOrEqual(2);
     expect(Math.abs(first[i].bottom-second[i].bottom)).toBeLessThanOrEqual(2);
-    expect(first[i].objectPosition).toContain('bottom');
+    expect(first[i].objectPosition).toMatch(/(?:bottom|100%)$/);
   }
 });
