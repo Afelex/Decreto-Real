@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "completed": 6,
+  "files": {
+    "N03": "sprites/nino_03_asustado.png",
+    "N04": "sprites/nino_04_aliviado.png",
+    "X05": "sprites/xervias_05_anillo_energia.png",
+    "D07": "sprites/domingo_07_enojado.png",
+    "G01": "props/carta_dorada_invocacion.png",
+    "D08": "sprites/domingo_08_invocacion_combate.png"
+  }
+}
