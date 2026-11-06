@@ -29,7 +29,8 @@ const CampaignQaNavigator: React.FC = () => {
 
   // No cubrir controles del duelo libre, tutorial u otras pantallas ajenas a Historia.
   // El acceso QA se mantiene en el menú y en todas las escenas de campaña.
-  if (!available || (location.pathname !== '/' && !location.pathname.startsWith('/campania'))) return null;
+  if (!available || new URLSearchParams(location.search).get('studio')==='1' ||
+      (location.pathname !== '/' && !location.pathname.startsWith('/campania'))) return null;
   const launch = (destination: QaDestination) => {
     if (!startCampaignQaAt(destination)) return;
     setOpen(false);
@@ -62,6 +63,8 @@ const CampaignQaNavigator: React.FC = () => {
         <button type="button" onClick={() => step(-1)} disabled={activeIndex === 0}>‹ Anterior</button>
         <button type="button" onClick={() => step(1)} disabled={activeIndex === QA_CAMPAIGN_DESTINATIONS.length - 1}>Siguiente ›</button>
       </div>
+      <button type="button" className="dr-qa-studio" data-testid="studio-entry"
+        onClick={()=>{setOpen(false);navigate('/studio');}}>✦ Abrir Decreto Real Studio · Editar escenas</button>
       <label className="dr-qa-label" htmlFor="dr-qa-chapter">Capítulo o sección</label>
       <select id="dr-qa-chapter" value={group} onChange={e => setGroup(e.target.value)}>
         {QA_CAMPAIGN_GROUPS.map(name => <option value={name} key={name}>{name}</option>)}
