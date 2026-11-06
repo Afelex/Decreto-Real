@@ -237,8 +237,8 @@ test('scene 7 puts Xervias left and mother with enlarged distinct child at right
   await expect(page.locator('.dcop-nameplate')).toHaveText('Madre');
   const actors=page.locator('.dcop-scene-figures');
   await expect(actors).toHaveClass(/dcop-family-right/);
-  await expect(actors.locator('>div').first()).toHaveClass(/dcop-hero/);
-  await expect(actors.locator('>div').last()).toHaveClass(/dcop-civil/);
+  await expect(actors.locator(':scope > div').first()).toHaveClass(/dcop-hero/);
+  await expect(actors.locator(':scope > div').last()).toHaveClass(/dcop-civil/);
   await expect(actors.locator('.dcop-child-sprite')).toBeVisible();
   const bounds=await page.evaluate(()=>{
     const hero=document.querySelector('.dcop-family-right .dcop-hero')!.getBoundingClientRect();
