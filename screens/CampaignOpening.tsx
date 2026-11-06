@@ -9,9 +9,11 @@ import CampaignPauseMenu from './CampaignPauseMenu';
 import { isPrologueArtManifest, prologueArtManifestUrl, prologueArtUrl, PROLOGUE_COMPLETE_KEY, type PrologueArtId } from '../campaign/prologueArt';
 import StoryDialogue from './StoryDialogue';
 import { prologueV2Url, prologueV2ManifestUrl, isV2Complete, INVOCATION_CARD_URL, type V2ArtId } from '../campaign/prologueV2';
+import { prologueV3Url, prologueV3ManifestUrl, isV3Complete, type V3ArtId } from '../campaign/prologueV3';
 import './campaign-opening.css';
 import './story-dialogue.css';
 import './prologue-v2.css';
+import './prologue-v3.css';
 
 export const PROLOGUE_CHECKPOINT_KEY = 'decreto-real.campania.prologo-cinematico.v1';
 
@@ -149,6 +151,7 @@ const CampaignOpening:React.FC=()=>{
   },[override]);
   const [artReady,setArtReady]=React.useState(false);
   const [v2Ready,setV2Ready]=React.useState(false);
+  const [v3Ready,setV3Ready]=React.useState(false);
   const {playSound}=useAudio();
   React.useEffect(()=>{
     if(typeof fetch!=='function')return;
@@ -168,11 +171,20 @@ const CampaignOpening:React.FC=()=>{
     return ()=>controller.abort();
   },[]);
   React.useEffect(()=>{
+    const controller=new AbortController();
+    fetch(prologueV3ManifestUrl(),{signal:controller.signal,cache:'no-store'})
+      .then(r=>r.ok?r.json():null)
+      .then(m=>{if(!controller.signal.aborted)setV3Ready(isV3Complete(m));})
+      .catch(()=>{/* Keep existing sprites until the six PNG assets are complete. */});
+    return ()=>controller.abort();
+  },[]);
+  React.useEffect(()=>{
     try{getCampaignStorage()?.setItem(PROLOGUE_CHECKPOINT_KEY,JSON.stringify({beat,duel,after}));}
     catch{/* Private browsing may disable storage. */}
   },[beat,duel,after]);
   const art=(id:PrologueArtId,fallback:string)=>artReady?prologueArtUrl(id):fallback;
   const v2art=(id:V2ArtId,fallback:string)=>v2Ready?prologueV2Url(id):fallback;
+  const v3art=(id:V3ArtId,fallback:string)=>v3Ready?prologueV3Url(id):fallback;
   const finish=()=>{
     const store=getCampaignStorage();
     const progress=loadCampaignProgress(store);
@@ -187,7 +199,11 @@ const CampaignOpening:React.FC=()=>{
   const story=isAfter?AFTER_DUEL_BEATS[after]:prologue;
   const scene=prologue?.scene??(isBattle?'duelo':isFinal?'fin':AFTER_DUEL_BEATS[after]?.phase??'desenlace');
   const speaker=story?.speaker??'';
-  const xervias=art(scene==='anillo'?'X02':scene==='reflexion'?'X04':scene==='desafio'?'X01':'X01',portraits.Xervias);
+  // Beat 16: only the ring emits energy; no invocation card or card silhouette.
+  const isRingOnlyShot=scene==='anillo'&&beat===15;
+  const xervias=isRingOnlyShot
+    ? v3art('X05',art('X01',portraits.Xervias))
+    : art(scene==='anillo'?'X02':scene==='reflexion'?'X04':scene==='desafio'?'X01':'X01',portraits.Xervias);
   // Domingo is a distinct character. Pointing is reserved for the mocking reply,
   // never for the beginning of the arrest, and he never holds standard cards.
   const domingoPose:V2ArtId=scene==='desenlace'?'D04':
@@ -197,7 +213,13 @@ const CampaignOpening:React.FC=()=>{
     domingoPose==='D04'?'D04':domingoPose==='D03'?'D02':domingoPose==='D02'?'D03':'D01',
     portraits['Domingo Quispe']
   );
-  const domingo=v2art(domingoPose,domingoFallback);
+  const domingoNormal=v2art(domingoPose,domingoFallback);
+  // Beat 15: furious Domingo. Beat 20: his single card is INSIDE his fighting PNG.
+  const domingo=scene==='desafio'&&beat===14
+    ? v3art('D07',domingoNormal)
+    : scene==='anillo'&&beat===19
+      ? v3art('D08',domingoNormal)
+      : domingoNormal;
   const domingoDuelPortrait=v2art('D05',portraits['Domingo Quispe']);
   const zhinchi=art(scene==='cetro'?(after===13?'Z02':'Z03'):scene==='resolucion'?'Z04':'Z01',portraits.Zhinchi);
   const mother=art(scene==='arresto'?'M02':scene==='desenlace'?'M03':scene==='resolucion'?'M04':'M01',portraits.Madre);
@@ -216,7 +238,7 @@ const CampaignOpening:React.FC=()=>{
   const add=(id:Actor['id'],src:string,child=false)=>actors.push({id,src,child});
   if(scene==='arresto'){add('Madre',mother,true);add('Domingo Quispe',domingo);}
   else if(['xervias','revision','desafio'].includes(scene)){
-    if(speaker==='Madre'){add('Madre',mother,true);add('Xervias',xervias);}
+    if(speaker==='Madre'){add('Xervias',xervias);add('Madre',mother,true);}
     else{add('Xervias',xervias);add('Domingo Quispe',domingo);}
   }
   else if(scene==='anillo'&&!isInvocationShot){add('Xervias',xervias);add('Domingo Quispe',domingo);}
@@ -262,22 +284,27 @@ const CampaignOpening:React.FC=()=>{
           </div>
           {!artReady&&<><div className="dcop-hand left"/><div className="dcop-hand right"/></>}
         </div>}
-        {actors.length>0&&<div className={'dcop-scene-figures dcop-cast-'+actors.length}>
+        {actors.length>0&&<div className={'dcop-scene-figures dcop-cast-'+actors.length+
+          (scene==='xervias'&&speaker==='Madre'?' dcop-family-right':'')}>
           {actors.map(actor=><div key={actor.id}
             className={(actor.id==='Xervias'?'dcop-hero':actor.id==='Madre'?'dcop-civil':'dcop-guard')+
-              ' '+(actor.id===speaker?'dcop-speaking':'dcop-dim')}>
+              (actor.id==='Domingo Quispe'?' dcop-actor-domingo':'')+
+              ' '+(actor.id===speaker?'dcop-speaking':'dcop-dim')}
+            data-testid={actor.id==='Domingo Quispe'&&isCounterInvocationShot?'domingo-integrated-invocation':undefined}>
             <img src={actor.src} alt=""/>
-            {actor.child&&artReady&&<img className="dcop-child-sprite"
-              src={prologueArtUrl(scene==='resolucion'?'N02':'N01')} alt=""/>}
+            {actor.child&&(artReady||v3Ready)&&<img className="dcop-child-sprite"
+              src={scene==='resolucion'
+                ? v3art('N04',art('N02',portraits.Madre))
+                : v3art('N03',art('N01',portraits.Madre))}
+              alt=""/>}
+            {actor.id==='Xervias'&&isRingOnlyShot&&!v3Ready&&<span className="dcop-ring-energy-fallback" aria-hidden="true"/>}
           </div>)}
         </div>}
         {isInvocationShot&&<div className="dcop-invocation-shimmer" data-testid="xervias-golden-invocation">
-          <img className="dcop-summoned-card" src={INVOCATION_CARD_URL} alt=""/>
+          <img className="dcop-summoned-card" src={v3art('G01',INVOCATION_CARD_URL)} alt=""/>
         </div>}
-        {isCounterInvocationShot&&<div className="dcop-counter-invocation" data-testid="domingo-golden-invocation">
-          <img className="dcop-royal-invocation-card" src={INVOCATION_CARD_URL} alt=""/>
-          <span className="dcop-counter-aura" aria-hidden="true"/>
-        </div>}
+        {/* Domingo's ceremonial card is part of his transparent fighting sprite,
+            never a floating card UI element hiding his face. */}
         {isVersus&&<div className="dcop-versus" data-testid="cinematic-versus">
           <div className="dcop-versus-side dcop-versus-xervias">
             <img src={portraits.Xervias} alt=""/><strong>XERVIAS</strong>
