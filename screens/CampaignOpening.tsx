@@ -114,6 +114,34 @@ const CampaignOpening:React.FC=()=>{
   const initialAfter=override && ['desenlace','zhinchi','cetro','resolucion','reflexion'].includes(override)
     ? Math.max(0,AFTER_DUEL_BEATS.findIndex(x=>x.phase===override)) : override?0:saved.after;
   const [after,setAfter]=React.useState(initialAfter);
+  // React Router can reuse this screen when only ?escena= changes.
+  // QA jumps must update both the story phase and its dialogue index.
+  React.useEffect(()=>{
+    if(!override)return;
+    if(override==='fin'){
+      setBeat(OPENING_BEATS.length+2);
+      setAfter(0);
+      return;
+    }
+    if(override==='duelo'){
+      setBeat(OPENING_BEATS.length);
+      setAfter(0);
+      return;
+    }
+    if(['desenlace','zhinchi','cetro','resolucion','reflexion'].includes(override)){
+      const target=AFTER_DUEL_BEATS.findIndex(item=>item.phase===override);
+      if(target>=0){
+        setBeat(OPENING_BEATS.length+1);
+        setAfter(target);
+      }
+      return;
+    }
+    const target=OPENING_BEATS.findIndex(item=>item.scene===override);
+    if(target>=0){
+      setBeat(target);
+      setAfter(0);
+    }
+  },[override]);
   const [artReady,setArtReady]=React.useState(false);
   const {playSound}=useAudio();
   React.useEffect(()=>{
