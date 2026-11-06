@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 768 1152" width="768" height="1152" role="img" aria-label="Carta Dorada de Invocación Real">
+<defs>
+ <linearGradient id="rim" x2=".8" y2="1"><stop stop-color="#ffeabb"/><stop offset=".23" stop-color="#a66321"/><stop offset=".49" stop-color="#ffe6a0"/><stop offset=".75" stop-color="#e2a546"/><stop offset="1" stop-color="#6b421b"/></linearGradient>
+ <radialGradient id="heart"><stop stop-color="#fffdd6"/><stop offset=".3" stop-color="#fbe695"/><stop offset=".67" stop-color="#c98932"/><stop offset="1" stop-color="#453019"/></radialGradient>
+ <linearGradient id="field" x2="1" y2="1"><stop stop-color="#64451e"/><stop offset=".5" stop-color="#211a20"/><stop offset="1" stop-color="#593b1b"/></linearGradient>
+ <filter id="shine"><feGaussianBlur stdDeviation="15"/></filter>
+ <pattern id="cloth" width="52" height="52" patternUnits="userSpaceOnUse"><path d="M0 0L52 52M52 0L0 52" stroke="#f8d785" stroke-opacity=".13" stroke-width="2"/></pattern>
+ </defs>
+ <rect x="20" y="20" width="728" height="1112" rx="44" fill="#37220f" stroke="url(#rim)" stroke-width="27"/>
+ <rect x="52" y="52" width="664" height="1048" rx="25" fill="url(#field)" stroke="#e9bd6b" stroke-width="5"/>
+ <rect x="78" y="79" width="612" height="993" rx="14" fill="url(#cloth)" stroke="#9f712b" stroke-width="5"/>
+ <path d="M384 156 C294 310 252 440 290 533 C317 604 363 645 384 682 C405 645 451 604 478 533 C516 440 474 310 384 156Z" fill="url(#heart)" opacity=".95"/>
+ <g fill="none" stroke="#fbe0a5" stroke-width="10" stroke-linejoin="round">
+ <path d="M384 255L384 695M270 375L498 375M300 585L468 585" opacity=".8"/>
+ <path d="M259 483Q384 360 509 483M278 615Q384 675 490 615" opacity=".8"/>
+ </g>
+ <g stroke="#f4ce74" fill="none" stroke-width="4">
+ <circle cx="384" cy="554" r="177"/><circle cx="384" cy="554" r="138"/>
+ <path d="M384 312v-56M384 794v-56M142 554h56M626 554h-56M212 382l40 40M556 726l-40-40M556 382l-40 40M212 726l40-40"/>
+ </g>
+ <g fill="#f7d878" stroke="#fff2c8" stroke-width="5">
+ <path d="M384 410L420 518L530 518L441 586L474 696L384 628L294 696L327 586L238 518L348 518Z"/>
+ <circle cx="384" cy="555" r="36" fill="#fff9d7" stroke="#9f6925" stroke-width="9"/>
+ </g>
+ <path d="M105 98Q384 159 663 98M105 1053Q384 988 663 1053" fill="none" stroke="#f7dfa7" stroke-width="7"/>
+ <g fill="#ffefa9"><circle cx="130" cy="130" r="12"/><circle cx="638" cy="130" r="12"/><circle cx="130" cy="1024" r="12"/><circle cx="638" cy="1024" r="12"/></g>
+ <g filter="url(#shine)" opacity=".36"><path d="M384 180L385 922" stroke="#fff9c5" stroke-width="29"/></g>
+</svg>

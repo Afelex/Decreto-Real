@@ -1,0 +1,66 @@
+{
+  "version": 2,
+  "product": "Decreto Real",
+  "purpose": "Corrección visual de Domingo Quispe y fondo vacío",
+  "model": "gpt-image-2.5-flare",
+  "quality": "medium",
+  "items": [
+    {
+      "id": "D01",
+      "file": "sprites/domingo_01_serio.webp",
+      "kind": "sprite",
+      "prompt": "Original high-quality 2D Japanese anime visual novel sprite for Decreto Real, an original 17th-century Andean colonial fantasy trading-card RPG. Professional crisp expressive outlines, clean cel shading, strong dark-to-light value shapes, polished elegant detailed linework matching the game's protagonist and captain, not 3D, not photorealistic, no clay, no letters, no watermark. Spanish colonial fantasy military outfit, blue/navy fabric, modest burgundy accents and restrained gold trim, ordinary subordinate rank without noble epaulettes, no playing cards anywhere. NO crown, no modern accessories. Face must be DISTINCT from Xervias: Domingo Quispe is a mature thirty-five-year-old ordinary guard with short straight black hair combed to the side with one silver streak at left temple, broad square jaw, deep-set small amber eyes, heavy straight eyebrows, prominent aquiline nose, very short dark stubble on chin, a short scar cutting across right eyebrow, slightly weathered medium copper complexion, slightly stockier neck and shoulders. This distinctive identity must remain identical in every variation. Three-quarter medium-length front portrait, torso to mid-thigh, standing strictly upright, head centered at the SAME standard height and scale as other adult sprites, a guarded serious stern expression, arms down empty hands, absolutely no deck or cards, clean transparent alpha background. Full hair silhouette visible with top padding ~8%, no cast shadow or decorative environment. His facial identity is the most important feature; do not make him look like a young anime hero.",
+      "refs": []
+    },
+    {
+      "id": "D02",
+      "file": "sprites/domingo_02_molesto.webp",
+      "kind": "sprite",
+      "prompt": "Original high-quality 2D Japanese anime visual novel sprite for Decreto Real, an original 17th-century Andean colonial fantasy trading-card RPG. Professional crisp expressive outlines, clean cel shading, strong dark-to-light value shapes, polished elegant detailed linework matching the game's protagonist and captain, not 3D, not photorealistic, no clay, no letters, no watermark. Spanish colonial fantasy military outfit, blue/navy fabric, modest burgundy accents and restrained gold trim, ordinary subordinate rank without noble epaulettes, no playing cards anywhere. NO crown, no modern accessories. Face must be DISTINCT from Xervias: Domingo Quispe is a mature thirty-five-year-old ordinary guard with short straight black hair combed to the side with one silver streak at left temple, broad square jaw, deep-set small amber eyes, heavy straight eyebrows, prominent aquiline nose, very short dark stubble on chin, a short scar cutting across right eyebrow, slightly weathered medium copper complexion, slightly stockier neck and shoulders. This distinctive identity must remain identical in every variation. Edit the attached official Domingo Quispe source character, maintaining EXACT same face, haircut, eyebrow scar, eyes, complexion, clothing, design proportions and crop. Serious angry/irritated face, clenched jaw, eyebrows furrowed, mildly raised empty left palm giving an official command to halt. NO cards, no deck, no paper, no pointing at viewer, and no laughing. Transparent background, same character framing as source.",
+      "refs": [
+        "public/campania/prologo-v2/sprites/domingo_01_serio.webp"
+      ]
+    },
+    {
+      "id": "D03",
+      "file": "sprites/domingo_03_burlon.webp",
+      "kind": "sprite",
+      "prompt": "Original high-quality 2D Japanese anime visual novel sprite for Decreto Real, an original 17th-century Andean colonial fantasy trading-card RPG. Professional crisp expressive outlines, clean cel shading, strong dark-to-light value shapes, polished elegant detailed linework matching the game's protagonist and captain, not 3D, not photorealistic, no clay, no letters, no watermark. Spanish colonial fantasy military outfit, blue/navy fabric, modest burgundy accents and restrained gold trim, ordinary subordinate rank without noble epaulettes, no playing cards anywhere. NO crown, no modern accessories. Face must be DISTINCT from Xervias: Domingo Quispe is a mature thirty-five-year-old ordinary guard with short straight black hair combed to the side with one silver streak at left temple, broad square jaw, deep-set small amber eyes, heavy straight eyebrows, prominent aquiline nose, very short dark stubble on chin, a short scar cutting across right eyebrow, slightly weathered medium copper complexion, slightly stockier neck and shoulders. This distinctive identity must remain identical in every variation. Edit attached official Domingo Quispe source, identical facial identity and uniform. Smug mocking arrogant expression, one hand POINTING FORWARD toward Xervias, mouth partly open in derision as though saying 'you just graduated'. This is the only pointing pose, used only during direct verbal confrontation; both hands empty, no playing cards or decks. Transparent background, maintain standard crop.",
+      "refs": [
+        "public/campania/prologo-v2/sprites/domingo_01_serio.webp"
+      ]
+    },
+    {
+      "id": "D04",
+      "file": "sprites/domingo_04_derrotado.webp",
+      "kind": "sprite",
+      "prompt": "Original high-quality 2D Japanese anime visual novel sprite for Decreto Real, an original 17th-century Andean colonial fantasy trading-card RPG. Professional crisp expressive outlines, clean cel shading, strong dark-to-light value shapes, polished elegant detailed linework matching the game's protagonist and captain, not 3D, not photorealistic, no clay, no letters, no watermark. Spanish colonial fantasy military outfit, blue/navy fabric, modest burgundy accents and restrained gold trim, ordinary subordinate rank without noble epaulettes, no playing cards anywhere. NO crown, no modern accessories. Face must be DISTINCT from Xervias: Domingo Quispe is a mature thirty-five-year-old ordinary guard with short straight black hair combed to the side with one silver streak at left temple, broad square jaw, deep-set small amber eyes, heavy straight eyebrows, prominent aquiline nose, very short dark stubble on chin, a short scar cutting across right eyebrow, slightly weathered medium copper complexion, slightly stockier neck and shoulders. This distinctive identity must remain identical in every variation. Edit attached official Domingo Quispe source, identical face and costume. Defeated and weak after the royal duel; wide tired eyes, mouth slightly ajar, unsteady torso and one hand near chest, brief mystic exhaustion, no wounds, no blood, no cards. Transparent alpha background, same crop.",
+      "refs": [
+        "public/campania/prologo-v2/sprites/domingo_01_serio.webp"
+      ]
+    },
+    {
+      "id": "D05",
+      "file": "retratos/domingo_perfil_duelo.webp",
+      "kind": "portrait",
+      "prompt": "Original high-quality 2D Japanese anime visual novel sprite for Decreto Real, an original 17th-century Andean colonial fantasy trading-card RPG. Professional crisp expressive outlines, clean cel shading, strong dark-to-light value shapes, polished elegant detailed linework matching the game's protagonist and captain, not 3D, not photorealistic, no clay, no letters, no watermark. Spanish colonial fantasy military outfit, blue/navy fabric, modest burgundy accents and restrained gold trim, ordinary subordinate rank without noble epaulettes, no playing cards anywhere. NO crown, no modern accessories. Face must be DISTINCT from Xervias: Domingo Quispe is a mature thirty-five-year-old ordinary guard with short straight black hair combed to the side with one silver streak at left temple, broad square jaw, deep-set small amber eyes, heavy straight eyebrows, prominent aquiline nose, very short dark stubble on chin, a short scar cutting across right eyebrow, slightly weathered medium copper complexion, slightly stockier neck and shoulders. This distinctive identity must remain identical in every variation. Edit attached official Domingo Quispe source to create a strictly FRONT-FACING tight head-and-shoulders serious neutral character portrait for a SMALL fixed 2:3 game frame. Character does not point or hold any object; hands not visible, no playing cards, NO full-body composition. The face and shoulders fill most of the 2:3 canvas, centered, neatly lit, full top of hair remains inside frame, frontal gaze at player. Dark clean muted blue background, same face with eyebrow scar and short black hair, readable at only 50 pixels high.",
+      "refs": [
+        "public/campania/prologo-v2/sprites/domingo_01_serio.webp"
+      ]
+    },
+    {
+      "id": "F01",
+      "file": "fondos/despacho_vacio.webp",
+      "kind": "background",
+      "prompt": "Vertical 2:3 1024x1536 clean richly painted 17th-century Andean viceregal fantasy archival office, anime visual novel background for Decreto Real. EMPTY ROOM WITH ABSOLUTELY NO PEOPLE, NO HUMAN SILHOUETTES, NO FACES, NO HANDS, NO ARMS, NO BODIES, NO REPRESENTATIONS OF PEOPLE IN PORTRAITS OR PAINTINGS. An unoccupied wooden desk with candle, blank parchment, sealed wax seal, inkwell, scroll shelves, stone walls, warm daylight streaming from upper right leaded glass window, noble but modest colonial historical office, no textual signage, central desk as focal point, space in middle for a separate foreground parchment prop overlay, tasteful clean cinematic painted lines and colors; background only, not a splash character illustration.",
+      "refs": []
+    },
+    {
+      "id": "F02",
+      "file": "fondos/plaza_vacia.webp",
+      "kind": "background",
+      "prompt": "Original tall 2:3 1024x1536 anime fantasy visual novel background, elegant clean cel-shaded 17th century Andean viceregal city plaza matching the Decreto Real world: bright clear daytime highland sky, mountains and fortified historic citadel on hillside, Spanish-colonial stone church with bell tower at back, pale adobe facades and balconies along left, a stone fountain to the right, spacious stone paved foreground explicitly RESERVED for removable foreground character sprites. ABSOLUTELY NO PEOPLE, no humans, no faces, no humanoids, no soldiers, no silhouettes, no citizens, no figures, no human-shaped statues, no human artwork or mural, NO bodies in entire image, no embedded characters whatsoever. Empty architecture and scenery ONLY. The image is a compositional backdrop, never a scene illustration with characters. Vibrant but not overpowering Andean light and charming colorful anime linework, high quality, 17th century architecture, no text, no UI, no playing cards.",
+      "refs": []
+    }
+  ]
+}

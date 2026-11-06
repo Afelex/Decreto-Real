@@ -105,6 +105,62 @@ test('the approved Xervias ring is a special insert and the game card is layered
   await expect(page.locator('.dcop-scene-figures>div')).toHaveCount(2);
   await page.locator('.dcop-dialog-body footer button').click();
   await expect(page.locator('.dcop-invocation-shimmer')).toBeVisible();
-  await expect(page.locator('.dcop-invocation-shimmer .dcop-summoned-card')).toHaveAttribute('src',/decreto-ataque.webp/);
+  await expect(page.locator('.dcop-invocation-shimmer .dcop-summoned-card')).toHaveAttribute('src',/carta-invocacion-real\.svg/);
   await expect(page.locator('.dcop-scene-figures')).toHaveCount(0);
+});
+
+
+test('adults in the arrest and confrontation share one visual head line',async({page},info)=>{
+  test.skip(info.project.name!=='mobile-390','Phone prologue composition');
+  await page.goto('/Decreto-Real/#/campania/prologo?escena=arresto');
+  await expect(page.locator('.dcop-scene-figures>div')).toHaveCount(2);
+  const positions=await page.locator('.dcop-scene-figures>div img:not(.dcop-child-sprite)').evaluateAll(images=>
+    images.map(x=>({top:x.getBoundingClientRect().top,height:x.getBoundingClientRect().height})));
+  expect(positions.length).toBe(2);
+  expect(Math.abs(positions[0].top-positions[1].top)).toBeLessThanOrEqual(2);
+  expect(Math.abs(positions[0].height-positions[1].height)).toBeLessThanOrEqual(2);
+  await page.goto('/Decreto-Real/#/campania/prologo?escena=xervias');
+  await expect(page.locator('.dcop-scene-figures>div')).toHaveCount(2);
+  const next=await page.locator('.dcop-scene-figures>div img:not(.dcop-child-sprite)').evaluateAll(images=>images.map(x=>x.getBoundingClientRect().top));
+  expect(Math.abs(next[0]-next[1])).toBeLessThanOrEqual(2);
+});
+test('intro retired the person-painted desk image',async({page},info)=>{
+  test.skip(info.project.name!=='mobile-390','Phone prologue intro');
+  await page.goto('/Decreto-Real/#/campania/prologo?escena=pergamino');
+  const src=await page.locator('.dcop-backdrop').getAttribute('src');
+  expect(src).not.toContain('fondo_01_mesa.webp');
+  expect(src).not.toContain('portada-poster.jpg');
+  await expect(page.locator('.dcop-parchment')).toBeVisible();
+});
+test('one golden ceremonial card per duelist, then an original VS scene',async({page},info)=>{
+  test.skip(info.project.name!=='mobile-390','Phone cinematic sequence');
+  await page.goto('/Decreto-Real/#/campania/prologo?escena=anillo');
+  await expect(page.locator('.dcop-summoned-card')).toHaveCount(0);
+  await page.locator('.dcop-dialog-body footer button').click();
+  await expect(page.getByTestId('xervias-golden-invocation')).toBeVisible();
+  await expect(page.locator('.dcop-invocation-shimmer .dcop-summoned-card')).toHaveCount(1);
+  await page.locator('.dcop-dialog-body footer button').click();
+  await expect(page.getByTestId('domingo-golden-invocation')).toHaveCount(0);
+  await page.locator('.dcop-dialog-body footer button').click();
+  await page.locator('.dcop-dialog-body footer button').click();
+  await expect(page.getByTestId('domingo-golden-invocation')).toBeVisible();
+  await expect(page.locator('.dcop-counter-invocation img')).toHaveAttribute('src',/carta-invocacion-real\.svg/);
+  await page.locator('.dcop-dialog-body footer button').click();
+  await expect(page.getByTestId('cinematic-versus')).toBeVisible();
+  await expect(page.getByTestId('cinematic-versus')).toContainText('XERVIAS');
+  await expect(page.getByTestId('cinematic-versus')).toContainText('DOMINGO QUISPE');
+  await page.locator('.dcop-dialog-body footer button').click();
+  await expect(page.locator('.dr-royal-layout')).toBeVisible();
+});
+test('guided duel HUD always shows neutral tiny portraits, not story figures',async({page},info)=>{
+  test.skip(info.project.name!=='mobile-390','Phone duel HUD');
+  await page.goto('/Decreto-Real/#/campania/prologo?escena=duelo');
+  await expect(page.locator('.dr-royal-character-frame > img:first-child')).toHaveCount(2);
+  await expect(page.getByAltText('Retrato de tu personaje')).toHaveAttribute('src',/retratos\/jugador\.webp/);
+  const opponent=await page.getByAltText('Retrato del rival').getAttribute('src');
+  expect(opponent).toMatch(/rival-01-domingo-quispe\.webp|domingo_perfil_duelo\.webp/);
+  await expect(page.getByTestId('guided-large-actor')).toHaveCount(1);
+  const limits=await page.locator('.dr-royal-character-frame').evaluateAll(items=>
+    items.map(x=>x.getBoundingClientRect().width));
+  expect(Math.abs(limits[0]-limits[1])).toBeLessThanOrEqual(1);
 });
