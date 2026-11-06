@@ -1,0 +1,62 @@
+{
+  "version": 3,
+  "product": "Decreto Real",
+  "purpose": "Correcciones de las escenas anteriores al duelo: hijo distinto, Domingo enojado e invocación, Xervias sin carta, carta ceremonial PNG",
+  "model": "gpt-image-2.5-flare",
+  "quality": "medium",
+  "items": [
+    {
+      "id": "N03",
+      "file": "sprites/nino_03_asustado.png",
+      "kind": "sprite",
+      "refs": [
+        "public/campania/prologo/sprites/nino_01_asustado.webp"
+      ],
+      "prompt": "Decreto Real, original high-end anime visual novel artwork, clean crisp linework and polished cel shading, Andean colonial fantasy world with 17th-century architectural and military influences, visually compatible with existing Xervias, Zhinchi and Domingo illustrations. No text, letters, symbols of commercial brands, watermarks, 3D renders, clay or photorealism. Transparent RGBA alpha with NO scenery, NO checkerboard, no shadows cast on a floor, no rectangular background. Edit the reference child, preserving the outfit: cream 17th-century shirt, navy blue waistcoat with gold trim, brown trousers, young boy proportions and frightened pose. IMPORTANT NEW IDENTITY: he must NOT look like Xervias as a little boy. Give him close-cropped CURLY dark chestnut hair (tight small curls and a rounded short fringe), rounder soft face, slightly broader nose and brown-hazel eyes, NO spiky or long layered hair, NO heroic hairstyle, NO sharp adult jaw or pointed Xervias-style bangs. Full body on pure transparent alpha, child is visibly worried, grasping his hands together; no cards, no accessories. He must remain recognizable for all subsequent reactions."
+    },
+    {
+      "id": "N04",
+      "file": "sprites/nino_04_aliviado.png",
+      "kind": "sprite",
+      "refs": [
+        "public/campania/prologo-v3/sprites/nino_03_asustado.png"
+      ],
+      "prompt": "Decreto Real, original high-end anime visual novel artwork, clean crisp linework and polished cel shading, Andean colonial fantasy world with 17th-century architectural and military influences, visually compatible with existing Xervias, Zhinchi and Domingo illustrations. No text, letters, symbols of commercial brands, watermarks, 3D renders, clay or photorealism. Transparent RGBA alpha with NO scenery, NO checkerboard, no shadows cast on a floor, no rectangular background. EDIT the attached N03 child. Preserve EXACT child identity, same tightly curled SHORT dark chestnut hair, round face, hazel eyes, navy blue vest and cream shirt; turn the expression into visibly relieved but cautious, soft small smile, unclasped relaxed hands. Identical crop/scale and hairstyle to N03, full body transparent RGBA. Never turn him into Xervias, no spiky hair, no long hair."
+    },
+    {
+      "id": "X05",
+      "file": "sprites/xervias_05_anillo_energia.png",
+      "kind": "sprite",
+      "refs": [
+        "public/campania/prologo/sprites/xervias_02_invoca.webp"
+      ],
+      "prompt": "Decreto Real, original high-end anime visual novel artwork, clean crisp linework and polished cel shading, Andean colonial fantasy world with 17th-century architectural and military influences, visually compatible with existing Xervias, Zhinchi and Domingo illustrations. No text, letters, symbols of commercial brands, watermarks, 3D renders, clay or photorealism. Transparent RGBA alpha with NO scenery, NO checkerboard, no shadows cast on a floor, no rectangular background. Create a transparent character sprite of the SAME Xervias hero from the reference: young adult, wavy dark brown voluminous hair, navy formal military jacket with gold embroidery and deep red cape, white cravat. Pose with ONE hand extended forward to display the gold royal SIGNET RING on the finger as the only magical focus. The ring is enveloped by soft, dynamic flowing bright GOLD ENERGY, spiraling in thin circular trails around the finger and hand, tiny golden particles. Absolutely NO card, NO rectangular objects, NO card borders or card silhouette, NO deck, NO books, NO parchment anywhere near the hands, at all. The energy is ONLY around the ring. Torso-to-thigh view compatible with existing Xervias sprites, fully transparent RGBA, natural anatomy and hands. Serious determined expression."
+    },
+    {
+      "id": "D07",
+      "file": "sprites/domingo_07_enojado.png",
+      "kind": "sprite",
+      "refs": [
+        "public/campania/prologo-v2/sprites/domingo_01_serio.webp"
+      ],
+      "prompt": "Decreto Real, original high-end anime visual novel artwork, clean crisp linework and polished cel shading, Andean colonial fantasy world with 17th-century architectural and military influences, visually compatible with existing Xervias, Zhinchi and Domingo illustrations. No text, letters, symbols of commercial brands, watermarks, 3D renders, clay or photorealism. Transparent RGBA alpha with NO scenery, NO checkerboard, no shadows cast on a floor, no rectangular background. Same canon Domingo Quispe (never Xervias): stocky adult 35, short straight black hair combed to side with slight silver streak left temple, broad square jaw, heavy brows, small amber eyes, aquiline nose, right eyebrow scar, copper complexion, short stubble, dark blue military uniform with burgundy cuffs and minimal gold accents. Render an ENRAGED facial expression for '¡No pienso obedecerte!' with deeply knit brows, mouth open mid-shout, tightened neck and jaw, one EMPTY hand clenched near chest (not saluting). No cards, no magical effects, no scroll. Keep his face and hair identical to supplied reference, torso to thigh, transparent alpha."
+    },
+    {
+      "id": "G01",
+      "file": "props/carta_dorada_invocacion.png",
+      "kind": "prop",
+      "refs": [],
+      "prompt": "Decreto Real, original high-end anime visual novel artwork, clean crisp linework and polished cel shading, Andean colonial fantasy world with 17th-century architectural and military influences, visually compatible with existing Xervias, Zhinchi and Domingo illustrations. No text, letters, symbols of commercial brands, watermarks, 3D renders, clay or photorealism. Transparent RGBA alpha with NO scenery, NO checkerboard, no shadows cast on a floor, no rectangular background. EXACTLY ONE ornate ceremonial vertically oriented GOLDEN FANTASY CARD, vertical 2:3 proportions, straight-on symmetrical product artwork centered, NOT a Yu-Gi-Oh card. No hand, no character, NO background. Intricate baroque golden outer frame with subtle sunbeams, original angular eight-point solar sunburst around a small blue-white crystal at card's center, polished hammered gold foil, deep luminous black-indigo inner field, delicate Peruvian viceregal gold geometric craftsmanship without actual historical explicit symbols; radiant but beautiful and legible at small size. NO printed writing, no words, no numbers. Exterior silhouette and all corners fully contained in the canvas with margin. Transparent RGBA empty around the SINGLE card, transparent corner pixels; no duplicate cards, no green chroma."
+    },
+    {
+      "id": "D08",
+      "file": "sprites/domingo_08_invocacion_combate.png",
+      "kind": "sprite",
+      "refs": [
+        "public/campania/prologo-v2/sprites/domingo_01_serio.webp",
+        "public/campania/prologo-v3/props/carta_dorada_invocacion.png"
+      ],
+      "prompt": "Decreto Real, original high-end anime visual novel artwork, clean crisp linework and polished cel shading, Andean colonial fantasy world with 17th-century architectural and military influences, visually compatible with existing Xervias, Zhinchi and Domingo illustrations. No text, letters, symbols of commercial brands, watermarks, 3D renders, clay or photorealism. Transparent RGBA alpha with NO scenery, NO checkerboard, no shadows cast on a floor, no rectangular background. Illustrate ONE cutout full-to-thigh expressive anime sprite of the same canon Domingo Quispe adult guard shown in first reference; the second reference is the EXACT design of a single golden ceremonial invocation card to integrate into the pose. Domingo assumes a fighting stance: body turned three-quarters toward Xervias, shoulders strong, serious fierce face ENTIRELY VISIBLE and free of obstruction. One hand is raised outward, displaying a GOLD SIGNET RING with energy flowing tightly around the ring; ONE SINGLE golden ceremonial card matching second reference materializes above and just to the RIGHT SIDE of that open hand, BELOW his face and far away from his head. This card must be INTEGRATED INTO THIS SAME PNG sprite, not a separate floating UI overlay. No other cards, no deck, no rectangle hiding his face. Both hands anatomically correct; original blue colonial military uniform and burgundy trim, transparent alpha no environment."
+    }
+  ]
+}
