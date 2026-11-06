@@ -1,0 +1,64 @@
+/* Prologue v3 — targeted scene corrections without changing combat rules. */
+
+/* Domingo's PNG has a smaller face-to-canvas ratio than his scene partners.
+   Widen the art inside the existing head-top slot while lowering content slightly.
+   The bounding slot stays fixed, so switching speakers never shifts the characters. */
+.dcop-screen .dcop-scene-figures>div.dcop-actor-domingo img:not(.dcop-child-sprite){
+  width:113%!important;
+  max-width:none!important;
+  height:100%!important;
+  object-fit:contain!important;
+  object-position:center calc(100% + 14px)!important;
+}
+
+/* Scene 7: Xervias on the left, mother and child grouped on the RIGHT.
+   The child is in front, closer to the shared center between the adults. */
+.dcop-screen .dcop-scene-figures.dcop-family-right .dcop-hero{order:0!important;}
+.dcop-screen .dcop-scene-figures.dcop-family-right .dcop-civil{
+  order:1!important;
+  overflow:visible;
+}
+.dcop-screen .dcop-scene-figures.dcop-family-right .dcop-child-sprite{
+  left:-16%!important;
+  width:80%!important;
+  height:77%!important;
+  z-index:6!important;
+  bottom:0!important;
+}
+
+/* Beat 16: fallback ring energy is purely a soft glow; not a rectangular card.
+   Once transparent X05.png exists, its illustrated energy replaces this CSS. */
+.dcop-ring-energy-fallback{
+  position:absolute;z-index:5;pointer-events:none;
+  left:2%;top:46%;width:31%;height:28%;
+  border-radius:50%;
+  background:radial-gradient(circle,#fff9bcba 0 9%,#f7c858b5 16%,
+    #f0b9333d 43%,transparent 70%);
+  box-shadow:0 0 15px #f9c85b77;
+  mix-blend-mode:screen;
+  animation:dcop-ring-aura 2s ease-in-out infinite alternate;
+}
+@keyframes dcop-ring-aura{
+  from{opacity:.7;transform:scale(.92)}
+  to{opacity:1;transform:scale(1.09)}
+}
+
+/* Beat 17: one newly illustrated transparent PNG, with no double card overlay. */
+.dcop-screen .dcop-invocation-shimmer .dcop-summoned-card{
+  height:38%;max-width:29%;
+  top:29%;right:10%;object-fit:contain;
+  box-shadow:none!important;
+  filter:drop-shadow(0 0 13px #ffe5a9ca)
+         drop-shadow(0 0 28px #dfb34c85);
+}
+
+/* Beat 20: the card and energy are integral to Domingo's D08 PNG.
+   Remove the legacy oversized UI card even if an old style file references it. */
+.dcop-screen .dcop-counter-invocation{display:none!important;}
+
+@media (max-height:650px){
+  .dcop-ring-energy-fallback{top:41%}
+}
+@media (prefers-reduced-motion:reduce){
+  .dcop-ring-energy-fallback{animation:none}
+}
