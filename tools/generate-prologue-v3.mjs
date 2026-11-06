@@ -68,11 +68,30 @@ export async function produce({mode='plan',quality='medium',confirm='',key=proce
   try{
    const {url,body}=payload(a,quality,j.model);
    console.log('Generando '+a.id+' '+a.file);
-   const resp=await fetch(url,{method:'POST',headers:{Authorization:'Bearer '+key,'Content-Type':'application/json'},
-    body:JSON.stringify(body),signal:AbortSignal.timeout(300000)});
-   if(!resp.ok)throw Error('HTTP '+resp.status+': '+redact((await resp.text()).slice(0,440)));
-   const json=await resp.json();
-   if(!json.data?.[0]?.b64_json)throw Error('La API no devolvió imagen base64');
+   let json;
+   for(let attempt=1;attempt<=4;attempt++){
+     try{
+       const resp=await fetch(url,{method:'POST',headers:{Authorization:'Bearer '+key,'Content-Type':'application/json'},
+        body:JSON.stringify(body),signal:AbortSignal.timeout(300000)});
+       if(!resp.ok){
+         const detail=redact((await resp.text()).slice(0,440));
+         if([429,500,502,503,504,520,522,524].includes(resp.status) && attempt<4){
+           console.warn('API temporal HTTP '+resp.status+' en '+a.id+'; reintento '+attempt+'/3');
+           await new Promise(resolve=>setTimeout(resolve,2500*attempt));
+           continue;
+         }
+         throw Error('HTTP '+resp.status+': '+detail);
+       }
+       json=await resp.json();
+       break;
+     }catch(e){
+       const transient=/abort|timeout|ECONN|fetch failed|network|socket/i.test(String(e.message||e));
+       if(!transient||attempt===4)throw e;
+       console.warn('Problema de red en '+a.id+'; reintento '+attempt+'/3');
+       await new Promise(resolve=>setTimeout(resolve,2500*attempt));
+     }
+   }
+   if(!json?.data?.[0]?.b64_json)throw Error('La API no devolvió imagen base64');
    const binary=Buffer.from(json.data[0].b64_json,'base64');
    mkdirSync(dirname(dest),{recursive:true});
    const temp=dest+'.partial';writeFileSync(temp,binary);
@@ -81,7 +100,7 @@ export async function produce({mode='plan',quality='medium',confirm='',key=proce
    const copy=join(OUTPUT,a.file);mkdirSync(dirname(copy),{recursive:true});copyFileSync(dest,copy);
    out.generated.push({id:a.id,file:a.file,bytes:binary.length});
    record(out);
-  }catch(e){out.errors.push({id:a.id,error:redact(e.message||e)});record(out);process.exitCode=1;break;}
+  }catch(e){const message=redact(e.message||e);out.errors.push({id:a.id,error:message});console.error('Error de generación '+a.id+': '+message);record(out);process.exitCode=1;break;}
  }
  out.complete=j.items.every(a=>validPng(join(ASSETS,a.file)));
  if(out.complete){
