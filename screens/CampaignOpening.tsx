@@ -525,6 +525,9 @@ const CampaignOpening:React.FC=()=>{
     navigate('/campania/prologo?previewStep='+currentIndex);
   };
   const studioExit=studioPreview;
+  const backgroundAsset=studioSceneSettings?.backgroundAsset;
+  const renderedBackdrop=mediaSource(backgroundAsset,background);
+  const backdropIsVideo=Boolean(backgroundAsset&&studioDoc.assets?.[backgroundAsset]?.mime.startsWith('video/'));
   const quickBubble=prologue?.scene==='arresto'&&beat===1?'¡Por favor!':
     scene==='xervias'&&speaker==='Xervias'&&beat===4?'¡Un momento!':
     scene==='desafio'&&speaker==='Domingo Quispe'&&story?.text.startsWith('¡Silencio!')?'¡Silencio!':
@@ -541,8 +544,16 @@ const CampaignOpening:React.FC=()=>{
   return <main className={'dcop-screen dcop-'+scene+(studioEnabled?' dcop-studio-mode':'')} aria-label="Prólogo de campaña: El Sello Real">
     <div className="dcop-stage">
       {!isBattle&&!isFinal&&!studioEnabled&&<CampaignPauseMenu/>}
+      {!isBattle&&!isFinal&&previewStep!==null&&!studioEnabled&&
+        <button type="button" className="dcop-studio-return" data-testid="studio-return"
+          onClick={()=>navigate('/campania/prologo?studio=1&studioStep='+
+            (isAfter?OPENING_BEATS.length+after:beat))}>
+          ✎ Volver a Studio
+        </button>}
       {!isFinal&&!isBattle&&<div className="dcop-art" aria-hidden="true">
-        <img className="dcop-backdrop" src={background} alt=""/>
+        {backdropIsVideo?<video className="dcop-backdrop" src={renderedBackdrop}
+          autoPlay muted loop playsInline data-testid="studio-video-background"/>:
+          <img className="dcop-backdrop" src={renderedBackdrop} alt=""/>}
         {scene==='pergamino'&&<div className="dcop-scroll-held">
           {artReady&&<img className="dcop-scroll-illustration" src={prologueArtUrl('P01')} alt=""/>}
           <div className={'dcop-parchment'+(artReady?' dcop-parchment-overlay':'')}>
@@ -568,7 +579,7 @@ const CampaignOpening:React.FC=()=>{
             onPointerCancel={studioEnabled?event=>endStudioDrag(event,actor.id):undefined}
             data-studio-actor={studioEnabled?actor.id:undefined}
             data-testid={actor.id==='Domingo Quispe'&&isCounterInvocationShot?'domingo-integrated-invocation':undefined}>
-            <img src={actor.src} alt=""/>
+            <img src={mediaSource(currentLayout(actor.id)?.assetId,actor.src)} alt=""/>
             {actor.child&&(artReady||v3Ready)&&<img
               className={'dcop-child-sprite'+studioClass('Niño')}
               style={studioStyle('Niño')}
@@ -577,13 +588,31 @@ const CampaignOpening:React.FC=()=>{
               onPointerMove={studioEnabled?event=>moveStudioDrag(event,'Niño'):undefined}
               onPointerUp={studioEnabled?event=>endStudioDrag(event,'Niño'):undefined}
               onPointerCancel={studioEnabled?event=>endStudioDrag(event,'Niño'):undefined}
-              src={scene==='resolucion'
+              src={mediaSource(currentLayout('Niño')?.assetId,scene==='resolucion'
                 ? v3art('N04',art('N02',portraits.Madre))
-                : v3art('N03',art('N01',portraits.Madre))}
+                : v3art('N03',art('N01',portraits.Madre)))}
               alt=""/>}
             {actor.id==='Xervias'&&isRingOnlyShot&&!v3Ready&&<span className="dcop-ring-energy-fallback" aria-hidden="true"/>}
           </div>)}
         </div>}
+        {isCampaignQaAvailable()&&studioExtras.map(extra=>{
+          const src=mediaUrls[extra.assetId];
+          const isVideo=studioDoc.assets?.[extra.assetId]?.mime.startsWith('video/');
+          return <div key={extra.id}
+            className={'dcop-studio-extra'+(studioEnabled&&studioVisibleSelection===extra.id?' dcop-studio-extra-selected':'')+
+              (!extra.transform.visible?' dcop-studio-hidden':'')}
+            style={extraStyle(extra)}
+            data-testid="studio-added-layer"
+            data-studio-actor={studioEnabled?extra.id:undefined}
+            onPointerDown={studioEnabled?e=>startStudioDrag(e,extra.id):undefined}
+            onPointerMove={studioEnabled?e=>moveStudioDrag(e,extra.id):undefined}
+            onPointerUp={studioEnabled?e=>endStudioDrag(e,extra.id):undefined}
+            onPointerCancel={studioEnabled?e=>endStudioDrag(e,extra.id):undefined}>
+            {src&&(isVideo?
+              <video src={src} autoPlay muted loop playsInline aria-label={extra.name}/>:
+              <img src={src} alt={studioEnabled?extra.name:''}/>)}
+          </div>;
+        })}
         {isInvocationShot&&<div className="dcop-invocation-shimmer" data-testid="xervias-golden-invocation">
           <img className="dcop-summoned-card" src={v3art('G01',INVOCATION_CARD_URL)} alt=""/>
         </div>}
@@ -598,7 +627,7 @@ const CampaignOpening:React.FC=()=>{
             <img src={domingoDuelPortrait} alt=""/><strong>DOMINGO QUISPE</strong>
           </div>
         </div>}
-        {quickBubble&&<div className={'dcop-quick-bubble '+quickBubbleSide}>{quickBubble}</div>}
+        {quickBubble&&bubbleVisible&&<div className={'dcop-quick-bubble '+quickBubbleSide}>{quickBubble}</div>}
       </div>}
       {studioEnabled&&studioStep!==null&&!isBattle&&!isFinal&&
         <DecretoRealStudioPanel
@@ -610,16 +639,27 @@ const CampaignOpening:React.FC=()=>{
           title={story?.speaker+' · '+(prologue?.title??phaseTitles[scene]??'Desenlace')}
           sceneKey={studioKey}
           actors={studioActors}
+          actorLabels={studioActorLabels}
           selected={studioVisibleSelection}
-          transform={studioVisibleSelection?getStudioTransform(studioDoc,studioKey,studioVisibleSelection):null}
+          transform={studioVisibleSelection?currentTransform(studioVisibleSelection):null}
+          bubbleVisible={bubbleVisible}
+          titleVisible={titleVisible}
           dirty={studioDirty}
           status={studioStatus}
           onSelect={setStudioSelected}
-          onChange={t=>{if(studioVisibleSelection)changeStudioActor(studioVisibleSelection,t);}}
+          onChange={t=>{if(studioVisibleSelection)changeStudioTarget(studioVisibleSelection,t);}}
           onSave={studioSave}
           onUndo={studioUndo}
           canUndo={studioHistory.length>0}
           onRestore={studioRestore}
+          onRemove={studioRemove}
+          onReplace={studioReplace}
+          onAdd={studioAdd}
+          onBackdrop={studioBackdrop}
+          onClearBackdrop={studioClearBackdrop}
+          onToggleBubble={studioToggleBubble}
+          onToggleTitle={studioToggleTitle}
+          onPreview={studioPreview}
           onPrev={()=>studioNavigate(studioStep-1)}
           onNext={()=>studioNavigate(studioStep+1)}
           onExport={studioExport}
@@ -642,6 +682,7 @@ const CampaignOpening:React.FC=()=>{
         speaker={speaker}
         text={story?.text??''}
         tone={dialogueTone}
+        showSceneTitle={titleVisible}
         progress={isAfter?'DESENLACE '+(after+1)+'/'+AFTER_DUEL_BEATS.length:
           'ESCENA '+(beat+1)+'/'+OPENING_BEATS.length}
         lastBeforeDuel={beat===OPENING_BEATS.length-1}
