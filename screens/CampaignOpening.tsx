@@ -304,12 +304,20 @@ const CampaignOpening:React.FC=()=>{
     else{add('Xervias',xervias);add('Zhinchi',zhinchi);}
   }
   else if(scene==='reflexion'&&speaker==='Xervias'){add('Xervias',xervias);}
+  const quickBubble=prologue?.scene==='arresto'&&beat===1?'¡Por favor!':
+    scene==='xervias'&&speaker==='Xervias'&&beat===4?'¡Un momento!':
+    scene==='desafio'&&speaker==='Domingo Quispe'&&story?.text.startsWith('¡Silencio!')?'¡Silencio!':
+    scene==='zhinchi'&&after===9?'¡Alto!':null;
   const studioKey=studioSceneKey(isAfter?'after':'opening',isAfter?after:beat);
   const studioExtras=studioDoc.extras?.[studioKey]??[];
   const studioActors:string[]=[...actors.flatMap(actor=>actor.child?
-    [actor.id,'Niño' as const]:[actor.id]),...studioExtras.map(extra=>extra.id)];
-  const studioActorLabels:Record<string,string>=Object.fromEntries(studioExtras.map(extra=>
-    [extra.id,extra.name+' · '+(extra.kind==='effect'?'Efecto':'Sprite')]));
+    [actor.id,'Niño' as const]:[actor.id]),...studioExtras.map(extra=>extra.id),
+    ...(quickBubble?['Globo']:[])];
+  const studioActorLabels:Record<string,string>={
+    Globo:'Globo de texto',
+    ...Object.fromEntries(studioExtras.map(extra=>
+      [extra.id,extra.name+' · '+(extra.kind==='effect'?'Efecto':'Sprite')])),
+  };
   const isNativeActor=(id:string):id is StudioActor=>(STUDIO_ACTORS as readonly string[]).includes(id);
   React.useEffect(()=>{
     if(!studioEnabled)return;
@@ -321,10 +329,14 @@ const CampaignOpening:React.FC=()=>{
   const studioSceneSettings=isCampaignQaAvailable()?studioDoc.settings?.[studioKey]:undefined;
   const bubbleVisible=studioSceneSettings?.bubbleVisible!==false;
   const titleVisible=studioSceneSettings?.titleVisible!==false;
+  const bubbleText=studioSceneSettings?.bubbleText??quickBubble??'';
   const currentLayout=(actor:StudioActor)=>isCampaignQaAvailable()?studioDoc.scenes[studioKey]?.[actor]:undefined;
   const currentExtra=(id:string)=>studioExtras.find(x=>x.id===id);
   const currentTransform=(id:string):StudioTransform|null=>{
     if(isNativeActor(id))return getStudioTransform(studioDoc,studioKey,id);
+    if(id==='Globo')return studioDoc.settings?.[studioKey]?.bubbleTransform??{
+      x:0,y:0,scale:1,mirror:false,layer:7,visible:true,
+    };
     return currentExtra(id)?.transform??null;
   };
   const mediaSource=(id:string|undefined,fallback:string)=>id?(mediaUrls[id]??fallback):fallback;
@@ -353,6 +365,7 @@ const CampaignOpening:React.FC=()=>{
     pushStudioHistory();
     setStudioDoc(doc=>isNativeActor(id)?
       withStudioTransform(doc,studioKey,id,next):
+      id==='Globo'?withStudioSettings(doc,studioKey,{bubbleTransform:next}):
       withStudioExtraTransform(doc,studioKey,id,next));
     setStudioStatus('Cambios sin guardar');
   };
@@ -378,6 +391,7 @@ const CampaignOpening:React.FC=()=>{
     };
     setStudioDoc(doc=>isNativeActor(actor)?
       withStudioTransform(doc,studioKey,actor,next):
+      actor==='Globo'?withStudioSettings(doc,studioKey,{bubbleTransform:next}):
       withStudioExtraTransform(doc,studioKey,actor,next));
     setStudioStatus('Cambios sin guardar');
   };
@@ -451,6 +465,9 @@ const CampaignOpening:React.FC=()=>{
     pushStudioHistory();
     setStudioDoc(doc=>isNativeActor(studioVisibleSelection)?
       withoutStudioTransform(doc,studioKey,studioVisibleSelection):
+      studioVisibleSelection==='Globo'?withStudioSettings(doc,studioKey,{
+        bubbleTransform:undefined,bubbleText:undefined,bubbleVisible:true,
+      }):
       withStudioExtraTransform(doc,studioKey,studioVisibleSelection,{
         x:0,y:0,scale:1,mirror:false,layer:8,visible:true,
       }));
@@ -462,8 +479,10 @@ const CampaignOpening:React.FC=()=>{
     setStudioDoc(doc=>isNativeActor(studioVisibleSelection)?
       withStudioTransform(doc,studioKey,studioVisibleSelection,{
         ...getStudioTransform(doc,studioKey,studioVisibleSelection),visible:false,
-      }):removeStudioExtra(doc,studioKey,studioVisibleSelection));
-    if(!isNativeActor(studioVisibleSelection))setStudioSelected(null);
+      }):studioVisibleSelection==='Globo'?
+      withStudioSettings(doc,studioKey,{bubbleVisible:false}):
+      removeStudioExtra(doc,studioKey,studioVisibleSelection));
+    if(!isNativeActor(studioVisibleSelection)&&studioVisibleSelection!=='Globo')setStudioSelected(null);
     setStudioStatus('Elemento oculto o retirado de esta intervención');
   };
   const studioStoreFile=async(file:File)=>{
@@ -513,6 +532,12 @@ const CampaignOpening:React.FC=()=>{
     pushStudioHistory();setStudioDoc(doc=>withStudioSettings(doc,studioKey,{backgroundAsset:undefined}));
     setStudioStatus('Fondo original restaurado.');
   };
+  const studioChangeBubbleText=(text:string)=>{
+    pushStudioHistory();setStudioDoc(doc=>withStudioSettings(doc,studioKey,{
+      bubbleText:text.slice(0,140),
+    }));
+    setStudioStatus('Texto del globo modificado');
+  };
   const studioToggleBubble=()=>{
     pushStudioHistory();
     setStudioDoc(doc=>withStudioSettings(doc,studioKey,{
@@ -534,10 +559,7 @@ const CampaignOpening:React.FC=()=>{
   const backgroundAsset=studioSceneSettings?.backgroundAsset;
   const renderedBackdrop=mediaSource(backgroundAsset,background);
   const backdropIsVideo=Boolean(backgroundAsset&&studioDoc.assets?.[backgroundAsset]?.mime.startsWith('video/'));
-  const quickBubble=prologue?.scene==='arresto'&&beat===1?'¡Por favor!':
-    scene==='xervias'&&speaker==='Xervias'&&beat===4?'¡Un momento!':
-    scene==='desafio'&&speaker==='Domingo Quispe'&&story?.text.startsWith('¡Silencio!')?'¡Silencio!':
-    scene==='zhinchi'&&after===9?'¡Alto!':null;
+
   const quickBubbleSide=quickBubble==='¡Alto!'?'right':
     speaker==='Domingo Quispe'?'right':'left';
   const dialogueTone=speaker==='Crónica'?'narrator':
@@ -633,7 +655,24 @@ const CampaignOpening:React.FC=()=>{
             <img src={domingoDuelPortrait} alt=""/><strong>DOMINGO QUISPE</strong>
           </div>
         </div>}
-        {quickBubble&&bubbleVisible&&<div className={'dcop-quick-bubble '+quickBubbleSide}>{quickBubble}</div>}
+        {quickBubble&&bubbleVisible&&<div
+          className={'dcop-quick-bubble '+quickBubbleSide+
+            (studioSceneSettings?.bubbleTransform?' dcop-studio-bubble-adjusted':'')+
+            (studioEnabled&&studioVisibleSelection==='Globo'?' dcop-studio-bubble-selected':'')}
+          style={studioSceneSettings?.bubbleTransform?({
+            '--studio-x':studioSceneSettings.bubbleTransform.x+'vw',
+            '--studio-y':studioSceneSettings.bubbleTransform.y+'vh',
+            '--studio-scale':studioSceneSettings.bubbleTransform.scale,
+            '--studio-mirror':studioSceneSettings.bubbleTransform.mirror?-1:1,
+            '--studio-layer':studioSceneSettings.bubbleTransform.layer,
+          } as React.CSSProperties):undefined}
+          data-studio-actor={studioEnabled?'Globo':undefined}
+          onPointerDown={studioEnabled?e=>startStudioDrag(e,'Globo'):undefined}
+          onPointerMove={studioEnabled?e=>moveStudioDrag(e,'Globo'):undefined}
+          onPointerUp={studioEnabled?e=>endStudioDrag(e,'Globo'):undefined}
+          onPointerCancel={studioEnabled?e=>endStudioDrag(e,'Globo'):undefined}>
+          {bubbleText}
+        </div>}
       </div>}
       {studioEnabled&&studioStep!==null&&!isBattle&&!isFinal&&
         <DecretoRealStudioPanel
@@ -649,6 +688,8 @@ const CampaignOpening:React.FC=()=>{
           selected={studioVisibleSelection}
           transform={studioVisibleSelection?currentTransform(studioVisibleSelection):null}
           bubbleVisible={bubbleVisible}
+          bubbleText={bubbleText}
+          onBubbleText={studioChangeBubbleText}
           titleVisible={titleVisible}
           dirty={studioDirty}
           status={studioStatus}
