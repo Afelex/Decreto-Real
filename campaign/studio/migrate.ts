@@ -18,7 +18,7 @@ import {
 import {
   STUDIO_V3_STORAGE_KEY, STUDIO_BUBBLE_LAYER_ID, STUDIO_ACTORS,
   actorLayerId, emptyStudioDocumentV3, normalizeStudioDocumentV3, parseStudioDocumentV3,
-  type StudioDocumentV3, type StudioLayer,
+  type StudioBackground, type StudioDocumentV3, type StudioLayer,
 } from './schema.ts';
 
 /** Orden de las 21 intervenciones previas al duelo en Studio v1/v2. */
@@ -79,7 +79,7 @@ export type StudioMigrationReport = {
 /** Convierte un documento v1/v2 ya validado por `parseStudioDocument`. */
 export function migrateLegacyStudioDocument(legacy:StudioDocument):{doc:StudioDocumentV3;report:StudioMigrationReport} {
   const report:StudioMigrationReport={migrated:{},dropped:[]};
-  const scenes:Record<string,{layers:StudioLayer[];background?:{assetId:string};titleVisible?:boolean}>={};
+  const scenes:Record<string,{layers:StudioLayer[];background?:StudioBackground;titleVisible?:boolean}>={};
   const keys=new Set([
     ...Object.keys(legacy.scenes),
     ...Object.keys(legacy.settings??{}),
@@ -89,7 +89,7 @@ export function migrateLegacyStudioDocument(legacy:StudioDocument):{doc:StudioDo
     const target=legacySceneKeyToV3(key);
     if(!target){report.dropped.push(key);continue;}
     report.migrated[key]=target;
-    const scene:{layers:StudioLayer[];background?:{assetId:string};titleVisible?:boolean}={layers:[]};
+    const scene:{layers:StudioLayer[];background?:StudioBackground;titleVisible?:boolean}={layers:[]};
     for(const actor of STUDIO_ACTORS){
       const t=legacy.scenes[key]?.[actor];
       if(!t)continue;

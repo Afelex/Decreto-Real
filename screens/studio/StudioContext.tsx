@@ -11,6 +11,10 @@ import {
   type StudioHistoryState, type StudioUpdate,
 } from '../../campaign/studio/history';
 import {
+  DEFAULT_EDITOR_PREFS, normalizeEditorPrefs, readEditorPrefs, saveEditorPrefs,
+  type StudioEditorPrefs,
+} from '../../campaign/studio/grid';
+import {
   addStudioMedia, exportStudioMedia, importStudioMedia, loadStudioMediaUrls, revokeStudioMediaUrls,
   type StudioPortableMedia,
 } from '../../campaign/studioMedia';
@@ -29,6 +33,17 @@ export type StudioContextValue = {
   dirty:boolean;canUndo:boolean;canRedo:boolean;
   status:string;setStatus:(text:string)=>void;
   selected:string|null;select:React.Dispatch<React.SetStateAction<string|null>>;
+  /** Selección múltiple (para alinear). Incluye al elemento principal cuando no está vacía. */
+  group:readonly string[];
+  /** Añade o quita un elemento de la selección múltiple. */
+  toggleGroup:(id:string)=>void;
+  clearGroup:()=>void;
+  /** Modo táctil «Seleccionar varios»: tocar añade o quita en vez de arrastrar. */
+  multiMode:boolean;setMultiMode:(on:boolean)=>void;
+  /** Preferencias del lienzo (grilla, ajuste, guías): nunca van al documento. */
+  prefs:StudioEditorPrefs;setPrefs:(patch:Partial<StudioEditorPrefs>)=>void;
+  /** Guía inteligente activa durante un arrastre (en % del escenario). */
+  guides:{x:number|null;y:number|null};setGuides:(g:{x:number|null;y:number|null})=>void;
   scene:(key:string|null)=>StudioSceneV3|undefined;
   /** Un cambio atómico (una entrada de deshacer). */
   apply:(update:StudioUpdate,status?:string)=>void;
@@ -47,6 +62,8 @@ const INACTIVE:StudioContextValue={
   active:false,editing:false,doc:emptyStudioDocumentV3(),mediaUrls:{},
   dirty:false,canUndo:false,canRedo:false,status:'',setStatus:noop,
   selected:null,select:noop,scene:()=>undefined,
+  group:[],toggleGroup:noop,clearGroup:noop,multiMode:false,setMultiMode:noop,
+  prefs:{...DEFAULT_EDITOR_PREFS},setPrefs:noop,guides:{x:null,y:null},setGuides:noop,
   apply:noop,begin:noop,preview:noop,commit:noop,undo:noop,redo:noop,save:()=>false,
   storeMedia:()=>Promise.reject(new Error('Studio no está disponible.')),
   exportProject:()=>Promise.resolve(),importProject:()=>Promise.resolve(),
@@ -85,6 +102,27 @@ export function StudioProvider({children}:{children:React.ReactNode}){
     return 'Borrador de Studio v2 convertido a v3.'+(dropped?' '+dropped+' intervenciones ya no existen y se omitieron.':'');
   });
   const [selected,select]=React.useState<string|null>(null);
+  const [group,setGroup]=React.useState<string[]>([]);
+  const [multiMode,setMultiMode]=React.useState(false);
+  const [guides,setGuides]=React.useState<{x:number|null;y:number|null}>({x:null,y:null});
+  const [prefs,setPrefsState]=React.useState<StudioEditorPrefs>(()=>editing?readEditorPrefs(draftStorage()):{...DEFAULT_EDITOR_PREFS});
+  const setPrefs=React.useCallback((patch:Partial<StudioEditorPrefs>)=>{
+    setPrefsState(previous=>{
+      const next=normalizeEditorPrefs({...previous,...patch});
+      saveEditorPrefs(draftStorage(),next);
+      return next;
+    });
+  },[]);
+  const selectionRef=React.useRef({selected,group});
+  selectionRef.current={selected,group};
+  const toggleGroup=React.useCallback((id:string)=>{
+    const {selected:current,group:previous}=selectionRef.current;
+    const base=previous.length?previous:current?[current]:[];
+    const next=base.includes(id)?base.filter(item=>item!==id):[...base,id];
+    setGroup(next);
+    select(next.at(-1)??null);
+  },[]);
+  const clearGroup=React.useCallback(()=>setGroup([]),[]);
 
   React.useEffect(()=>{if(history.error)setStatus(history.error);},[history.error]);
 
@@ -136,6 +174,7 @@ export function StudioProvider({children}:{children:React.ReactNode}){
     active,editing,doc:history.doc,mediaUrls,
     dirty:isStudioDirty(history),canUndo:canUndo(history),canRedo:canRedo(history),
     status,setStatus,selected,select,
+    group,toggleGroup,clearGroup,multiMode,setMultiMode,prefs,setPrefs,guides,setGuides,
     scene:key=>key?history.doc.scenes[key]:undefined,
     apply:(update,text)=>{dispatch({type:'apply',update});if(text)setStatus(text);},
     begin:()=>dispatch({type:'begin'}),
@@ -177,7 +216,8 @@ export function StudioProvider({children}:{children:React.ReactNode}){
         select(null);
       }catch(err){setStatus(err instanceof Error?err.message:'No se pudo importar.');}
     },
-  }),[active,editing,history,mediaUrls,status,selected,save,undoOrRedo]);
+  }),[active,editing,history,mediaUrls,status,selected,group,multiMode,prefs,guides,
+    toggleGroup,clearGroup,setPrefs,save,undoOrRedo]);
 
   // Atajos de teclado del editor (fuera de los campos de texto).
   React.useEffect(()=>{

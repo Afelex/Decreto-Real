@@ -199,3 +199,130 @@
 }
 
 .dr-studio-actions.dr-studio-history{grid-template-columns:1fr 1fr 1.3fr}
+
+/* ——— Studio v3 · fase 3: plano único de capas (solo QA) ———
+   .dcop-art se aísla y el grupo teatral de figuras deja de crear su propio
+   contexto de apilamiento: actores, capas añadidas, globo y planos
+   cinematográficos comparten las bandas z del documento v3
+   (actores 11–40, globo 47, capas añadidas 48–49 por defecto).
+   El niño sigue dentro del contenedor de la madre (filtro = contexto propio). */
+.dcop-screen .dcop-art.dcop-studio-plane{isolation:isolate}
+.dcop-screen .dcop-studio-plane .dcop-scene-figures{z-index:auto!important}
+.dcop-screen .dcop-studio-plane .dcop-scene-figures>div.dcop-dim{z-index:12}
+.dcop-screen .dcop-studio-plane .dcop-scene-figures>div.dcop-speaking{z-index:14}
+.dcop-screen .dcop-studio-plane .dcop-invocation-shimmer{z-index:44}
+.dcop-screen .dcop-studio-plane .dcop-versus{z-index:46}
+.dcop-screen .dcop-studio-plane .dcop-quick-bubble{z-index:47}
+
+/* Fondo como capa con encuadre (desplazamiento en % del escenario y escala). */
+.dcop-screen .dcop-backdrop.dcop-studio-framed{
+  --dr-studio-translate:translate(
+    calc(var(--studio-x,0) * var(--dr-stage-w,100vw) / 100),
+    calc(var(--studio-y,0) * var(--dr-stage-h,100dvh) / 100));
+  transform:var(--dr-studio-translate) scale(var(--studio-bg-scale,1))!important;
+}
+.dcop-screen.dcop-studio-mode .dcop-backdrop{pointer-events:auto;touch-action:none}
+.dcop-screen.dcop-studio-mode .dcop-studio-locked,
+.dcop-screen.dcop-studio-mode .dcop-scene-figures>div.dcop-studio-locked{cursor:default!important}
+
+/* ——— Lienzo: grilla, ejes, márgenes, guías y selección ———
+   Nada de esto recibe eventos: nunca impide seleccionar ni arrastrar. */
+.dr-studio-canvas{position:absolute;inset:0;z-index:930;pointer-events:none}
+.dr-studio-canvas *{pointer-events:none}
+.dr-studio-grid{
+  position:absolute;inset:0;
+  --grid-line:rgba(255,248,226,.95);--grid-shadow:rgba(8,12,22,.75);
+  background-image:
+    linear-gradient(to right,var(--grid-line) 0 2px,transparent 2px),
+    linear-gradient(to bottom,var(--grid-line) 0 2px,transparent 2px),
+    linear-gradient(to right,var(--grid-line) 0 1px,var(--grid-shadow) 1px 2px,transparent 2px),
+    linear-gradient(to bottom,var(--grid-line) 0 1px,var(--grid-shadow) 1px 2px,transparent 2px);
+  background-size:var(--grid-major) var(--grid-major),var(--grid-major) var(--grid-major),
+    var(--grid-cell) var(--grid-cell),var(--grid-cell) var(--grid-cell);
+}
+.dr-studio-axes span{position:absolute;background:#5fd4ff;box-shadow:0 0 0 1px #04223a99}
+.dr-studio-axis-x{left:0;right:0;top:50%;height:1px}
+.dr-studio-axis-y{top:0;bottom:0;left:50%;width:1px}
+.dr-studio-safe span{position:absolute;border:1px dashed #9cf59a}
+.dr-studio-safe .dr-studio-safe-title{border-color:#ffd36b}
+.dr-studio-safe .dr-studio-dialogue-band{
+  left:0;right:0;bottom:0;border:0;border-top:2px dashed #ff9d7a;
+  background:repeating-linear-gradient(135deg,#ff7b5a26 0 8px,transparent 8px 16px);
+}
+.dr-studio-guide{position:absolute;background:#ff3fd2;box-shadow:0 0 6px #ff3fd2}
+.dr-studio-guide-x{top:0;bottom:0;width:1px;margin-left:-.5px}
+.dr-studio-guide-y{left:0;right:0;height:1px;margin-top:-.5px}
+.dr-studio-group-box{position:absolute;border:1px dashed #9fe8ff;border-radius:4px}
+.dr-studio-selection{
+  position:absolute;z-index:935;pointer-events:none;
+  border:1px solid #ffe2a3;box-shadow:0 0 0 1px #0008;border-radius:3px;
+}
+.dr-studio-selection-locked{border-style:dashed;border-color:#c9c9c9}
+.dr-studio-lock-badge{position:absolute;top:-12px;right:-12px;font-size:14px;
+  background:#1b2737;border:1px solid #c9c9c9;border-radius:50%;width:24px;height:24px;
+  display:grid;place-items:center}
+.dr-studio-handle{
+  position:absolute;pointer-events:auto;touch-action:none;
+  width:28px;height:28px;padding:0;border-radius:50%;
+  border:2px solid #fff1cf;background:#c97b2d;box-shadow:0 2px 8px #000a;cursor:nwse-resize;
+}
+.dr-studio-handle-scale{right:-14px;bottom:-14px}
+.dr-studio-handle-rotate{left:-14px;bottom:-14px;cursor:grab;background:#2d79c9}
+.dr-studio-handle::after{
+  position:absolute;inset:0;display:grid;place-items:center;color:#fff6e2;font:700 14px system-ui,sans-serif;
+}
+.dr-studio-handle-scale::after{content:"⤡"}
+.dr-studio-handle-rotate::after{content:"⟳"}
+
+/* ——— Barra de herramientas del lienzo (siempre visible en el editor) ——— */
+.dr-studio-toolbar{
+  position:absolute;z-index:960;left:50%;transform:translateX(-50%);
+  bottom:max(8px,env(safe-area-inset-bottom));
+  display:flex;gap:4px;padding:4px;max-width:calc(100% - 16px);
+  border:1px solid #cda66b;border-radius:12px;background:rgba(13,24,39,.95);
+  box-shadow:0 6px 22px #000a;font:12px system-ui,-apple-system,sans-serif;color:#fceaca;
+}
+.dr-studio-toolbar>button{
+  min-width:42px;min-height:42px;padding:3px 6px;border-radius:8px;
+  border:1px solid #6f6047;background:#24354c;color:inherit;font:inherit;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;cursor:pointer;
+}
+.dr-studio-toolbar>button span[aria-hidden]{font-size:16px;line-height:1}
+.dr-studio-tool-label{font-size:9px;letter-spacing:.02em}
+.dr-studio-toolbar>button.dr-studio-tool-on{background:#7d4125;border-color:#f1ce92;color:#fff4dc}
+.dr-studio-toolbar>button:focus-visible{outline:2px solid #ffe4a4;outline-offset:2px}
+.dr-studio-tool-popover{
+  position:absolute;bottom:calc(100% + 6px);right:0;min-width:210px;
+  display:flex;flex-direction:column;gap:8px;padding:10px;
+  border:1px solid #cda66b;border-radius:10px;background:rgba(13,24,39,.98);box-shadow:0 6px 22px #000a;
+}
+.dr-studio-tool-popover label{display:flex;flex-direction:column;gap:4px;font-size:11px;color:#e7c691}
+.dr-studio-tool-popover select{background:#172336;color:#fceaca;border:1px solid #ab9370;border-radius:5px;min-height:36px}
+.dr-studio-tool-popover small{color:#c3c9d3;font-size:10px}
+@media(max-width:360px){.dr-studio-tool-label{display:none}}
+
+/* ——— Inspector v3 ——— */
+.dr-studio-two{grid-template-columns:repeat(auto-fit,minmax(118px,1fr))!important}
+.dr-studio-number{display:flex;flex-direction:column;gap:3px;font-size:11px;min-width:0}
+.dr-studio-number-row{display:grid;grid-template-columns:28px minmax(0,1fr) 28px;gap:3px}
+.dr-studio-number-row button{min-height:34px!important;padding:0!important;font-size:15px!important}
+.dr-studio-number-row input{
+  min-width:0;width:100%;min-height:34px;padding:4px;text-align:center;
+  background:#172336;border:1px solid #ab9370;border-radius:5px;
+  font:13px system-ui,sans-serif;font-variant-numeric:tabular-nums;color:#fceaca;
+}
+.dr-studio-align{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}
+.dr-studio-align button{display:flex;flex-direction:column;align-items:center;gap:1px;font-size:16px;padding:4px 2px!important}
+.dr-studio-align small{font-size:9px}
+.dr-studio-label select{margin-top:4px}
+
+/* Escritorio: el inspector se acopla al margen derecho, fuera del escenario
+   (540 px), para no tapar el lienzo que se está editando. */
+@media (min-width:1180px){
+  .dr-studio-panel{
+    position:fixed;top:12px;right:12px;left:auto;margin:0;
+    width:min(420px,calc((100vw - 540px) / 2 - 24px));max-width:none;
+  }
+  .dr-studio-body{max-height:calc(100dvh - 90px)}
+}
+.dr-studio-axes,.dr-studio-safe{position:absolute;inset:0}

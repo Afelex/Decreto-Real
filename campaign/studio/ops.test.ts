@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { defaultLayerTransform, emptyStudioDocumentV3, type StudioLayer } from './schema.ts';
+import { defaultLayerTransform, emptyStudioDocumentV3, isBackgroundLocked, type StudioLayer } from './schema.ts';
 import {
   changedSceneKeys, copyScene, editedSceneKeys, layerOrDefault, getLayer, referencedAssetIds, sceneLayers, withAsset, withLayer,
-  withLayerPatch, withSceneSettings, withoutLayer, withoutScene, withoutUnusedAssets,
+  withBackgroundFrame, withLayerPatch, withSceneSettings, withoutLayer, withoutScene, withoutUnusedAssets,
 } from './ops.ts';
 
 const MEDIA='media-11111111-1111-4111-8111-111111111111';
@@ -101,4 +101,27 @@ test('layerOrDefault creates native actor and bubble layers on demand',()=>{
   assert.equal(layerOrDefault(blank,ARRESTO,EXTRA),null);
   const doc=withLayer(blank,ARRESTO,{...madre,x:3});
   assert.equal(layerOrDefault(doc,ARRESTO,'actor-madre')?.x,3);
+});
+
+test('background framing is independent of its media and locked by default',()=>{
+  let doc=withAsset(emptyStudioDocumentV3(),MEDIA,{name:'plaza.webp',mime:'image/webp'});
+  doc=withBackgroundFrame(doc,ARRESTO,{x:4,scale:1.2});
+  assert.deepEqual(doc.scenes[ARRESTO].background,{x:4,scale:1.2});
+  assert.equal(isBackgroundLocked(doc.scenes[ARRESTO].background),true);
+  doc=withSceneSettings(doc,ARRESTO,{background:{assetId:MEDIA}});
+  doc=withBackgroundFrame(doc,ARRESTO,{locked:false,scale:9});
+  assert.deepEqual(doc.scenes[ARRESTO].background,{assetId:MEDIA,x:4,scale:3,locked:false});
+  assert.equal(isBackgroundLocked(doc.scenes[ARRESTO].background),false);
+  assert.deepEqual([...referencedAssetIds(doc)],[MEDIA]);
+  // Volver a los valores neutros elimina el fondo; «Fondo original» quita recurso y encuadre.
+  assert.equal(withBackgroundFrame(withSceneSettings(doc,ARRESTO,{background:null}),ARRESTO,{}).scenes[ARRESTO],undefined);
+  const neutral=withBackgroundFrame(withAsset(emptyStudioDocumentV3(),MEDIA,{name:'a',mime:'image/png'}),ARRESTO,{x:0,scale:1,locked:true});
+  assert.equal(neutral.scenes[ARRESTO],undefined);
+});
+
+test('locked layers keep their flag; unlocked layers store nothing',()=>{
+  const doc=withLayer(emptyStudioDocumentV3(),ARRESTO,{...madre,locked:true});
+  assert.equal(getLayer(doc,ARRESTO,'actor-madre')?.locked,true);
+  const unlocked=withLayerPatch(doc,ARRESTO,'actor-madre',{locked:false});
+  assert.equal('locked' in (getLayer(unlocked,ARRESTO,'actor-madre')??{}),false);
 });

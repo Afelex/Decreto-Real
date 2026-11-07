@@ -1,31 +1,25 @@
 import React from 'react';
 import type { PrologueComposition } from '../../campaign/studio/composition';
-import { layerOrDefault, withLayer } from '../../campaign/studio/ops';
 import type { StudioLayer, StudioMediaLayer } from '../../campaign/studio/schema';
+import { BACKGROUND_ID } from './stageGeometry';
 import { useStudio } from './StudioContext';
+import { useStudioDrag } from './useStudioDrag';
 
-/**
- * Orden de pintado provisional (fase 2): los actores siguen dentro del grupo
- * teatral de figuras, así que el `z` del plano único se traduce a la escala
- * que entiende el DOM actual (equivalente al orden de Studio v2). La fase 3
- * sustituye este adaptador por un plano de capas real.
- */
-export function interimCssLayer(layer:StudioLayer):number {
-  if(layer.kind==='actor')return Math.min(30,Math.max(1,layer.z-10));
-  return layer.z<=2?layer.z:Math.min(60,Math.max(3,layer.z-40));
-}
 const BUBBLE_DEFAULT={x:0,y:0,scale:1,rotation:0,mirror:false,z:47};
 /** El globo conserva su inclinación nativa mientras no se mueva. */
 const bubbleMoved=(layer:StudioLayer|undefined)=>Boolean(layer&&(
   layer.x!==BUBBLE_DEFAULT.x||layer.y!==BUBBLE_DEFAULT.y||layer.scale!==BUBBLE_DEFAULT.scale||
   layer.rotation!==BUBBLE_DEFAULT.rotation||layer.mirror!==BUBBLE_DEFAULT.mirror||layer.z!==BUBBLE_DEFAULT.z));
 
-/** Variables CSS: x/y en % del escenario (unitarios); el CSS los multiplica por su tamaño medido. */
+/**
+ * Variables CSS de una capa: x/y en % del escenario (unitarios; el CSS los
+ * multiplica por el tamaño medido) y `z` en el plano único de capas.
+ */
 export function studioLayerStyle(layer:StudioLayer):React.CSSProperties {
   return {
     '--studio-x':layer.x,'--studio-y':layer.y,
     '--studio-scale':layer.scale,'--studio-mirror':layer.mirror?-1:1,
-    '--studio-rot':layer.rotation+'deg','--studio-layer':interimCssLayer(layer),
+    '--studio-rot':layer.rotation+'deg','--studio-layer':layer.z,
     ...(layer.opacity<1?{opacity:layer.opacity}:{}),
   } as React.CSSProperties;
 }
@@ -49,8 +43,36 @@ function useStageSizeVars(stageRef:React.RefObject<HTMLElement|null>,enabled:boo
   },[stageRef,enabled]);
 }
 
-type Drag={id:string;pointerId:number;startX:number;startY:number;origin:StudioLayer;
-  width:number;height:number;frame:number;lastX:number;lastY:number};
+/**
+ * Plano único de capas: actores, capas añadidas, globo y elementos
+ * cinematográficos comparten un mismo contexto de apilamiento. Solo se activa
+ * en QA (editor abierto o escena con capas); el juego público no cambia.
+ */
+export function useStudioPlane(sceneKey:string|null):boolean {
+  const studio=useStudio();
+  return studio.active&&(studio.editing||Boolean(studio.scene(sceneKey)?.layers?.length));
+}
+
+/** Fondo de la intervención: recurso local opcional y encuadre editable. */
+export function StudioBackdrop({sceneKey,src,stageRef}:{sceneKey:string|null;src:string;stageRef:React.RefObject<HTMLElement|null>}){
+  const studio=useStudio();
+  const handlers=useStudioDrag(sceneKey,stageRef);
+  const background=studio.scene(sceneKey)?.background;
+  const assetId=background?.assetId;
+  const rendered=assetId?(studio.mediaUrls[assetId]??src):src;
+  const isVideo=Boolean(assetId&&studio.doc.assets?.[assetId]?.mime.startsWith('video/'));
+  const framed=Boolean(background&&(background.x!==undefined||background.y!==undefined||background.scale!==undefined));
+  const props={
+    className:'dcop-backdrop'+(framed?' dcop-studio-framed':'')+
+      (studio.editing&&studio.selected===BACKGROUND_ID?' dcop-studio-selected':''),
+    style:framed?{'--studio-x':background?.x??0,'--studio-y':background?.y??0,
+      '--studio-bg-scale':background?.scale??1} as React.CSSProperties:undefined,
+    ...handlers(BACKGROUND_ID),
+  };
+  return isVideo
+    ? <video {...props} src={rendered} autoPlay muted loop playsInline data-testid="studio-video-background"/>
+    : <img {...props} src={rendered} alt=""/>;
+}
 
 type Props={
   composition:PrologueComposition;
@@ -64,65 +86,25 @@ type Props={
 /**
  * Pinta los actores, el niño, las capas añadidas y el globo de una
  * intervención: composición base + capas de Studio. Con el editor abierto,
- * cada elemento se puede seleccionar y arrastrar (una entrada de deshacer por
- * gesto) con coordenadas relativas al escenario.
+ * cada elemento se puede seleccionar y arrastrar.
  */
 export default function StageComposer({composition,sceneKey,stageRef,showRingFallback,children}:Props){
   const studio=useStudio();
   const {editing}=studio;
+  const handlers=useStudioDrag(sceneKey,stageRef);
   const scene=studio.scene(sceneKey);
   const layers=scene?.layers??[];
   const layer=(id:string)=>layers.find(item=>item.id===id);
-  const drag=React.useRef<Drag|null>(null);
   useStageSizeVars(stageRef,studio.active);
 
   const src=(assetId:string|undefined,fallback:string)=>assetId?(studio.mediaUrls[assetId]??fallback):fallback;
+  const picked=(id:string)=>editing&&(studio.selected===id||studio.group.includes(id));
   const stateClass=(id:string,adjusted:boolean)=>{
     const l=layer(id);
     return (adjusted?' dcop-studio-adjusted':'')+
-      (editing&&studio.selected===id?' dcop-studio-selected':'')+
-      (l?.visible===false?' dcop-studio-hidden':'');
-  };
-
-  const flush=(d:Drag)=>{
-    if(!sceneKey)return;
-    const next={...d.origin,
-      x:d.origin.x+100*(d.lastX-d.startX)/d.width,
-      y:d.origin.y+100*(d.lastY-d.startY)/d.height,
-    } as StudioLayer;
-    studio.preview(doc=>withLayer(doc,sceneKey,next));
-  };
-  const handlers=(id:string)=>!editing||!sceneKey?{}:{
-    onPointerDown:(event:React.PointerEvent<HTMLElement>)=>{
-      const origin=layerOrDefault(studio.doc,sceneKey,id);
-      const rect=stageRef.current?.getBoundingClientRect();
-      if(!origin||!rect||!rect.width||!rect.height)return;
-      event.preventDefault();event.stopPropagation();
-      studio.select(id);
-      studio.begin();
-      drag.current={id,pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,origin,
-        width:rect.width,height:rect.height,frame:0,lastX:event.clientX,lastY:event.clientY};
-      event.currentTarget.setPointerCapture?.(event.pointerId);
-    },
-    onPointerMove:(event:React.PointerEvent<HTMLElement>)=>{
-      const d=drag.current;
-      if(!d||d.pointerId!==event.pointerId||d.id!==id)return;
-      event.preventDefault();event.stopPropagation();
-      d.lastX=event.clientX;d.lastY=event.clientY;
-      if(d.frame)return;
-      d.frame=requestAnimationFrame(()=>{d.frame=0;if(drag.current===d)flush(d);});
-    },
-    onPointerUp:(event:React.PointerEvent<HTMLElement>)=>end(event,id),
-    onPointerCancel:(event:React.PointerEvent<HTMLElement>)=>end(event,id),
-  };
-  const end=(event:React.PointerEvent<HTMLElement>,id:string)=>{
-    const d=drag.current;
-    if(!d||d.pointerId!==event.pointerId||d.id!==id)return;
-    if(d.frame)cancelAnimationFrame(d.frame);
-    if(d.lastX!==d.startX||d.lastY!==d.startY)flush(d);
-    drag.current=null;
-    studio.commit();
-    if(event.currentTarget.hasPointerCapture?.(event.pointerId))event.currentTarget.releasePointerCapture(event.pointerId);
+      (picked(id)?' dcop-studio-selected':'')+
+      (l?.visible===false?' dcop-studio-hidden':'')+
+      (l?.locked?' dcop-studio-locked':'');
   };
 
   const media=layers.filter((l):l is StudioMediaLayer=>l.kind==='image'||l.kind==='effect');
@@ -160,8 +142,8 @@ export default function StageComposer({composition,sceneKey,stageRef,showRingFal
       const url=studio.mediaUrls[extra.assetId];
       const isVideo=studio.doc.assets?.[extra.assetId]?.mime.startsWith('video/');
       return <div key={extra.id}
-        className={'dcop-studio-extra'+(editing&&studio.selected===extra.id?' dcop-studio-extra-selected':'')+
-          (!extra.visible?' dcop-studio-hidden':'')}
+        className={'dcop-studio-extra'+(picked(extra.id)?' dcop-studio-extra-selected':'')+
+          (!extra.visible?' dcop-studio-hidden':'')+(extra.locked?' dcop-studio-locked':'')}
         style={studioLayerStyle(extra)}
         data-testid="studio-added-layer"
         data-studio-actor={editing?extra.id:undefined}
@@ -175,7 +157,7 @@ export default function StageComposer({composition,sceneKey,stageRef,showRingFal
     {bubble&&bubbleLayer?.visible!==false&&<div
       className={'dcop-quick-bubble '+bubble.side+
         (bubbleAdjusted?' dcop-studio-bubble-adjusted':'')+
-        (editing&&studio.selected==='bubble'?' dcop-studio-bubble-selected':'')}
+        (picked('bubble')?' dcop-studio-bubble-selected':'')}
       style={bubbleAdjusted&&bubbleLayer?studioLayerStyle(bubbleLayer):undefined}
       data-studio-actor={editing?'bubble':undefined}
       {...handlers('bubble')}>
@@ -183,4 +165,3 @@ export default function StageComposer({composition,sceneKey,stageRef,showRingFal
     </div>}
   </>;
 }
-

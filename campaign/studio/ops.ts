@@ -5,7 +5,7 @@
  */
 import {
   STUDIO_BUBBLE_LAYER_ID, STUDIO_V3_MAX_LAYERS_PER_SCENE, actorForLayerId, defaultLayerTransform,
-  isStudioSceneKey, isStudioMediaId, normalizeStudioLayer, sortLayers,
+  isStudioSceneKey, isStudioMediaId, normalizeStudioBackground, normalizeStudioLayer, sortLayers,
   type StudioAssetMeta, type StudioDocumentV3, type StudioLayer, type StudioSceneV3,
 } from './schema.ts';
 
@@ -60,13 +60,27 @@ export function withSceneSettings(doc:StudioDocumentV3,key:string,
   patch:{background?:{assetId:string}|null;titleVisible?:boolean|null}):StudioDocumentV3 {
   assertSceneKey(key);
   const scene:StudioSceneV3={...doc.scenes[key]};
-  if(patch.background===null)delete scene.background;
-  else if(patch.background){
+  if(patch.background===null){
+    // «Fondo original»: se retira el recurso y el encuadre.
+    delete scene.background;
+  }else if(patch.background){
     if(!doc.assets?.[patch.background.assetId])throw new Error('El fondo usa un recurso inexistente.');
-    scene.background={assetId:patch.background.assetId};
+    scene.background={...scene.background,assetId:patch.background.assetId};
   }
   if(patch.titleVisible===null)delete scene.titleVisible;
   else if(typeof patch.titleVisible==='boolean')scene.titleVisible=patch.titleVisible;
+  return withScene(doc,key,scene);
+}
+
+/** Cambia el encuadre o el bloqueo del fondo (sin tocar el recurso). */
+export function withBackgroundFrame(doc:StudioDocumentV3,key:string,
+  patch:{x?:number;y?:number;scale?:number;locked?:boolean}):StudioDocumentV3 {
+  assertSceneKey(key);
+  const merged={...doc.scenes[key]?.background,...patch};
+  const background=normalizeStudioBackground(merged,doc.assets??{});
+  const scene:StudioSceneV3={...doc.scenes[key]};
+  if(background)scene.background=background;
+  else delete scene.background;
   return withScene(doc,key,scene);
 }
 
@@ -110,7 +124,7 @@ const cloneScene=(scene:StudioSceneV3):StudioSceneV3=>({
 export function referencedAssetIds(doc:StudioDocumentV3):Set<string> {
   const used=new Set<string>();
   for(const scene of Object.values(doc.scenes)){
-    if(scene.background)used.add(scene.background.assetId);
+    if(scene.background?.assetId)used.add(scene.background.assetId);
     for(const layer of scene.layers??[]){
       if((layer.kind==='actor'||layer.kind==='image'||layer.kind==='effect')&&layer.assetId)used.add(layer.assetId);
     }

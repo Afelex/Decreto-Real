@@ -41,6 +41,8 @@ export type StudioLayerBase = {
   /** Orden en el plano único de capas (1 = más al fondo). */
   z:number;
   visible:boolean;
+  /** Bloqueada: no se arrastra ni se redimensiona en el lienzo (sí desde el inspector). */
+  locked?:boolean;
 };
 export type StudioActorLayer = StudioLayerBase & {kind:'actor'; actor:StudioActor; assetId?:string};
 export type StudioMediaLayer = StudioLayerBase & {kind:'image'|'effect'; name:string; assetId:string};
@@ -49,9 +51,17 @@ export type StudioLayer = StudioActorLayer | StudioMediaLayer | StudioBubbleLaye
 export type StudioLayerKind = StudioLayer['kind'];
 export type StudioLayerTransform = Omit<StudioLayerBase,'id'>;
 
+/**
+ * Fondo de la escena: imagen/video local opcional y encuadre (desplazamiento
+ * en % del escenario y escala). Bloqueado salvo `locked:false`, para no
+ * moverlo por accidente al arrastrar personajes.
+ */
+export type StudioBackground = {assetId?:string;x?:number;y?:number;scale?:number;locked?:boolean};
+export const STUDIO_BACKGROUND_SCALE = Object.freeze({min:.5,max:3});
+export const isBackgroundLocked = (bg:StudioBackground|undefined):boolean => bg?.locked!==false;
 export type StudioSceneV3 = {
   layers?:StudioLayer[];
-  background?:{assetId:string};
+  background?:StudioBackground;
   titleVisible?:boolean;
 };
 export type StudioDocumentV3 = {
@@ -110,6 +120,7 @@ export function normalizeLayerTransform(value:unknown,defaults:StudioLayerTransf
     mirror:typeof v.mirror==='boolean'?v.mirror:defaults.mirror,
     z:Math.round(num(v.z,defaults.z,L.z)),
     visible:typeof v.visible==='boolean'?v.visible:defaults.visible,
+    ...(v.locked===true?{locked:true}:{}),
   };
 }
 
@@ -147,6 +158,22 @@ export function normalizeStudioLayer(value:unknown,assets?:Record<string,StudioA
     };
   }
   return null;
+}
+
+/** Valida el fondo; null si no aporta nada (sin recurso válido ni encuadre). */
+export function normalizeStudioBackground(value:unknown,assets?:Record<string,StudioAssetMeta>):StudioBackground|null {
+  if(!isRecord(value))return null;
+  const bg:StudioBackground={};
+  if(typeof value.assetId==='string'&&MEDIA_ID.test(value.assetId)&&(!assets||assets[value.assetId]))
+    bg.assetId=value.assetId;
+  for(const axis of ['x','y'] as const){
+    const n=value[axis];
+    if(typeof n==='number'&&Number.isFinite(n)&&n!==0)bg[axis]=round2(clamp(n,-100,100));
+  }
+  if(typeof value.scale==='number'&&Number.isFinite(value.scale)&&value.scale!==1)
+    bg.scale=round2(clamp(value.scale,STUDIO_BACKGROUND_SCALE.min,STUDIO_BACKGROUND_SCALE.max));
+  if(value.locked===false)bg.locked=false;
+  return Object.keys(bg).length?bg:null;
 }
 
 /** Ordena por z (y por id para que el resultado sea determinista). */
@@ -196,9 +223,8 @@ export function normalizeStudioDocumentV3(value:unknown):StudioDocumentV3 {
       }
       if(layers.length)scene.layers=sortLayers(layers);
     }
-    if(isRecord(raw.background)&&typeof raw.background.assetId==='string'&&
-      MEDIA_ID.test(raw.background.assetId)&&assets?.[raw.background.assetId])
-      scene.background={assetId:raw.background.assetId};
+    const background=normalizeStudioBackground(raw.background,assets);
+    if(background)scene.background=background;
     if(typeof raw.titleVisible==='boolean')scene.titleVisible=raw.titleVisible;
     if(Object.keys(scene).length)doc.scenes[key]=scene;
   }

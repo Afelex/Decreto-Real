@@ -109,7 +109,7 @@ StudioLayer      = { id, x, y, scale, rotation, opacity, mirror, z, visible } & 
 | **0. Documento** | Esta auditoría y este plan (sin cambios de código) | `docs/decreto-real-studio-v3-plan.md` |
 | **1. Fundamentos de datos** ✅ | IDs estables, `prologueScript.ts`, schema v3, migración v1/v2→v3, pruebas de migración y de corrimiento de índices | `campaign/studio/{schema,migrate,ops}.ts`, `CampaignOpening.tsx` (solo extraer datos) |
 | **2. Desacoplar** ✅ | `StudioProvider` + reducer con transacciones de deshacer/rehacer; `StageComposer` consume `SceneComposition`; quitar ~400 líneas de Studio de `CampaignOpening.tsx`; navegación sin remontar | `screens/studio/*`, `CampaignOpening.tsx`, `App.tsx` |
-| **3. Lienzo, coordenadas, capas y grilla** | Unidades % del escenario (arrastre medido con el rectángulo del escenario, no con `window.innerWidth`), plano de capas único, asas de escala/rotación, **grilla, ajuste magnético, ejes, márgenes de seguridad, guías inteligentes y alineación** (ver especificación abajo), selección múltiple para alinear, bloqueo de capa, fondo como capa con encuadre editable, nudges con teclado, inputs numéricos con borrador local (arregla el «-») | `campaign/studio/grid.ts`, `StageComposer`, `StudioCanvasOverlay`, `StudioGridOverlay`, CSS nuevo sin `!important` heredado |
+| **3. Lienzo, coordenadas, capas y grilla** ✅ | Unidades % del escenario (arrastre medido con el rectángulo del escenario, no con `window.innerWidth`), plano de capas único, asas de escala/rotación, **grilla, ajuste magnético, ejes, márgenes de seguridad, guías inteligentes y alineación** (ver especificación abajo), selección múltiple para alinear, bloqueo de capa, fondo como capa con encuadre editable, nudges con teclado, inputs numéricos con borrador local (arregla el «-») | `campaign/studio/grid.ts`, `StageComposer`, `StudioCanvasOverlay`, `StudioGridOverlay`, CSS nuevo sin `!important` heredado |
 | **4. UX del editor** | Inspector acoplable (hoja inferior plegable, lateral en escritorio); timeline con miniaturas y marcas de editado; «aplicar a toda la escena» y «copiar de la anterior»; guardado explícito con indicador, autoguardado en borrador y `beforeunload`; Salir/Previsualizar separados; globos y texto de diálogo editables; comparar antes/después | `StudioInspector`, `StudioTimeline` |
 | **5. Multimedia robusta** | Refcount y GC de huérfanos, panel de biblioteca (reutilizar y renombrar recursos, ver tamaño), comprobación de firma, paquete `.zip` sin dependencias, importación con «fusionar/reemplazar» confirmada | `campaign/studio/{media,package}.ts` |
 | **6. Publicación** | `public/studio/composiciones.json` cargado por el juego público; «Exportar para publicar» genera ese JSON y los assets normalizados; workflow manual de GitHub Actions que valida el paquete y abre un PR (siguiendo el patrón de `generate-prologue-v3.yml` y `tools/art-github.mjs`) | `published.ts`, `.github/workflows/studio-publicar.yml`, `tools/studio-publish.mjs` |
@@ -123,7 +123,7 @@ Studio v3 debe funcionar como un editor gráfico: personajes, sprites, globos, f
 | 1 | Activar/desactivar la grilla con un botón visible | Botón **▦ Grilla** en la barra fija del lienzo (no dentro del inspector plegable), con `aria-pressed`. Atajo `G` en escritorio. |
 | 2 | Grilla superpuesta sin modificar los recursos | `StudioGridOverlay`: un único elemento absoluto que cubre exactamente `.dcop-stage`, dibujado con `linear-gradient` repetidos (o SVG inline). No toca imágenes, fondos ni el DOM del juego. Las líneas son dobles (clara y oscura) para verse sobre cualquier fondo. |
 | 3 | Densidad y transparencia configurables | Densidad: 6, 8, 12 (por defecto), 16 o 24 columnas. Las celdas son **cuadradas**: el paso horizontal es 100/N % del ancho y el vertical se deriva de la proporción del escenario. Cada 4 celdas, una línea principal más marcada. Transparencia de 10 a 80 % (35 % por defecto). |
-| 4 | Snap to Grid independiente | Interruptor **🧲 Ajuste** separado de la grilla: se puede ajustar sin verla. Se aplica al arrastrar, a los nudges con flechas (1 celda con ajuste, 0,5 % sin él) y a las asas de escala (pasos de 5 %). Imanta el ancla y los bordes y centros de la caja del elemento a la línea más cercana dentro de un umbral de 8 px CSS. En escritorio, `Alt` mantenido lo suspende; en táctil se usa el interruptor. |
+| 4 | Snap to Grid independiente | Interruptor **🧲 Ajuste** separado de la grilla: se puede ajustar sin verla. Se aplica al arrastrar, a los nudges con flechas (1 celda con ajuste, 0,5 % sin él), a las asas de escala (pasos de 5 %) y a la rotación (pasos de 15°). Al arrastrar, el borde, el centro o el borde opuesto de la caja del elemento termina **siempre** sobre la línea de grilla más cercana; las guías inteligentes, si están activas, tienen prioridad dentro de un umbral de 8 px CSS. En escritorio, `Alt` mantenido lo suspende; en táctil se usa el interruptor. |
 | 5 | Guías: ejes, márgenes de seguridad, alineación | Interruptores independientes: **Ejes** (centro vertical y horizontal), **Márgenes seguros** (acción al 5 % y títulos al 10 % por lado; franja del panel de diálogo, `--dcop-story-panel-height`, sombreada) y **Guías inteligentes**: líneas de color al coincidir borde o centro con los ejes, los márgenes o los bordes y centros de otras capas, con el mismo umbral de imantado. |
 | 6 | Alinear personajes por arriba, abajo o centro | En el inspector: alineación vertical (arriba, centro, abajo) y horizontal (izquierda, centro, derecha). La referencia puede ser el escenario, la zona segura o la selección. Selección múltiple con `Shift`+clic, o en táctil con el modo «Seleccionar varios». Acción **«Igualar suelo»** para poner los pies de varios personajes en la misma línea base. Se deshace como una sola acción. |
 | 7 | Controles numéricos precisos | X, Y (% del escenario, 2 decimales) y Escala (%). Mientras se teclea, el valor vive en un borrador local, así que «-», «-1» y el campo vacío son válidos, y se confirma con `Enter` o al salir del campo. Botones ± por paso. Los valores escritos **no se imantan**: se respetan exactamente. |
@@ -183,6 +183,33 @@ Implementación: la matemática pura (paso de grilla, `snapValue`, `snapRect`, a
 - **Pruebas nuevas:**
   - Unitarias de composición e historial.
   - E2E: un arrastre equivale a un paso de deshacer; el historial se conserva entre intervenciones; las unidades son del escenario en 390 y en horizontal; migración del borrador v2; salir del editor.
+
+### Estado de la fase 3 (implementada)
+- **Plano único de capas.** En QA, `.dcop-art` se aísla y el grupo de figuras deja de crear su propio contexto de apilamiento. Los elementos nativos ocupan las bandas `z` del documento: atenuado 12, hablante 14, destello 44, VS 46, globo 47; las capas añadidas, 48–49 por defecto. Un efecto puede ir **entre** dos personajes (`z` 13: delante de Domingo atenuado, detrás de Xervias hablando); está verificado con `elementFromPoint`. El juego público no cambia: el plano solo se activa con el editor abierto o con capas en la escena. Desaparece el adaptador provisional `interimCssLayer`.
+- **Grilla y guías** (`campaign/studio/grid.ts`, `screens/studio/StudioCanvasOverlay.tsx`):
+  - Barra fija con Grilla (atajo `G`), Ajuste, Ejes, Márgenes, Guías y Opciones (densidad 6–24 columnas y transparencia 10–80 %).
+  - Celdas cuadradas.
+  - El ajuste deja el borde, el centro o el borde opuesto **siempre** sobre una línea; las guías inteligentes (ejes, márgenes y otras capas) tienen prioridad dentro de 8 px.
+  - `Alt` suspende el ajuste.
+  - Márgenes del 5 % y el 10 %, más la franja del diálogo.
+  - Las preferencias se guardan en `decreto-real.studio.preferencias-editor.v1`, nunca en el documento ni en el respaldo.
+  - Ninguna capa del lienzo recibe eventos.
+- **Asas** de escala (pasos de 5 % con ajuste) y de rotación (15°) en las esquinas inferiores, donde el panel no las tapa.
+- **Alineación:**
+  - Arriba, centro y abajo; izquierda, centro y derecha.
+  - Referencia: automática, escenario, zona segura o selección.
+  - «Igualar suelo» lleva los pies de todos a la línea más baja.
+  - Selección múltiple con `Shift`+clic o con «Seleccionar varios».
+  - Cada alineación se deshace con un solo paso.
+- **Bloqueo por capa.** El **fondo** es una capa con encuadre (X, Y y escala), bloqueada por defecto.
+- **Controles numéricos exactos** (X, Y, escala, capa, rotación y opacidad) con borrador local: el «-» se puede teclear y los valores escritos no se imantan. Hay botones ± y flechas: una celda con ajuste, 0,5 % sin él.
+- **Escritorio:** el inspector se acopla al margen derecho, fuera del escenario.
+- **Limitaciones conocidas:**
+  - El niño se ordena dentro del grupo de la madre: su contenedor tiene filtro y, por tanto, contexto de apilamiento propio.
+  - La caja de selección y la alineación usan la caja del sprite, incluida su transparencia.
+- **Pruebas:**
+  - Unitarias de grilla, ajuste, guías, alineación, nudges y preferencias.
+  - `tests/e2e/studio-canvas.spec.ts` en `mobile-320`, `mobile-390`, `landscape` y el nuevo proyecto `desktop-1280` (ratón).
 
 Reutilizar sin reescribir: `normalizeStudioTransform`/`parseStudioDocument` (base del saneado v3), `validateStudioMedia`/`withStore` (IndexedDB), `isCampaignQaAvailable`/`getCampaignStorage` (gating y aislamiento del progreso), el patrón de manifiestos de `prologueV2.ts`/`prologueV3.ts` y la descarga `studioDownload`.
 

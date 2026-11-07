@@ -16,7 +16,8 @@ import {
   prologueComposition, prologueDomingoSprite, type PrologueArtResolver,
 } from '../campaign/studio/composition';
 import { StudioProvider, useStudio } from './studio/StudioContext';
-import StageComposer from './studio/StageComposer';
+import StageComposer, { StudioBackdrop, useStudioPlane } from './studio/StageComposer';
+import StudioCanvasOverlay from './studio/StudioCanvasOverlay';
 import StudioInspector from './studio/StudioInspector';
 import './campaign-opening.css';
 import './story-dialogue.css';
@@ -178,9 +179,7 @@ const CampaignOpening:React.FC=()=>{
   const studioKey=composition?prologueSceneKey(composition.beatId):null;
   const studioScene=studio.scene(studioKey);
   const titleVisible=studioScene?.titleVisible!==false;
-  const backgroundAsset=studioScene?.background?.assetId;
-  const renderedBackdrop=backgroundAsset?(studio.mediaUrls[backgroundAsset]??background):background;
-  const backdropIsVideo=Boolean(backgroundAsset&&studio.doc.assets?.[backgroundAsset]?.mime.startsWith('video/'));
+  const studioPlane=useStudioPlane(studioKey);
   const currentStudioIndex=isAfter?OPENING_BEATS.length+after:beat;
   const saveIfDirty=()=>{
     studio.commit();
@@ -216,10 +215,8 @@ const CampaignOpening:React.FC=()=>{
           onClick={()=>navigate('/campania/prologo?studio=1&studioStep='+currentStudioIndex)}>
           ✎ Volver a Studio
         </button>}
-      {!isFinal&&!isBattle&&composition&&<div className="dcop-art" aria-hidden="true">
-        {backdropIsVideo?<video className="dcop-backdrop" src={renderedBackdrop}
-          autoPlay muted loop playsInline data-testid="studio-video-background"/>:
-          <img className="dcop-backdrop" src={renderedBackdrop} alt=""/>}
+      {!isFinal&&!isBattle&&composition&&<div className={'dcop-art'+(studioPlane?' dcop-studio-plane':'')} aria-hidden="true">
+        <StudioBackdrop sceneKey={studioKey} src={background} stageRef={stageRef}/>
         {scene==='pergamino'&&<div className="dcop-scroll-held">
           {artReady&&<img className="dcop-scroll-illustration" src={prologueArtUrl('P01')} alt=""/>}
           <div className={'dcop-parchment'+(artReady?' dcop-parchment-overlay':'')}>
@@ -248,6 +245,8 @@ const CampaignOpening:React.FC=()=>{
         </StageComposer>
       </div>}
       {studioEnabled&&studioStep!==null&&studioKey&&composition&&
+        <StudioCanvasOverlay sceneKey={studioKey} stageRef={stageRef}/>}
+      {studioEnabled&&studioStep!==null&&studioKey&&composition&&
         <StudioInspector
           sceneKey={studioKey}
           sceneIndex={studioStep}
@@ -256,6 +255,7 @@ const CampaignOpening:React.FC=()=>{
           title={speaker+' · '+(prologue?.title??phaseTitles[scene]??'Desenlace')}
           nativeLayerIds={compositionLayerIds(composition)}
           nativeBubbleText={composition.bubble?.text??null}
+          stageRef={stageRef}
           onNavigate={studioNavigate}
           onPreview={studioPreview}
           onExit={studioExit}/>
