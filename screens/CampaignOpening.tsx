@@ -4,9 +4,14 @@ import { awardMissionStars, loadCampaignProgress, saveCampaignProgress } from '.
 import { getCampaignStorage, isCampaignQaAvailable } from '../campaign/campaignQA';
 import {
   readStudioDocument,saveStudioDocument,parseStudioDocument,withStudioTransform,withoutStudioTransform,
+  withStudioSettings,withStudioAsset,addStudioExtra,removeStudioExtra,withStudioExtraTransform,withStudioExtraAsset,
   getStudioTransform,studioSceneKey,STUDIO_ACTORS,
-  type StudioActor,type StudioTransform,type StudioDocument
+  type StudioActor,type StudioTransform,type StudioDocument,type StudioExtra
 } from '../campaign/studioLayout';
+import {
+  addStudioMedia,loadStudioMediaUrls,revokeStudioMediaUrls,exportStudioMedia,
+  importStudioMedia,type StudioPortableMedia
+} from '../campaign/studioMedia';
 import DecretoRealStudioPanel from './DecretoRealStudioPanel';
 import GameBoard from './GameBoard';
 import { GUIDED_STEPS } from '../campaign/guidedOpeningDuel';
@@ -118,28 +123,33 @@ const CampaignOpening:React.FC=()=>{
   const parsedStudioStep=studioRawStep===null?NaN:Number(studioRawStep);
   const studioStep=studioEnabled&&Number.isInteger(parsedStudioStep)&&parsedStudioStep>=0&&
     parsedStudioStep<OPENING_BEATS.length+AFTER_DUEL_BEATS.length?parsedStudioStep:null;
+  const previewRaw=query.get('previewStep');
+  const parsedPreview=previewRaw===null?NaN:Number(previewRaw);
+  const previewStep=isCampaignQaAvailable()&&Number.isInteger(parsedPreview)&&
+    parsedPreview>=0&&parsedPreview<OPENING_BEATS.length+AFTER_DUEL_BEATS.length?parsedPreview:null;
+  const forcedStep=studioStep??previewStep;
   const startBeat=React.useMemo(()=>{
-    if(studioStep!==null)return studioStep<OPENING_BEATS.length?studioStep:OPENING_BEATS.length+1;
+    if(forcedStep!==null)return forcedStep<OPENING_BEATS.length?forcedStep:OPENING_BEATS.length+1;
     if(override==='duelo')return OPENING_BEATS.length;
     if(override==='fin')return OPENING_BEATS.length+2;
     if(override==='desenlace'||override==='zhinchi'||override==='cetro'||override==='resolucion'||override==='reflexion')
       return OPENING_BEATS.length+1;
     if(override){const index=OPENING_BEATS.findIndex(x=>x.scene===override);if(index>=0)return index;}
     return saved.beat;
-  },[override,saved.beat,studioStep]);
+  },[override,saved.beat,forcedStep]);
   const [beat,setBeat]=React.useState(startBeat);
   // Combat returns to the beginning of the real board if the player leaves mid-duel.
   const duel=0;
-  const initialAfter=studioStep!==null&&studioStep>=OPENING_BEATS.length
-    ? studioStep-OPENING_BEATS.length : override && ['desenlace','zhinchi','cetro','resolucion','reflexion'].includes(override)
+  const initialAfter=forcedStep!==null&&forcedStep>=OPENING_BEATS.length
+    ? forcedStep-OPENING_BEATS.length : override && ['desenlace','zhinchi','cetro','resolucion','reflexion'].includes(override)
     ? Math.max(0,AFTER_DUEL_BEATS.findIndex(x=>x.phase===override)) : override?0:saved.after;
   const [after,setAfter]=React.useState(initialAfter);
   // React Router can reuse this screen when only ?escena= changes.
   // QA jumps must update both the story phase and its dialogue index.
   React.useEffect(()=>{
-    if(studioStep!==null){
-      setBeat(studioStep<OPENING_BEATS.length?studioStep:OPENING_BEATS.length+1);
-      setAfter(studioStep>=OPENING_BEATS.length?studioStep-OPENING_BEATS.length:0);
+    if(forcedStep!==null){
+      setBeat(forcedStep<OPENING_BEATS.length?forcedStep:OPENING_BEATS.length+1);
+      setAfter(forcedStep>=OPENING_BEATS.length?forcedStep-OPENING_BEATS.length:0);
       return;
     }
     if(!override)return;
@@ -166,16 +176,27 @@ const CampaignOpening:React.FC=()=>{
       setBeat(target);
       setAfter(0);
     }
-  },[override,studioStep]);
+  },[override,forcedStep]);
   const [artReady,setArtReady]=React.useState(false);
   const [v2Ready,setV2Ready]=React.useState(false);
   const [v3Ready,setV3Ready]=React.useState(false);
   const [studioDoc,setStudioDoc]=React.useState<StudioDocument>(readStudioDocument);
   const [studioSaved,setStudioSaved]=React.useState(()=>JSON.stringify(readStudioDocument()));
-  const [studioSelected,setStudioSelected]=React.useState<StudioActor|null>(null);
+  const [studioSelected,setStudioSelected]=React.useState<string|null>(null);
+  const [mediaUrls,setMediaUrls]=React.useState<Record<string,string>>({});
+  const mediaIds=Object.keys(studioDoc.assets??{}).sort().join('|');
+  React.useEffect(()=>{
+    if(!isCampaignQaAvailable())return;
+    let cancelled=false;
+    let urls:Record<string,string>={};
+    void loadStudioMediaUrls(mediaIds?mediaIds.split('|'):[])
+      .then(next=>{urls=next;if(cancelled)revokeStudioMediaUrls(next);else setMediaUrls(next);})
+      .catch(()=>setStudioStatus('No se pudieron cargar algunos archivos locales.'));
+    return ()=>{cancelled=true;revokeStudioMediaUrls(urls);};
+  },[mediaIds]);
   const [studioHistory,setStudioHistory]=React.useState<StudioDocument[]>([]);
   const [studioStatus,setStudioStatus]=React.useState('');
-  const studioDrag=React.useRef<{actor:StudioActor;pointerId:number;startX:number;startY:number;origin:StudioTransform}|null>(null);
+  const studioDrag=React.useRef<{actor:string;pointerId:number;startX:number;startY:number;origin:StudioTransform}|null>(null);
   const {playSound}=useAudio();
   React.useEffect(()=>{
     if(typeof fetch!=='function')return;
