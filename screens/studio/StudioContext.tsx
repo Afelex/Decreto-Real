@@ -2,10 +2,14 @@ import React from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { isCampaignQaAvailable } from '../../campaign/campaignQA';
 import { emptyStudioDocumentV3, normalizeStudioDocumentV3, type StudioDocumentV3, type StudioSceneV3 } from '../../campaign/studio/schema';
-import { changedSceneKeys, withAsset, withoutUnusedAssets } from '../../campaign/studio/ops';
+import { assetUsage, changedSceneKeys, mergeStudioDocuments, referencedAssetIds, withAsset, withoutUnusedAssets } from '../../campaign/studio/ops';
 import {
-  parseAnyStudioDocument, readStudioDocumentV3, saveStudioDocumentV3,
+  migrateLegacyStudioDocument, readStudioDocumentV3, saveStudioDocumentV3,
 } from '../../campaign/studio/migrate';
+import { STUDIO_STORAGE_KEY, parseStudioDocument } from '../../campaign/studioLayout';
+import {
+  STUDIO_ZIP_FILENAME, buildStudioPackage, parseStudioPackage, summarizeImport, type ParsedStudioPackage,
+} from '../../campaign/studio/package';
 import {
   canRedo, canUndo, createStudioHistory, isStudioDirty, studioHistoryReducer,
   type StudioHistoryState, type StudioUpdate,
@@ -15,17 +19,24 @@ import {
   type StudioEditorPrefs,
 } from '../../campaign/studio/grid';
 import {
-  addStudioMedia, exportStudioMedia, importStudioMedia, loadStudioMediaUrls, revokeStudioMediaUrls,
-  type StudioPortableMedia,
+  addStudioMedia, deleteStudioMedia, listStudioMedia, loadStudioMediaUrls, putStudioMediaBytes,
+  readStudioMediaBytes, renameStudioMedia, revokeStudioMediaUrls, type StudioMediaInfo,
 } from '../../campaign/studioMedia';
 
 export const STUDIO_PACKAGE_VERSION = 3;
 export type StudioAudience = 'player'|'developer';
 /** Autoguardado continuo del editor (recuperación tras cerrar sin guardar). */
 export const STUDIO_AUTOSAVE_KEY = 'decreto-real.studio.autoguardado.v3';
-export const STUDIO_PROJECT_FILENAME = 'decreto-real-studio-proyecto.json';
+export const STUDIO_PROJECT_FILENAME = STUDIO_ZIP_FILENAME;
 
-export type StudioStoredMedia = {id:string;name:string;mime:string};
+export type StudioStoredMedia = {id:string;name:string;mime:string;reused:boolean};
+export type StudioImportSummary = ReturnType<typeof summarizeImport>&{fileName:string;format:'zip'|'json'};
+export type StudioLibraryItem = StudioMediaInfo&{
+  /** Escenas del documento actual que usan el archivo. */
+  usedIn:string[];
+  /** Lo usa el borrador, el historial de deshacer o un respaldo local: no se puede borrar. */
+  protected:boolean;
+};
 export type StudioContextValue = {
   /** Los borradores locales se aplican (QA disponible). */
   active:boolean;
@@ -71,7 +82,18 @@ export type StudioContextValue = {
   /** Guarda en IndexedDB; el llamador añade el recurso al documento con `withAsset`. */
   storeMedia:(file:File)=>Promise<StudioStoredMedia>;
   exportProject:()=>Promise<void>;
+  /** Lee un respaldo y prepara la importación (no cambia nada hasta confirmar). */
   importProject:(file:File)=>Promise<void>;
+  pendingImport:StudioImportSummary|null;
+  confirmImport:(mode:'merge'|'replace')=>Promise<void>;
+  cancelImport:()=>void;
+  /** Biblioteca multimedia local. */
+  listLibrary:()=>Promise<StudioLibraryItem[]>;
+  renameMedia:(id:string,name:string)=>Promise<void>;
+  deleteMedia:(id:string)=>Promise<void>;
+  /** Borra los archivos que nada usa; devuelve cuántos y cuánto espacio libera. */
+  cleanLibrary:()=>Promise<{count:number;bytes:number}>;
+  libraryVersion:number;
 };
 
 const noop=()=>{/* Studio inactivo */};
@@ -86,6 +108,9 @@ const INACTIVE:StudioContextValue={
   apply:noop,begin:noop,preview:noop,commit:noop,undo:noop,redo:noop,save:()=>false,
   storeMedia:()=>Promise.reject(new Error('Studio no está disponible.')),
   exportProject:()=>Promise.resolve(),importProject:()=>Promise.resolve(),
+  pendingImport:null,confirmImport:()=>Promise.resolve(),cancelImport:noop,
+  listLibrary:()=>Promise.resolve([]),renameMedia:()=>Promise.resolve(),deleteMedia:()=>Promise.resolve(),
+  cleanLibrary:()=>Promise.resolve({count:0,bytes:0}),libraryVersion:0,
 };
 const StudioContext=React.createContext<StudioContextValue>(INACTIVE);
 export const useStudio=():StudioContextValue=>React.useContext(StudioContext);
@@ -93,8 +118,8 @@ export const useStudio=():StudioContextValue=>React.useContext(StudioContext);
 function draftStorage():Storage|null {
   try{return typeof window!=='undefined'?window.localStorage:null;}catch{return null;}
 }
-function download(name:string,body:string){
-  const url=URL.createObjectURL(new Blob([body],{type:'application/json'}));
+function download(name:string,body:BlobPart,type='application/json'){
+  const url=URL.createObjectURL(new Blob([body],{type}));
   const link=document.createElement('a');
   link.href=url;link.download=name;
   document.body.appendChild(link);link.click();link.remove();
@@ -187,6 +212,24 @@ export function StudioProvider({children}:{children:React.ReactNode}){
   },[active,assetKey]);
   React.useEffect(()=>()=>revokeStudioMediaUrls(urlsRef.current),[]);
 
+  const [pendingImport,setPendingImport]=React.useState<{summary:StudioImportSummary;parsed:ParsedStudioPackage}|null>(null);
+  const [libraryVersion,setLibraryVersion]=React.useState(0);
+  /**
+   * Archivos que no se pueden borrar: los usa el documento actual, cualquier
+   * paso del historial de deshacer/rehacer, el borrador guardado, el
+   * autoguardado o el borrador v2 que se conserva como respaldo.
+   */
+  const protectedAssetIds=React.useCallback(()=>{
+    const ids=new Set<string>();
+    const add=(doc:StudioDocumentV3|null|undefined)=>{if(doc)for(const id of referencedAssetIds(doc))ids.add(id);};
+    const h=historyRef.current;
+    [h.doc,h.saved,h.pending,...h.past,...h.future].forEach(add);
+    const storage=draftStorage();
+    try{add(readStudioDocumentV3(storage).doc);}catch{/* sin borrador */}
+    try{const raw=storage?.getItem(STUDIO_AUTOSAVE_KEY);if(raw)add(normalizeStudioDocumentV3((JSON.parse(raw) as {doc?:unknown}).doc));}catch{/* sin autoguardado */}
+    try{const raw=storage?.getItem(STUDIO_STORAGE_KEY);if(raw)add(migrateLegacyStudioDocument(parseStudioDocument(raw)).doc);}catch{/* sin borrador v2 */}
+    return ids;
+  },[]);
   const save=React.useCallback(()=>{
     const ok=saveStudioDocumentV3(draftStorage(),historyRef.current.doc);
     if(ok){
@@ -238,38 +281,75 @@ export function StudioProvider({children}:{children:React.ReactNode}){
     save,
     storeMedia:async file=>{
       const record=await addStudioMedia(file);
-      return {id:record.id,name:record.name,mime:record.mime};
+      setLibraryVersion(v=>v+1);
+      return {id:record.id,name:record.name,mime:record.mime,reused:record.reused};
     },
     exportProject:async()=>{
       try{
         setStatus('Preparando respaldo con imágenes y videos…');
-        // Solo se exportan los recursos que alguna escena usa.
+        // Solo se exportan los recursos que alguna escena usa; sin base64.
         const document=withoutUnusedAssets(historyRef.current.doc);
-        const media=await exportStudioMedia(Object.keys(document.assets??{}));
-        download(STUDIO_PROJECT_FILENAME,JSON.stringify({studioPackage:STUDIO_PACKAGE_VERSION,document,media}));
-        setStatus('Proyecto completo exportado con sus archivos multimedia.');
+        const files=await readStudioMediaBytes([...referencedAssetIds(document)]);
+        const zip=buildStudioPackage(document,files);
+        download(STUDIO_ZIP_FILENAME,zip as BlobPart,'application/zip');
+        setStatus('Proyecto exportado (.zip) con '+files.length+' archivos multimedia.');
       }catch(err){setStatus(err instanceof Error?err.message:'Error al exportar.');}
     },
     importProject:async file=>{
       try{
-        if(file.size>100_000_000)throw new Error('Archivo demasiado grande (máximo 100 MB).');
-        const payload:unknown=JSON.parse(await file.text());
-        const pack=payload&&typeof payload==='object'?payload as {studioPackage?:unknown;document?:unknown;media?:unknown}:{};
-        if(pack.studioPackage===2||pack.studioPackage===3){
-          if(!Array.isArray(pack.media))throw new Error('Faltan los recursos multimedia.');
-          const loaded=parseAnyStudioDocument(JSON.stringify(pack.document));
-          await importStudioMedia(pack.media as StudioPortableMedia[]);
-          dispatch({type:'replace',doc:loaded.doc});
-          setStatus(importMessage(loaded.report?.dropped.length??0));
-        }else{
-          const loaded=parseAnyStudioDocument(JSON.stringify(payload));
-          dispatch({type:'replace',doc:loaded.doc});
-          setStatus(importMessage(loaded.report?.dropped.length??0));
-        }
+        if(file.size>210_000_000)throw new Error('Archivo demasiado grande (máximo 200 MB).');
+        const parsed=parseStudioPackage(new Uint8Array(await file.arrayBuffer()));
+        const summary={...summarizeImport(historyRef.current.doc,parsed),fileName:file.name.slice(0,80),format:parsed.format};
+        setPendingImport({summary,parsed});
+        setStatus('Revisa el respaldo y elige cómo importarlo.');
+      }catch(err){setPendingImport(null);setStatus(err instanceof Error?err.message:'No se pudo importar.');}
+    },
+    pendingImport:pendingImport?.summary??null,
+    confirmImport:async mode=>{
+      if(!pendingImport)return;
+      try{
+        const {parsed}=pendingImport;
+        await putStudioMediaBytes(parsed.media);
+        const doc=mode==='merge'?mergeStudioDocuments(historyRef.current.doc,parsed.doc):parsed.doc;
+        dispatch({type:'replace',doc});
+        setPendingImport(null);
+        setLibraryVersion(v=>v+1);
         select(null);
+        setStatus(importMessage(parsed.report?.dropped.length??0,mode));
       }catch(err){setStatus(err instanceof Error?err.message:'No se pudo importar.');}
     },
+    cancelImport:()=>{setPendingImport(null);setStatus('Importación cancelada. No se cambió nada.');},
+    listLibrary:async()=>{
+      const usage=assetUsage(historyRef.current.doc);
+      const guarded=protectedAssetIds();
+      return (await listStudioMedia()).map(item=>({...item,usedIn:usage[item.id]??[],protected:guarded.has(item.id)}));
+    },
+    renameMedia:async(id,name)=>{
+      await renameStudioMedia(id,name);
+      const clean=name.trim().slice(0,100);
+      const meta=historyRef.current.doc.assets?.[id];
+      if(meta&&meta.name!==clean)dispatch({type:'apply',update:doc=>withAsset(doc,id,{...meta,name:clean})});
+      setLibraryVersion(v=>v+1);
+      setStatus('Archivo renombrado.');
+    },
+    deleteMedia:async id=>{
+      if(protectedAssetIds().has(id))throw new Error('Este archivo está en uso (o en el historial). Quítalo primero de las escenas y guarda.');
+      await deleteStudioMedia([id]);
+      setLibraryVersion(v=>v+1);
+      setStatus('Archivo eliminado de la biblioteca.');
+    },
+    cleanLibrary:async()=>{
+      const guarded=protectedAssetIds();
+      const orphans=(await listStudioMedia()).filter(item=>!guarded.has(item.id));
+      await deleteStudioMedia(orphans.map(item=>item.id));
+      setLibraryVersion(v=>v+1);
+      const bytes=orphans.reduce((n,item)=>n+item.size,0);
+      setStatus(orphans.length?'Biblioteca limpia: '+orphans.length+' archivos sin uso eliminados.':'No hay archivos sin uso.');
+      return {count:orphans.length,bytes};
+    },
+    libraryVersion,
   }),[active,editing,history,mediaUrls,status,selected,group,multiMode,prefs,guides,audience,compare,recovery,
+    pendingImport,libraryVersion,protectedAssetIds,
     toggleGroup,clearGroup,setPrefs,save,undoOrRedo]);
 
   // Autoguardado continuo mientras hay cambios sin guardar (no sustituye a Guardar).
@@ -309,11 +389,6 @@ export function StudioProvider({children}:{children:React.ReactNode}){
   return <StudioContext.Provider value={value}>{children}</StudioContext.Provider>;
 }
 
-const importMessage=(dropped:number)=>'Proyecto importado. Revisa las escenas y pulsa Guardar.'+
+const importMessage=(dropped:number,mode:'merge'|'replace')=>
+  (mode==='merge'?'Proyecto fusionado con tu borrador.':'Proyecto importado (reemplazó tu borrador).')+' Revisa las escenas y pulsa Guardar.'+
   (dropped?' '+dropped+' intervenciones ya no existen y se omitieron.':'');
-
-/** Añade un archivo a la biblioteca y devuelve la actualización que lo registra en el documento. */
-export async function storeStudioFile(studio:StudioContextValue,file:File):Promise<{media:StudioStoredMedia;register:StudioUpdate}>{
-  const media=await studio.storeMedia(file);
-  return {media,register:doc=>withAsset(doc,media.id,{name:media.name,mime:media.mime})};
-}

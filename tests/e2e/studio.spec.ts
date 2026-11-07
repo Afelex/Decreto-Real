@@ -1,4 +1,5 @@
 import {test,expect} from '@playwright/test';
+import {readZip} from '../../campaign/studio/zip';
 
 test('Decreto Real Studio opens from QA and edits the same scene used by the game',async({page},info)=>{
   test.skip(info.project.name!=='mobile-390','Interactive Studio MVP on a phone');
@@ -53,14 +54,14 @@ test('Studio keeps changes isolated per dialogue beat and supports undo',async({
   await expect(page.getByTestId('studio-y')).toHaveValue('4');
 });
 
-test('Studio exports its document as versioned JSON',async({page},info)=>{
+test('Studio exports its project as a versioned ZIP',async({page},info)=>{
   test.skip(info.project.name!=='mobile-390','Studio file backup');
   await page.goto('/Decreto-Real/?drDev=1#/studio');
   const [download]=await Promise.all([
     page.waitForEvent('download'),
     page.getByRole('button',{name:'⇩ Exportar proyecto'}).click()
   ]);
-  expect(download.suggestedFilename()).toBe('decreto-real-studio-proyecto.json');
+  expect(download.suggestedFilename()).toBe('decreto-real-studio-proyecto.zip');
 });
 
 
@@ -142,7 +143,9 @@ test('Studio v2 adds, moves and deletes an independent sprite and accepts an eff
   const path=await download.path();
   if(!path)throw new Error('No se pudo leer el respaldo');
   const fs=await import('node:fs/promises');
-  const pack=JSON.parse(await fs.readFile(path,'utf8'));
+  const entries=readZip(new Uint8Array(await fs.readFile(path)));
+  const pack=JSON.parse(new TextDecoder().decode(entries.find(e=>e.name==='proyecto.json')!.data));
+  expect(entries.filter(e=>e.name.startsWith('media/')).length).toBe(pack.media.length);
   expect(pack.studioPackage).toBe(3);
   expect(pack.document.version).toBe(3);
   // The deleted sprite's file is no longer referenced, so it is not exported.

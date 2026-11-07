@@ -1,4 +1,5 @@
 import {test,expect,type Page} from '@playwright/test';
+import {readZip} from '../../campaign/studio/zip';
 
 /**
  * Decreto Real Studio v3 · fase 3: lienzo, grilla, ajuste magnético, guías,
@@ -305,7 +306,8 @@ test('grid and guides exist only inside the editor and never reach the exported 
     page.getByRole('button',{name:'⇩ Exportar proyecto'}).click(),
   ]);
   const fs=await import('node:fs/promises');
-  const text=await fs.readFile((await download.path())!,'utf8');
+  const entries=readZip(new Uint8Array(await fs.readFile((await download.path())!)));
+  const text=new TextDecoder().decode(entries.find(e=>e.name==='proyecto.json')!.data);
   expect(text).not.toMatch(/"(grid|snap|columns|axes|safe|smart|prefs)"/);
   await page.getByTestId('studio-preview').click();
   await expect(page.getByTestId('studio-return')).toBeVisible();

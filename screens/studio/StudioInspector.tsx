@@ -3,18 +3,19 @@ import {
   alignBoxes, gridStep, nudgeDelta, type AlignMode, type AlignReference,
 } from '../../campaign/studio/grid';
 import {
-  copyScene, effectiveDialogueStyle, layerOrDefault, sceneLayers, withBackgroundFrame, withDialogue,
+  copyScene, effectiveDialogueStyle, layerOrDefault, withAsset, sceneLayers, withBackgroundFrame, withDialogue,
   withDialogueDefaults, withLayer, withLayerPatch, withSceneSettings, withoutLayer,
 } from '../../campaign/studio/ops';
 import { toggleBold } from '../../campaign/studio/richText';
 import StudioTimeline, { type TimelineItem } from './StudioTimeline';
+import StudioLibrary, { formatBytes, type LibraryUse } from './StudioLibrary';
 import {
   STUDIO_ACTORS, STUDIO_BACKGROUND_SCALE, STUDIO_DIALOGUE_BOX_SCALE, STUDIO_DIALOGUE_TEXT_SCALE, STUDIO_LIMITS, actorLayerId, defaultLayerTransform, isBackgroundLocked,
   type StudioLayer, type StudioLayerTransform, type StudioMediaLayer,
 } from '../../campaign/studio/schema';
 import { BACKGROUND_ID, layerBoxes } from './stageGeometry';
 import { actionTargets, moveLayersUpdate } from './studioActions';
-import { storeStudioFile, useStudio } from './StudioContext';
+import { useStudio } from './StudioContext';
 import '../decreto-real-studio.css';
 
 const NATIVE_LABELS:Record<string,string>={
@@ -27,7 +28,7 @@ const FILE_INPUTS=[
   {id:'add',accept:'image/png,image/jpeg,image/webp,image/gif'},
   {id:'effect',accept:'image/png,image/jpeg,image/webp,image/gif,video/mp4,video/webm'},
   {id:'background',accept:'image/png,image/jpeg,image/webp,image/gif,video/mp4,video/webm'},
-  {id:'project',accept:'.json,application/json'},
+  {id:'project',accept:'.zip,.json,application/zip,application/json'},
 ] as const;
 type FileInputId=typeof FILE_INPUTS[number]['id'];
 
@@ -102,6 +103,7 @@ export default function StudioInspector(props:Props){
   const [busy,setBusy]=React.useState(false);
   const [alignRef,setAlignRef]=React.useState<'auto'|AlignReference>('auto');
   const [timelineOpen,setTimelineOpen]=React.useState(false);
+  const [libraryOpen,setLibraryOpen]=React.useState(false);
   const [dialogueScope,setDialogueScope]=React.useState<'beat'|'all'>('beat');
   const dialogueRef=React.useRef<HTMLTextAreaElement|null>(null);
   const inputs=React.useRef<Partial<Record<FileInputId,HTMLInputElement|null>>>({});
@@ -175,34 +177,45 @@ export default function StudioInspector(props:Props){
       reference?'Suelo igualado':'Elementos alineados');
   };
 
+  /**
+   * Coloca un archivo de la biblioteca en la intervención: como sprite, efecto,
+   * fondo o reemplazo del elemento seleccionado. Una sola entrada de deshacer.
+   */
+  const placeMedia=(use:LibraryUse,media:{id:string;name:string;mime:string},note='')=>{
+    const register=(doc:typeof studio.doc)=>withAsset(doc,media.id,{name:media.name,mime:media.mime});
+    const isImage=media.mime.startsWith('image/');
+    if((use==='replace'||use==='sprite')&&!isImage)
+      throw new Error(use==='sprite'?'Un sprite debe ser PNG, WebP, JPG o GIF.':'Un personaje requiere una imagen PNG, WebP, JPG o GIF.');
+    if(use==='replace'){
+      if(!selected||selected==='bubble'||isBackground)throw new Error('Selecciona primero un personaje o un sprite.');
+      const target=selected;
+      studio.apply(doc=>{
+        const next=register(doc);
+        const base=layerOrDefault(next,sceneKey,target);
+        if(!base)throw new Error('El elemento ya no existe.');
+        return base.kind==='actor'?withLayer(next,sceneKey,{...base,assetId:media.id,visible:true}):
+          withLayerPatch(next,sceneKey,target,{assetId:media.id} as Partial<StudioMediaLayer>);
+      },'Imagen reemplazada.'+note+' Guarda el borrador para conservarla.');
+    }else if(use==='sprite'||use==='effect'){
+      const kind=use==='effect'?'effect':'image';
+      const layer:StudioMediaLayer={id:'extra-'+crypto.randomUUID(),kind,name:media.name.slice(0,100),
+        assetId:media.id,...defaultLayerTransform(kind)};
+      studio.apply(doc=>withLayer(register(doc),sceneKey,layer),
+        (kind==='effect'?'Efecto añadido.':'Sprite añadido.')+note+' Puedes moverlo y escalarlo.');
+      studio.select(layer.id);
+    }else{
+      studio.apply(doc=>withSceneSettings(register(doc),sceneKey,{background:{assetId:media.id}}),
+        'Fondo cambiado solo en esta intervención.'+note);
+    }
+  };
   const withFile=async(id:FileInputId,file:File)=>{
     setBusy(true);
     try{
       if(id==='project'){await studio.importProject(file);return;}
-      if((id==='replace'||id==='add')&&!file.type.startsWith('image/'))
-        throw new Error(id==='add'?'Un sprite debe ser PNG, WebP, JPG o GIF.':'Un personaje requiere una imagen PNG, WebP, JPG o GIF.');
       if(id==='replace'&&(!selected||selected==='bubble'||isBackground))throw new Error('Selecciona primero un personaje o un sprite.');
-      const {media:stored,register}=await storeStudioFile(studio,file);
-      if(id==='replace'){
-        const target=selected!;
-        studio.apply(doc=>{
-          const next=register(doc);
-          const base=layerOrDefault(next,sceneKey,target);
-          if(!base)throw new Error('El elemento ya no existe.');
-          return base.kind==='actor'?withLayer(next,sceneKey,{...base,assetId:stored.id,visible:true}):
-            withLayerPatch(next,sceneKey,target,{assetId:stored.id} as Partial<StudioMediaLayer>);
-        },'Imagen reemplazada. Guarda el borrador para conservarla.');
-      }else if(id==='add'||id==='effect'){
-        const kind=id==='effect'?'effect':'image';
-        const layer:StudioMediaLayer={id:'extra-'+crypto.randomUUID(),kind,name:file.name.slice(0,100),
-          assetId:stored.id,...defaultLayerTransform(kind)};
-        studio.apply(doc=>withLayer(register(doc),sceneKey,layer),
-          kind==='effect'?'Efecto añadido. Puedes moverlo y escalarlo.':'Sprite añadido. Puedes moverlo y escalarlo.');
-        studio.select(layer.id);
-      }else{
-        studio.apply(doc=>withSceneSettings(register(doc),sceneKey,{background:{assetId:stored.id}}),
-          'Fondo cambiado solo en esta intervención.');
-      }
+      const stored=await studio.storeMedia(file);
+      const use:LibraryUse=id==='add'?'sprite':id==='effect'?'effect':id==='background'?'background':'replace';
+      placeMedia(use,stored,stored.reused?' (archivo ya existente en la biblioteca: no se duplicó)':'');
     }catch(err){studio.setStatus(err instanceof Error?err.message:'No se pudo usar el archivo.');}
     finally{setBusy(false);}
   };
@@ -279,6 +292,12 @@ export default function StudioInspector(props:Props){
   const numeric={onBegin:studio.begin,onCommit:studio.commit};
   const status=studio.status||(studio.dirty?'Cambios pendientes de guardar':'Borrador de este dispositivo');
   return <>
+  {libraryOpen&&<StudioLibrary canReplace={Boolean(current&&selected!=='bubble')}
+    onClose={()=>setLibraryOpen(false)}
+    onUse={(item,use)=>{
+      try{placeMedia(use,item);}
+      catch(err){studio.setStatus(err instanceof Error?err.message:'No se pudo usar el archivo.');}
+    }}/>}
   {timelineOpen&&<StudioTimeline items={props.timeline} current={props.sceneIndex}
     onNavigate={index=>props.onNavigate(index)} onClose={()=>setTimelineOpen(false)}/>}
   <section className={'dr-studio-panel'+(expanded?' dr-studio-expanded':' dr-studio-collapsed')+
@@ -288,8 +307,11 @@ export default function StudioInspector(props:Props){
       <div><small>HERRAMIENTA QA · BORRADOR LOCAL</small><strong>Decreto Real Studio <em>v3</em></strong></div>
       <div className="dr-studio-heading-actions">
         <button type="button" data-testid="studio-preview-top" onClick={props.onPreview}>▶ Historia</button>
+        <button type="button" data-testid="studio-library-toggle" aria-expanded={libraryOpen}
+          aria-label="Biblioteca multimedia" title="Biblioteca multimedia"
+          onClick={()=>{setLibraryOpen(v=>!v);setTimelineOpen(false);}}>🖼</button>
         <button type="button" data-testid="studio-timeline-toggle" aria-expanded={timelineOpen}
-          aria-label="Línea de tiempo" title="Línea de tiempo" onClick={()=>setTimelineOpen(v=>!v)}>☰</button>
+          aria-label="Línea de tiempo" title="Línea de tiempo" onClick={()=>{setTimelineOpen(v=>!v);setLibraryOpen(false);}}>☰</button>
         <button type="button" data-testid="studio-dock" className="dr-studio-dock-button"
           aria-label={studio.prefs.dock==='top'?'Mover el panel abajo':'Mover el panel arriba'}
           title="Mover el panel" onClick={()=>studio.setPrefs({dock:studio.prefs.dock==='top'?'bottom':'top'})}>⇅</button>
@@ -305,6 +327,24 @@ export default function StudioInspector(props:Props){
         if(chosen)await withFile(file.id,chosen);
       }}/>)}
     {expanded&&<div className="dr-studio-body">
+      {studio.pendingImport&&<div className="dr-studio-import" role="alertdialog" aria-label="Confirmar importación"
+        data-testid="studio-import-dialog">
+        <strong>Importar «{studio.pendingImport.fileName}»</strong>
+        <span>{studio.pendingImport.scenes} escenas editadas · {studio.pendingImport.media} archivos ({formatBytes(studio.pendingImport.bytes)})
+          {studio.pendingImport.format==='json'?' · respaldo antiguo (JSON)':''}</span>
+        <span>{studio.pendingImport.overlapping
+          ?studio.pendingImport.overlapping+' de esas escenas ya tienen cambios en tu borrador.'
+          :'Ninguna escena coincide con tu borrador.'}{studio.pendingImport.dropped?' '+studio.pendingImport.dropped+' intervenciones ya no existen y se omitirán.':''}</span>
+        <div className="dr-studio-actions">
+          <button type="button" data-testid="studio-import-merge" onClick={()=>void studio.confirmImport('merge')}
+            title="Conserva tu borrador; las escenas importadas reemplazan solo a las que coinciden">⊕ Fusionar</button>
+          <button type="button" data-testid="studio-import-replace" className="dr-studio-danger"
+            onClick={()=>void studio.confirmImport('replace')}
+            title={'Sustituye todo tu borrador ('+studio.pendingImport.currentScenes+' escenas)'}>⟲ Reemplazar todo</button>
+        </div>
+        <button type="button" data-testid="studio-import-cancel" onClick={studio.cancelImport}>Cancelar</button>
+        <small>Puedes deshacer la importación con ↶ Deshacer.</small>
+      </div>}
       {studio.recovery&&<div className="dr-studio-recovery" role="alert" data-testid="studio-recovery">
         <span>Hay cambios sin guardar de una sesión anterior{studio.recovery.savedAt?' ('+new Date(studio.recovery.savedAt).toLocaleString('es-PE')+')':''}.</span>
         <div className="dr-studio-actions">
@@ -498,7 +538,7 @@ export default function StudioInspector(props:Props){
         </button>
       </div>
       <div className="dr-studio-actions">
-        <button type="button" disabled={busy} onClick={()=>void studio.exportProject()}>⇩ Exportar proyecto</button>
+        <button type="button" disabled={busy} onClick={()=>void studio.exportProject()}>⇩ Exportar proyecto (.zip)</button>
         <button type="button" disabled={busy} onClick={()=>pick('project')}>⇧ Importar proyecto</button>
       </div>
       <div className="dr-studio-actions">

@@ -111,7 +111,7 @@ StudioLayer      = { id, x, y, scale, rotation, opacity, mirror, z, visible } & 
 | **2. Desacoplar** ✅ | `StudioProvider` + reducer con transacciones de deshacer/rehacer; `StageComposer` consume `SceneComposition`; quitar ~400 líneas de Studio de `CampaignOpening.tsx`; navegación sin remontar | `screens/studio/*`, `CampaignOpening.tsx`, `App.tsx` |
 | **3. Lienzo, coordenadas, capas y grilla** ✅ | Unidades % del escenario (arrastre medido con el rectángulo del escenario, no con `window.innerWidth`), plano de capas único, asas de escala/rotación, **grilla, ajuste magnético, ejes, márgenes de seguridad, guías inteligentes y alineación** (ver especificación abajo), selección múltiple para alinear, bloqueo de capa, fondo como capa con encuadre editable, nudges con teclado, inputs numéricos con borrador local (arregla el «-») | `campaign/studio/grid.ts`, `StageComposer`, `StudioCanvasOverlay`, `StudioGridOverlay`, CSS nuevo sin `!important` heredado |
 | **4. UX del editor** ✅ | Inspector acoplable (hoja inferior plegable, lateral en escritorio); timeline con miniaturas y marcas de editado; «aplicar a toda la escena» y «copiar de la anterior»; guardado explícito con indicador, autoguardado en borrador y `beforeunload`; Salir/Previsualizar separados; globos y texto de diálogo editables; comparar antes/después | `StudioInspector`, `StudioTimeline` |
-| **5. Multimedia robusta** | Refcount y GC de huérfanos, panel de biblioteca (reutilizar y renombrar recursos, ver tamaño), comprobación de firma, paquete `.zip` sin dependencias, importación con «fusionar/reemplazar» confirmada | `campaign/studio/{media,package}.ts` |
+| **5. Multimedia robusta** ✅ | Refcount y GC de huérfanos, panel de biblioteca (reutilizar y renombrar recursos, ver tamaño), comprobación de firma, paquete `.zip` sin dependencias, importación con «fusionar/reemplazar» confirmada | `campaign/studio/{media,package}.ts` |
 | **6. Publicación** | `public/studio/composiciones.json` cargado por el juego público; «Exportar para publicar» genera ese JSON y los assets normalizados; workflow manual de GitHub Actions que valida el paquete y abre un PR (siguiendo el patrón de `generate-prologue-v3.yml` y `tools/art-github.mjs`) | `published.ts`, `.github/workflows/studio-publicar.yml`, `tools/studio-publish.mjs` |
 | **7. Más pantallas** | El mismo `StageComposer` y el mismo Studio en `CampaignAfterVictory`, `CampaignRegionMoment`, `CampaignStory`/`StoryDialogue`, `CampaignEpilogue` y créditos | esas pantallas |
 
@@ -245,6 +245,31 @@ Implementación: la matemática pura (paso de grilla, `snapValue`, `snapRect`, a
   - Unitarias de texto enriquecido, diálogo, rótulo, visibilidad y copia de composición.
   - Integración de `StoryDialogue` (negrita sin HTML y paginación).
   - `tests/e2e/studio-phase4.spec.ts` en móvil, horizontal y escritorio.
+
+### Estado de la fase 5 (implementada)
+- **Firma real de cada archivo** (`campaign/studio/mediaSignature.ts`): PNG, JPEG, GIF, WebP, MP4 y WebM se reconocen por sus primeros bytes. Un texto o un SVG disfrazado de `.png` se rechaza, y un archivo válido con la extensión equivocada se acepta con su tipo real. Se aplica al subir, al importar y al exportar.
+- **Sin duplicados:** al subir se calcula el SHA-256. Si el archivo ya está en la biblioteca, se reutiliza su id y se avisa «no se duplicó».
+- **Biblioteca** (`screens/studio/StudioLibrary.tsx`, botón 🖼):
+  - Miniatura, tipo, tamaño y escenas que usan cada archivo.
+  - Renombrar.
+  - Reutilizar en la intervención actual como sprite, efecto o fondo, o para reemplazar al elemento seleccionado.
+  - Eliminar archivos sueltos.
+- **Limpieza segura:** «🧹 Limpiar sin uso» borra solo lo que nada puede volver a necesitar. Protege lo que usa el documento actual, cualquier paso del historial de deshacer/rehacer, el borrador guardado, el autoguardado y el borrador v2 conservado como respaldo. La confirmación es en dos pasos.
+- **Respaldo ZIP sin dependencias** (`campaign/studio/zip.ts`, `campaign/studio/package.ts`):
+  - Contiene `proyecto.json` y `media/<id>.<ext>` con los archivos originales: sin base64 ni su inflado del 33 %.
+  - Usa CRC-32 y solo admite rutas seguras (sin `..` ni rutas absolutas).
+  - Es determinista y admite hasta 200 MB.
+  - Solo incluye los archivos en uso.
+  - El lector rechaza ZIP dañados, comprimidos o ajenos.
+- **Importación en dos pasos:**
+  1. Un resumen previo indica escenas, archivos, tamaño y coincidencias con el borrador.
+  2. Se elige **⊕ Fusionar** (las escenas importadas reemplazan solo a las coincidentes), **⟲ Reemplazar todo** o **Cancelar** (no cambia nada).
+  - Los archivos se restauran en la biblioteca.
+  - La importación se deshace con un paso.
+  - Los respaldos JSON de v2 y v3 siguen siendo compatibles.
+- **Pruebas:**
+  - Unitarias de firmas, ZIP (CRC, rutas, corrupción), paquete (ida y vuelta, archivos disfrazados, JSON antiguo), fusión y uso de recursos.
+  - `tests/e2e/studio-media.spec.ts` en móvil y escritorio.
 
 Reutilizar sin reescribir: `normalizeStudioTransform`/`parseStudioDocument` (base del saneado v3), `validateStudioMedia`/`withStore` (IndexedDB), `isCampaignQaAvailable`/`getCampaignStorage` (gating y aislamiento del progreso), el patrón de manifiestos de `prologueV2.ts`/`prologueV3.ts` y la descarga `studioDownload`.
 

@@ -59,10 +59,27 @@ En el editor, lo marcado lleva un contorno morado punteado. En **▶ Historia** 
 - **⇅** (en el móvil): pasa el panel arriba o abajo.
 - **Autoguardado:** si cierras o recargas sin guardar, el navegador te avisa. Al volver, Studio ofrece **↺ Recuperar** tus cambios.
 
+## Biblioteca de imágenes y videos
+Pulsa **🖼** para abrir la biblioteca:
+- Muestra cada archivo con su miniatura, su tamaño y las escenas que lo usan.
+- Cámbiale el nombre escribiendo sobre él.
+- Reutilízalo en la intervención actual como **＋ Sprite**, **✦ Efecto** o **▧ Fondo**, o con **⇄ Reemplazar** sobre el personaje seleccionado, sin volver a subirlo.
+- Si subes un archivo que ya estaba, Studio lo reutiliza y no ocupa espacio dos veces.
+- Studio comprueba el **contenido real** de cada archivo: un archivo que no es una imagen o un video de verdad se rechaza, aunque se llame `.png`.
+- **🧹 Limpiar sin uso** borra lo que ya no necesitas. Nunca borra lo que usan tus escenas, el historial de deshacer, el borrador guardado ni el autoguardado.
+
+## Respaldos (.zip)
+- **⇩ Exportar proyecto (.zip)** guarda tus escenas y solo los archivos que usan, en un ZIP normal.
+- **⇧ Importar proyecto** acepta ese ZIP y también los respaldos `.json` de versiones anteriores. Antes de cambiar nada, muestra un resumen:
+  - **⊕ Fusionar:** conserva tu borrador; las escenas del respaldo reemplazan solo a las que coinciden.
+  - **⟲ Reemplazar todo:** tu borrador pasa a ser el del respaldo.
+  - **Cancelar:** no cambia nada.
+- Las imágenes y videos del respaldo vuelven a la biblioteca. Si te equivocas, **↶ Deshacer** revierte la importación.
+
 ## Atajos de teclado
 `Ctrl+Z` deshacer · `Ctrl+Shift+Z` rehacer · `Ctrl+S` guardar · `G` grilla · flechas para mover · `Alt` para arrastrar sin ajuste · `Esc` para vaciar la selección múltiple.
 
 ## Límites actuales
 - El niño se ordena dentro del grupo de su madre.
 - La caja de selección incluye la parte transparente del sprite.
-- La publicación para todos los jugadores llegará en una fase posterior. Mientras tanto, usa **⇩ Exportar proyecto** para respaldar tu trabajo.
+- La publicación para todos los jugadores llegará en una fase posterior. Mientras tanto, usa **⇩ Exportar proyecto (.zip)** para respaldar tu trabajo.

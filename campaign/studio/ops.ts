@@ -216,3 +216,32 @@ export function layerOrDefault(doc:StudioDocumentV3,key:string,id:string):Studio
   if(id===STUDIO_BUBBLE_LAYER_ID)return {id,kind:'bubble',...defaultLayerTransform('bubble')};
   return null;
 }
+
+/**
+ * Fusiona un documento importado con el actual: las escenas importadas
+ * reemplazan solo a las que coinciden; el resto del borrador se conserva.
+ * Los recursos se unen y los tamaños comunes importados, si existen, ganan.
+ */
+export function mergeStudioDocuments(base:StudioDocumentV3,incoming:StudioDocumentV3):StudioDocumentV3 {
+  const assets={...base.assets,...incoming.assets};
+  const merged:StudioDocumentV3={
+    version:3,
+    scenes:{...base.scenes,...incoming.scenes},
+    ...(Object.keys(assets).length?{assets}:{}),
+  };
+  const defaults=incoming.defaults??base.defaults;
+  if(defaults)merged.defaults=defaults;
+  return merged;
+}
+
+/** Escenas que usan cada recurso multimedia (capas o fondo). */
+export function assetUsage(doc:StudioDocumentV3):Record<string,string[]> {
+  const usage:Record<string,string[]>={};
+  const add=(id:string,key:string)=>{(usage[id]??=[]).includes(key)||usage[id].push(key);};
+  for(const [key,scene] of Object.entries(doc.scenes)){
+    if(scene.background?.assetId)add(scene.background.assetId,key);
+    for(const layer of scene.layers??[])
+      if((layer.kind==='actor'||layer.kind==='image'||layer.kind==='effect')&&layer.assetId)add(layer.assetId,key);
+  }
+  return usage;
+}
