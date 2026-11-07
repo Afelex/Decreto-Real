@@ -538,6 +538,8 @@ export default function StudioInspector(props:Props){
         </button>
       </div>
       <div className="dr-studio-actions">
+        <button type="button" disabled={busy} onClick={()=>void studio.exportProject(true)}>⇪ Exportar para publicar</button>
+        <button type="button" disabled={busy} onClick={studio.startPublished}>Partir de lo publicado</button>
         <button type="button" disabled={busy} onClick={()=>void studio.exportProject()}>⇩ Exportar proyecto (.zip)</button>
         <button type="button" disabled={busy} onClick={()=>pick('project')}>⇧ Importar proyecto</button>
       </div>

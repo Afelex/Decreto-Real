@@ -82,4 +82,19 @@ Pulsa **🖼** para abrir la biblioteca:
 ## Límites actuales
 - El niño se ordena dentro del grupo de su madre.
 - La caja de selección incluye la parte transparente del sprite.
-- La publicación para todos los jugadores llegará en una fase posterior. Mientras tanto, usa **⇩ Exportar proyecto (.zip)** para respaldar tu trabajo.
+- La publicación sigue limitada al prólogo; las demás pantallas corresponden a la fase 7.
+
+## Publicar para todos los jugadores
+1. Pulsa **⇪ Exportar para publicar**. El ZIP contiene el documento v3 y solo los medios usados; se comprueban firmas, referencias y límites (25 MB por archivo, 200 MB en total).
+2. Aloja el ZIP en una URL HTTPS accesible sin credenciales. Ejecuta **Studio · Preparar publicación mediante PR** desde GitHub Actions e introduce esa URL.
+3. El workflow valida el paquete, prepara `public/studio/composiciones.json` y `public/studio/media/`, elimina los medios publicados sin uso, ejecuta pruebas y compilación, y abre una rama `studio/publicacion-*` con un PR hacia `main`.
+4. Revisa el PR antes de fusionarlo. El navegador nunca escribe en GitHub ni guarda tokens. La publicación llega al desplegar la versión fusionada.
+
+Para preparar los mismos archivos localmente con Node 22 o superior:
+```bash
+node --experimental-strip-types tools/studio-publish.mjs ruta/al/paquete.zip
+```
+
+El juego aplica **composición base → publicación revisada → borrador local (solo QA)**. Fuera de QA no lee borradores ni IndexedDB y siempre oculta lo marcado solo dev. Si no existe publicación válida, conserva la composición base.
+
+Al abrir Studio sin borrador se parte de la publicación. **Partir de lo publicado** sustituye el documento actual por la publicación y se puede deshacer; pulsa Guardar para conservarlo. Los archivos publicados se pueden exportar de nuevo sin tenerlos en la biblioteca local.

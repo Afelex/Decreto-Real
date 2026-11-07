@@ -176,14 +176,14 @@ const CampaignOpening:React.FC=()=>{
   const cleanPlaza=prologueCleanPlaza(resolver);
   const background=composition?.background??cleanPlaza;
 
-  // Decreto Real Studio: local QA drafts layered over the base composition.
+  // Composición base < publicación revisada < borrador local de QA.
   const studioKey=composition?prologueSceneKey(composition.beatId):null;
   // viewScene: sin ediciones mientras se compara con el original.
   const studioScene=studio.viewScene(studioKey);
   const titleVisible=studioScene?.titleVisible!==false&&studio.visibleTo(studioScene?.titleDevOnly);
   const sceneTitle=studioScene?.title??(isAfter?phaseTitles[scene]??'El precio de la victoria':prologue?.title??'Prólogo');
   const dialogueText=studioScene?.dialogue?.text??story?.text??'';
-  const dialogueStyle=studio.active&&!studio.compare?effectiveDialogueStyle(studio.doc,studioKey):{textScale:1,boxScale:1};
+  const dialogueStyle=!studio.compare?effectiveDialogueStyle(studio.doc,studioKey):{textScale:1,boxScale:1};
   const beatHiddenForAudience=Boolean(studioScene?.devOnly)&&!studio.visibleTo(true);
   const studioIndexOfBeat=(beatId:string)=>PROLOGUE_BEAT_IDS.indexOf(beatId);
   /** La intervención está oculta para la audiencia actual (versión publicada). */

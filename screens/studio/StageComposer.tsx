@@ -47,11 +47,11 @@ function useStageSizeVars(stageRef:React.RefObject<HTMLElement|null>,enabled:boo
 /**
  * Plano único de capas: actores, capas añadidas, globo y elementos
  * cinematográficos comparten un mismo contexto de apilamiento. Solo se activa
- * en QA (editor abierto o escena con capas); el juego público no cambia.
+ * con el editor abierto o una escena con capas, también en la publicación.
  */
 export function useStudioPlane(sceneKey:string|null):boolean {
   const studio=useStudio();
-  return studio.active&&(studio.editing||Boolean(studio.scene(sceneKey)?.layers?.length));
+  return studio.editing||Boolean(studio.scene(sceneKey)?.layers?.length);
 }
 
 /** Fondo de la intervención: recurso local opcional y encuadre editable. */
@@ -96,7 +96,7 @@ export default function StageComposer({composition,sceneKey,stageRef,showRingFal
   const scene=studio.viewScene(sceneKey);
   const layers=scene?.layers??[];
   const layer=(id:string)=>layers.find(item=>item.id===id);
-  useStageSizeVars(stageRef,studio.active);
+  useStageSizeVars(stageRef,studio.active||Boolean(scene));
 
   const src=(assetId:string|undefined,fallback:string)=>assetId?(studio.mediaUrls[assetId]??fallback):fallback;
   const picked=(id:string)=>editing&&(studio.selected===id||studio.group.includes(id));

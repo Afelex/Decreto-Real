@@ -112,7 +112,7 @@ StudioLayer      = { id, x, y, scale, rotation, opacity, mirror, z, visible } & 
 | **3. Lienzo, coordenadas, capas y grilla** ✅ | Unidades % del escenario (arrastre medido con el rectángulo del escenario, no con `window.innerWidth`), plano de capas único, asas de escala/rotación, **grilla, ajuste magnético, ejes, márgenes de seguridad, guías inteligentes y alineación** (ver especificación abajo), selección múltiple para alinear, bloqueo de capa, fondo como capa con encuadre editable, nudges con teclado, inputs numéricos con borrador local (arregla el «-») | `campaign/studio/grid.ts`, `StageComposer`, `StudioCanvasOverlay`, `StudioGridOverlay`, CSS nuevo sin `!important` heredado |
 | **4. UX del editor** ✅ | Inspector acoplable (hoja inferior plegable, lateral en escritorio); timeline con miniaturas y marcas de editado; «aplicar a toda la escena» y «copiar de la anterior»; guardado explícito con indicador, autoguardado en borrador y `beforeunload`; Salir/Previsualizar separados; globos y texto de diálogo editables; comparar antes/después | `StudioInspector`, `StudioTimeline` |
 | **5. Multimedia robusta** ✅ | Refcount y GC de huérfanos, panel de biblioteca (reutilizar y renombrar recursos, ver tamaño), comprobación de firma, paquete `.zip` sin dependencias, importación con «fusionar/reemplazar» confirmada | `campaign/studio/{media,package}.ts` |
-| **6. Publicación** | `public/studio/composiciones.json` cargado por el juego público; «Exportar para publicar» genera ese JSON y los assets normalizados; workflow manual de GitHub Actions que valida el paquete y abre un PR (siguiendo el patrón de `generate-prologue-v3.yml` y `tools/art-github.mjs`) | `published.ts`, `.github/workflows/studio-publicar.yml`, `tools/studio-publish.mjs` |
+| **6. Publicación** ✅ | `public/studio/composiciones.json` cargado por el juego público; «Exportar para publicar» genera ese JSON y los assets normalizados; workflow manual de GitHub Actions que valida el paquete y abre un PR (siguiendo el patrón de `generate-prologue-v3.yml` y `tools/art-github.mjs`) | `published.ts`, `.github/workflows/studio-publicar.yml`, `tools/studio-publish.mjs` |
 | **7. Más pantallas** | El mismo `StageComposer` y el mismo Studio en `CampaignAfterVictory`, `CampaignRegionMoment`, `CampaignStory`/`StoryDialogue`, `CampaignEpilogue` y créditos | esas pantallas |
 
 ### Especificación: grilla, ajuste magnético y guías (fase 3)
@@ -284,3 +284,12 @@ Reutilizar sin reescribir: `normalizeStudioTransform`/`parseStudioDocument` (bas
 - Un borrador v2 real (exportado de la versión actual) importado en v3 debe verse idéntico.
 - La previsualización sigue sin escribir `PROLOGUE_CHECKPOINT_KEY` ni progreso de campaña (prueba existente, que se mantiene).
 - CI: workflow `development-qa.yml` en el PR.
+
+### Estado de la fase 6 (implementada)
+- Carga pública validada con `cache: no-store`, rutas derivadas del ID/MIME sin ampliar el esquema y documento de solo lectura fuera de QA.
+- El plano único, las unidades del escenario y los tamaños de diálogo también se aplican al publicado. Audiencia pública `player`.
+- QA inicia desde el borrador local si existe; en caso contrario, desde la publicación. «Partir de lo publicado» es deshacible.
+- «Exportar para publicar» reutiliza el ZIP portable, con límites de 25 MB por archivo y 200 MB totales y comprobación de referencias y firmas.
+- `tools/studio-publish.mjs` valida antes de escribir, prepara el manifiesto y multimedia y poda los medios antiguos.
+- Workflow manual `studio-publicar.yml`: recibe URL HTTPS, valida, ejecuta pruebas/compilación y abre un PR en `studio/publicacion-*`, sin escribir directamente en `main`.
+- Pruebas puras del publicador y e2e del juego compilado sin `drDev`, prioridad del borrador y ausencia de publicación.

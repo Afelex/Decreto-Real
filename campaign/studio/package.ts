@@ -13,6 +13,12 @@ import { createZip, isZip, readZip } from './zip.ts';
 export const STUDIO_PACKAGE_MANIFEST = 'proyecto.json';
 export const STUDIO_PACKAGE_MAX_BYTES = 200*1024*1024;
 export const STUDIO_PACKAGE_MAX_MEDIA = 200;
+export const STUDIO_PUBLISH_MAX_FILE_BYTES = 25*1024*1024;
+
+/** La publicación debe fallar ante referencias rotas, nunca descartarlas en silencio. */
+export function assertStudioReferences(doc:StudioDocumentV3){
+  for(const id of referencedAssetIds(doc))if(!doc.assets?.[id])throw new Error("Referencia multimedia rota: "+id);
+}
 export const STUDIO_ZIP_FILENAME = 'decreto-real-studio-proyecto.zip';
 
 export type PackageMedia = {id:string;name:string;mime:StudioMediaMime;data:Uint8Array};
@@ -23,6 +29,7 @@ export type ParsedStudioPackage = {
 
 /** Construye el ZIP del proyecto. Solo incluye los recursos que alguna escena usa. */
 export function buildStudioPackage(source:StudioDocumentV3,files:readonly PackageMedia[]):Uint8Array {
+  assertStudioReferences(source);
   const document=withoutUnusedAssets(source);
   const used=[...referencedAssetIds(document)].sort();
   const byId=new Map(files.map(file=>[file.id,file]));
@@ -32,6 +39,8 @@ export function buildStudioPackage(source:StudioDocumentV3,files:readonly Packag
     if(!file)throw new Error('Falta un recurso multimedia. No se puede crear un respaldo completo.');
     const mime=sniffStudioMedia(file.data);
     if(!mime)throw new Error('El archivo «'+file.name+'» está dañado o no es un formato admitido.');
+    if(file.data.length>STUDIO_PUBLISH_MAX_FILE_BYTES)throw new Error("Un archivo supera 25 MB.");
+    if(document.assets?.[id]?.mime!==mime)throw new Error("La firma no coincide con el MIME declarado.");
     total+=file.data.length;
     if(total>STUDIO_PACKAGE_MAX_BYTES)throw new Error('El respaldo supera 200 MB. Reduce los videos.');
     return {id,name:file.name,mime,size:file.data.length,path:'media/'+id+'.'+STUDIO_MEDIA_EXTENSIONS[mime],data:file.data};
@@ -66,7 +75,9 @@ function collectMedia(list:unknown,read:(item:Record<string,unknown>)=>Uint8Arra
     if(!raw||typeof raw!=='object')throw new Error('El archivo contiene recursos no válidos.');
     const item=raw as Record<string,unknown>;
     if(typeof item.id!=='string'||!MEDIA_ID.test(item.id))throw new Error('El archivo contiene recursos no válidos.');
+    if(media.some(file=>file.id===item.id))throw new Error("ID multimedia duplicado.");
     const data=read(item);
+    if(data.length>STUDIO_PUBLISH_MAX_FILE_BYTES)throw new Error("Un archivo supera 25 MB.");
     total+=data.length;
     if(total>STUDIO_PACKAGE_MAX_BYTES)throw new Error('Respaldo multimedia demasiado grande.');
     const mime=sniffStudioMedia(data);
@@ -86,6 +97,7 @@ export function parseStudioPackage(bytes:Uint8Array):ParsedStudioPackage {
     if(!manifestBytes)throw new Error('El ZIP no contiene proyecto.json de Decreto Real Studio.');
     const manifest=JSON.parse(new TextDecoder().decode(manifestBytes)) as Record<string,unknown>;
     if(manifest.studioPackage!==3)throw new Error('Formato de respaldo no compatible.');
+    if((manifest.document as StudioDocumentV3)?.version===3)assertStudioReferences(manifest.document as StudioDocumentV3);
     const loaded=parseAnyStudioDocument(JSON.stringify(manifest.document));
     const media=collectMedia(manifest.media,item=>{
       const data=typeof item.path==='string'?byName.get(item.path):undefined;

@@ -23,6 +23,9 @@ import {
   readStudioMediaBytes, renameStudioMedia, revokeStudioMediaUrls, type StudioMediaInfo,
 } from '../../campaign/studioMedia';
 
+import type { StudioMediaMime } from '../../campaign/studio/mediaSignature';
+import { loadPublishedStudio, publishedMediaUrls } from '../../campaign/studio/published';
+
 export const STUDIO_PACKAGE_VERSION = 3;
 export type StudioAudience = 'player'|'developer';
 /** Autoguardado continuo del editor (recuperación tras cerrar sin guardar). */
@@ -81,7 +84,8 @@ export type StudioContextValue = {
   save:()=>boolean;
   /** Guarda en IndexedDB; el llamador añade el recurso al documento con `withAsset`. */
   storeMedia:(file:File)=>Promise<StudioStoredMedia>;
-  exportProject:()=>Promise<void>;
+  exportProject:(publishing?:boolean)=>Promise<void>;
+  startPublished:()=>void;
   /** Lee un respaldo y prepara la importación (no cambia nada hasta confirmar). */
   importProject:(file:File)=>Promise<void>;
   pendingImport:StudioImportSummary|null;
@@ -107,7 +111,7 @@ const INACTIVE:StudioContextValue={
   visibleTo:devOnly=>!devOnly,recovery:null,recover:noop,discardRecovery:noop,
   apply:noop,begin:noop,preview:noop,commit:noop,undo:noop,redo:noop,save:()=>false,
   storeMedia:()=>Promise.reject(new Error('Studio no está disponible.')),
-  exportProject:()=>Promise.resolve(),importProject:()=>Promise.resolve(),
+  startPublished:noop,exportProject:()=>Promise.resolve(),importProject:()=>Promise.resolve(),
   pendingImport:null,confirmImport:()=>Promise.resolve(),cancelImport:noop,
   listLibrary:()=>Promise.resolve([]),renameMedia:()=>Promise.resolve(),deleteMedia:()=>Promise.resolve(),
   cleanLibrary:()=>Promise.resolve({count:0,bytes:0}),libraryVersion:0,
@@ -132,12 +136,22 @@ const describeScene=(key:string)=>key.replace(/^prologo\//,'');
  * En el juego público (sin QA) no lee almacenamiento ni IndexedDB.
  */
 export function StudioProvider({children}:{children:React.ReactNode}){
+  const [published,setPublished]=React.useState<StudioDocumentV3|null>(null);
+  React.useEffect(()=>{
+    let cancelled=false;
+    loadPublishedStudio(import.meta.env.BASE_URL).then(doc=>{if(!cancelled)setPublished(doc);});
+    return ()=>{cancelled=true;};
+  },[]);
+  return published?<LoadedStudioProvider published={published}>{children}</LoadedStudioProvider>:null;
+}
+
+function LoadedStudioProvider({children,published}:{children:React.ReactNode;published:StudioDocumentV3}){
   const [query]=useSearchParams();
   const active=isCampaignQaAvailable();
   const editing=active&&query.get('studio')==='1';
   const [initial]=React.useState(()=>active?readStudioDocumentV3(draftStorage()):null);
   const [history,dispatch]=React.useReducer(studioHistoryReducer,undefined,
-    ()=>createStudioHistory(initial?.doc??emptyStudioDocumentV3()));
+    ()=>createStudioHistory(initial&&initial.source!=='empty'?initial.doc:published));
   const historyRef=React.useRef<StudioHistoryState>(history);
   historyRef.current=history;
   const [status,setStatus]=React.useState(()=>{
@@ -159,7 +173,7 @@ export function StudioProvider({children}:{children:React.ReactNode}){
       if(!raw)return null;
       const parsed=JSON.parse(raw) as {savedAt?:unknown;doc?:unknown};
       const doc=normalizeStudioDocumentV3(parsed.doc);
-      if(JSON.stringify(doc)===JSON.stringify(initial?.doc??emptyStudioDocumentV3()))return null;
+      if(JSON.stringify(doc)===JSON.stringify(initial&&initial.source!=='empty'?initial.doc:published))return null;
       return {savedAt:typeof parsed.savedAt==='string'?parsed.savedAt:'',doc};
     }catch{return null;}
   });
@@ -250,8 +264,13 @@ export function StudioProvider({children}:{children:React.ReactNode}){
       (scenes.length?' · '+scenes.map(describeScene).join(', '):''));
   },[]);
 
-  const value=React.useMemo<StudioContextValue>(()=>!active?INACTIVE:({
-    active,editing,doc:history.doc,mediaUrls,
+  const publicUrls=React.useMemo(()=>publishedMediaUrls(published,import.meta.env.BASE_URL),[published]);
+  const value=React.useMemo<StudioContextValue>(()=>!active?{
+    ...INACTIVE,doc:published,mediaUrls:publicUrls,
+    scene:key=>key?published.scenes[key]:undefined,
+    viewScene:key=>key?published.scenes[key]:undefined,
+  }:({
+    active,editing,doc:history.doc,mediaUrls:{...publicUrls,...mediaUrls},
     dirty:isStudioDirty(history),canUndo:canUndo(history),canRedo:canRedo(history),
     status,setStatus,selected,select,
     group,toggleGroup,clearGroup,multiMode,setMultiMode,prefs,setPrefs,guides,setGuides,
@@ -284,14 +303,31 @@ export function StudioProvider({children}:{children:React.ReactNode}){
       setLibraryVersion(v=>v+1);
       return {id:record.id,name:record.name,mime:record.mime,reused:record.reused};
     },
-    exportProject:async()=>{
+    startPublished:()=>{
+      dispatch({type:'replace',doc:published});
+      setStatus('Composición publicada recuperada. Pulsa Guardar para conservarla.');
+    },
+    exportProject:async(publishing=false)=>{
       try{
         setStatus('Preparando respaldo con imágenes y videos…');
         // Solo se exportan los recursos que alguna escena usa; sin base64.
         const document=withoutUnusedAssets(historyRef.current.doc);
-        const files=await readStudioMediaBytes([...referencedAssetIds(document)]);
+        const files:Awaited<ReturnType<typeof readStudioMediaBytes>>=[];
+        for(const id of referencedAssetIds(document)){
+          try{files.push(...await readStudioMediaBytes([id]));}
+          catch(error){if(!publicUrls[id])throw error;}
+        }
+        for(const id of referencedAssetIds(document)){
+          if(files.some(file=>file.id===id))continue;
+          const url=publicUrls[id];
+          if(!url)throw new Error('Falta un recurso multimedia.');
+          const response=await fetch(url,{cache:'no-store'});
+          if(!response.ok)throw new Error('No se pudo cargar un recurso publicado.');
+          const meta=document.assets![id];
+          files.push({id,...meta,mime:meta.mime as StudioMediaMime,data:new Uint8Array(await response.arrayBuffer())});
+        }
         const zip=buildStudioPackage(document,files);
-        download(STUDIO_ZIP_FILENAME,zip as BlobPart,'application/zip');
+        download(publishing?'decreto-real-studio-publicacion.zip':STUDIO_ZIP_FILENAME,zip as BlobPart,'application/zip');
         setStatus('Proyecto exportado (.zip) con '+files.length+' archivos multimedia.');
       }catch(err){setStatus(err instanceof Error?err.message:'Error al exportar.');}
     },
@@ -348,7 +384,7 @@ export function StudioProvider({children}:{children:React.ReactNode}){
       return {count:orphans.length,bytes};
     },
     libraryVersion,
-  }),[active,editing,history,mediaUrls,status,selected,group,multiMode,prefs,guides,audience,compare,recovery,
+  }),[published,publicUrls,active,editing,history,mediaUrls,status,selected,group,multiMode,prefs,guides,audience,compare,recovery,
     pendingImport,libraryVersion,protectedAssetIds,
     toggleGroup,clearGroup,setPrefs,save,undoOrRedo]);
 
