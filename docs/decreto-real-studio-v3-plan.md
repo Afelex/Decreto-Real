@@ -66,6 +66,7 @@ campaign/studio/
   migrate.ts       v1/v2 (version:1) → v3, con mapa índice→beatId congelado
   ops.ts           operaciones puras (set/remove/duplicate/applyToScene/reorder)
   history.ts       reducer con deshacer/rehacer por transacciones (pointerdown…pointerup = 1 entrada)
+  grid.ts          matemáticas puras de grilla, snap, guías inteligentes y alineación (fase 3)
   media.ts         IndexedDB (evolución de studioMedia.ts): refcount, GC de huérfanos, firma de archivos
   package.ts       export/import: .zip propio sin dependencias (STORE), o JSON+base64 en streaming como fallback
   published.ts     carga de public/studio/composiciones.json para todos los jugadores
@@ -73,6 +74,7 @@ screens/studio/
   StudioProvider.tsx      contexto con el reducer; la pantalla del juego solo lee
   StageComposer.tsx       pinta actores/capas/globo desde un "SceneComposition" (unidades % del escenario)
   StudioCanvasOverlay.tsx asas de selección, escala, rotación, guías y snapping, por encima del escenario
+  StudioGridOverlay.tsx   grilla, ejes, márgenes de seguridad y guías inteligentes (pointer-events:none)
   StudioInspector.tsx     panel acoplable (hoja inferior en móvil, lateral en escritorio)
   StudioTimeline.tsx      lista de intervenciones con miniaturas y marcas de "editado"
 ```
@@ -82,10 +84,24 @@ screens/studio/
 - **Navegación dentro de Studio sin remontar.** Cambiar de intervención actualiza el estado y hace `replaceState` del query, sin `navigate` con nueva `key`. Así se conservan el historial, las URL multimedia y los manifiestos.
 - **Overrides por capas:** composición base del código < `published.json` (todos los jugadores) < borrador local (solo QA).
 
-### Modelo de datos v3 (resumen)
-`{version:3, documentId, updatedAt, scenes: {[sceneKey]: {layers: Layer[], background?, title?, dialogue?: {text?, speaker?, tone?}}}, assets}`.
-`Layer = {id, kind:'actor'|'image'|'effect'|'bubble', ref, x,y (% escenario), scale, rotation, opacity, mirror, z, visible, text?}`.
-Las migraciones conservan los borradores v1/v2 existentes: claves por índice → beatId usando una tabla congelada del orden actual, y `vw`/`vh` → % del escenario con el factor de 390×844 documentado.
+### Modelo de datos v3 (definido en la fase 1)
+```ts
+StudioDocumentV3 = { version: 3; scenes: Record<SceneKey, StudioSceneV3>; assets?: Record<MediaId, {name, mime}> }
+SceneKey         = 'prologo/arresto-01'            // pantalla/beatId estable, nunca un índice
+StudioSceneV3    = { layers?: StudioLayer[]; background?: {assetId}; titleVisible?: boolean }
+StudioLayer      = { id, x, y, scale, rotation, opacity, mirror, z, visible } & (
+                     {kind:'actor', actor, assetId?}          // id 'actor-madre', 'actor-nino'…
+                   | {kind:'image'|'effect', name, assetId}   // id 'extra-<uuid>' (se conservan los de v2)
+                   | {kind:'bubble', text?} )                 // id 'bubble', uno por escena
+```
+- `x`, `y`: desplazamiento en **% del escenario** (`.dcop-stage`) desde el ancla base de la capa: la posición nativa del actor o del globo, o el punto 50 %/48 % del escenario para imágenes y efectos (el mismo que usaba v2). Rangos: x/y −100…100, escala 0,35…2,75, rotación −180…180°, opacidad 0…1, `z` 1…100 en **un único plano**.
+- Las capas que apuntan a un recurso inexistente en `assets` se descartan al leer (integridad referencial).
+- Almacenamiento: clave nueva `decreto-real.studio.borradores.v3`. Si no existe, se migra la clave v1 al vuelo **sin borrarla** (queda como respaldo).
+- Migración v1/v2 (`version:1`) → v3:
+  - Claves `opening:N`/`after:N` → beatId mediante una **tabla congelada** del orden publicado en v2. Las claves fuera de rango se descartan y se informan.
+  - `vw`/`vh` → % del escenario. Es una equivalencia exacta en el viewport de referencia de 390×844, donde el escenario mide 100 vw × 100 dvh.
+  - Capas: los actores pasan a `z = 10 + capa` (11–40). Las imágenes, efectos y globo pasan a `z = capa` si capa ≤ 2 (detrás del grupo de actores, que tenía z-index 3) o a `z = 40 + capa`. Así se conserva exactamente el orden visual de v2.
+  - `bubbleVisible`/`bubbleText`/`bubbleTransform` → capa `bubble`; `backgroundAsset` → `background`.
 
 ### Fases
 | Fase | Entrega | Archivos principales |
@@ -93,11 +109,51 @@ Las migraciones conservan los borradores v1/v2 existentes: claves por índice �
 | **0. Documento** | Esta auditoría y este plan (sin cambios de código) | `docs/decreto-real-studio-v3-plan.md` |
 | **1. Fundamentos de datos** | IDs estables, `prologueScript.ts`, schema v3, migración v1/v2→v3, pruebas de migración y de corrimiento de índices | `campaign/studio/{schema,migrate,ops}.ts`, `CampaignOpening.tsx` (solo extraer datos) |
 | **2. Desacoplar** | `StudioProvider` + reducer con transacciones de deshacer/rehacer; `StageComposer` consume `SceneComposition`; quitar ~400 líneas de Studio de `CampaignOpening.tsx`; navegación sin remontar | `screens/studio/*`, `CampaignOpening.tsx`, `App.tsx` |
-| **3. Lienzo y unidades** | Unidades % del escenario, plano de capas único, asas de escala/rotación, guías/snapping, nudges con teclado, inputs numéricos con borrador local (arregla el «-») | `StageComposer`, `StudioCanvasOverlay`, CSS nuevo sin `!important` heredado |
+| **3. Lienzo, coordenadas, capas y grilla** | Unidades % del escenario (arrastre medido con el rectángulo del escenario, no con `window.innerWidth`), plano de capas único, asas de escala/rotación, **grilla, ajuste magnético, ejes, márgenes de seguridad, guías inteligentes y alineación** (ver especificación abajo), selección múltiple para alinear, bloqueo de capa, fondo como capa con encuadre editable, nudges con teclado, inputs numéricos con borrador local (arregla el «-») | `campaign/studio/grid.ts`, `StageComposer`, `StudioCanvasOverlay`, `StudioGridOverlay`, CSS nuevo sin `!important` heredado |
 | **4. UX del editor** | Inspector acoplable (hoja inferior plegable, lateral en escritorio); timeline con miniaturas y marcas de editado; «aplicar a toda la escena» y «copiar de la anterior»; guardado explícito con indicador, autoguardado en borrador y `beforeunload`; Salir/Previsualizar separados; globos y texto de diálogo editables; comparar antes/después | `StudioInspector`, `StudioTimeline` |
 | **5. Multimedia robusta** | Refcount y GC de huérfanos, panel de biblioteca (reutilizar y renombrar recursos, ver tamaño), comprobación de firma, paquete `.zip` sin dependencias, importación con «fusionar/reemplazar» confirmada | `campaign/studio/{media,package}.ts` |
 | **6. Publicación** | `public/studio/composiciones.json` cargado por el juego público; «Exportar para publicar» genera ese JSON y los assets normalizados; workflow manual de GitHub Actions que valida el paquete y abre un PR (siguiendo el patrón de `generate-prologue-v3.yml` y `tools/art-github.mjs`) | `published.ts`, `.github/workflows/studio-publicar.yml`, `tools/studio-publish.mjs` |
 | **7. Más pantallas** | El mismo `StageComposer` y el mismo Studio en `CampaignAfterVictory`, `CampaignRegionMoment`, `CampaignStory`/`StoryDialogue`, `CampaignEpilogue` y créditos | esas pantallas |
+
+### Especificación: grilla, ajuste magnético y guías (fase 3)
+Studio v3 debe funcionar como un editor gráfico: personajes, sprites, globos, fondos y efectos se ubican con precisión sobre una grilla del escenario.
+
+| # | Requisito | Diseño |
+|---|---|---|
+| 1 | Activar/desactivar la grilla con un botón visible | Botón **▦ Grilla** en la barra fija del lienzo (no dentro del inspector plegable), con `aria-pressed`. Atajo `G` en escritorio. |
+| 2 | Grilla superpuesta sin modificar los recursos | `StudioGridOverlay`: un único elemento absoluto que cubre exactamente `.dcop-stage`, dibujado con `linear-gradient` repetidos (o SVG inline). No toca imágenes, fondos ni el DOM del juego. Las líneas son dobles (clara y oscura) para verse sobre cualquier fondo. |
+| 3 | Densidad y transparencia configurables | Densidad: 6, 8, 12 (por defecto), 16 o 24 columnas. Las celdas son **cuadradas**: el paso horizontal es 100/N % del ancho y el vertical se deriva de la proporción del escenario. Cada 4 celdas, una línea principal más marcada. Transparencia de 10 a 80 % (35 % por defecto). |
+| 4 | Snap to Grid independiente | Interruptor **🧲 Ajuste** separado de la grilla: se puede ajustar sin verla. Se aplica al arrastrar, a los nudges con flechas (1 celda con ajuste, 0,5 % sin él) y a las asas de escala (pasos de 5 %). Imanta el ancla y los bordes y centros de la caja del elemento a la línea más cercana dentro de un umbral de 8 px CSS. En escritorio, `Alt` mantenido lo suspende; en táctil se usa el interruptor. |
+| 5 | Guías: ejes, márgenes de seguridad, alineación | Interruptores independientes: **Ejes** (centro vertical y horizontal), **Márgenes seguros** (acción al 5 % y títulos al 10 % por lado; franja del panel de diálogo, `--dcop-story-panel-height`, sombreada) y **Guías inteligentes**: líneas de color al coincidir borde o centro con los ejes, los márgenes o los bordes y centros de otras capas, con el mismo umbral de imantado. |
+| 6 | Alinear personajes por arriba, abajo o centro | En el inspector: alineación vertical (arriba, centro, abajo) y horizontal (izquierda, centro, derecha). La referencia puede ser el escenario, la zona segura o la selección. Selección múltiple con `Shift`+clic, o en táctil con el modo «Seleccionar varios». Acción **«Igualar suelo»** para poner los pies de varios personajes en la misma línea base. Se deshace como una sola acción. |
+| 7 | Controles numéricos precisos | X, Y (% del escenario, 2 decimales) y Escala (%). Mientras se teclea, el valor vive en un borrador local, así que «-», «-1» y el campo vacío son válidos, y se confirma con `Enter` o al salir del campo. Botones ± por paso. Los valores escritos **no se imantan**: se respetan exactamente. |
+| 8 | Coordenadas relativas al escenario | Modelo de la fase 1. El arrastre convierte con `stage.getBoundingClientRect()`, nunca con `window.innerWidth/innerHeight`. |
+| 9 | La grilla no impide seleccionar ni arrastrar | La grilla y las guías llevan `pointer-events:none` y `aria-hidden`. Solo las asas del elemento seleccionado reciben eventos. Los fondos y capas bloqueados (🔒) no se arrastran por accidente. |
+| 10 | Solo dentro del editor | El overlay se monta solo con `studioEnabled` (QA + `?studio=1`). Las preferencias (visible, densidad, opacidad, ajuste, guías) se guardan aparte en `decreto-real.studio.preferencias-editor.v1`, **nunca** en el documento, el respaldo ni el JSON publicado. No aparecen en la previsualización, en la reproducción QA ni en el juego público. |
+
+Implementación: la matemática pura (paso de grilla, `snapValue`, `snapRect`, alinear y distribuir cajas, detección de guías inteligentes) va en `campaign/studio/grid.ts` con pruebas unitarias. Los componentes solo la invocan.
+
+**Pruebas de posicionamiento y ajuste magnético (fase 3)**
+- Unitarias (`npm test`):
+  - Paso de grilla para 6/8/12/16/24 columnas en 390×844, 320×568, 844×390 y 1280×800.
+  - `snapValue` dentro y fuera del umbral.
+  - `snapRect` por borde, centro y ancla.
+  - Alineación arriba/centro/abajo e «Igualar suelo» con varias cajas.
+  - Guías inteligentes contra ejes, márgenes y otras capas.
+  - Que los valores numéricos escritos no se imanten.
+- E2E móvil (`mobile-320`, `mobile-390`, `landscape`, táctil):
+  - Activar y desactivar grilla y ajuste por separado.
+  - Arrastre táctil con ajuste: la posición final cae en una línea de la grilla (±0,01 %). Sin ajuste, la posición es libre.
+  - `elementFromPoint` en el centro de un actor devuelve el actor con la grilla activa, y el arrastre funciona a través de ella.
+  - Teclear «-11» en X.
+  - La misma composición guardada en 390 ocupa la misma caja relativa al escenario en `landscape`.
+- E2E escritorio (nuevo proyecto `desktop-1280`, 1280×800, ratón, limitado a los specs de Studio con `testMatch`):
+  - Arrastre con ratón y ajuste.
+  - `Alt` suspende el ajuste.
+  - Nudges con flechas de una celda.
+  - Atajo `G`.
+  - Alinear abajo dos personajes: sus pies quedan a la misma altura (±1 px).
+- Aislamiento: ni la grilla ni las guías existen en `?previewStep=`, en la reproducción QA ni sin `drDev`. Las preferencias del editor no aparecen en el JSON exportado.
 
 Reutilizar sin reescribir: `normalizeStudioTransform`/`parseStudioDocument` (base del saneado v3), `validateStudioMedia`/`withStore` (IndexedDB), `isCampaignQaAvailable`/`getCampaignStorage` (gating y aislamiento del progreso), el patrón de manifiestos de `prologueV2.ts`/`prologueV3.ts` y la descarga `studioDownload`.
 
@@ -108,7 +164,7 @@ Reutilizar sin reescribir: `normalizeStudioTransform`/`parseStudioDocument` (bas
 
 ### Verificación (para cada fase de implementación)
 - `npm test` (pruebas puras: schema, migración, ops, history, GC), `npm run test:ui`, `npx tsc --noEmit` y `npm run build`.
-- `npm run test:e2e -- --trace off`, ampliando Studio a los proyectos `mobile-320`, `mobile-390` y `landscape`: un ajuste guardado en 390 debe quedar en la misma posición relativa del escenario en `landscape`. Añadir regresiones para teclear «-11», deshacer y rehacer tras arrastrar, capa de un efecto entre dos actores, conservar el historial al cambiar de intervención y que no queden huérfanos tras reemplazar y deshacer.
+- `npm run test:e2e -- --trace off`, ampliando Studio a los proyectos `mobile-320`, `mobile-390`, `landscape` y `desktop-1280` (ver las pruebas de grilla de la fase 3): un ajuste guardado en 390 debe quedar en la misma posición relativa del escenario en `landscape`. Añadir regresiones para teclear «-11», deshacer y rehacer tras arrastrar, capa de un efecto entre dos actores, conservar el historial al cambiar de intervención y que no queden huérfanos tras reemplazar y deshacer.
 - Un borrador v2 real (exportado de la versión actual) importado en v3 debe verse idéntico.
 - La previsualización sigue sin escribir `PROLOGUE_CHECKPOINT_KEY` ni progreso de campaña (prueba existente, que se mantiene).
 - CI: workflow `development-qa.yml` en el PR.
