@@ -156,3 +156,14 @@
   background:linear-gradient(120deg,#29634f,#19443d);
   border-color:#a2d4b0;font-weight:700;
 }
+
+/* Critical: prologue-v2 explicitly sets transform:none!important on both
+   speaking and dim adult actors. Studio positioning must outrank that legacy rule
+   in edit mode AND in QA playback after returning from the editor. */
+.dcop-screen .dcop-scene-figures>div.dcop-studio-adjusted.dcop-speaking,
+.dcop-screen .dcop-scene-figures>div.dcop-studio-adjusted.dcop-dim,
+.dcop-screen.dcop-studio-mode .dcop-scene-figures>div.dcop-studio-adjusted{
+  transform:translate(var(--studio-x),var(--studio-y))
+    scale(var(--studio-scale)) scaleX(var(--studio-mirror))!important;
+  z-index:var(--studio-layer)!important;
+}
