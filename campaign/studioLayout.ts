@@ -18,6 +18,8 @@ export type StudioSceneSettings={
   backgroundAsset?:string;
   bubbleVisible?:boolean;
   titleVisible?:boolean;
+  bubbleText?:string;
+  bubbleTransform?:StudioTransform;
 };
 export type StudioAssetMeta={name:string;mime:string};
 export type StudioDocument={
@@ -79,6 +81,9 @@ export function parseStudioDocument(raw:string):StudioDocument{
         ...(typeof s.backgroundAsset==='string'&&assetOk(s.backgroundAsset)?{backgroundAsset:s.backgroundAsset}:{}),
         ...(typeof s.bubbleVisible==='boolean'?{bubbleVisible:s.bubbleVisible}:{}),
         ...(typeof s.titleVisible==='boolean'?{titleVisible:s.titleVisible}:{}),
+        ...(typeof s.bubbleText==='string'?{bubbleText:s.bubbleText.slice(0,140)}:{}),
+        ...(s.bubbleTransform&&typeof s.bubbleTransform==='object'?{
+          bubbleTransform:normalizeStudioTransform(s.bubbleTransform,'Madre')}:{}),
       };
     }
     if(Object.keys(settings).length)parsed.settings=settings;
