@@ -490,3 +490,16 @@
 .dr-studio-catalog h2{font-size:13px;color:#f3cb93;margin:0 0 6px}
 .dr-studio-catalog ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px}
 .dr-studio-catalog button{width:100%;min-height:42px;text-align:left;padding:8px 10px;border-radius:8px;border:1px solid #a78a62;background:#24354c;color:inherit;font:inherit;cursor:pointer}
+
+/* Elementos nativos editables (ilustración y tarjeta del pergamino). */
+.dcop-screen.dcop-studio-mode .dcop-studio-native{pointer-events:auto;touch-action:none;cursor:grab}
+.dcop-screen .dcop-studio-native.dcop-studio-adjusted{
+  transform:var(--dr-studio-translate) rotate(var(--studio-rot,0deg)) scale(var(--studio-scale)) scaleX(var(--studio-mirror))!important;
+}
+.dcop-screen:not(.dcop-studio-mode) .dcop-studio-native.dcop-studio-hidden{opacity:0!important}
+.dcop-screen.dcop-studio-mode .dcop-studio-native.dcop-studio-hidden{opacity:.18!important}
+.dcop-screen.dcop-studio-mode .dcop-studio-native.dcop-studio-selected{outline:2px dashed #ffe0a0;outline-offset:3px}
+/* Bloque de diálogo más estrecho, centrado. */
+.dcop-screen .dcop-narrative.dcop-dialogue-narrow{
+  left:50%;right:auto;width:calc(100% * var(--dr-dialogue-width,1));transform:translateX(-50%);
+}

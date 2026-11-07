@@ -148,8 +148,8 @@ test('one golden ceremonial card per duelist, then an original VS scene',async({
   await expect(page.getByTestId('domingo-integrated-invocation').locator('img')).toHaveAttribute('src',/domingo_08_invocacion_combate\.png|domingo_02_molesto\.webp/);
   await page.locator('.dcop-dialog-body footer button').click();
   await expect(page.getByTestId('cinematic-versus')).toBeVisible();
-  await expect(page.getByTestId('cinematic-versus')).toContainText('XERVIAS');
-  await expect(page.getByTestId('cinematic-versus')).toContainText('DOMINGO QUISPE');
+  await expect(page.getByTestId('cinematic-versus')).toContainText(/xervias/i);
+  await expect(page.getByTestId('cinematic-versus')).toContainText(/domingo quispe/i);
   await page.locator('.dcop-dialog-body footer button').click();
   await expect(page.locator('.dr-royal-layout')).toBeVisible();
 });

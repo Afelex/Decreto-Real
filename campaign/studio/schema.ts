@@ -50,7 +50,10 @@ export type StudioActorLayer = StudioLayerBase & {kind:'actor'; actor:StudioActo
 export type StudioMediaLayer = StudioLayerBase & {kind:'image'|'effect'; name:string; assetId:string};
 /** Globo breve: el nativo de la intervención o uno nuevo (con `text`). Admite **negrita**. */
 export type StudioBubbleLayer = StudioLayerBase & {kind:'bubble'; text?:string; side?:'left'|'right'};
-export type StudioLayer = StudioActorLayer | StudioMediaLayer | StudioBubbleLayer;
+/** Elemento nativo de la escena que no es un actor (p. ej. la ilustración o la tarjeta del pergamino). */
+export type StudioNativeLayer = StudioLayerBase & {kind:'native'};
+export const NATIVE_LAYER_ID = /^native-[a-z0-9-]{1,40}$/;
+export type StudioLayer = StudioActorLayer | StudioMediaLayer | StudioBubbleLayer | StudioNativeLayer;
 export type StudioLayerKind = StudioLayer['kind'];
 export type StudioLayerTransform = Omit<StudioLayerBase,'id'>;
 
@@ -63,7 +66,13 @@ export type StudioBackground = {assetId?:string;x?:number;y?:number;scale?:numbe
 export const STUDIO_BACKGROUND_SCALE = Object.freeze({min:.5,max:3});
 export const isBackgroundLocked = (bg:StudioBackground|undefined):boolean => bg?.locked!==false;
 /** Estilo del bloque de texto inferior (1 = tamaño original). */
-export type StudioDialogueStyle = {textScale?:number;boxScale?:number};
+export type StudioDialogueStyle = {textScale?:number;boxScale?:number;
+  /** Ancho del bloque (1 = ancho completo). */
+  boxWidth?:number;
+  /** Ocultar a los jugadores el nombre de quien habla, el progreso («ESCENA 1/21») o el rótulo. */
+  hideNameplate?:boolean;hideProgress?:boolean;hideTitle?:boolean;
+};
+export const STUDIO_DIALOGUE_BOX_WIDTH = Object.freeze({min:.5,max:1});
 export const STUDIO_DIALOGUE_TEXT_SCALE = Object.freeze({min:.8,max:1.6});
 export const STUDIO_DIALOGUE_BOX_SCALE = Object.freeze({min:.8,max:1.8});
 export const STUDIO_V3_MAX_DIALOGUE_TEXT = 600;
@@ -121,6 +130,7 @@ const num = (value:unknown,fallback:number,limit:{min:number;max:number}):number
 export function defaultLayerZ(kind:StudioLayerKind,actor?:StudioActor):number {
   if(kind==='actor')return actor==='Niño'?16:14;
   if(kind==='bubble')return 47;
+  if(kind==='native')return 10;
   return kind==='effect'?49:48;
 }
 export function defaultLayerTransform(kind:StudioLayerKind,actor?:StudioActor):StudioLayerTransform {
@@ -171,6 +181,10 @@ export function normalizeStudioLayer(value:unknown,assets?:Record<string,StudioA
       ...normalizeLayerTransform(value,defaultLayerTransform(value.kind)),
     };
   }
+  if(value.kind==='native'){
+    if(typeof value.id!=='string'||!NATIVE_LAYER_ID.test(value.id))return null;
+    return {id:value.id,kind:'native',...normalizeLayerTransform(value,defaultLayerTransform('native'))};
+  }
   if(value.kind==='bubble'){
     return {
       id:STUDIO_BUBBLE_LAYER_ID,kind:'bubble',
@@ -208,6 +222,9 @@ export function normalizeDialogueStyle(value:unknown):StudioDialogueStyle {
   const box=scale(v.boxScale,STUDIO_DIALOGUE_BOX_SCALE);
   if(text!==1)style.textScale=text;
   if(box!==1)style.boxScale=box;
+  const width=scale(v.boxWidth,STUDIO_DIALOGUE_BOX_WIDTH);
+  if(width!==1)style.boxWidth=width;
+  for(const flag of ['hideNameplate','hideProgress','hideTitle'] as const)if(v[flag]===true)style[flag]=true;
   return style;
 }
 export function normalizeDialogue(value:unknown):StudioDialogue|null {

@@ -53,6 +53,10 @@ type Props={
   boxScale?:number;
   /** Marca visible para desarrolladores cuando la intervención está oculta a los jugadores. */
   devOnlyNotice?:boolean;
+  /** Mostrar el nombre de quien habla y el progreso («ESCENA 1/21»). */
+  showNameplate?:boolean;showProgress?:boolean;
+  /** Ancho del bloque (1 = completo), centrado. */
+  boxWidth?:number;
 };
 /** Texto por página según el tamaño del texto y el alto del bloque. */
 export function dialoguePageLimit(textScale=1,boxScale=1):number {
@@ -66,7 +70,7 @@ export function dialoguePageLimit(textScale=1,boxScale=1):number {
  */
 export default function StoryDialogue({
   sceneTitle,speaker,text,beatKey,progress,tone,onAdvance,lastBeforeDuel=false,showSceneTitle=true,
-  textScale=1,boxScale=1,devOnlyNotice=false,
+  textScale=1,boxScale=1,devOnlyNotice=false,showNameplate=true,showProgress=true,boxWidth=1,
 }:Props){
   const pages=React.useMemo(()=>dialoguePages(text,dialoguePageLimit(textScale,boxScale)),[text,textScale,boxScale]);
   // **negrita** → <strong>; nunca se interpreta HTML.
@@ -83,8 +87,9 @@ export default function StoryDialogue({
   const speakerLabel=tone==='thought'?'Xervias · Pensamiento':speaker;
   const plate=nameplateFor(speaker);
   const scaled=textScale!==1;
-  return <section className={'dcop-narrative dcop-dialog-'+tone+(scaled?' dcop-dialogue-text-scaled':'')}
-    style={scaled?{'--dr-dialogue-text':textScale} as React.CSSProperties:undefined}
+  const narrow=boxWidth<1;
+  return <section className={'dcop-narrative dcop-dialog-'+tone+(scaled?' dcop-dialogue-text-scaled':'')+(narrow?' dcop-dialogue-narrow':'')}
+    style={scaled||narrow?{...(scaled?{'--dr-dialogue-text':textScale}:{}),...(narrow?{'--dr-dialogue-width':boxWidth}:{})} as React.CSSProperties:undefined}
     aria-label="Diálogo del prólogo" data-testid="prologue-dialogue">
     {showSceneTitle&&<div className="dcop-chapter-title">
       <small>DECRETO REAL · PRÓLOGO</small>
@@ -93,14 +98,14 @@ export default function StoryDialogue({
     {devOnlyNotice&&<div className="dcop-devonly-chip" data-testid="devonly-beat-notice">
       Solo desarrollador · oculta a los jugadores</div>}
     <div className="dcop-dialog-box">
-      <div className={'dcop-nameplate dcop-nameplate-'+plate} aria-label={'Habla '+speaker}>
+      {showNameplate&&<div className={'dcop-nameplate dcop-nameplate-'+plate} aria-label={'Habla '+speaker}>
         {speakerLabel}
-      </div>
+      </div>}
       <div className="dcop-dialog-body" aria-live="polite" aria-atomic="true">
         <p key={beatKey+'-'+safePage}>{(richPages[safePage]??[]).map((segment,index)=>
           segment.bold?<strong key={index}>{segment.text}</strong>:<React.Fragment key={index}>{segment.text}</React.Fragment>)}</p>
         <footer>
-          <span aria-label="Progreso del diálogo">{progress}{pages.length>1?' · '+(safePage+1)+'/'+pages.length:''}</span>
+          {showProgress?<span aria-label="Progreso del diálogo">{progress}{pages.length>1?' · '+(safePage+1)+'/'+pages.length:''}</span>:<span/>}
           <button type="button" onClick={next} aria-label={finalPage?finalLabel:'Continuar diálogo'}
             title={finalPage?finalLabel:'Continuar diálogo'}>
             <span>{finalPage&&lastBeforeDuel?'Comenzar duelo':'Continuar'}</span>
