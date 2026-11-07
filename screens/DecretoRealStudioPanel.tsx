@@ -12,6 +12,7 @@ type Props={
   transform:StudioTransform|null;
   dirty:boolean;status:string;
   bubbleVisible:boolean;titleVisible:boolean;
+  bubbleText:string;onBubbleText:(text:string)=>void;
   onSelect:(actor:string)=>void;
   onChange:(value:StudioTransform)=>void;
   onSave:()=>void;onUndo:()=>void;canUndo:boolean;
@@ -116,8 +117,14 @@ export default function DecretoRealStudioPanel(props:Props){
           <button type="button" onClick={()=>update({y:t.y+.5})} aria-label="Mover abajo">↓</button>
           <button type="button" onClick={()=>update({x:t.x+.5})} aria-label="Mover a la derecha">→</button>
         </div>
+        {props.selected==='Globo'&&<label className="dr-studio-bubble-text">
+          Texto del globo
+          <input type="text" maxLength={140} value={props.bubbleText}
+            data-testid="studio-bubble-text" onChange={e=>props.onBubbleText(e.target.value)}/>
+        </label>}
         <div className="dr-studio-actions">
-          <button type="button" onClick={()=>pick('replace')} disabled={busy} data-testid="studio-replace">⇄ Reemplazar imagen</button>
+          {props.selected!=='Globo'&&<button type="button" onClick={()=>pick('replace')}
+            disabled={busy} data-testid="studio-replace">⇄ Reemplazar imagen</button>}
           <button type="button" onClick={props.onRemove} data-testid="studio-delete">🗑 Quitar de escena</button>
         </div>
         <button type="button" onClick={props.onRestore}>↺ Restaurar este elemento</button>
