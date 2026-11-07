@@ -311,6 +311,11 @@ const CampaignOpening:React.FC=()=>{
   const studioActorLabels:Record<string,string>=Object.fromEntries(studioExtras.map(extra=>
     [extra.id,extra.name+' · '+(extra.kind==='effect'?'Efecto':'Sprite')]));
   const isNativeActor=(id:string):id is StudioActor=>(STUDIO_ACTORS as readonly string[]).includes(id);
+  React.useEffect(()=>{
+    if(!studioEnabled)return;
+    setStudioSelected(old=>old&&studioActors.includes(old)?old:
+      studioActors[0]??null);
+  },[studioEnabled,studioKey]);
   const studioVisibleSelection=studioSelected&&studioActors.includes(studioSelected)?studioSelected:null;
   const studioDirty=JSON.stringify(studioDoc)!==studioSaved;
   const studioSceneSettings=isCampaignQaAvailable()?studioDoc.settings?.[studioKey]:undefined;
