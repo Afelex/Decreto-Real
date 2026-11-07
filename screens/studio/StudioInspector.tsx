@@ -16,6 +16,7 @@ import {
 import { BACKGROUND_ID, layerBoxes } from './stageGeometry';
 import { actionTargets, moveLayersUpdate } from './studioActions';
 import { useStudio } from './StudioContext';
+import { StudioTextArea } from './StudioTextArea';
 import '../decreto-real-studio.css';
 
 const NATIVE_LABELS:Record<string,string>={
@@ -492,9 +493,10 @@ export default function StudioInspector(props:Props){
           <button type="button" data-testid="studio-bold" aria-label="Negrita" title="Negrita (selecciona el texto)"
             onMouseDown={e=>e.preventDefault()} onClick={bold}><b>B</b></button>
         </div>
-        <textarea id="studio-dialogue-text" ref={dialogueRef} rows={4} maxLength={600}
-          data-testid="studio-dialogue-text" value={dialogueText}
-          onFocus={studio.begin} onBlur={studio.commit} onChange={e=>setDialogueText(e.target.value)}/>
+        <StudioTextArea id="studio-dialogue-text" ref={dialogueRef} rows={4} maxLength={600}
+          testid="studio-dialogue-text" value={dialogueText} original={props.originalText}
+          onFocus={studio.begin} onBlur={studio.commit} onLive={setDialogueText}/>
+        <small className="dr-studio-hint">Enter crea una línea nueva.</small>
         <small className="dr-studio-hint">Selecciona palabras y pulsa <b>B</b>, o escribe **así**, para ponerlas en negrita.</small>
         <button type="button" data-testid="studio-dialogue-reset" disabled={!scene?.dialogue?.text}
           onClick={()=>studio.apply(doc=>withDialogue(doc,sceneKey,{text:null}),'Texto original restaurado')}>↺ Texto original</button>

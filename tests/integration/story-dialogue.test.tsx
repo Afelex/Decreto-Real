@@ -66,3 +66,10 @@ test('larger text paginates into shorter pages; a taller box fits more text per 
   expect(section.style.getPropertyValue('--dr-dialogue-text')).toBe('1.5');
   expect(container.querySelector('footer span')?.textContent).toMatch(/· 1\/[3-9]/);
 });
+
+test('line breaks typed with Enter are kept in the dialogue',()=>{
+  expect(dialoguePages('Primera línea.\nSegunda línea.')).toEqual(['Primera línea.\nSegunda línea.']);
+  const {container}=render(<StoryDialogue beatKey="n" sceneTitle="T" speaker="Crónica"
+    text={'Virreinato del Perú.\n**Siglo XVII.**'} progress="ESCENA 1/1" tone="narrator" onAdvance={()=>{}}/>);
+  expect(container.querySelector('.dcop-dialog-body p')?.textContent).toBe('Virreinato del Perú.\nSiglo XVII.');
+});

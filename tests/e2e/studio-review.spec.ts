@@ -60,3 +60,19 @@ test('VS screen: bands, names and the VS mark are editable pieces',async({page},
   await expect(page.locator('[data-studio-actor="native-versus-nombre-jugador"]')).toHaveAttribute('style',/--studio-y: -5;/);
   await expect(page.getByTestId('cinematic-versus')).toContainText(/xervias/i);
 });
+
+test('Enter in the dialogue text creates a visible new line',async({page},info)=>{
+  test.skip(only(['mobile-390','desktop-1280'])(info.project.name),'Line breaks');
+  await page.goto('/Decreto-Real/?drDev=1#/campania/prologo?studio=1&studioStep=0');
+  const field=page.getByTestId('studio-dialogue-text');
+  await field.fill('');
+  await field.pressSequentially('Virreinato del Perú, siglo XVII.');
+  await field.press('Enter');
+  await field.pressSequentially('El Sello Real da autoridad.');
+  await field.press('Tab');
+  const p=page.locator('.dcop-dialog-body p');
+  await expect(p).toHaveCSS('white-space','pre-line');
+  const lines=await p.evaluate(el=>Math.round(el.getBoundingClientRect().height/parseFloat(getComputedStyle(el).lineHeight)));
+  expect(lines).toBeGreaterThanOrEqual(2);
+  expect(await p.evaluate(el=>el.textContent)).toBe('Virreinato del Perú, siglo XVII.\nEl Sello Real da autoridad.');
+});

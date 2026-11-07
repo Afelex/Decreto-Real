@@ -8,14 +8,15 @@ export type NameplateTone = 'player' | 'authority' | 'neutral' | 'system';
 export function dialoguePages(input: string, limit=150): string[] {
   const text=input.trim();
   if(!text)return [''];
-  const sentences=text.split(/(?<=[.!?])\s+/u);
+  // Los saltos de línea (Enter en Studio) se conservan: solo se corta por espacios.
+  const sentences=text.split(/(?<=[.!?])[ \t]+/u);
   const result:string[]=[];
   let page='';
   const push=()=>{if(page.trim())result.push(page.trim());page='';};
   for(const sentence of sentences){
     if(sentence.length>limit){
       push();
-      const words=sentence.split(/\s+/u);
+      const words=sentence.split(/[ \t]+/u);
       for(const word of words){
         if(page && page.length+word.length+1>limit)push();
         page+=(page?' ':'')+word;

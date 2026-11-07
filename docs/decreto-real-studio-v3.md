@@ -38,7 +38,7 @@ Personajes, sprites, efectos y globo comparten **una sola numeración de capas**
 
 ## Textos: escribir, negrita y tamaño
 En **Diálogo y textos**:
-- **Texto del bloque inferior:** reescribe la línea de la intervención. Para la **negrita**, selecciona palabras y pulsa **B**, o escribe `**así**`. **↺ Texto original** recupera el guion.
+- **Texto del bloque inferior:** reescribe la línea de la intervención. **Enter** crea una línea nueva (también en los globos y en las otras pantallas). Puedes vaciar el campo y escribir desde cero. Para la **negrita**, selecciona palabras y pulsa **B**, o escribe `**así**`. **↺ Texto original** recupera el guion.
 - **Tamaño del texto** (80–160 %) y **Alto del bloque** (80–180 %). En «Aplicar tamaños a» elige *Solo esta intervención* o *Todas las intervenciones*. Al subir el bloque, los personajes se apoyan sobre él.
 - **Rótulo de la escena:** el título pequeño que aparece sobre el diálogo.
 - Los globos también admiten **negrita**. Con **💬 ＋ Globo** añades uno en cualquier intervención, y con ⇤/⇥ eliges su lado.

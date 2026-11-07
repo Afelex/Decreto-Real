@@ -8,6 +8,7 @@ import { defaultLayerTransform, type StudioLayer, type StudioMediaLayer } from '
 import { StudioProvider, useStudio } from './StudioContext';
 import { studioLayerStyle } from './StageComposer';
 import { useStudioDrag } from './useStudioDrag';
+import { StudioTextArea } from './StudioTextArea';
 import '../decreto-real-studio.css';
 
 /**
@@ -34,7 +35,7 @@ export function StudioText({k,original}:{k:string;original:string}){
   const scene=studio.viewScene(k);
   if(!studio.visibleTo(scene?.devOnly))return null;
   return <span data-studio-text={studio.editing?k:undefined}
-    className={studio.editing&&scene?.devOnly?'dr-studio-text-devonly':undefined}>
+    className={'dr-studio-rich'+(studio.editing&&scene?.devOnly?' dr-studio-text-devonly':'')}>
     <Rich text={scene?.dialogue?.text??original}/></span>;
 }
 /** Rótulo editable de la escena (clave visual). */
@@ -161,9 +162,9 @@ export function StudioScreenPanel({label,sceneKey,originalTitle,texts}:PanelProp
           </select></label>}
         <div className="dr-studio-bold-row"><span className="dr-studio-label">{text.label}</span>
           <button type="button" data-testid="studio-bold" aria-label="Negrita" onMouseDown={e=>e.preventDefault()} onClick={bold}><b>B</b></button></div>
-        <textarea ref={field} rows={4} maxLength={600} data-testid="studio-dialogue-text"
-          value={textScene?.dialogue?.text??text.original}
-          onFocus={studio.begin} onBlur={studio.commit} onChange={e=>setText(e.target.value)}/>
+        <StudioTextArea ref={field} rows={4} maxLength={600} testid="studio-dialogue-text" key={text.key}
+          value={textScene?.dialogue?.text??text.original} original={text.original}
+          onFocus={studio.begin} onBlur={studio.commit} onLive={setText}/>
         <div className="dr-studio-actions">
           <button type="button" data-testid="studio-dialogue-reset" disabled={!textScene?.dialogue?.text}
             onClick={()=>studio.apply(d=>withDialogue(d,text.key,{text:null}),'Texto original restaurado')}>↺ Texto original</button>

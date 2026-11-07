@@ -503,3 +503,6 @@
 .dcop-screen .dcop-narrative.dcop-dialogue-narrow{
   left:50%;right:auto;width:calc(100% * var(--dr-dialogue-width,1));transform:translateX(-50%);
 }
+
+/* Saltos de línea escritos con Enter en Studio: se respetan en diálogos, globos y textos. */
+.dcop-dialog-body p,.dcop-quick-bubble,[data-studio-text],.dr-studio-rich{white-space:pre-line}
