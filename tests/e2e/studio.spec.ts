@@ -58,7 +58,7 @@ test('Studio exports its document as versioned JSON',async({page},info)=>{
   await page.goto('/Decreto-Real/?drDev=1#/studio');
   const [download]=await Promise.all([
     page.waitForEvent('download'),
-    page.getByRole('button',{name:'⇩ Exportar JSON'}).click()
+    page.getByRole('button',{name:'⇩ Exportar proyecto'}).click()
   ]);
   expect(download.suggestedFilename()).toBe('decreto-real-studio-proyecto.json');
 });
@@ -71,6 +71,7 @@ test('Studio v2 edits actors across different scenes and previews the exact beat
   await expect(page.locator('.dcop-nameplate')).toHaveText('Xervias');
   await page.getByTestId('studio-actor-select').selectOption('Xervias');
   await page.getByTestId('studio-y').fill('7');
+  await expect(page.locator('.dcop-hero')).not.toHaveCSS('transform','none');
   await page.getByTestId('studio-save').click();
   await page.getByTestId('studio-preview-top').click();
   await expect(page.getByTestId('dr-studio')).toHaveCount(0);
@@ -145,4 +146,23 @@ test('Studio v2 adds, moves and deletes an independent sprite and accepts an eff
   expect(pack.studioPackage).toBe(2);
   expect(pack.document.assets).toBeTruthy();
   expect(pack.media.length).toBeGreaterThanOrEqual(2);
+});
+
+
+test('Studio v2 can reposition, rewrite and hide a quick speech bubble',async({page},info)=>{
+  test.skip(info.project.name!=='mobile-390','Studio bubble editor');
+  await page.goto('/Decreto-Real/?drDev=1#/studio');
+  await page.getByTestId('studio-actor-select').selectOption('Globo');
+  await page.getByTestId('studio-bubble-text').fill('¡Ayudadnos!');
+  await page.getByTestId('studio-x').fill('6');
+  await expect(page.locator('.dcop-quick-bubble')).toContainText('¡Ayudadnos!');
+  await expect(page.locator('.dcop-quick-bubble')).not.toHaveCSS('transform','none');
+  await page.getByTestId('studio-delete').click();
+  await expect(page.locator('.dcop-quick-bubble')).toHaveCount(0);
+  await page.getByTestId('studio-save').click();
+  await page.getByTestId('studio-preview-top').click();
+  await expect(page.locator('.dcop-quick-bubble')).toHaveCount(0);
+  await page.getByTestId('studio-return').click();
+  await page.getByTestId('studio-bubble').click();
+  await expect(page.locator('.dcop-quick-bubble')).toContainText('¡Ayudadnos!');
 });
