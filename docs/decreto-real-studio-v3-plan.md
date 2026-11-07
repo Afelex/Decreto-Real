@@ -107,7 +107,7 @@ StudioLayer      = { id, x, y, scale, rotation, opacity, mirror, z, visible } & 
 | Fase | Entrega | Archivos principales |
 |---|---|---|
 | **0. Documento** | Esta auditoría y este plan (sin cambios de código) | `docs/decreto-real-studio-v3-plan.md` |
-| **1. Fundamentos de datos** | IDs estables, `prologueScript.ts`, schema v3, migración v1/v2→v3, pruebas de migración y de corrimiento de índices | `campaign/studio/{schema,migrate,ops}.ts`, `CampaignOpening.tsx` (solo extraer datos) |
+| **1. Fundamentos de datos** ✅ | IDs estables, `prologueScript.ts`, schema v3, migración v1/v2→v3, pruebas de migración y de corrimiento de índices | `campaign/studio/{schema,migrate,ops}.ts`, `CampaignOpening.tsx` (solo extraer datos) |
 | **2. Desacoplar** | `StudioProvider` + reducer con transacciones de deshacer/rehacer; `StageComposer` consume `SceneComposition`; quitar ~400 líneas de Studio de `CampaignOpening.tsx`; navegación sin remontar | `screens/studio/*`, `CampaignOpening.tsx`, `App.tsx` |
 | **3. Lienzo, coordenadas, capas y grilla** | Unidades % del escenario (arrastre medido con el rectángulo del escenario, no con `window.innerWidth`), plano de capas único, asas de escala/rotación, **grilla, ajuste magnético, ejes, márgenes de seguridad, guías inteligentes y alineación** (ver especificación abajo), selección múltiple para alinear, bloqueo de capa, fondo como capa con encuadre editable, nudges con teclado, inputs numéricos con borrador local (arregla el «-») | `campaign/studio/grid.ts`, `StageComposer`, `StudioCanvasOverlay`, `StudioGridOverlay`, CSS nuevo sin `!important` heredado |
 | **4. UX del editor** | Inspector acoplable (hoja inferior plegable, lateral en escritorio); timeline con miniaturas y marcas de editado; «aplicar a toda la escena» y «copiar de la anterior»; guardado explícito con indicador, autoguardado en borrador y `beforeunload`; Salir/Previsualizar separados; globos y texto de diálogo editables; comparar antes/después | `StudioInspector`, `StudioTimeline` |
@@ -154,6 +154,14 @@ Implementación: la matemática pura (paso de grilla, `snapValue`, `snapRect`, a
   - Atajo `G`.
   - Alinear abajo dos personajes: sus pies quedan a la misma altura (±1 px).
 - Aislamiento: ni la grilla ni las guías existen en `?previewStep=`, en la reproducción QA ni sin `drDev`. Las preferencias del editor no aparecen en el JSON exportado.
+
+### Estado de la fase 1 (implementada)
+- `campaign/prologueScript.ts`: guion del prólogo (49 intervenciones, textos idénticos) con IDs estables, `PROLOGUE_BEAT_IDS` y `prologueSceneKey()`. `CampaignOpening.tsx` lo importa y lo reexporta; su comportamiento no cambia.
+- `campaign/studio/schema.ts`: tipos v3, límites, normalización y validación con integridad referencial.
+- `campaign/studio/migrate.ts`: tablas congeladas de v2, `migrateLegacyStudioDocument`, `parseAnyStudioDocument` y lectura/escritura del borrador v3 (con migración al vuelo que conserva la clave v1).
+- `campaign/studio/ops.ts`: operaciones puras (capas, escena, fondo, título, `copyScene`, recursos usados y poda de recursos).
+- Pruebas en `campaign/prologueScript.test.ts` y `campaign/studio/*.test.ts`, incluidas en `npm test`.
+- Studio v2 sigue usando su almacenamiento actual. La fase 2 conectará el editor al documento v3.
 
 Reutilizar sin reescribir: `normalizeStudioTransform`/`parseStudioDocument` (base del saneado v3), `validateStudioMedia`/`withStore` (IndexedDB), `isCampaignQaAvailable`/`getCampaignStorage` (gating y aislamiento del progreso), el patrón de manifiestos de `prologueV2.ts`/`prologueV3.ts` y la descarga `studioDownload`.
 
