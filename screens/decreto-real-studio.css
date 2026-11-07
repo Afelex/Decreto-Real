@@ -167,3 +167,24 @@
     scale(var(--studio-scale)) scaleX(var(--studio-mirror))!important;
   z-index:var(--studio-layer)!important;
 }
+
+/* Bubble is an authorable scene element in Studio, not baked into the background. */
+.dcop-screen .dcop-quick-bubble.dcop-studio-bubble-adjusted{
+  transform:translate(var(--studio-x),var(--studio-y))
+    scale(var(--studio-scale)) scaleX(var(--studio-mirror))!important;
+  z-index:var(--studio-layer,7)!important;
+}
+.dcop-screen.dcop-studio-mode .dcop-quick-bubble{
+  pointer-events:auto!important;touch-action:none;cursor:grab;
+}
+.dcop-screen.dcop-studio-mode .dcop-studio-bubble-selected{
+  outline:2px dashed #ffe1a2;outline-offset:3px;
+}
+.dr-studio-bubble-text{
+  display:grid;gap:5px;color:#f0d4a5;font-size:11px;
+}
+.dr-studio-bubble-text input{
+  display:block;width:100%;min-height:38px;padding:8px;
+  border:1px solid #ac9269;border-radius:7px;
+  background:#172336;color:#fff5e5;font:13px system-ui,sans-serif;
+}
