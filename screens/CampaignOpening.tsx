@@ -4,9 +4,14 @@ import { awardMissionStars, loadCampaignProgress, saveCampaignProgress } from '.
 import { getCampaignStorage, isCampaignQaAvailable } from '../campaign/campaignQA';
 import {
   readStudioDocument,saveStudioDocument,parseStudioDocument,withStudioTransform,withoutStudioTransform,
+  withStudioSettings,withStudioAsset,addStudioExtra,removeStudioExtra,withStudioExtraTransform,withStudioExtraAsset,
   getStudioTransform,studioSceneKey,STUDIO_ACTORS,
-  type StudioActor,type StudioTransform,type StudioDocument
+  type StudioActor,type StudioTransform,type StudioDocument,type StudioExtra
 } from '../campaign/studioLayout';
+import {
+  addStudioMedia,loadStudioMediaUrls,revokeStudioMediaUrls,exportStudioMedia,
+  importStudioMedia,type StudioPortableMedia
+} from '../campaign/studioMedia';
 import DecretoRealStudioPanel from './DecretoRealStudioPanel';
 import GameBoard from './GameBoard';
 import { GUIDED_STEPS } from '../campaign/guidedOpeningDuel';
@@ -118,28 +123,33 @@ const CampaignOpening:React.FC=()=>{
   const parsedStudioStep=studioRawStep===null?NaN:Number(studioRawStep);
   const studioStep=studioEnabled&&Number.isInteger(parsedStudioStep)&&parsedStudioStep>=0&&
     parsedStudioStep<OPENING_BEATS.length+AFTER_DUEL_BEATS.length?parsedStudioStep:null;
+  const previewRaw=query.get('previewStep');
+  const parsedPreview=previewRaw===null?NaN:Number(previewRaw);
+  const previewStep=isCampaignQaAvailable()&&Number.isInteger(parsedPreview)&&
+    parsedPreview>=0&&parsedPreview<OPENING_BEATS.length+AFTER_DUEL_BEATS.length?parsedPreview:null;
+  const forcedStep=studioStep??previewStep;
   const startBeat=React.useMemo(()=>{
-    if(studioStep!==null)return studioStep<OPENING_BEATS.length?studioStep:OPENING_BEATS.length+1;
+    if(forcedStep!==null)return forcedStep<OPENING_BEATS.length?forcedStep:OPENING_BEATS.length+1;
     if(override==='duelo')return OPENING_BEATS.length;
     if(override==='fin')return OPENING_BEATS.length+2;
     if(override==='desenlace'||override==='zhinchi'||override==='cetro'||override==='resolucion'||override==='reflexion')
       return OPENING_BEATS.length+1;
     if(override){const index=OPENING_BEATS.findIndex(x=>x.scene===override);if(index>=0)return index;}
     return saved.beat;
-  },[override,saved.beat,studioStep]);
+  },[override,saved.beat,forcedStep]);
   const [beat,setBeat]=React.useState(startBeat);
   // Combat returns to the beginning of the real board if the player leaves mid-duel.
   const duel=0;
-  const initialAfter=studioStep!==null&&studioStep>=OPENING_BEATS.length
-    ? studioStep-OPENING_BEATS.length : override && ['desenlace','zhinchi','cetro','resolucion','reflexion'].includes(override)
+  const initialAfter=forcedStep!==null&&forcedStep>=OPENING_BEATS.length
+    ? forcedStep-OPENING_BEATS.length : override && ['desenlace','zhinchi','cetro','resolucion','reflexion'].includes(override)
     ? Math.max(0,AFTER_DUEL_BEATS.findIndex(x=>x.phase===override)) : override?0:saved.after;
   const [after,setAfter]=React.useState(initialAfter);
   // React Router can reuse this screen when only ?escena= changes.
   // QA jumps must update both the story phase and its dialogue index.
   React.useEffect(()=>{
-    if(studioStep!==null){
-      setBeat(studioStep<OPENING_BEATS.length?studioStep:OPENING_BEATS.length+1);
-      setAfter(studioStep>=OPENING_BEATS.length?studioStep-OPENING_BEATS.length:0);
+    if(forcedStep!==null){
+      setBeat(forcedStep<OPENING_BEATS.length?forcedStep:OPENING_BEATS.length+1);
+      setAfter(forcedStep>=OPENING_BEATS.length?forcedStep-OPENING_BEATS.length:0);
       return;
     }
     if(!override)return;
@@ -166,16 +176,27 @@ const CampaignOpening:React.FC=()=>{
       setBeat(target);
       setAfter(0);
     }
-  },[override,studioStep]);
+  },[override,forcedStep]);
   const [artReady,setArtReady]=React.useState(false);
   const [v2Ready,setV2Ready]=React.useState(false);
   const [v3Ready,setV3Ready]=React.useState(false);
   const [studioDoc,setStudioDoc]=React.useState<StudioDocument>(readStudioDocument);
   const [studioSaved,setStudioSaved]=React.useState(()=>JSON.stringify(readStudioDocument()));
-  const [studioSelected,setStudioSelected]=React.useState<StudioActor|null>(null);
+  const [studioSelected,setStudioSelected]=React.useState<string|null>(null);
+  const [mediaUrls,setMediaUrls]=React.useState<Record<string,string>>({});
+  const mediaIds=Object.keys(studioDoc.assets??{}).sort().join('|');
+  React.useEffect(()=>{
+    if(!isCampaignQaAvailable())return;
+    let cancelled=false;
+    let urls:Record<string,string>={};
+    void loadStudioMediaUrls(mediaIds?mediaIds.split('|'):[])
+      .then(next=>{urls=next;if(cancelled)revokeStudioMediaUrls(next);else setMediaUrls(next);})
+      .catch(()=>setStudioStatus('No se pudieron cargar algunos archivos locales.'));
+    return ()=>{cancelled=true;revokeStudioMediaUrls(urls);};
+  },[mediaIds]);
   const [studioHistory,setStudioHistory]=React.useState<StudioDocument[]>([]);
   const [studioStatus,setStudioStatus]=React.useState('');
-  const studioDrag=React.useRef<{actor:StudioActor;pointerId:number;startX:number;startY:number;origin:StudioTransform}|null>(null);
+  const studioDrag=React.useRef<{actor:string;pointerId:number;startX:number;startY:number;origin:StudioTransform}|null>(null);
   const {playSound}=useAudio();
   React.useEffect(()=>{
     if(typeof fetch!=='function')return;
@@ -203,14 +224,15 @@ const CampaignOpening:React.FC=()=>{
     return ()=>controller.abort();
   },[]);
   React.useEffect(()=>{
-    if(studioEnabled)return; // Studio must never touch actual campaign progress.
+    if(studioEnabled||previewStep!==null)return; // Studio preview must not alter the player's progress.
     try{getCampaignStorage()?.setItem(PROLOGUE_CHECKPOINT_KEY,JSON.stringify({beat,duel,after}));}
     catch{/* Private browsing may disable storage. */}
-  },[beat,duel,after,studioEnabled]);
+  },[beat,duel,after,studioEnabled,previewStep]);
   const art=(id:PrologueArtId,fallback:string)=>artReady?prologueArtUrl(id):fallback;
   const v2art=(id:V2ArtId,fallback:string)=>v2Ready?prologueV2Url(id):fallback;
   const v3art=(id:V3ArtId,fallback:string)=>v3Ready?prologueV3Url(id):fallback;
   const finish=()=>{
+    if(previewStep!==null){setBeat(OPENING_BEATS.length+2);return;}
     const store=getCampaignStorage();
     const progress=loadCampaignProgress(store);
     saveCampaignProgress(store,awardMissionStars(progress,'01',3));
@@ -282,12 +304,42 @@ const CampaignOpening:React.FC=()=>{
     else{add('Xervias',xervias);add('Zhinchi',zhinchi);}
   }
   else if(scene==='reflexion'&&speaker==='Xervias'){add('Xervias',xervias);}
+  const quickBubble=prologue?.scene==='arresto'&&beat===1?'¡Por favor!':
+    scene==='xervias'&&speaker==='Xervias'&&beat===4?'¡Un momento!':
+    scene==='desafio'&&speaker==='Domingo Quispe'&&story?.text.startsWith('¡Silencio!')?'¡Silencio!':
+    scene==='zhinchi'&&after===9?'¡Alto!':null;
   const studioKey=studioSceneKey(isAfter?'after':'opening',isAfter?after:beat);
-  const studioActors:StudioActor[]=actors.flatMap(actor=>actor.child?
-    [actor.id,'Niño' as const]:[actor.id]);
+  const studioExtras=studioDoc.extras?.[studioKey]??[];
+  const studioActors:string[]=[...actors.flatMap(actor=>actor.child?
+    [actor.id,'Niño' as const]:[actor.id]),...studioExtras.map(extra=>extra.id),
+    ...(quickBubble?['Globo']:[])];
+  const studioActorLabels:Record<string,string>={
+    Globo:'Globo de texto',
+    ...Object.fromEntries(studioExtras.map(extra=>
+      [extra.id,extra.name+' · '+(extra.kind==='effect'?'Efecto':'Sprite')])),
+  };
+  const isNativeActor=(id:string):id is StudioActor=>(STUDIO_ACTORS as readonly string[]).includes(id);
+  React.useEffect(()=>{
+    if(!studioEnabled)return;
+    setStudioSelected(old=>old&&studioActors.includes(old)?old:
+      studioActors[0]??null);
+  },[studioEnabled,studioKey]);
   const studioVisibleSelection=studioSelected&&studioActors.includes(studioSelected)?studioSelected:null;
   const studioDirty=JSON.stringify(studioDoc)!==studioSaved;
+  const studioSceneSettings=isCampaignQaAvailable()?studioDoc.settings?.[studioKey]:undefined;
+  const bubbleVisible=studioSceneSettings?.bubbleVisible!==false;
+  const titleVisible=studioSceneSettings?.titleVisible!==false;
+  const bubbleText=studioSceneSettings?.bubbleText??quickBubble??'';
   const currentLayout=(actor:StudioActor)=>isCampaignQaAvailable()?studioDoc.scenes[studioKey]?.[actor]:undefined;
+  const currentExtra=(id:string)=>studioExtras.find(x=>x.id===id);
+  const currentTransform=(id:string):StudioTransform|null=>{
+    if(isNativeActor(id))return getStudioTransform(studioDoc,studioKey,id);
+    if(id==='Globo')return studioDoc.settings?.[studioKey]?.bubbleTransform??{
+      x:0,y:0,scale:1,mirror:false,layer:7,visible:true,
+    };
+    return currentExtra(id)?.transform??null;
+  };
+  const mediaSource=(id:string|undefined,fallback:string)=>id?(mediaUrls[id]??fallback):fallback;
   const studioStyle=(actor:StudioActor):React.CSSProperties|undefined=>{
     const layout=currentLayout(actor);
     if(!layout)return undefined;
@@ -297,48 +349,69 @@ const CampaignOpening:React.FC=()=>{
       '--studio-layer':layout.layer,
     } as React.CSSProperties;
   };
+  const extraStyle=(extra:StudioExtra):React.CSSProperties=>({
+    '--studio-x':extra.transform.x+'vw','--studio-y':extra.transform.y+'vh',
+    '--studio-scale':extra.transform.scale,
+    '--studio-mirror':extra.transform.mirror?-1:1,
+    '--studio-layer':extra.transform.layer,
+  } as React.CSSProperties);
   const studioClass=(actor:StudioActor)=>(currentLayout(actor)?' dcop-studio-adjusted':'')+
     (studioEnabled&&studioVisibleSelection===actor?' dcop-studio-selected':'')+
     (currentLayout(actor)?.visible===false?' dcop-studio-hidden':'');
   const pushStudioHistory=()=>{
     setStudioHistory(items=>[...items.slice(-24),studioDoc]);
   };
-  const changeStudioActor=(actor:StudioActor,next:StudioTransform)=>{
+  const changeStudioTarget=(id:string,next:StudioTransform)=>{
     pushStudioHistory();
-    setStudioDoc(doc=>withStudioTransform(doc,studioKey,actor,next));
+    setStudioDoc(doc=>isNativeActor(id)?
+      withStudioTransform(doc,studioKey,id,next):
+      id==='Globo'?withStudioSettings(doc,studioKey,{bubbleTransform:next}):
+      withStudioExtraTransform(doc,studioKey,id,next));
     setStudioStatus('Cambios sin guardar');
   };
-  const startStudioDrag=(event:React.PointerEvent<HTMLElement>,actor:StudioActor)=>{
+  const startStudioDrag=(event:React.PointerEvent<HTMLElement>,actor:string)=>{
     if(!studioEnabled)return;
+    const origin=currentTransform(actor);
+    if(!origin)return;
     event.preventDefault();event.stopPropagation();
     setStudioSelected(actor);
     pushStudioHistory();
     studioDrag.current={
-      actor,pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,
-      origin:getStudioTransform(studioDoc,studioKey,actor)
+      actor,pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,origin,
     };
     event.currentTarget.setPointerCapture(event.pointerId);
   };
-  const moveStudioDrag=(event:React.PointerEvent<HTMLElement>,actor:StudioActor)=>{
+  const moveStudioDrag=(event:React.PointerEvent<HTMLElement>,actor:string)=>{
     const drag=studioDrag.current;
     if(!studioEnabled||!drag||drag.pointerId!==event.pointerId||drag.actor!==actor)return;
     event.preventDefault();event.stopPropagation();
     const next={...drag.origin,
       x:drag.origin.x+100*(event.clientX-drag.startX)/window.innerWidth,
-      y:drag.origin.y+100*(event.clientY-drag.startY)/window.innerHeight
+      y:drag.origin.y+100*(event.clientY-drag.startY)/window.innerHeight,
     };
-    setStudioDoc(doc=>withStudioTransform(doc,studioKey,actor,next));
+    setStudioDoc(doc=>isNativeActor(actor)?
+      withStudioTransform(doc,studioKey,actor,next):
+      actor==='Globo'?withStudioSettings(doc,studioKey,{bubbleTransform:next}):
+      withStudioExtraTransform(doc,studioKey,actor,next));
     setStudioStatus('Cambios sin guardar');
   };
-  const endStudioDrag=(event:React.PointerEvent<HTMLElement>,actor:StudioActor)=>{
+  const endStudioDrag=(event:React.PointerEvent<HTMLElement>,actor:string)=>{
     if(studioDrag.current?.pointerId!==event.pointerId||studioDrag.current?.actor!==actor)return;
     studioDrag.current=null;
     if(event.currentTarget.hasPointerCapture(event.pointerId))
       event.currentTarget.releasePointerCapture(event.pointerId);
   };
+  const saveBeforeNavigation=()=>{
+    if(!studioDirty)return true;
+    if(saveStudioDocument(studioDoc)){
+      setStudioSaved(JSON.stringify(studioDoc));return true;
+    }
+    setStudioStatus('No se pudo guardar. Exporta tu proyecto como respaldo.');
+    return false;
+  };
   const studioNavigate=(next:number)=>{
     if(next<0||next>=OPENING_BEATS.length+AFTER_DUEL_BEATS.length)return;
-    if(studioDirty&&!window.confirm('Hay cambios sin guardar. ¿Cambiar de escena sin guardarlos?'))return;
+    if(!saveBeforeNavigation())return;
     setStudioSelected(null);
     navigate('/campania/prologo?studio=1&studioStep='+next);
   };
@@ -346,43 +419,147 @@ const CampaignOpening:React.FC=()=>{
     if(saveStudioDocument(studioDoc)){
       setStudioSaved(JSON.stringify(studioDoc));
       setStudioStatus('Borrador guardado en este dispositivo');
-    }else setStudioStatus('No se pudo guardar. Exporta una copia JSON.');
+    }else setStudioStatus('No se pudo guardar. Exporta el proyecto.');
   };
-  const studioExport=()=>{
-    const blob=new Blob([JSON.stringify(studioDoc,null,2)],{type:'application/json'});
+  const studioDownload=(name:string,body:string)=>{
+    const blob=new Blob([body],{type:'application/json'});
     const url=URL.createObjectURL(blob);
     const link=document.createElement('a');
-    link.href=url;link.download='decreto-real-studio-v1.json';
+    link.href=url;link.download=name;
     document.body.appendChild(link);link.click();link.remove();
-    URL.revokeObjectURL(url);
-    setStudioStatus('Configuración exportada');
+    window.setTimeout(()=>URL.revokeObjectURL(url),1000);
+  };
+  const studioExport=async()=>{
+    try{
+      setStudioStatus('Preparando respaldo con imágenes y videos…');
+      const media=await exportStudioMedia(Object.keys(studioDoc.assets??{}));
+      studioDownload('decreto-real-studio-proyecto.json',
+        JSON.stringify({studioPackage:2,document:studioDoc,media},null,2));
+      setStudioStatus('Proyecto completo exportado con sus archivos multimedia.');
+    }catch(err){setStudioStatus(err instanceof Error?err.message:'Error al exportar.');}
   };
   const studioImport=async(file:File)=>{
     try{
-      if(file.size>1_000_000)throw new Error('Archivo demasiado grande (máximo 1 MB).');
-      const doc=parseStudioDocument(await file.text());
-      pushStudioHistory();setStudioDoc(doc);
-      setStudioStatus('Importado: revisa las escenas y pulsa Guardar');
-    }catch(err){setStudioStatus(err instanceof Error?err.message:'El archivo no es válido.');}
+      if(file.size>100_000_000)throw new Error('Archivo demasiado grande (máximo 100 MB).');
+      const payload:unknown=JSON.parse(await file.text());
+      if(payload&&typeof payload==='object'&&(payload as {studioPackage?:number}).studioPackage===2){
+        const pack=payload as {document:unknown;media:StudioPortableMedia[]};
+        const parsed=parseStudioDocument(JSON.stringify(pack.document));
+        if(!Array.isArray(pack.media))throw new Error('Faltan los recursos multimedia.');
+        await importStudioMedia(pack.media);
+        pushStudioHistory();setStudioDoc(parsed);
+      }else{
+        const parsed=parseStudioDocument(JSON.stringify(payload));
+        pushStudioHistory();setStudioDoc(parsed);
+      }
+      setStudioSelected(null);
+      setStudioStatus('Proyecto importado. Revisa las escenas y pulsa Guardar.');
+    }catch(err){setStudioStatus(err instanceof Error?err.message:'No se pudo importar.');}
   };
   const studioUndo=()=>{
     const prev=studioHistory[studioHistory.length-1];if(!prev)return;
-    setStudioDoc(prev);setStudioHistory(h=>h.slice(0,-1));setStudioStatus('Último cambio deshecho');
+    setStudioDoc(prev);setStudioHistory(h=>h.slice(0,-1));setStudioStatus('Última modificación deshecha');
   };
   const studioRestore=()=>{
     if(!studioVisibleSelection)return;
     pushStudioHistory();
-    setStudioDoc(doc=>withoutStudioTransform(doc,studioKey,studioVisibleSelection));
-    setStudioStatus('Restaurada la transformación original');
+    setStudioDoc(doc=>isNativeActor(studioVisibleSelection)?
+      withoutStudioTransform(doc,studioKey,studioVisibleSelection):
+      studioVisibleSelection==='Globo'?withStudioSettings(doc,studioKey,{
+        bubbleTransform:undefined,bubbleText:undefined,bubbleVisible:true,
+      }):
+      withStudioExtraTransform(doc,studioKey,studioVisibleSelection,{
+        x:0,y:0,scale:1,mirror:false,layer:8,visible:true,
+      }));
+    setStudioStatus('Elemento restaurado');
   };
-  const studioExit=()=>{
-    if(studioDirty&&!window.confirm('Hay cambios sin guardar. ¿Salir del editor?'))return;
-    navigate('/campania/prologo?escena='+scene);
+  const studioRemove=()=>{
+    if(!studioVisibleSelection)return;
+    pushStudioHistory();
+    setStudioDoc(doc=>isNativeActor(studioVisibleSelection)?
+      withStudioTransform(doc,studioKey,studioVisibleSelection,{
+        ...getStudioTransform(doc,studioKey,studioVisibleSelection),visible:false,
+      }):studioVisibleSelection==='Globo'?
+      withStudioSettings(doc,studioKey,{bubbleVisible:false}):
+      removeStudioExtra(doc,studioKey,studioVisibleSelection));
+    if(!isNativeActor(studioVisibleSelection)&&studioVisibleSelection!=='Globo')setStudioSelected(null);
+    setStudioStatus('Elemento oculto o retirado de esta intervención');
   };
-  const quickBubble=prologue?.scene==='arresto'&&beat===1?'¡Por favor!':
-    scene==='xervias'&&speaker==='Xervias'&&beat===4?'¡Un momento!':
-    scene==='desafio'&&speaker==='Domingo Quispe'&&story?.text.startsWith('¡Silencio!')?'¡Silencio!':
-    scene==='zhinchi'&&after===9?'¡Alto!':null;
+  const studioStoreFile=async(file:File)=>{
+    const record=await addStudioMedia(file);
+    setStudioDoc(doc=>withStudioAsset(doc,record.id,{name:record.name,mime:record.mime}));
+    return record;
+  };
+  const studioReplace=async(file:File)=>{
+    try{
+      if(!studioVisibleSelection)throw new Error('Selecciona primero un personaje o un sprite.');
+      if(!file.type.startsWith('image/'))throw new Error('Un personaje requiere una imagen PNG, WebP, JPG o GIF.');
+      const record=await studioStoreFile(file);
+      pushStudioHistory();
+      const target=studioVisibleSelection;
+      setStudioDoc(doc=>isNativeActor(target)?
+        withStudioTransform(doc,studioKey,target,{
+          ...getStudioTransform(doc,studioKey,target),assetId:record.id,visible:true,
+        }):withStudioExtraAsset(doc,studioKey,target,record.id));
+      setStudioStatus('Imagen reemplazada. Guarda el borrador para conservarla.');
+    }catch(err){setStudioStatus(err instanceof Error?err.message:'No se pudo reemplazar la imagen.');}
+  };
+  const studioAdd=async(file:File,kind:'image'|'effect')=>{
+    try{
+      if(kind==='image'&&!file.type.startsWith('image/'))
+        throw new Error('Un sprite debe ser PNG, WebP, JPG o GIF.');
+      const record=await studioStoreFile(file);
+      const item:StudioExtra={
+        id:'extra-'+crypto.randomUUID(),name:file.name.slice(0,100),assetId:record.id,kind,
+        transform:{x:0,y:0,scale:1,mirror:false,layer:kind==='effect'?9:8,visible:true},
+      };
+      pushStudioHistory();
+      setStudioDoc(doc=>addStudioExtra(doc,studioKey,item));
+      setStudioSelected(item.id);
+      setStudioStatus(kind==='effect'?'Efecto añadido. Puedes moverlo y escalarlo.':
+        'Sprite añadido. Puedes moverlo y escalarlo.');
+    }catch(err){setStudioStatus(err instanceof Error?err.message:'No se pudo añadir el archivo.');}
+  };
+  const studioBackdrop=async(file:File)=>{
+    try{
+      const record=await studioStoreFile(file);
+      pushStudioHistory();
+      setStudioDoc(doc=>withStudioSettings(doc,studioKey,{backgroundAsset:record.id}));
+      setStudioStatus('Fondo cambiado solo en esta intervención.');
+    }catch(err){setStudioStatus(err instanceof Error?err.message:'No se pudo cambiar el fondo.');}
+  };
+  const studioClearBackdrop=()=>{
+    pushStudioHistory();setStudioDoc(doc=>withStudioSettings(doc,studioKey,{backgroundAsset:undefined}));
+    setStudioStatus('Fondo original restaurado.');
+  };
+  const studioChangeBubbleText=(text:string)=>{
+    pushStudioHistory();setStudioDoc(doc=>withStudioSettings(doc,studioKey,{
+      bubbleText:text.slice(0,140),
+    }));
+    setStudioStatus('Texto del globo modificado');
+  };
+  const studioToggleBubble=()=>{
+    pushStudioHistory();
+    setStudioDoc(doc=>withStudioSettings(doc,studioKey,{
+      bubbleVisible:doc.settings?.[studioKey]?.bubbleVisible===false,
+    }));
+  };
+  const studioToggleTitle=()=>{
+    pushStudioHistory();
+    setStudioDoc(doc=>withStudioSettings(doc,studioKey,{
+      titleVisible:doc.settings?.[studioKey]?.titleVisible===false,
+    }));
+  };
+  const studioPreview=()=>{
+    if(!saveBeforeNavigation())return;
+    const currentIndex=isAfter?OPENING_BEATS.length+after:beat;
+    navigate('/campania/prologo?previewStep='+currentIndex);
+  };
+  const studioExit=studioPreview;
+  const backgroundAsset=studioSceneSettings?.backgroundAsset;
+  const renderedBackdrop=mediaSource(backgroundAsset,background);
+  const backdropIsVideo=Boolean(backgroundAsset&&studioDoc.assets?.[backgroundAsset]?.mime.startsWith('video/'));
+
   const quickBubbleSide=quickBubble==='¡Alto!'?'right':
     speaker==='Domingo Quispe'?'right':'left';
   const dialogueTone=speaker==='Crónica'?'narrator':
@@ -395,8 +572,16 @@ const CampaignOpening:React.FC=()=>{
   return <main className={'dcop-screen dcop-'+scene+(studioEnabled?' dcop-studio-mode':'')} aria-label="Prólogo de campaña: El Sello Real">
     <div className="dcop-stage">
       {!isBattle&&!isFinal&&!studioEnabled&&<CampaignPauseMenu/>}
+      {!isBattle&&!isFinal&&previewStep!==null&&!studioEnabled&&
+        <button type="button" className="dcop-studio-return" data-testid="studio-return"
+          onClick={()=>navigate('/campania/prologo?studio=1&studioStep='+
+            (isAfter?OPENING_BEATS.length+after:beat))}>
+          ✎ Volver a Studio
+        </button>}
       {!isFinal&&!isBattle&&<div className="dcop-art" aria-hidden="true">
-        <img className="dcop-backdrop" src={background} alt=""/>
+        {backdropIsVideo?<video className="dcop-backdrop" src={renderedBackdrop}
+          autoPlay muted loop playsInline data-testid="studio-video-background"/>:
+          <img className="dcop-backdrop" src={renderedBackdrop} alt=""/>}
         {scene==='pergamino'&&<div className="dcop-scroll-held">
           {artReady&&<img className="dcop-scroll-illustration" src={prologueArtUrl('P01')} alt=""/>}
           <div className={'dcop-parchment'+(artReady?' dcop-parchment-overlay':'')}>
@@ -422,7 +607,7 @@ const CampaignOpening:React.FC=()=>{
             onPointerCancel={studioEnabled?event=>endStudioDrag(event,actor.id):undefined}
             data-studio-actor={studioEnabled?actor.id:undefined}
             data-testid={actor.id==='Domingo Quispe'&&isCounterInvocationShot?'domingo-integrated-invocation':undefined}>
-            <img src={actor.src} alt=""/>
+            <img src={mediaSource(currentLayout(actor.id)?.assetId,actor.src)} alt=""/>
             {actor.child&&(artReady||v3Ready)&&<img
               className={'dcop-child-sprite'+studioClass('Niño')}
               style={studioStyle('Niño')}
@@ -431,13 +616,31 @@ const CampaignOpening:React.FC=()=>{
               onPointerMove={studioEnabled?event=>moveStudioDrag(event,'Niño'):undefined}
               onPointerUp={studioEnabled?event=>endStudioDrag(event,'Niño'):undefined}
               onPointerCancel={studioEnabled?event=>endStudioDrag(event,'Niño'):undefined}
-              src={scene==='resolucion'
+              src={mediaSource(currentLayout('Niño')?.assetId,scene==='resolucion'
                 ? v3art('N04',art('N02',portraits.Madre))
-                : v3art('N03',art('N01',portraits.Madre))}
+                : v3art('N03',art('N01',portraits.Madre)))}
               alt=""/>}
             {actor.id==='Xervias'&&isRingOnlyShot&&!v3Ready&&<span className="dcop-ring-energy-fallback" aria-hidden="true"/>}
           </div>)}
         </div>}
+        {isCampaignQaAvailable()&&studioExtras.map(extra=>{
+          const src=mediaUrls[extra.assetId];
+          const isVideo=studioDoc.assets?.[extra.assetId]?.mime.startsWith('video/');
+          return <div key={extra.id}
+            className={'dcop-studio-extra'+(studioEnabled&&studioVisibleSelection===extra.id?' dcop-studio-extra-selected':'')+
+              (!extra.transform.visible?' dcop-studio-hidden':'')}
+            style={extraStyle(extra)}
+            data-testid="studio-added-layer"
+            data-studio-actor={studioEnabled?extra.id:undefined}
+            onPointerDown={studioEnabled?e=>startStudioDrag(e,extra.id):undefined}
+            onPointerMove={studioEnabled?e=>moveStudioDrag(e,extra.id):undefined}
+            onPointerUp={studioEnabled?e=>endStudioDrag(e,extra.id):undefined}
+            onPointerCancel={studioEnabled?e=>endStudioDrag(e,extra.id):undefined}>
+            {src&&(isVideo?
+              <video src={src} autoPlay muted loop playsInline aria-label={extra.name}/>:
+              <img src={src} alt={studioEnabled?extra.name:''}/>)}
+          </div>;
+        })}
         {isInvocationShot&&<div className="dcop-invocation-shimmer" data-testid="xervias-golden-invocation">
           <img className="dcop-summoned-card" src={v3art('G01',INVOCATION_CARD_URL)} alt=""/>
         </div>}
@@ -452,7 +655,24 @@ const CampaignOpening:React.FC=()=>{
             <img src={domingoDuelPortrait} alt=""/><strong>DOMINGO QUISPE</strong>
           </div>
         </div>}
-        {quickBubble&&<div className={'dcop-quick-bubble '+quickBubbleSide}>{quickBubble}</div>}
+        {quickBubble&&bubbleVisible&&<div
+          className={'dcop-quick-bubble '+quickBubbleSide+
+            (studioSceneSettings?.bubbleTransform?' dcop-studio-bubble-adjusted':'')+
+            (studioEnabled&&studioVisibleSelection==='Globo'?' dcop-studio-bubble-selected':'')}
+          style={studioSceneSettings?.bubbleTransform?({
+            '--studio-x':studioSceneSettings.bubbleTransform.x+'vw',
+            '--studio-y':studioSceneSettings.bubbleTransform.y+'vh',
+            '--studio-scale':studioSceneSettings.bubbleTransform.scale,
+            '--studio-mirror':studioSceneSettings.bubbleTransform.mirror?-1:1,
+            '--studio-layer':studioSceneSettings.bubbleTransform.layer,
+          } as React.CSSProperties):undefined}
+          data-studio-actor={studioEnabled?'Globo':undefined}
+          onPointerDown={studioEnabled?e=>startStudioDrag(e,'Globo'):undefined}
+          onPointerMove={studioEnabled?e=>moveStudioDrag(e,'Globo'):undefined}
+          onPointerUp={studioEnabled?e=>endStudioDrag(e,'Globo'):undefined}
+          onPointerCancel={studioEnabled?e=>endStudioDrag(e,'Globo'):undefined}>
+          {bubbleText}
+        </div>}
       </div>}
       {studioEnabled&&studioStep!==null&&!isBattle&&!isFinal&&
         <DecretoRealStudioPanel
@@ -464,16 +684,29 @@ const CampaignOpening:React.FC=()=>{
           title={story?.speaker+' · '+(prologue?.title??phaseTitles[scene]??'Desenlace')}
           sceneKey={studioKey}
           actors={studioActors}
+          actorLabels={studioActorLabels}
           selected={studioVisibleSelection}
-          transform={studioVisibleSelection?getStudioTransform(studioDoc,studioKey,studioVisibleSelection):null}
+          transform={studioVisibleSelection?currentTransform(studioVisibleSelection):null}
+          bubbleVisible={bubbleVisible}
+          bubbleText={bubbleText}
+          onBubbleText={studioChangeBubbleText}
+          titleVisible={titleVisible}
           dirty={studioDirty}
           status={studioStatus}
           onSelect={setStudioSelected}
-          onChange={t=>{if(studioVisibleSelection)changeStudioActor(studioVisibleSelection,t);}}
+          onChange={t=>{if(studioVisibleSelection)changeStudioTarget(studioVisibleSelection,t);}}
           onSave={studioSave}
           onUndo={studioUndo}
           canUndo={studioHistory.length>0}
           onRestore={studioRestore}
+          onRemove={studioRemove}
+          onReplace={studioReplace}
+          onAdd={studioAdd}
+          onBackdrop={studioBackdrop}
+          onClearBackdrop={studioClearBackdrop}
+          onToggleBubble={studioToggleBubble}
+          onToggleTitle={studioToggleTitle}
+          onPreview={studioPreview}
           onPrev={()=>studioNavigate(studioStep-1)}
           onNext={()=>studioNavigate(studioStep+1)}
           onExport={studioExport}
@@ -496,6 +729,7 @@ const CampaignOpening:React.FC=()=>{
         speaker={speaker}
         text={story?.text??''}
         tone={dialogueTone}
+        showSceneTitle={titleVisible}
         progress={isAfter?'DESENLACE '+(after+1)+'/'+AFTER_DUEL_BEATS.length:
           'ESCENA '+(beat+1)+'/'+OPENING_BEATS.length}
         lastBeforeDuel={beat===OPENING_BEATS.length-1}

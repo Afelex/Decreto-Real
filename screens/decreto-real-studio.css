@@ -110,3 +110,81 @@
 .dcop-screen .dcop-scene-figures.dcop-family-right img.dcop-child-sprite.dcop-studio-adjusted{
   z-index:var(--studio-layer)!important;
 }
+
+/* Studio v2 overlays: independent sprites, GIFs and muted looping video effects. */
+.dcop-screen .dcop-studio-extra{
+  position:absolute;left:50%;top:48%;z-index:var(--studio-layer,8);
+  width:42%;height:38%;max-width:260px;pointer-events:none;
+  transform:translate(-50%,-50%) translate(var(--studio-x),var(--studio-y))
+    scale(var(--studio-scale)) scaleX(var(--studio-mirror));
+  transform-origin:center center;
+}
+.dcop-screen .dcop-studio-extra>img,
+.dcop-screen .dcop-studio-extra>video{
+  display:block;width:100%;height:100%;object-fit:contain;
+  filter:drop-shadow(0 5px 11px #0009);
+}
+.dcop-screen.dcop-studio-mode .dcop-studio-extra{
+  pointer-events:auto;touch-action:none;cursor:grab;
+}
+.dcop-screen.dcop-studio-mode .dcop-studio-extra:active{cursor:grabbing;}
+.dcop-screen.dcop-studio-mode .dcop-studio-extra-selected{
+  outline:2px dashed #ffe0a0;outline-offset:3px;border-radius:8px;
+}
+.dcop-screen .dcop-studio-extra.dcop-studio-hidden{opacity:0!important;}
+.dcop-screen.dcop-studio-mode .dcop-studio-extra.dcop-studio-hidden{opacity:.19!important;}
+.dcop-screen video.dcop-backdrop{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;filter:saturate(.82) brightness(.78);
+}
+.dcop-studio-return{
+  position:absolute;top:max(65px,calc(env(safe-area-inset-top) + 62px));right:10px;z-index:950;
+  padding:9px 13px;min-height:42px;
+  border:1px solid #e2bc7f;border-radius:9px;
+  background:rgba(15,32,48,.93);color:#fff1d0;
+  font:700 13px system-ui,sans-serif!important;
+  box-shadow:0 3px 15px #0009;
+}
+.dr-studio-heading-actions{display:flex;gap:7px;align-items:center}
+.dr-studio-heading-actions button:first-child{font-size:12px;white-space:nowrap;background:#70422d}
+.dr-studio-divider{
+  border-top:1px solid #ffffff25;padding-top:8px;color:#f3cb93;
+  font-size:12px;font-weight:700;letter-spacing:.03em;
+}
+.dr-studio-actions button{font-size:12px;text-align:center;white-space:normal;}
+.dr-studio-panel button.dr-studio-preview{
+  background:linear-gradient(120deg,#29634f,#19443d);
+  border-color:#a2d4b0;font-weight:700;
+}
+
+/* Critical: prologue-v2 explicitly sets transform:none!important on both
+   speaking and dim adult actors. Studio positioning must outrank that legacy rule
+   in edit mode AND in QA playback after returning from the editor. */
+.dcop-screen .dcop-scene-figures>div.dcop-studio-adjusted.dcop-speaking,
+.dcop-screen .dcop-scene-figures>div.dcop-studio-adjusted.dcop-dim,
+.dcop-screen.dcop-studio-mode .dcop-scene-figures>div.dcop-studio-adjusted{
+  transform:translate(var(--studio-x),var(--studio-y))
+    scale(var(--studio-scale)) scaleX(var(--studio-mirror))!important;
+  z-index:var(--studio-layer)!important;
+}
+
+/* Bubble is an authorable scene element in Studio, not baked into the background. */
+.dcop-screen .dcop-quick-bubble.dcop-studio-bubble-adjusted{
+  transform:translate(var(--studio-x),var(--studio-y))
+    scale(var(--studio-scale)) scaleX(var(--studio-mirror))!important;
+  z-index:var(--studio-layer,7)!important;
+}
+.dcop-screen.dcop-studio-mode .dcop-quick-bubble{
+  pointer-events:auto!important;touch-action:none;cursor:grab;
+}
+.dcop-screen.dcop-studio-mode .dcop-studio-bubble-selected{
+  outline:2px dashed #ffe1a2;outline-offset:3px;
+}
+.dr-studio-bubble-text{
+  display:grid;gap:5px;color:#f0d4a5;font-size:11px;
+}
+.dr-studio-bubble-text input{
+  display:block;width:100%;min-height:38px;padding:8px;
+  border:1px solid #ac9269;border-radius:7px;
+  background:#172336;color:#fff5e5;font:13px system-ui,sans-serif;
+}
