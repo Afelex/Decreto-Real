@@ -60,5 +60,89 @@ test('Studio exports its document as versioned JSON',async({page},info)=>{
     page.waitForEvent('download'),
     page.getByRole('button',{name:'⇩ Exportar JSON'}).click()
   ]);
-  expect(download.suggestedFilename()).toBe('decreto-real-studio-v1.json');
+  expect(download.suggestedFilename()).toBe('decreto-real-studio-proyecto.json');
+});
+
+
+test('Studio v2 edits actors across different scenes and previews the exact beat',async({page},info)=>{
+  test.skip(info.project.name!=='mobile-390','Studio v2 mobile scene editor');
+  await page.goto('/Decreto-Real/?drDev=1#/studio');
+  await page.getByTestId('studio-step-select').selectOption('4');
+  await expect(page.locator('.dcop-nameplate')).toHaveText('Xervias');
+  await page.getByTestId('studio-actor-select').selectOption('Xervias');
+  await page.getByTestId('studio-y').fill('7');
+  await page.getByTestId('studio-save').click();
+  await page.getByTestId('studio-preview-top').click();
+  await expect(page.getByTestId('dr-studio')).toHaveCount(0);
+  await expect(page.getByTestId('studio-return')).toBeVisible();
+  await expect(page.locator('.dcop-hero')).toHaveAttribute('style',/7vh/);
+  await page.getByTestId('studio-return').click();
+  await expect(page.getByTestId('dr-studio')).toBeVisible();
+  await expect(page.getByTestId('studio-step-select')).toHaveValue('4');
+  await page.getByTestId('studio-step-select').selectOption('14');
+  await expect(page.locator('.dcop-nameplate')).toHaveText('Domingo Quispe');
+  await page.getByTestId('studio-actor-select').selectOption('Domingo Quispe');
+  await page.getByTestId('studio-x').fill('-11');
+  await page.getByTestId('studio-save').click();
+  await expect(page.locator('.dcop-actor-domingo')).toHaveAttribute('style',/-11vw/);
+  await page.getByTestId('studio-step-select').selectOption('4');
+  await page.getByTestId('studio-actor-select').selectOption('Xervias');
+  await expect(page.getByTestId('studio-y')).toHaveValue('7');
+});
+
+test('Studio v2 can hide the bubble, replace a native sprite and change the background',async({page},info)=>{
+  test.skip(info.project.name!=='mobile-390','Studio v2 local image library');
+  const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO7+wL8AAAAASUVORK5CYII=','base64');
+  const selectedImage={name:'nuevo-sprite.png',mimeType:'image/png',buffer:png};
+  await page.goto('/Decreto-Real/?drDev=1#/studio');
+  await expect(page.locator('.dcop-quick-bubble')).toHaveCount(1);
+  await page.getByTestId('studio-bubble').click();
+  await expect(page.locator('.dcop-quick-bubble')).toHaveCount(0);
+  await page.getByTestId('studio-actor-select').selectOption('Madre');
+  await page.locator('input[aria-label="Archivo replace"]').setInputFiles(selectedImage);
+  await expect(page.locator('.dcop-civil > img:not(.dcop-child-sprite)')).toHaveAttribute('src',/^blob:/);
+  await page.locator('input[aria-label="Archivo background"]').setInputFiles({
+    name:'plaza-vacia.png',mimeType:'image/png',buffer:png,
+  });
+  await expect(page.locator('.dcop-backdrop')).toHaveAttribute('src',/^blob:/);
+  await page.getByTestId('studio-save').click();
+  await page.getByTestId('studio-preview').click();
+  await expect(page.locator('.dcop-quick-bubble')).toHaveCount(0);
+  await expect(page.locator('.dcop-civil > img:not(.dcop-child-sprite)')).toHaveAttribute('src',/^blob:/);
+  await page.reload();
+  await expect(page.locator('.dcop-backdrop')).toHaveAttribute('src',/^blob:/);
+  await page.getByTestId('studio-return').click();
+  await expect(page.locator('.dcop-backdrop')).toHaveAttribute('src',/^blob:/);
+});
+
+test('Studio v2 adds, moves and deletes an independent sprite and accepts an effect',async({page},info)=>{
+  test.skip(info.project.name!=='mobile-390','Studio v2 media layering');
+  const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO7+wL8AAAAASUVORK5CYII=','base64');
+  await page.goto('/Decreto-Real/?drDev=1#/studio');
+  await page.locator('input[aria-label="Archivo add"]').setInputFiles({
+    name:'soldado-extra.png',mimeType:'image/png',buffer:png,
+  });
+  await expect(page.getByTestId('studio-added-layer')).toHaveCount(1);
+  await expect(page.getByTestId('studio-actor-select')).toHaveValue(/extra-/);
+  await page.getByTestId('studio-x').fill('10');
+  await expect(page.getByTestId('studio-added-layer')).toHaveAttribute('style',/10vw/);
+  await page.getByTestId('studio-delete').click();
+  await expect(page.getByTestId('studio-added-layer')).toHaveCount(0);
+  const gif=Buffer.from('R0lGODlhAQABAAAAACwAAAAAAQABAAA=','base64');
+  await page.locator('input[aria-label="Archivo effect"]').setInputFiles({
+    name:'destello.gif',mimeType:'image/gif',buffer:gif,
+  });
+  await expect(page.getByTestId('studio-added-layer')).toHaveCount(1);
+  await page.getByTestId('studio-save').click();
+  const [download]=await Promise.all([
+    page.waitForEvent('download'),
+    page.getByRole('button',{name:'⇩ Exportar proyecto'}).click(),
+  ]);
+  const path=await download.path();
+  if(!path)throw new Error('No se pudo leer el respaldo');
+  const fs=await import('node:fs/promises');
+  const pack=JSON.parse(await fs.readFile(path,'utf8'));
+  expect(pack.studioPackage).toBe(2);
+  expect(pack.document.assets).toBeTruthy();
+  expect(pack.media.length).toBeGreaterThanOrEqual(2);
 });
