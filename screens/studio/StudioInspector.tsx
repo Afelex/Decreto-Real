@@ -16,6 +16,11 @@ import {
 import { BACKGROUND_ID, layerBoxes } from './stageGeometry';
 import { actionTargets, moveLayersUpdate } from './studioActions';
 import { useStudio } from './StudioContext';
+import { StudioTextArea } from './StudioTextArea';
+import { copyTransform, formatTransform, parseTransform, type CopiedTransform } from '../../campaign/studio/transformClipboard';
+
+/** Lo último copiado en Studio: se conserva al cambiar de intervención. */
+let copiedTransform:CopiedTransform|null=null;
 import '../decreto-real-studio.css';
 
 const NATIVE_LABELS:Record<string,string>={
@@ -113,6 +118,7 @@ export default function StudioInspector(props:Props){
   const [busy,setBusy]=React.useState(false);
   const [alignRef,setAlignRef]=React.useState<'auto'|AlignReference>('auto');
   const [timelineOpen,setTimelineOpen]=React.useState(false);
+  const [hasCopy,setHasCopy]=React.useState(()=>copiedTransform!==null);
   const [libraryOpen,setLibraryOpen]=React.useState(false);
   const [dialogueScope,setDialogueScope]=React.useState<'beat'|'all'>('beat');
   const dialogueRef=React.useRef<HTMLTextAreaElement|null>(null);
@@ -237,6 +243,24 @@ export default function StudioInspector(props:Props){
       studio.apply(doc=>withoutLayer(doc,sceneKey,current.id),'Elemento retirado de esta intervención');
       studio.select(null);
     }else studio.apply(doc=>withLayer(doc,sceneKey,{...current,visible:false}),'Elemento oculto en esta intervención');
+  };
+  // ——— Copiar y pegar transformaciones (entre elementos e intervenciones) ———
+  const copyCurrent=async()=>{
+    const source=isBackground?{...defaultLayerTransform('native'),x:background?.x??0,y:background?.y??0,scale:background?.scale??1}:current;
+    if(!source)return;
+    const copied=copyTransform(source);
+    copiedTransform=copied;
+    try{await navigator.clipboard?.writeText(formatTransform(copied));}catch{/* sin permiso: queda en Studio */}
+    setHasCopy(true);
+    studio.setStatus('Copiado: X '+copied.x+' · Y '+copied.y+' · escala '+Math.round(copied.scale*100)+' %');
+  };
+  const pasteCurrent=async()=>{
+    let copied=copiedTransform;
+    try{const text=await navigator.clipboard?.readText();const parsed=text?parseTransform(text):null;if(parsed)copied=parsed;}catch{/* sin permiso */}
+    if(!copied){studio.setStatus('Primero copia un elemento.');return;}
+    const c=copied;
+    if(isBackground)studio.apply(d=>withBackgroundFrame(d,sceneKey,{x:c.x,y:c.y,scale:c.scale}),'Posición y escala pegadas en el fondo');
+    else studio.apply(patch(c),'Transformación pegada');
   };
   const restore=()=>{
     if(isBackground){
@@ -449,6 +473,12 @@ export default function StudioInspector(props:Props){
             disabled={busy} data-testid="studio-replace">⇄ Reemplazar imagen</button>}
           {current&&<button type="button" onClick={remove} data-testid="studio-delete">🗑 Quitar de escena</button>}
         </div>
+        <div className="dr-studio-actions">
+          <button type="button" data-testid="studio-copy-transform" onClick={()=>void copyCurrent()}
+            title="Copia posición, escala, rotación, capa, opacidad y espejado">📋 Copiar posición</button>
+          <button type="button" data-testid="studio-paste-transform" disabled={!hasCopy} onClick={()=>void pasteCurrent()}
+            title="Aplica lo copiado a este elemento">📥 Pegar posición</button>
+        </div>
         <button type="button" onClick={restore}>{isBackground?'↺ Restaurar encuadre':'↺ Restaurar este elemento'}</button>
       </div>:<p className="dr-studio-tip">Elige cualquier personaje o imagen añadida. Puedes ajustar sus propiedades o moverla directamente con el dedo.</p>}
       <div className="dr-studio-divider">Alinear</div>
@@ -492,9 +522,10 @@ export default function StudioInspector(props:Props){
           <button type="button" data-testid="studio-bold" aria-label="Negrita" title="Negrita (selecciona el texto)"
             onMouseDown={e=>e.preventDefault()} onClick={bold}><b>B</b></button>
         </div>
-        <textarea id="studio-dialogue-text" ref={dialogueRef} rows={4} maxLength={600}
-          data-testid="studio-dialogue-text" value={dialogueText}
-          onFocus={studio.begin} onBlur={studio.commit} onChange={e=>setDialogueText(e.target.value)}/>
+        <StudioTextArea id="studio-dialogue-text" ref={dialogueRef} rows={4} maxLength={600}
+          testid="studio-dialogue-text" value={dialogueText} original={props.originalText}
+          onFocus={studio.begin} onBlur={studio.commit} onLive={setDialogueText}/>
+        <small className="dr-studio-hint">Enter crea una línea nueva.</small>
         <small className="dr-studio-hint">Selecciona palabras y pulsa <b>B</b>, o escribe **así**, para ponerlas en negrita.</small>
         <button type="button" data-testid="studio-dialogue-reset" disabled={!scene?.dialogue?.text}
           onClick={()=>studio.apply(doc=>withDialogue(doc,sceneKey,{text:null}),'Texto original restaurado')}>↺ Texto original</button>

@@ -24,6 +24,7 @@ La grilla y las guías **no impiden** tocar ni arrastrar los personajes, y no ap
 - **Asa azul ⟳** (abajo a la izquierda): rota, en pasos de 15° con Ajuste.
 - **Campos exactos:** X, Y, Escala, Capa (1–100), Rotación y Opacidad. Puedes escribir números negativos y los valores escritos se respetan tal cual. Los botones − y + ajustan por pasos.
 - **Flechas** (en pantalla o en el teclado): una celda con Ajuste, 0,5 % sin él.
+- **📋 Copiar posición / 📥 Pegar posición:** copia X, Y, escala, rotación, capa, opacidad y espejado del elemento seleccionado y los aplica a otro, también en otra intervención (se deshace con un paso). También quedan en el portapapeles como texto legible.
 - 🔒 **Bloquear:** el elemento ya no se arrastra en el lienzo, pero sigue editable desde el panel.
 - **Fondo:** selecciona «Fondo» para encuadrarlo (X, Y, escala). Viene bloqueado para no moverlo sin querer.
 
@@ -38,7 +39,7 @@ Personajes, sprites, efectos y globo comparten **una sola numeración de capas**
 
 ## Textos: escribir, negrita y tamaño
 En **Diálogo y textos**:
-- **Texto del bloque inferior:** reescribe la línea de la intervención. Para la **negrita**, selecciona palabras y pulsa **B**, o escribe `**así**`. **↺ Texto original** recupera el guion.
+- **Texto del bloque inferior:** reescribe la línea de la intervención. **Enter** crea una línea nueva (también en los globos y en las otras pantallas). Puedes vaciar el campo y escribir desde cero. Para la **negrita**, selecciona palabras y pulsa **B**, o escribe `**así**`. **↺ Texto original** recupera el guion.
 - **Tamaño del texto** (80–160 %) y **Alto del bloque** (80–180 %). En «Aplicar tamaños a» elige *Solo esta intervención* o *Todas las intervenciones*. Al subir el bloque, los personajes se apoyan sobre él.
 - **Rótulo de la escena:** el título pequeño que aparece sobre el diálogo.
 - Los globos también admiten **negrita**. Con **💬 ＋ Globo** añades uno en cualquier intervención, y con ⇤/⇥ eliges su lado.
