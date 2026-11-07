@@ -1,4 +1,13 @@
-/* Decreto Real Studio v1: QA-only editor layered on top of the actual scene. */
+/* Decreto Real Studio v3: QA-only editor layered on top of the actual scene.
+   Layer offsets (--studio-x/--studio-y) are unitless percentages of the STAGE;
+   StageComposer publishes the measured stage size as --dr-stage-w/--dr-stage-h
+   (fallback: viewport, identical to the 390x844 reference). */
+.dcop-screen .dcop-studio-adjusted,.dcop-screen .dcop-studio-extra,
+.dcop-screen .dcop-studio-bubble-adjusted{
+  --dr-studio-translate:translate(
+    calc(var(--studio-x,0) * var(--dr-stage-w,100vw) / 100),
+    calc(var(--studio-y,0) * var(--dr-stage-h,100dvh) / 100));
+}
 .dcop-screen.dcop-studio-mode .dcop-scene-figures,
 .dcop-screen.dcop-studio-mode .dcop-scene-figures>div,
 .dcop-screen.dcop-studio-mode .dcop-scene-figures>div img{pointer-events:auto!important}
@@ -7,11 +16,11 @@
 .dcop-screen.dcop-studio-mode .dcop-scene-figures>div:active,
 .dcop-screen.dcop-studio-mode .dcop-child-sprite:active{cursor:grabbing}
 .dcop-screen .dcop-scene-figures>div.dcop-studio-adjusted{
-  transform:translate(var(--studio-x),var(--studio-y)) scale(var(--studio-scale)) scaleX(var(--studio-mirror))!important;
+  transform:var(--dr-studio-translate) rotate(var(--studio-rot,0deg)) scale(var(--studio-scale)) scaleX(var(--studio-mirror))!important;
   z-index:var(--studio-layer)!important;
 }
 .dcop-screen .dcop-scene-figures img.dcop-child-sprite.dcop-studio-adjusted{
-  transform:translate(var(--studio-x),var(--studio-y)) scale(var(--studio-scale)) scaleX(var(--studio-mirror))!important;
+  transform:var(--dr-studio-translate) rotate(var(--studio-rot,0deg)) scale(var(--studio-scale)) scaleX(var(--studio-mirror))!important;
   z-index:var(--studio-layer)!important;
 }
 .dcop-screen .dcop-scene-figures>div.dcop-studio-hidden,
@@ -115,7 +124,7 @@
 .dcop-screen .dcop-studio-extra{
   position:absolute;left:50%;top:48%;z-index:var(--studio-layer,8);
   width:42%;height:38%;max-width:260px;pointer-events:none;
-  transform:translate(-50%,-50%) translate(var(--studio-x),var(--studio-y))
+  transform:translate(-50%,-50%) var(--dr-studio-translate) rotate(var(--studio-rot,0deg))
     scale(var(--studio-scale)) scaleX(var(--studio-mirror));
   transform-origin:center center;
 }
@@ -163,14 +172,14 @@
 .dcop-screen .dcop-scene-figures>div.dcop-studio-adjusted.dcop-speaking,
 .dcop-screen .dcop-scene-figures>div.dcop-studio-adjusted.dcop-dim,
 .dcop-screen.dcop-studio-mode .dcop-scene-figures>div.dcop-studio-adjusted{
-  transform:translate(var(--studio-x),var(--studio-y))
+  transform:var(--dr-studio-translate) rotate(var(--studio-rot,0deg))
     scale(var(--studio-scale)) scaleX(var(--studio-mirror))!important;
   z-index:var(--studio-layer)!important;
 }
 
 /* Bubble is an authorable scene element in Studio, not baked into the background. */
 .dcop-screen .dcop-quick-bubble.dcop-studio-bubble-adjusted{
-  transform:translate(var(--studio-x),var(--studio-y))
+  transform:var(--dr-studio-translate) rotate(var(--studio-rot,0deg))
     scale(var(--studio-scale)) scaleX(var(--studio-mirror))!important;
   z-index:var(--studio-layer,7)!important;
 }
@@ -187,4 +196,274 @@
   display:block;width:100%;min-height:38px;padding:8px;
   border:1px solid #ac9269;border-radius:7px;
   background:#172336;color:#fff5e5;font:13px system-ui,sans-serif;
+}
+
+.dr-studio-actions.dr-studio-history{grid-template-columns:1fr 1fr 1.3fr}
+
+/* ——— Studio v3 · fase 3: plano único de capas (solo QA) ———
+   .dcop-art se aísla y el grupo teatral de figuras deja de crear su propio
+   contexto de apilamiento: actores, capas añadidas, globo y planos
+   cinematográficos comparten las bandas z del documento v3
+   (actores 11–40, globo 47, capas añadidas 48–49 por defecto).
+   El niño sigue dentro del contenedor de la madre (filtro = contexto propio). */
+.dcop-screen .dcop-art.dcop-studio-plane{isolation:isolate}
+.dcop-screen .dcop-studio-plane .dcop-scene-figures{z-index:auto!important}
+.dcop-screen .dcop-studio-plane .dcop-scene-figures>div.dcop-dim{z-index:12}
+.dcop-screen .dcop-studio-plane .dcop-scene-figures>div.dcop-speaking{z-index:14}
+.dcop-screen .dcop-studio-plane .dcop-invocation-shimmer{z-index:44}
+.dcop-screen .dcop-studio-plane .dcop-versus{z-index:46}
+.dcop-screen .dcop-studio-plane .dcop-quick-bubble{z-index:47}
+
+/* Fondo como capa con encuadre (desplazamiento en % del escenario y escala). */
+.dcop-screen .dcop-backdrop.dcop-studio-framed{
+  --dr-studio-translate:translate(
+    calc(var(--studio-x,0) * var(--dr-stage-w,100vw) / 100),
+    calc(var(--studio-y,0) * var(--dr-stage-h,100dvh) / 100));
+  transform:var(--dr-studio-translate) scale(var(--studio-bg-scale,1))!important;
+}
+.dcop-screen.dcop-studio-mode .dcop-backdrop{pointer-events:auto;touch-action:none}
+.dcop-screen.dcop-studio-mode .dcop-studio-locked,
+.dcop-screen.dcop-studio-mode .dcop-scene-figures>div.dcop-studio-locked{cursor:default!important}
+
+/* ——— Lienzo: grilla, ejes, márgenes, guías y selección ———
+   Nada de esto recibe eventos: nunca impide seleccionar ni arrastrar. */
+.dr-studio-canvas{position:absolute;inset:0;z-index:930;pointer-events:none}
+.dr-studio-canvas *{pointer-events:none}
+.dr-studio-grid{
+  position:absolute;inset:0;
+  --grid-line:rgba(255,248,226,.95);--grid-shadow:rgba(8,12,22,.75);
+  background-image:
+    linear-gradient(to right,var(--grid-line) 0 2px,transparent 2px),
+    linear-gradient(to bottom,var(--grid-line) 0 2px,transparent 2px),
+    linear-gradient(to right,var(--grid-line) 0 1px,var(--grid-shadow) 1px 2px,transparent 2px),
+    linear-gradient(to bottom,var(--grid-line) 0 1px,var(--grid-shadow) 1px 2px,transparent 2px);
+  background-size:var(--grid-major) var(--grid-major),var(--grid-major) var(--grid-major),
+    var(--grid-cell) var(--grid-cell),var(--grid-cell) var(--grid-cell);
+}
+.dr-studio-axes span{position:absolute;background:#5fd4ff;box-shadow:0 0 0 1px #04223a99}
+.dr-studio-axis-x{left:0;right:0;top:50%;height:1px}
+.dr-studio-axis-y{top:0;bottom:0;left:50%;width:1px}
+.dr-studio-safe span{position:absolute;border:1px dashed #9cf59a}
+.dr-studio-safe .dr-studio-safe-title{border-color:#ffd36b}
+.dr-studio-safe .dr-studio-dialogue-band{
+  left:0;right:0;bottom:0;border:0;border-top:2px dashed #ff9d7a;
+  background:repeating-linear-gradient(135deg,#ff7b5a26 0 8px,transparent 8px 16px);
+}
+.dr-studio-guide{position:absolute;background:#ff3fd2;box-shadow:0 0 6px #ff3fd2}
+.dr-studio-guide-x{top:0;bottom:0;width:1px;margin-left:-.5px}
+.dr-studio-guide-y{left:0;right:0;height:1px;margin-top:-.5px}
+.dr-studio-group-box{position:absolute;border:1px dashed #9fe8ff;border-radius:4px}
+.dr-studio-selection{
+  position:absolute;z-index:935;pointer-events:none;
+  border:1px solid #ffe2a3;box-shadow:0 0 0 1px #0008;border-radius:3px;
+}
+.dr-studio-selection-locked{border-style:dashed;border-color:#c9c9c9}
+.dr-studio-lock-badge{position:absolute;top:-12px;right:-12px;font-size:14px;
+  background:#1b2737;border:1px solid #c9c9c9;border-radius:50%;width:24px;height:24px;
+  display:grid;place-items:center}
+.dr-studio-handle{
+  position:absolute;pointer-events:auto;touch-action:none;
+  width:28px;height:28px;padding:0;border-radius:50%;
+  border:2px solid #fff1cf;background:#c97b2d;box-shadow:0 2px 8px #000a;cursor:nwse-resize;
+}
+.dr-studio-handle-scale{right:-14px;bottom:-14px}
+.dr-studio-handle-rotate{left:-14px;bottom:-14px;cursor:grab;background:#2d79c9}
+.dr-studio-handle::after{
+  position:absolute;inset:0;display:grid;place-items:center;color:#fff6e2;font:700 14px system-ui,sans-serif;
+}
+.dr-studio-handle-scale::after{content:"⤡"}
+.dr-studio-handle-rotate::after{content:"⟳"}
+
+/* ——— Barra de herramientas del lienzo (siempre visible en el editor) ——— */
+.dr-studio-toolbar{
+  position:absolute;z-index:960;left:50%;transform:translateX(-50%);
+  bottom:max(8px,env(safe-area-inset-bottom));
+  display:flex;gap:4px;padding:4px;max-width:calc(100% - 16px);
+  border:1px solid #cda66b;border-radius:12px;background:rgba(13,24,39,.95);
+  box-shadow:0 6px 22px #000a;font:12px system-ui,-apple-system,sans-serif;color:#fceaca;
+}
+.dr-studio-toolbar>button{
+  min-width:42px;min-height:42px;padding:3px 6px;border-radius:8px;
+  border:1px solid #6f6047;background:#24354c;color:inherit;font:inherit;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;cursor:pointer;
+}
+.dr-studio-toolbar>button span[aria-hidden]{font-size:16px;line-height:1}
+.dr-studio-tool-label{font-size:9px;letter-spacing:.02em}
+.dr-studio-toolbar>button.dr-studio-tool-on{background:#7d4125;border-color:#f1ce92;color:#fff4dc}
+.dr-studio-toolbar>button:focus-visible{outline:2px solid #ffe4a4;outline-offset:2px}
+.dr-studio-tool-popover{
+  position:absolute;bottom:calc(100% + 6px);right:0;min-width:210px;
+  display:flex;flex-direction:column;gap:8px;padding:10px;
+  border:1px solid #cda66b;border-radius:10px;background:rgba(13,24,39,.98);box-shadow:0 6px 22px #000a;
+}
+.dr-studio-tool-popover label{display:flex;flex-direction:column;gap:4px;font-size:11px;color:#e7c691}
+.dr-studio-tool-popover select{background:#172336;color:#fceaca;border:1px solid #ab9370;border-radius:5px;min-height:36px}
+.dr-studio-tool-popover small{color:#c3c9d3;font-size:10px}
+@media(max-width:360px){.dr-studio-tool-label{display:none}}
+
+/* ——— Inspector v3 ——— */
+.dr-studio-two{grid-template-columns:repeat(auto-fit,minmax(118px,1fr))!important}
+.dr-studio-number{display:flex;flex-direction:column;gap:3px;font-size:11px;min-width:0}
+.dr-studio-number-row{display:grid;grid-template-columns:28px minmax(0,1fr) 28px;gap:3px}
+.dr-studio-number-row button{min-height:34px!important;padding:0!important;font-size:15px!important}
+.dr-studio-number-row input{
+  min-width:0;width:100%;min-height:34px;padding:4px;text-align:center;
+  background:#172336;border:1px solid #ab9370;border-radius:5px;
+  font:13px system-ui,sans-serif;font-variant-numeric:tabular-nums;color:#fceaca;
+}
+.dr-studio-align{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}
+.dr-studio-align button{display:flex;flex-direction:column;align-items:center;gap:1px;font-size:16px;padding:4px 2px!important}
+.dr-studio-align small{font-size:9px}
+.dr-studio-label select{margin-top:4px}
+
+/* Escritorio: el inspector se acopla al margen derecho, fuera del escenario
+   (540 px), para no tapar el lienzo que se está editando. */
+@media (min-width:1180px){
+  .dr-studio-panel{
+    position:fixed;top:12px;right:12px;left:auto;margin:0;
+    width:min(420px,calc((100vw - 540px) / 2 - 24px));max-width:none;
+  }
+  .dr-studio-body{max-height:calc(100dvh - 90px)}
+}
+.dr-studio-axes,.dr-studio-safe{position:absolute;inset:0}
+
+/* ——— Studio v3 · fase 4 ——— */
+/* Bloque de diálogo más alto: también sube la línea de apoyo de los personajes. */
+.dcop-stage.dcop-dialogue-sized{--dcop-story-panel-height:calc(clamp(188px,28dvh,258px) * var(--dr-dialogue-box,1))}
+@media(max-height:650px){
+  .dcop-stage.dcop-dialogue-sized{--dcop-story-panel-height:calc(clamp(150px,35dvh,185px) * var(--dr-dialogue-box,1))}
+}
+.dcop-screen .dcop-narrative.dcop-dialogue-text-scaled .dcop-dialog-body p{
+  font-size:calc(clamp(14px,4vw,18px) * var(--dr-dialogue-text,1));
+}
+@media(max-height:650px){
+  .dcop-screen .dcop-narrative.dcop-dialogue-text-scaled .dcop-dialog-body p{
+    font-size:calc(clamp(12px,2.8vw,14px) * var(--dr-dialogue-text,1));
+  }
+}
+.dcop-dialog-body p strong,.dcop-quick-bubble strong{font-weight:850}
+.dcop-screen .dcop-devonly-chip{
+  position:absolute;right:12px;bottom:calc(100% + 6px);z-index:3;pointer-events:none;
+  padding:4px 9px;border-radius:999px;border:1px dashed #c58bff;
+  background:#2a1740e6;color:#ead9ff;font:700 10px system-ui,sans-serif;letter-spacing:.03em;
+}
+/* Elementos «solo desarrollador»: marcados en el editor, inexistentes para el jugador. */
+.dcop-screen.dcop-studio-mode .dcop-studio-devonly{outline:2px dotted #c58bff!important;outline-offset:4px}
+.dcop-screen .dcop-studio-devonly-hidden{visibility:hidden!important}
+.dcop-studio-audience{
+  position:absolute;top:max(115px,calc(env(safe-area-inset-top) + 112px));right:10px;z-index:950;
+  padding:8px 12px;min-height:40px;border:1px solid #c58bff;border-radius:9px;
+  background:rgba(32,18,52,.94);color:#f1e6ff;font:700 12px system-ui,sans-serif;box-shadow:0 3px 15px #0009;
+}
+.dcop-studio-audience[aria-pressed="true"]{background:rgba(18,52,40,.94);border-color:#9fe3b5;color:#e6fff0}
+
+/* Panel abajo en móvil (encima de la barra del lienzo). */
+.dr-studio-panel.dr-studio-dock-bottom{top:auto;bottom:calc(66px + env(safe-area-inset-bottom))}
+.dr-studio-heading-actions button{min-width:40px}
+@media (min-width:1180px){
+  .dr-studio-panel.dr-studio-dock-bottom{top:12px;bottom:auto}
+  .dr-studio-dock-button{display:none}
+}
+.dr-studio-recovery{
+  display:flex;flex-direction:column;gap:6px;padding:8px;border-radius:8px;
+  border:1px solid #f0b26a;background:#3a2412;color:#ffe7c4;font-size:12px;
+}
+.dr-studio-dialogue{border-top:1px solid #ffffff25;padding-top:8px}
+.dr-studio-dialogue>summary{cursor:pointer;color:#f3cb93;font-size:12px;font-weight:700;letter-spacing:.03em;margin-bottom:6px}
+.dr-studio-dialogue[open]{display:flex;flex-direction:column;gap:7px}
+.dr-studio-dialogue textarea,.dr-studio-dialogue input[type=text]{
+  width:100%;min-height:38px;padding:8px;border:1px solid #ac9269;border-radius:7px;
+  background:#172336;color:#fff5e5;font:13px/1.35 system-ui,sans-serif;resize:vertical;
+}
+.dr-studio-bold-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.dr-studio-bold-row button{min-width:40px;font-size:15px}
+.dr-studio-hint{font-size:10px;color:#c3c9d3}
+.dr-studio-bubble-text small{font-size:10px;color:#c3c9d3}
+
+/* Línea de tiempo: tira horizontal en móvil, columna en el margen izquierdo en escritorio. */
+.dr-studio-timeline{
+  position:absolute;left:8px;right:8px;bottom:calc(66px + env(safe-area-inset-bottom));z-index:955;
+  display:flex;flex-direction:column;gap:6px;padding:8px;
+  border:1px solid #cda66b;border-radius:12px;background:rgba(13,24,39,.97);color:#fceaca;
+  box-shadow:0 8px 30px #000b;font:12px system-ui,-apple-system,sans-serif;
+}
+.dr-studio-timeline header{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dr-studio-timeline header strong{font-size:13px}
+.dr-studio-timeline header span{color:#c3c9d3;font-size:11px;flex:1}
+.dr-studio-timeline header label{display:flex;gap:4px;align-items:center;font-size:11px}
+.dr-studio-timeline header button{min-width:36px;min-height:36px;border-radius:8px;border:1px solid #a78a62;background:#24354c;color:inherit;font-size:18px}
+.dr-studio-timeline ol{list-style:none;margin:0;padding:2px;display:flex;gap:6px;overflow-x:auto;overscroll-behavior:contain}
+.dr-studio-timeline-card{
+  width:84px;display:flex;flex-direction:column;gap:3px;padding:3px;
+  border:1px solid #4d5b6f;border-radius:8px;background:#1a2638;color:inherit;font:inherit;text-align:left;cursor:pointer;
+}
+.dr-studio-timeline-current{border-color:#ffd68a;box-shadow:0 0 0 2px #ffd68a66}
+.dr-studio-thumb{
+  position:relative;height:104px;border-radius:5px;overflow:hidden;
+  background:#10141a center/cover no-repeat;display:flex;align-items:flex-end;justify-content:space-between;
+}
+.dr-studio-thumb img{width:50%;height:68%;object-fit:contain;object-position:bottom}
+.dr-studio-thumb img:only-child{margin:0 auto}
+.dr-studio-thumb-hidden{opacity:.2}
+.dr-studio-thumb-bubble{position:absolute;top:14%;left:10%;width:38%;height:12%;border-radius:4px;background:#faf4e8}
+.dr-studio-timeline-label{font-size:10px;line-height:1.2;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.dr-studio-timeline-marks{display:flex;gap:4px;min-height:13px;font-size:10px}
+.dr-studio-mark-edited{color:#ffb257}
+.dr-studio-mark-dev{color:#e0c8ff;border:1px dashed #c58bff;border-radius:4px;padding:0 3px}
+@media (min-width:1180px){
+  .dr-studio-timeline{
+    position:fixed;left:12px;top:12px;bottom:12px;right:auto;
+    width:min(420px,calc((100vw - 540px) / 2 - 24px));
+  }
+  .dr-studio-timeline ol{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));overflow-y:auto;overflow-x:hidden}
+}
+.dr-studio-heading>div.dr-studio-heading-actions{flex-direction:row;flex-wrap:nowrap;gap:5px;align-items:center}
+.dr-studio-heading>div.dr-studio-heading-actions button{min-height:38px}
+.dr-studio-heading>div.dr-studio-heading-actions button:not(:first-child){font-size:18px;min-width:38px;padding:3px 6px}
+@media(max-width:360px){.dr-studio-heading small{display:none}.dr-studio-heading strong{font-size:14px}}
+
+/* ——— Studio v3 · fase 5: biblioteca e importación ——— */
+.dr-studio-panel button.dr-studio-danger{background:#6b1f22;border-color:#ff9c8f}
+.dr-studio-import{
+  display:flex;flex-direction:column;gap:6px;padding:9px;border-radius:9px;
+  border:1px solid #9fd2ff;background:#12324c;color:#e6f4ff;font-size:12px;
+}
+.dr-studio-import strong{font-size:13px;overflow-wrap:anywhere}
+.dr-studio-import small{color:#b9d6ea;font-size:10px}
+.dr-studio-library{
+  position:absolute;left:8px;right:8px;bottom:calc(66px + env(safe-area-inset-bottom));z-index:955;
+  display:flex;flex-direction:column;gap:8px;padding:8px;max-height:min(62dvh,560px);
+  border:1px solid #cda66b;border-radius:12px;background:rgba(13,24,39,.98);color:#fceaca;
+  box-shadow:0 8px 30px #000b;font:12px system-ui,-apple-system,sans-serif;
+}
+.dr-studio-library header{display:flex;align-items:center;gap:8px}
+.dr-studio-library header strong{font-size:13px}
+.dr-studio-library header span{flex:1;color:#c3c9d3;font-size:11px}
+.dr-studio-library button{
+  min-height:34px;padding:4px 8px;border-radius:7px;border:1px solid #a78a62;
+  background:#24354c;color:inherit;font:inherit;cursor:pointer;
+}
+.dr-studio-library button:disabled{opacity:.4;cursor:default}
+.dr-studio-library button.dr-studio-danger{background:#6b1f22;border-color:#ff9c8f}
+.dr-studio-library header button{min-width:36px;font-size:18px}
+.dr-studio-library-clean{display:flex;flex-direction:column;gap:4px}
+.dr-studio-library-clean small{color:#c3c9d3;font-size:10px}
+.dr-studio-library-error{margin:0;padding:6px;border-radius:6px;background:#5a1d1d;color:#ffdede}
+.dr-studio-library ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;overflow-y:auto;overscroll-behavior:contain}
+.dr-studio-library li{display:grid;grid-template-columns:64px minmax(0,1fr);gap:8px;padding:6px;border:1px solid #3c4a5e;border-radius:8px;background:#172336}
+.dr-studio-library li[data-protected="false"]{border-style:dashed}
+.dr-studio-library-thumb{width:64px;height:64px;border-radius:6px;overflow:hidden;
+  background:repeating-conic-gradient(#2a3443 0 25%,#1f2734 0 50%) 0 0/12px 12px}
+.dr-studio-library-thumb img,.dr-studio-library-thumb video{width:100%;height:100%;object-fit:contain}
+.dr-studio-library-info{display:flex;flex-direction:column;gap:4px;min-width:0}
+.dr-studio-library-info input{min-height:32px;padding:4px 6px;border:1px solid #ac9269;border-radius:6px;background:#0f1a2a;color:#fff5e5;font:12px system-ui,sans-serif}
+.dr-studio-library-info small{color:#c3c9d3;font-size:10px}
+.dr-studio-library-actions{display:flex;flex-wrap:wrap;gap:4px}
+.dr-studio-library-actions button{font-size:11px;min-height:30px}
+.dr-studio-library-empty{display:block!important;color:#c3c9d3;text-align:center;padding:14px!important}
+@media (min-width:1180px){
+  .dr-studio-library{
+    position:fixed;left:12px;top:12px;bottom:12px;right:auto;max-height:none;
+    width:min(420px,calc((100vw - 540px) / 2 - 24px));
+  }
 }

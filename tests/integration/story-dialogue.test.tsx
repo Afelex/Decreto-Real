@@ -1,7 +1,7 @@
 import React from 'react';
 import { afterEach, expect, test, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
-import StoryDialogue, { dialoguePages, nameplateFor } from '../../screens/StoryDialogue';
+import StoryDialogue, { dialoguePageLimit, dialoguePages, nameplateFor } from '../../screens/StoryDialogue';
 
 afterEach(cleanup);
 
@@ -43,4 +43,26 @@ test('narrator and thoughts are semantically distinct without portraits in the d
     speaker="Xervias" text="¿Quién estará detrás?" tone="thought" progress="ESCENA 18/18" onAdvance={()=>{}}/>);
   expect(container.querySelector('.dcop-dialog-thought')).toBeTruthy();
   expect(screen.getByText('Xervias · Pensamiento')).toBeTruthy();
+});
+
+test('dialogue renders **bold** emphasis as <strong> and never interprets HTML',()=>{
+  const {container}=render(<StoryDialogue beatKey="b" sceneTitle="El juramento" speaker="Xervias"
+    text={'¡Activo el **DECRETO REAL**! <img src=x onerror=alert(1)>'} progress="ESCENA 1/1" tone="character" onAdvance={()=>{}}/>);
+  const strong=container.querySelector('.dcop-dialog-body p strong');
+  expect(strong?.textContent).toBe('DECRETO REAL');
+  expect(container.querySelector('.dcop-dialog-body p img')).toBeNull();
+  expect(container.querySelector('.dcop-dialog-body p')?.textContent).toBe('¡Activo el DECRETO REAL! <img src=x onerror=alert(1)>');
+});
+
+test('larger text paginates into shorter pages; a taller box fits more text per page',()=>{
+  expect(dialoguePageLimit()).toBe(150);
+  expect(dialoguePageLimit(1.5,1)).toBeLessThan(150);
+  expect(dialoguePageLimit(1,1.5)).toBeGreaterThan(150);
+  const text=Array.from({length:30},(_,i)=>'Frase número '+i+'.').join(' ');
+  const {container}=render(<StoryDialogue beatKey="s" sceneTitle="T" speaker="Crónica" text={text}
+    progress="ESCENA 1/1" tone="narrator" textScale={1.5} onAdvance={()=>{}}/>);
+  const section=container.querySelector('[data-testid="prologue-dialogue"]') as HTMLElement;
+  expect(section.className).toContain('dcop-dialogue-text-scaled');
+  expect(section.style.getPropertyValue('--dr-dialogue-text')).toBe('1.5');
+  expect(container.querySelector('footer span')?.textContent).toMatch(/· 1\/[3-9]/);
 });

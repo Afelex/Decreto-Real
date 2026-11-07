@@ -46,8 +46,12 @@ const LaterStoryOnlyQa:React.FC<{children:React.ReactNode}> = ({children})=>{
 
 const CampaignRoutes: React.FC = () => {
   const location = useLocation();
+  // Decreto Real Studio navigates between beats by changing only the query:
+  // keep the editor mounted (undo history, media and art manifests survive).
+  const studioSession = location.pathname === '/campania/prologo' &&
+    new URLSearchParams(location.search).get('studio') === '1';
   return <>
-    <React.Fragment key={location.key}>
+    <React.Fragment key={studioSession ? 'decreto-real-studio' : location.key}>
         <Routes>
           <Route path="/" element={<MainMenu />} />
           <Route path="/game" element={<GameBoard />} />
