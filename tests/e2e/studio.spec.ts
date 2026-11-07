@@ -45,7 +45,7 @@ test('Studio keeps changes isolated per dialogue beat and supports undo',async({
   await page.getByTestId('studio-y').fill('4');
   await page.getByTestId('studio-save').click();
   await page.getByRole('button',{name:'Escena siguiente'}).click();
-  await expect(page.getByTestId('dr-studio')).toContainText('Escena 3 de');
+  await expect(page.getByTestId('dr-studio')).toContainText('Intervención 3 /');
   await page.getByTestId('studio-actor-select').selectOption('Madre');
   await expect(page.getByTestId('studio-y')).toHaveValue('0');
   await page.getByRole('button',{name:'Escena anterior'}).click();
