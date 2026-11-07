@@ -45,6 +45,7 @@ type Props={
   tone:DialogueTone;
   onAdvance:()=>void;
   lastBeforeDuel?:boolean;
+  showSceneTitle?:boolean;
 };
 
 /**
@@ -53,7 +54,7 @@ type Props={
  * Single accessible arrow controls page advance or the next story beat.
  */
 export default function StoryDialogue({
-  sceneTitle,speaker,text,beatKey,progress,tone,onAdvance,lastBeforeDuel=false
+  sceneTitle,speaker,text,beatKey,progress,tone,onAdvance,lastBeforeDuel=false,showSceneTitle=true
 }:Props){
   const pages=React.useMemo(()=>dialoguePages(text),[text]);
   const [page,setPage]=React.useState(0);
@@ -68,10 +69,10 @@ export default function StoryDialogue({
   const speakerLabel=tone==='thought'?'Xervias · Pensamiento':speaker;
   const plate=nameplateFor(speaker);
   return <section className={'dcop-narrative dcop-dialog-'+tone} aria-label="Diálogo del prólogo" data-testid="prologue-dialogue">
-    <div className="dcop-chapter-title">
+    {showSceneTitle&&<div className="dcop-chapter-title">
       <small>DECRETO REAL · PRÓLOGO</small>
       <h1>{sceneTitle}</h1>
-    </div>
+    </div>}
     <div className="dcop-dialog-box">
       <div className={'dcop-nameplate dcop-nameplate-'+plate} aria-label={'Habla '+speaker}>
         {speakerLabel}
