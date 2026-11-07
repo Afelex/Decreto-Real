@@ -76,6 +76,11 @@ Pulsa **🖼** para abrir la biblioteca:
   - **Cancelar:** no cambia nada.
 - Las imágenes y videos del respaldo vuelven a la biblioteca. Si te equivocas, **↶ Deshacer** revierte la importación.
 
+## Textos de interfaz y elementos de la escena 1
+- En **Diálogo y textos → Visible solo para desarrolladores** puedes ocultar a los jugadores el **nombre** de quien habla («Crónica»), el **progreso** («ESCENA 1/21») y el **rótulo** («Decreto Real · Prólogo»). Siguen viéndose en Studio y en «Viendo como desarrollador». Respeta «Aplicar tamaños a»: esta intervención o todas.
+- **Ancho del bloque** (50–100 %): estrecha el bloque de texto inferior, centrado.
+- En la escena 1, la **ilustración del pergamino** y la **tarjeta «Por orden de la Corona»** aparecen en «Elemento a editar»: se pueden mover, escalar, ocultar (🗑) o marcar «solo dev».
+
 ## Otras pantallas de la historia
 Abre **☷ Otras pantallas** (o `#/studio/escenas`) y elige una conversación tras victoria, la entrada o liberación de una región, la crónica, el epílogo o los créditos. En cada una puedes cambiar los textos (con **negrita**), el rótulo, el fondo y añadir sprites o efectos, y marcar textos o capas como «solo desarrollador». Se abren con una partida de prueba: tu partida real no cambia.
 

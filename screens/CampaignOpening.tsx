@@ -17,7 +17,8 @@ import {
   prologueComposition, prologueDomingoSprite, type PrologueArtResolver,
 } from '../campaign/studio/composition';
 import { StudioProvider, useStudio } from './studio/StudioContext';
-import StageComposer, { StudioBackdrop, useStudioPlane } from './studio/StageComposer';
+import StageComposer, { StudioBackdrop, studioLayerStyle, useStudioPlane } from './studio/StageComposer';
+import { useStudioDrag } from './studio/useStudioDrag';
 import StudioCanvasOverlay from './studio/StudioCanvasOverlay';
 import StudioInspector from './studio/StudioInspector';
 import './campaign-opening.css';
@@ -180,7 +181,8 @@ const CampaignOpening:React.FC=()=>{
   const studioKey=composition?prologueSceneKey(composition.beatId):null;
   // viewScene: sin ediciones mientras se compara con el original.
   const studioScene=studio.viewScene(studioKey);
-  const titleVisible=studioScene?.titleVisible!==false&&studio.visibleTo(studioScene?.titleDevOnly);
+  const chrome=studio.active&&!studio.compare?effectiveDialogueStyle(studio.doc,studioKey):null;
+  const titleVisible=studioScene?.titleVisible!==false&&studio.visibleTo(studioScene?.titleDevOnly)&&studio.visibleTo(chrome?.hideTitle);
   const sceneTitle=studioScene?.title??(isAfter?phaseTitles[scene]??'El precio de la victoria':prologue?.title??'Prólogo');
   const dialogueText=studioScene?.dialogue?.text??story?.text??'';
   const dialogueStyle=!studio.compare?effectiveDialogueStyle(studio.doc,studioKey):{textScale:1,boxScale:1};
@@ -195,6 +197,21 @@ const CampaignOpening:React.FC=()=>{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }):[],[studioEnabled,artReady,v2Ready,v3Ready]);
   const studioPlane=useStudioPlane(studioKey);
+  // Elementos nativos que no son actores (ilustración y tarjeta del pergamino): editables y ocultables.
+  const nativeDrag=useStudioDrag(studioKey,stageRef);
+  const nativeProps=(id:string,className:string)=>{
+    const layer=studioScene?.layers?.find(l=>l.id===id);
+    const hidden=!studio.visibleTo(layer?.devOnly);
+    return {
+      className:className+' dcop-studio-native'+(layer?' dcop-studio-adjusted':'')+
+        (studioEnabled&&studio.selected===id?' dcop-studio-selected':'')+
+        (layer?.visible===false?' dcop-studio-hidden':'')+(hidden?' dcop-studio-devonly-hidden':'')+
+        (studioEnabled&&layer?.devOnly?' dcop-studio-devonly':''),
+      style:layer?studioLayerStyle(layer):undefined,
+      'data-studio-actor':studioEnabled?id:undefined,
+      ...nativeDrag(id),
+    };
+  };
   const currentStudioIndex=isAfter?OPENING_BEATS.length+after:beat;
   const saveIfDirty=()=>{
     studio.commit();
@@ -250,8 +267,8 @@ const CampaignOpening:React.FC=()=>{
       {!isFinal&&!isBattle&&composition&&<div className={'dcop-art'+(studioPlane?' dcop-studio-plane':'')} aria-hidden="true">
         <StudioBackdrop sceneKey={studioKey} src={background} stageRef={stageRef}/>
         {scene==='pergamino'&&<div className="dcop-scroll-held">
-          {artReady&&<img className="dcop-scroll-illustration" src={prologueArtUrl('P01')} alt=""/>}
-          <div className={'dcop-parchment'+(artReady?' dcop-parchment-overlay':'')}>
+          {artReady&&<img src={prologueArtUrl('P01')} alt="" {...nativeProps('native-pergamino-arte','dcop-scroll-illustration')}/>}
+          <div {...nativeProps('native-pergamino-carta','dcop-parchment'+(artReady?' dcop-parchment-overlay':''))}>
             <span>† CORONA SOLAR †</span><b>POR ORDEN DE LA CORONA</b>
             <p>Dos órdenes opuestas.<br/>Un mismo Sello Real.<br/>¿Cuál dice la verdad?</p>
             {!artReady&&<div className="dcop-wax">✷</div>}
@@ -285,9 +302,11 @@ const CampaignOpening:React.FC=()=>{
           total={TOTAL_STUDIO_BEATS}
           sceneOptions={STUDIO_SCENE_OPTIONS}
           title={speaker+' · '+(prologue?.title??phaseTitles[scene]??'Desenlace')}
-          nativeLayerIds={compositionLayerIds(composition)}
+          nativeLayerIds={[...compositionLayerIds(composition),
+            ...(scene==='pergamino'?[...(artReady?['native-pergamino-arte']:[]),'native-pergamino-carta']:[])]}
           nativeBubbleText={composition.bubble?.text??null}
           stageRef={stageRef}
+          speaker={speaker}
           originalText={story?.text??''}
           originalTitle={isAfter?phaseTitles[scene]??'El precio de la victoria':prologue?.title??'Prólogo'}
           sceneGroupKeys={prologueBeatGroup(composition.beatId).map(prologueSceneKey)}
@@ -317,6 +336,9 @@ const CampaignOpening:React.FC=()=>{
         textScale={dialogueStyle.textScale}
         boxScale={dialogueStyle.boxScale}
         devOnlyNotice={studio.active&&Boolean(studioScene?.devOnly)&&!beatHiddenForAudience}
+        showNameplate={studio.visibleTo(chrome?.hideNameplate)}
+        showProgress={studio.visibleTo(chrome?.hideProgress)}
+        boxWidth={chrome?.boxWidth??1}
         progress={isAfter?'DESENLACE '+(after+1)+'/'+AFTER_DUEL_BEATS.length:
           'ESCENA '+(beat+1)+'/'+OPENING_BEATS.length}
         lastBeforeDuel={beat===OPENING_BEATS.length-1}

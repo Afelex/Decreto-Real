@@ -87,10 +87,11 @@ export function withSceneSettings(doc:StudioDocumentV3,key:string,
  * intervención. `null` vuelve al valor original.
  */
 export function withDialogue(doc:StudioDocumentV3,key:string,
-  patch:{text?:string|null;textScale?:number|null;boxScale?:number|null}):StudioDocumentV3 {
+  patch:{text?:string|null;textScale?:number|null;boxScale?:number|null;boxWidth?:number|null;
+    hideNameplate?:boolean|null;hideProgress?:boolean|null;hideTitle?:boolean|null}):StudioDocumentV3 {
   assertSceneKey(key);
   const merged:Record<string,unknown>={...doc.scenes[key]?.dialogue};
-  for(const field of ['text','textScale','boxScale'] as const){
+  for(const field of ['text','textScale','boxScale','boxWidth','hideNameplate','hideProgress','hideTitle'] as const){
     if(patch[field]===null)delete merged[field];
     else if(patch[field]!==undefined)merged[field]=patch[field];
   }
@@ -103,9 +104,10 @@ export function withDialogue(doc:StudioDocumentV3,key:string,
 
 /** Tamaño del bloque de diálogo común a todas las intervenciones. */
 export function withDialogueDefaults(doc:StudioDocumentV3,
-  patch:{textScale?:number|null;boxScale?:number|null}):StudioDocumentV3 {
+  patch:{textScale?:number|null;boxScale?:number|null;boxWidth?:number|null;
+    hideNameplate?:boolean|null;hideProgress?:boolean|null;hideTitle?:boolean|null}):StudioDocumentV3 {
   const merged:Record<string,unknown>={...doc.defaults?.dialogue};
-  for(const field of ['textScale','boxScale'] as const){
+  for(const field of ['textScale','boxScale','boxWidth','hideNameplate','hideProgress','hideTitle'] as const){
     if(patch[field]===null)delete merged[field];
     else if(patch[field]!==undefined)merged[field]=patch[field];
   }
@@ -123,6 +125,10 @@ export function effectiveDialogueStyle(doc:StudioDocumentV3,key:string|null):Req
   return {
     textScale:own?.textScale??common?.textScale??1,
     boxScale:own?.boxScale??common?.boxScale??1,
+    boxWidth:own?.boxWidth??common?.boxWidth??1,
+    hideNameplate:own?.hideNameplate??common?.hideNameplate??false,
+    hideProgress:own?.hideProgress??common?.hideProgress??false,
+    hideTitle:own?.hideTitle??common?.hideTitle??false,
   };
 }
 
@@ -214,6 +220,7 @@ export function layerOrDefault(doc:StudioDocumentV3,key:string,id:string):Studio
   const actor=actorForLayerId(id);
   if(actor)return {id,kind:'actor',actor,...defaultLayerTransform('actor',actor)};
   if(id===STUDIO_BUBBLE_LAYER_ID)return {id,kind:'bubble',...defaultLayerTransform('bubble')};
+  if(/^native-[a-z0-9-]{1,40}$/.test(id))return {id,kind:'native',...defaultLayerTransform('native')};
   return null;
 }
 

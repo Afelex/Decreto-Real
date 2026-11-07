@@ -129,12 +129,12 @@ test('locked layers keep their flag; unlocked layers store nothing',()=>{
 test('dialogue text, sizes and common defaults; null restores the original',()=>{
   let doc=withDialogue(emptyStudioDocumentV3(),ARRESTO,{text:'¡Por **favor**!',textScale:1.3,boxScale:9});
   assert.deepEqual(doc.scenes[ARRESTO].dialogue,{text:'¡Por **favor**!',textScale:1.3,boxScale:1.8});
-  assert.deepEqual(effectiveDialogueStyle(doc,ARRESTO),{textScale:1.3,boxScale:1.8});
+  assert.deepEqual(effectiveDialogueStyle(doc,ARRESTO),{textScale:1.3,boxScale:1.8,boxWidth:1,hideNameplate:false,hideProgress:false,hideTitle:false});
   doc=withDialogueDefaults(doc,{textScale:1.2,boxScale:1.4});
-  assert.deepEqual(effectiveDialogueStyle(doc,'prologo/arresto-02'),{textScale:1.2,boxScale:1.4});
-  assert.deepEqual(effectiveDialogueStyle(doc,ARRESTO),{textScale:1.3,boxScale:1.8});
+  assert.deepEqual(effectiveDialogueStyle(doc,'prologo/arresto-02'),{textScale:1.2,boxScale:1.4,boxWidth:1,hideNameplate:false,hideProgress:false,hideTitle:false});
+  assert.deepEqual(effectiveDialogueStyle(doc,ARRESTO),{textScale:1.3,boxScale:1.8,boxWidth:1,hideNameplate:false,hideProgress:false,hideTitle:false});
   doc=withDialogue(doc,ARRESTO,{textScale:null,boxScale:null});
-  assert.deepEqual(effectiveDialogueStyle(doc,ARRESTO),{textScale:1.2,boxScale:1.4});
+  assert.deepEqual(effectiveDialogueStyle(doc,ARRESTO),{textScale:1.2,boxScale:1.4,boxWidth:1,hideNameplate:false,hideProgress:false,hideTitle:false});
   doc=withDialogue(doc,ARRESTO,{text:'   '});
   assert.equal(doc.scenes[ARRESTO],undefined,'blank text means the original line');
   assert.equal(withDialogueDefaults(doc,{textScale:1,boxScale:null}).defaults,undefined);
@@ -158,4 +158,14 @@ test('copyScene copies only the visual layout, never the texts of the target bea
   assert.equal(getLayer(copied,'prologo/arresto-02','actor-madre')?.x,8);
   assert.equal(copied.scenes['prologo/arresto-02'].dialogue?.text,'Texto del destino');
   assert.equal(copied.scenes['prologo/arresto-02'].devOnly,true);
+});
+
+test('dialogue chrome: narrower block and developer-only nameplate, progress and title',()=>{
+  let doc=withDialogueDefaults(emptyStudioDocumentV3(),{hideProgress:true,boxWidth:.3});
+  assert.deepEqual(effectiveDialogueStyle(doc,ARRESTO),{textScale:1,boxScale:1,boxWidth:.5,hideNameplate:false,hideProgress:true,hideTitle:false});
+  doc=withDialogue(doc,ARRESTO,{hideNameplate:true,hideTitle:true});
+  assert.equal(effectiveDialogueStyle(doc,ARRESTO).hideNameplate,true);
+  assert.equal(effectiveDialogueStyle(doc,'prologo/arresto-02').hideNameplate,false);
+  doc=withDialogue(doc,ARRESTO,{hideNameplate:null,hideTitle:null});
+  assert.equal(doc.scenes[ARRESTO],undefined);
 });

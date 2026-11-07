@@ -22,6 +22,8 @@ const NATIVE_LABELS:Record<string,string>={
   ...Object.fromEntries(STUDIO_ACTORS.map(actor=>[actorLayerId(actor),actor])),
   bubble:'Globo de texto',
   [BACKGROUND_ID]:'Fondo',
+  'native-pergamino-arte':'Ilustración del pergamino',
+  'native-pergamino-carta':'Tarjeta «Por orden de la Corona»',
 };
 const FILE_INPUTS=[
   {id:'replace',accept:'image/png,image/jpeg,image/webp,image/gif'},
@@ -46,6 +48,8 @@ type Props={
   /** Claves de las intervenciones de la misma escena (incluida la actual) y de la anterior. */
   sceneGroupKeys:readonly string[];previousKey:string|null;
   timeline:readonly TimelineItem[];
+  /** Quien habla en la intervención (para las etiquetas). */
+  speaker?:string;
   onNavigate:(index:number)=>void;
   onPreview:()=>void;
   onExit:()=>void;
@@ -256,7 +260,15 @@ export default function StudioInspector(props:Props){
     studio.apply(doc=>withDialogue(doc,sceneKey,{text:next.text===props.originalText?null:next.text}),'Negrita aplicada');
     requestAnimationFrame(()=>{field.focus();field.setSelectionRange(next.start,next.end);});
   };
-  const setDialogueSize=(field:'textScale'|'boxScale',value:number)=>{
+  /** Ocultar a los jugadores el nombre, el progreso o el rótulo (esta intervención o todas). */
+  const toggleChrome=(field:'hideNameplate'|'hideProgress'|'hideTitle')=>{
+    const next=!dialogueStyle[field];
+    studio.apply(doc=>dialogueScope==='all'
+      ? withDialogue(withDialogueDefaults(doc,{[field]:next||null}),sceneKey,{[field]:null})
+      : withDialogue(doc,sceneKey,{[field]:next||null}),
+      next?'Oculto para los jugadores (visible para desarrolladores)':'Visible para todos');
+  };
+  const setDialogueSize=(field:'textScale'|'boxScale'|'boxWidth',value:number)=>{
     studio.preview(doc=>dialogueScope==='all'
       ? withDialogue(withDialogueDefaults(doc,{[field]:value}),sceneKey,{[field]:null})
       : withDialogue(doc,sceneKey,{[field]:value}));
@@ -427,7 +439,7 @@ export default function StudioInspector(props:Props){
             {bubbleSide==='left'?'⇥ Pasar a la derecha':'⇤ Pasar a la izquierda'}</button>
         </label>}
         <div className="dr-studio-actions">
-          {current&&selected!=='bubble'&&<button type="button" onClick={()=>pick('replace')}
+          {current&&selected!=='bubble'&&current.kind!=='native'&&<button type="button" onClick={()=>pick('replace')}
             disabled={busy} data-testid="studio-replace">⇄ Reemplazar imagen</button>}
           {current&&<button type="button" onClick={remove} data-testid="studio-delete">🗑 Quitar de escena</button>}
         </div>
@@ -498,6 +510,22 @@ export default function StudioInspector(props:Props){
             min={STUDIO_DIALOGUE_BOX_SCALE.min} max={STUDIO_DIALOGUE_BOX_SCALE.max} value={dialogueStyle.boxScale}
             {...gesture} onChange={e=>setDialogueSize('boxScale',+e.target.value)}/>
         </div>
+        <div className="dr-studio-slider">
+          <label htmlFor="studio-dialogue-box-width">Ancho del bloque <output>{Math.round(dialogueStyle.boxWidth*100)}%</output></label>
+          <input id="studio-dialogue-box-width" data-testid="studio-dialogue-box-width" type="range" step=".05"
+            min={.5} max={1} value={dialogueStyle.boxWidth}
+            {...gesture} onChange={e=>setDialogueSize('boxWidth',+e.target.value)}/>
+        </div>
+        <span className="dr-studio-label">Visible solo para desarrolladores</span>
+        <div className="dr-studio-actions">
+          <button type="button" data-testid="studio-hide-nameplate" aria-pressed={dialogueStyle.hideNameplate}
+            onClick={()=>toggleChrome('hideNameplate')}>{dialogueStyle.hideNameplate?'🛠 Nombre solo dev':'👁 Nombre («'+(props.speaker||'Crónica')+'»)'}</button>
+          <button type="button" data-testid="studio-hide-progress" aria-pressed={dialogueStyle.hideProgress}
+            onClick={()=>toggleChrome('hideProgress')}>{dialogueStyle.hideProgress?'🛠 Progreso solo dev':'👁 Progreso («ESCENA n/21»)'}</button>
+          <button type="button" data-testid="studio-hide-title-all" aria-pressed={dialogueStyle.hideTitle}
+            onClick={()=>toggleChrome('hideTitle')}>{dialogueStyle.hideTitle?'🛠 Rótulo solo dev':'👁 Rótulo «Decreto Real · Prólogo»'}</button>
+        </div>
+        <small className="dr-studio-hint">Respeta «Aplicar tamaños a»: esta intervención o todas.</small>
         <label className="dr-studio-label" htmlFor="studio-title-text">Rótulo de la escena</label>
         <input id="studio-title-text" type="text" maxLength={80} data-testid="studio-title-text"
           value={scene?.title??props.originalTitle}
