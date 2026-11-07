@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { isCampaignQaAvailable } from '../../campaign/campaignQA';
-import { emptyStudioDocumentV3, type StudioDocumentV3, type StudioSceneV3 } from '../../campaign/studio/schema';
+import { emptyStudioDocumentV3, normalizeStudioDocumentV3, type StudioDocumentV3, type StudioSceneV3 } from '../../campaign/studio/schema';
 import { changedSceneKeys, withAsset, withoutUnusedAssets } from '../../campaign/studio/ops';
 import {
   parseAnyStudioDocument, readStudioDocumentV3, saveStudioDocumentV3,
@@ -20,6 +20,9 @@ import {
 } from '../../campaign/studioMedia';
 
 export const STUDIO_PACKAGE_VERSION = 3;
+export type StudioAudience = 'player'|'developer';
+/** Autoguardado continuo del editor (recuperación tras cerrar sin guardar). */
+export const STUDIO_AUTOSAVE_KEY = 'decreto-real.studio.autoguardado.v3';
 export const STUDIO_PROJECT_FILENAME = 'decreto-real-studio-proyecto.json';
 
 export type StudioStoredMedia = {id:string;name:string;mime:string};
@@ -44,6 +47,20 @@ export type StudioContextValue = {
   prefs:StudioEditorPrefs;setPrefs:(patch:Partial<StudioEditorPrefs>)=>void;
   /** Guía inteligente activa durante un arrastre (en % del escenario). */
   guides:{x:number|null;y:number|null};setGuides:(g:{x:number|null;y:number|null})=>void;
+  /**
+   * Quién mira: el jugador (versión publicada: se ocultan los elementos «solo
+   * desarrollador») o el desarrollador (QA). Fuera de QA siempre es 'player'.
+   */
+  audience:StudioAudience;setAudience:(audience:StudioAudience)=>void;
+  /** Comparar: muestra la composición original sin las ediciones. */
+  compare:boolean;setCompare:(on:boolean)=>void;
+  /** Escena tal como se pinta ahora (sin ediciones mientras se compara). */
+  viewScene:(key:string|null)=>StudioSceneV3|undefined;
+  /** El elemento o la intervención se ve con la audiencia actual. */
+  visibleTo:(devOnly:boolean|undefined)=>boolean;
+  /** Borrador autoguardado de una sesión anterior pendiente de recuperar. */
+  recovery:{savedAt:string}|null;
+  recover:()=>void;discardRecovery:()=>void;
   scene:(key:string|null)=>StudioSceneV3|undefined;
   /** Un cambio atómico (una entrada de deshacer). */
   apply:(update:StudioUpdate,status?:string)=>void;
@@ -64,6 +81,8 @@ const INACTIVE:StudioContextValue={
   selected:null,select:noop,scene:()=>undefined,
   group:[],toggleGroup:noop,clearGroup:noop,multiMode:false,setMultiMode:noop,
   prefs:{...DEFAULT_EDITOR_PREFS},setPrefs:noop,guides:{x:null,y:null},setGuides:noop,
+  audience:'player',setAudience:noop,compare:false,setCompare:noop,viewScene:()=>undefined,
+  visibleTo:devOnly=>!devOnly,recovery:null,recover:noop,discardRecovery:noop,
   apply:noop,begin:noop,preview:noop,commit:noop,undo:noop,redo:noop,save:()=>false,
   storeMedia:()=>Promise.reject(new Error('Studio no está disponible.')),
   exportProject:()=>Promise.resolve(),importProject:()=>Promise.resolve(),
@@ -105,6 +124,20 @@ export function StudioProvider({children}:{children:React.ReactNode}){
   const [group,setGroup]=React.useState<string[]>([]);
   const [multiMode,setMultiMode]=React.useState(false);
   const [guides,setGuides]=React.useState<{x:number|null;y:number|null}>({x:null,y:null});
+  const [audience,setAudience]=React.useState<StudioAudience>('developer');
+  const [compare,setCompare]=React.useState(false);
+  // Recuperación: borrador autoguardado que difiere del guardado explícito.
+  const [recovery,setRecovery]=React.useState<{savedAt:string;doc:StudioDocumentV3}|null>(()=>{
+    if(!editing)return null;
+    try{
+      const raw=draftStorage()?.getItem(STUDIO_AUTOSAVE_KEY);
+      if(!raw)return null;
+      const parsed=JSON.parse(raw) as {savedAt?:unknown;doc?:unknown};
+      const doc=normalizeStudioDocumentV3(parsed.doc);
+      if(JSON.stringify(doc)===JSON.stringify(initial?.doc??emptyStudioDocumentV3()))return null;
+      return {savedAt:typeof parsed.savedAt==='string'?parsed.savedAt:'',doc};
+    }catch{return null;}
+  });
   const [prefs,setPrefsState]=React.useState<StudioEditorPrefs>(()=>editing?readEditorPrefs(draftStorage()):{...DEFAULT_EDITOR_PREFS});
   const setPrefs=React.useCallback((patch:Partial<StudioEditorPrefs>)=>{
     setPrefsState(previous=>{
@@ -156,7 +189,11 @@ export function StudioProvider({children}:{children:React.ReactNode}){
 
   const save=React.useCallback(()=>{
     const ok=saveStudioDocumentV3(draftStorage(),historyRef.current.doc);
-    if(ok){dispatch({type:'saved'});setStatus('Borrador guardado en este dispositivo');}
+    if(ok){
+      dispatch({type:'saved'});setStatus('Borrador guardado en este dispositivo');
+      try{draftStorage()?.removeItem(STUDIO_AUTOSAVE_KEY);}catch{/* sin almacenamiento */}
+      setRecovery(null);
+    }
     else setStatus('No se pudo guardar. Exporta el proyecto como respaldo.');
     return ok;
   },[]);
@@ -175,6 +212,22 @@ export function StudioProvider({children}:{children:React.ReactNode}){
     dirty:isStudioDirty(history),canUndo:canUndo(history),canRedo:canRedo(history),
     status,setStatus,selected,select,
     group,toggleGroup,clearGroup,multiMode,setMultiMode,prefs,setPrefs,guides,setGuides,
+    audience:editing?'developer':audience,setAudience,
+    compare:editing&&compare,setCompare,
+    viewScene:key=>key&&!(editing&&compare)?history.doc.scenes[key]:undefined,
+    visibleTo:devOnly=>!devOnly||(editing?true:audience==='developer'),
+    recovery:recovery?{savedAt:recovery.savedAt}:null,
+    recover:()=>{
+      if(!recovery)return;
+      dispatch({type:'replace',doc:recovery.doc});
+      setRecovery(null);
+      setStatus('Cambios recuperados. Pulsa Guardar para conservarlos.');
+    },
+    discardRecovery:()=>{
+      try{draftStorage()?.removeItem(STUDIO_AUTOSAVE_KEY);}catch{/* sin almacenamiento */}
+      setRecovery(null);
+      setStatus('Cambios no guardados descartados.');
+    },
     scene:key=>key?history.doc.scenes[key]:undefined,
     apply:(update,text)=>{dispatch({type:'apply',update});if(text)setStatus(text);},
     begin:()=>dispatch({type:'begin'}),
@@ -216,8 +269,26 @@ export function StudioProvider({children}:{children:React.ReactNode}){
         select(null);
       }catch(err){setStatus(err instanceof Error?err.message:'No se pudo importar.');}
     },
-  }),[active,editing,history,mediaUrls,status,selected,group,multiMode,prefs,guides,
+  }),[active,editing,history,mediaUrls,status,selected,group,multiMode,prefs,guides,audience,compare,recovery,
     toggleGroup,clearGroup,setPrefs,save,undoOrRedo]);
+
+  // Autoguardado continuo mientras hay cambios sin guardar (no sustituye a Guardar).
+  React.useEffect(()=>{
+    if(!editing||!isStudioDirty(history)||recovery)return;
+    const timer=window.setTimeout(()=>{
+      try{draftStorage()?.setItem(STUDIO_AUTOSAVE_KEY,JSON.stringify({savedAt:new Date().toISOString(),doc:history.doc}));}
+      catch{/* sin espacio: el aviso de salida sigue protegiendo */}
+    },800);
+    return ()=>window.clearTimeout(timer);
+  },[editing,history,recovery]);
+  // Aviso del navegador al cerrar o recargar con cambios sin guardar.
+  const dirtyNow=editing&&isStudioDirty(history);
+  React.useEffect(()=>{
+    if(!dirtyNow)return;
+    const onBeforeUnload=(event:BeforeUnloadEvent)=>{event.preventDefault();event.returnValue='';};
+    window.addEventListener('beforeunload',onBeforeUnload);
+    return ()=>window.removeEventListener('beforeunload',onBeforeUnload);
+  },[dirtyNow]);
 
   // Atajos de teclado del editor (fuera de los campos de texto).
   React.useEffect(()=>{

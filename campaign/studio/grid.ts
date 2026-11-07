@@ -189,9 +189,11 @@ export const STUDIO_EDITOR_PREFS_KEY = 'decreto-real.studio.preferencias-editor.
 export type StudioEditorPrefs = {
   grid:boolean;columns:StudioGridColumns;opacity:number;
   snap:boolean;axes:boolean;safe:boolean;smart:boolean;
+  /** Posición del inspector en pantallas estrechas. */
+  dock:'top'|'bottom';
 };
 export const DEFAULT_EDITOR_PREFS:Readonly<StudioEditorPrefs> = Object.freeze({
-  grid:false,columns:12,opacity:.35,snap:false,axes:false,safe:false,smart:false,
+  grid:false,columns:12,opacity:.35,snap:false,axes:false,safe:false,smart:false,dock:'top',
 });
 export function normalizeEditorPrefs(value:unknown):StudioEditorPrefs {
   const v=value&&typeof value==='object'?value as Record<string,unknown>:{};
@@ -200,7 +202,8 @@ export function normalizeEditorPrefs(value:unknown):StudioEditorPrefs {
     ?v.columns as StudioGridColumns:DEFAULT_EDITOR_PREFS.columns;
   const opacity=typeof v.opacity==='number'&&Number.isFinite(v.opacity)
     ?Math.round(Math.min(.8,Math.max(.1,v.opacity))*100)/100:DEFAULT_EDITOR_PREFS.opacity;
-  return {grid:bool('grid'),columns,opacity,snap:bool('snap'),axes:bool('axes'),safe:bool('safe'),smart:bool('smart')};
+  return {grid:bool('grid'),columns,opacity,snap:bool('snap'),axes:bool('axes'),safe:bool('safe'),smart:bool('smart'),
+    dock:v.dock==='bottom'?'bottom':'top'};
 }
 type PrefsStorage = Pick<Storage,'getItem'|'setItem'>;
 export function readEditorPrefs(storage:PrefsStorage|null|undefined):StudioEditorPrefs {

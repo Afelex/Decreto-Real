@@ -5,7 +5,8 @@
  */
 import {
   STUDIO_BUBBLE_LAYER_ID, STUDIO_V3_MAX_LAYERS_PER_SCENE, actorForLayerId, defaultLayerTransform,
-  isStudioSceneKey, isStudioMediaId, normalizeStudioBackground, normalizeStudioLayer, sortLayers,
+  STUDIO_V3_MAX_TITLE, isStudioSceneKey, isStudioMediaId, normalizeDialogue, normalizeDialogueStyle,
+  normalizeStudioBackground, normalizeStudioLayer, sortLayers, type StudioDialogueStyle,
   type StudioAssetMeta, type StudioDocumentV3, type StudioLayer, type StudioSceneV3,
 } from './schema.ts';
 
@@ -18,6 +19,10 @@ function withScene(doc:StudioDocumentV3,key:string,scene:StudioSceneV3):StudioDo
   if(!clean.layers?.length)delete clean.layers;
   if(!clean.background)delete clean.background;
   if(clean.titleVisible===undefined)delete clean.titleVisible;
+  if(!clean.title)delete clean.title;
+  if(!clean.titleDevOnly)delete clean.titleDevOnly;
+  if(!clean.devOnly)delete clean.devOnly;
+  if(!clean.dialogue||!Object.keys(clean.dialogue).length)delete clean.dialogue;
   const scenes={...doc.scenes};
   if(Object.keys(clean).length)scenes[key]=clean;
   else delete scenes[key];
@@ -57,7 +62,8 @@ export function withoutLayer(doc:StudioDocumentV3,key:string,id:string):StudioDo
 }
 
 export function withSceneSettings(doc:StudioDocumentV3,key:string,
-  patch:{background?:{assetId:string}|null;titleVisible?:boolean|null}):StudioDocumentV3 {
+  patch:{background?:{assetId:string}|null;titleVisible?:boolean|null;
+    title?:string|null;titleDevOnly?:boolean|null;devOnly?:boolean|null}):StudioDocumentV3 {
   assertSceneKey(key);
   const scene:StudioSceneV3={...doc.scenes[key]};
   if(patch.background===null){
@@ -69,7 +75,55 @@ export function withSceneSettings(doc:StudioDocumentV3,key:string,
   }
   if(patch.titleVisible===null)delete scene.titleVisible;
   else if(typeof patch.titleVisible==='boolean')scene.titleVisible=patch.titleVisible;
+  if(patch.title===null||patch.title==='')delete scene.title;
+  else if(typeof patch.title==='string')scene.title=patch.title.slice(0,STUDIO_V3_MAX_TITLE);
+  if(patch.titleDevOnly!==undefined)scene.titleDevOnly=patch.titleDevOnly===true;
+  if(patch.devOnly!==undefined)scene.devOnly=patch.devOnly===true;
   return withScene(doc,key,scene);
+}
+
+/**
+ * Texto propio (con **negrita**) y tamaño del bloque de diálogo de una
+ * intervención. `null` vuelve al valor original.
+ */
+export function withDialogue(doc:StudioDocumentV3,key:string,
+  patch:{text?:string|null;textScale?:number|null;boxScale?:number|null}):StudioDocumentV3 {
+  assertSceneKey(key);
+  const merged:Record<string,unknown>={...doc.scenes[key]?.dialogue};
+  for(const field of ['text','textScale','boxScale'] as const){
+    if(patch[field]===null)delete merged[field];
+    else if(patch[field]!==undefined)merged[field]=patch[field];
+  }
+  const dialogue=normalizeDialogue(merged);
+  const scene:StudioSceneV3={...doc.scenes[key]};
+  if(dialogue)scene.dialogue=dialogue;
+  else delete scene.dialogue;
+  return withScene(doc,key,scene);
+}
+
+/** Tamaño del bloque de diálogo común a todas las intervenciones. */
+export function withDialogueDefaults(doc:StudioDocumentV3,
+  patch:{textScale?:number|null;boxScale?:number|null}):StudioDocumentV3 {
+  const merged:Record<string,unknown>={...doc.defaults?.dialogue};
+  for(const field of ['textScale','boxScale'] as const){
+    if(patch[field]===null)delete merged[field];
+    else if(patch[field]!==undefined)merged[field]=patch[field];
+  }
+  const dialogue=normalizeDialogueStyle(merged);
+  const next={...doc};
+  if(Object.keys(dialogue).length)next.defaults={...doc.defaults,dialogue};
+  else delete next.defaults;
+  return next;
+}
+
+/** Tamaño efectivo del bloque: el de la intervención o, si no, el común. */
+export function effectiveDialogueStyle(doc:StudioDocumentV3,key:string|null):Required<StudioDialogueStyle> {
+  const own=key?doc.scenes[key]?.dialogue:undefined;
+  const common=doc.defaults?.dialogue;
+  return {
+    textScale:own?.textScale??common?.textScale??1,
+    boxScale:own?.boxScale??common?.boxScale??1,
+  };
 }
 
 /** Cambia el encuadre o el bloqueo del fondo (sin tocar el recurso). */
@@ -98,8 +152,9 @@ export function withAsset(doc:StudioDocumentV3,id:string,meta:StudioAssetMeta):S
 }
 
 /**
- * Copia la composición completa de una escena a otras («aplicar a toda la
- * escena» / «copiar de la anterior»). Las escenas destino se reemplazan.
+ * Copia la COMPOSICIÓN visual (capas y fondo) de una escena a otras
+ * («aplicar a toda la escena» / «copiar de la anterior»). Los textos, el
+ * rótulo y la visibilidad de cada intervención de destino se conservan.
  */
 export function copyScene(doc:StudioDocumentV3,from:string,targets:readonly string[]):StudioDocumentV3 {
   assertSceneKey(from);
@@ -108,17 +163,14 @@ export function copyScene(doc:StudioDocumentV3,from:string,targets:readonly stri
   let next=doc;
   for(const target of targets){
     if(target===from)continue;
-    next=source
-      ? withScene(next,target,cloneScene(source))
-      : withoutScene(next,target);
+    const scene:StudioSceneV3={...next.scenes[target]};
+    delete scene.layers;delete scene.background;
+    if(source?.layers)scene.layers=source.layers.map(layer=>({...layer}));
+    if(source?.background)scene.background={...source.background};
+    next=withScene(next,target,scene);
   }
   return next;
 }
-const cloneScene=(scene:StudioSceneV3):StudioSceneV3=>({
-  ...scene,
-  ...(scene.layers?{layers:scene.layers.map(layer=>({...layer}))}:{}),
-  ...(scene.background?{background:{...scene.background}}:{}),
-});
 
 /** Recursos multimedia realmente usados por alguna capa o fondo. */
 export function referencedAssetIds(doc:StudioDocumentV3):Set<string> {

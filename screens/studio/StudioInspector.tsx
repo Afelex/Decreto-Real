@@ -3,10 +3,13 @@ import {
   alignBoxes, gridStep, nudgeDelta, type AlignMode, type AlignReference,
 } from '../../campaign/studio/grid';
 import {
-  layerOrDefault, sceneLayers, withBackgroundFrame, withLayer, withLayerPatch, withSceneSettings, withoutLayer,
+  copyScene, effectiveDialogueStyle, layerOrDefault, sceneLayers, withBackgroundFrame, withDialogue,
+  withDialogueDefaults, withLayer, withLayerPatch, withSceneSettings, withoutLayer,
 } from '../../campaign/studio/ops';
+import { toggleBold } from '../../campaign/studio/richText';
+import StudioTimeline, { type TimelineItem } from './StudioTimeline';
 import {
-  STUDIO_ACTORS, STUDIO_BACKGROUND_SCALE, STUDIO_LIMITS, actorLayerId, defaultLayerTransform, isBackgroundLocked,
+  STUDIO_ACTORS, STUDIO_BACKGROUND_SCALE, STUDIO_DIALOGUE_BOX_SCALE, STUDIO_DIALOGUE_TEXT_SCALE, STUDIO_LIMITS, actorLayerId, defaultLayerTransform, isBackgroundLocked,
   type StudioLayer, type StudioLayerTransform, type StudioMediaLayer,
 } from '../../campaign/studio/schema';
 import { BACKGROUND_ID, layerBoxes } from './stageGeometry';
@@ -37,6 +40,11 @@ type Props={
   /** El texto original del globo de esta intervención, si existe. */
   nativeBubbleText:string|null;
   stageRef:React.RefObject<HTMLElement|null>;
+  /** Texto y rótulo originales del guion (para restaurar y comparar). */
+  originalText:string;originalTitle:string;
+  /** Claves de las intervenciones de la misma escena (incluida la actual) y de la anterior. */
+  sceneGroupKeys:readonly string[];previousKey:string|null;
+  timeline:readonly TimelineItem[];
   onNavigate:(index:number)=>void;
   onPreview:()=>void;
   onExit:()=>void;
@@ -93,10 +101,15 @@ export default function StudioInspector(props:Props){
   const [expanded,setExpanded]=React.useState(true);
   const [busy,setBusy]=React.useState(false);
   const [alignRef,setAlignRef]=React.useState<'auto'|AlignReference>('auto');
+  const [timelineOpen,setTimelineOpen]=React.useState(false);
+  const [dialogueScope,setDialogueScope]=React.useState<'beat'|'all'>('beat');
+  const dialogueRef=React.useRef<HTMLTextAreaElement|null>(null);
   const inputs=React.useRef<Partial<Record<FileInputId,HTMLInputElement|null>>>({});
   const scene=studio.scene(sceneKey);
   const media=sceneLayers(studio.doc,sceneKey).filter((l):l is StudioMediaLayer=>l.kind==='image'||l.kind==='effect');
-  const options=[...props.nativeLayerIds,...media.map(m=>m.id),BACKGROUND_ID];
+  const bubbleLayerRaw=sceneLayers(studio.doc,sceneKey).find(l=>l.kind==='bubble');
+  const customBubble=!props.nativeBubbleText&&bubbleLayerRaw?.kind==='bubble'&&bubbleLayerRaw.text!==undefined;
+  const options=[...props.nativeLayerIds,...(customBubble?['bubble']:[]),...media.map(m=>m.id),BACKGROUND_ID];
   const labels:Record<string,string>={
     ...NATIVE_LABELS,
     ...Object.fromEntries(media.map(m=>[m.id,m.name+' · '+(m.kind==='effect'?'Efecto':'Sprite')])),
@@ -120,6 +133,10 @@ export default function StudioInspector(props:Props){
   const bubbleVisible=bubbleLayer?.visible!==false;
   const titleVisible=scene?.titleVisible!==false;
   const bubbleText=bubbleLayer?.kind==='bubble'&&bubbleLayer.text!==undefined?bubbleLayer.text:props.nativeBubbleText??'';
+  const hasBubble=Boolean(props.nativeBubbleText)||customBubble;
+  const bubbleSide=(bubbleLayer?.kind==='bubble'?bubbleLayer.side:undefined)??'left';
+  const dialogueStyle=effectiveDialogueStyle(studio.doc,sceneKey);
+  const dialogueText=scene?.dialogue?.text??props.originalText;
   const targets=actionTargets(selected,studio.group.filter(id=>options.includes(id)));
 
   const patch=(part:Partial<StudioLayerTransform>&{locked?:boolean})=>(doc:typeof studio.doc)=>{
@@ -204,9 +221,44 @@ export default function StudioInspector(props:Props){
       return;
     }
     if(!current)return;
-    studio.apply(doc=>current.kind==='image'||current.kind==='effect'
+    studio.apply(doc=>current.kind==='image'||current.kind==='effect'||(current.kind==='bubble'&&customBubble)
       ? withLayer(doc,sceneKey,{...current,...defaultLayerTransform(current.kind)})
       : withoutLayer(doc,sceneKey,current.id),'Elemento restaurado');
+  };
+  // ——— Globo en cualquier intervención ———
+  const addBubble=()=>{
+    studio.apply(doc=>withLayer(doc,sceneKey,{id:'bubble',kind:'bubble',...defaultLayerTransform('bubble'),text:'¡…!'}),
+      'Globo añadido. Escribe su texto.');
+    studio.select('bubble');
+  };
+  // ——— Diálogo y textos ———
+  const setDialogueText=(text:string)=>{
+    studio.preview(doc=>withDialogue(doc,sceneKey,{text:text===props.originalText?null:text}));
+    studio.setStatus('Texto del diálogo modificado');
+  };
+  const bold=()=>{
+    const field=dialogueRef.current;
+    if(!field)return;
+    const next=toggleBold(field.value,field.selectionStart??0,field.selectionEnd??0);
+    studio.apply(doc=>withDialogue(doc,sceneKey,{text:next.text===props.originalText?null:next.text}),'Negrita aplicada');
+    requestAnimationFrame(()=>{field.focus();field.setSelectionRange(next.start,next.end);});
+  };
+  const setDialogueSize=(field:'textScale'|'boxScale',value:number)=>{
+    studio.preview(doc=>dialogueScope==='all'
+      ? withDialogue(withDialogueDefaults(doc,{[field]:value}),sceneKey,{[field]:null})
+      : withDialogue(doc,sceneKey,{[field]:value}));
+    studio.setStatus(dialogueScope==='all'?'Tamaño aplicado a todas las intervenciones':'Tamaño aplicado a esta intervención');
+  };
+  // ——— Composición entre intervenciones ———
+  const applyToScene=()=>{
+    const targets=props.sceneGroupKeys.filter(key=>key!==sceneKey);
+    if(!targets.length){studio.setStatus('Esta escena tiene una sola intervención.');return;}
+    studio.apply(doc=>copyScene(doc,sceneKey,targets),
+      'Composición aplicada a '+targets.length+' intervenciones de la escena (puedes deshacerlo).');
+  };
+  const copyPrevious=()=>{
+    if(!props.previousKey)return;
+    studio.apply(doc=>copyScene(doc,props.previousKey!,[sceneKey]),'Composición copiada de la intervención anterior.');
   };
   const toggleBubble=()=>{
     if(!bubbleLayer)return;
@@ -226,12 +278,21 @@ export default function StudioInspector(props:Props){
   const scaleLimits=isBackground?STUDIO_BACKGROUND_SCALE:STUDIO_LIMITS.scale;
   const numeric={onBegin:studio.begin,onCommit:studio.commit};
   const status=studio.status||(studio.dirty?'Cambios pendientes de guardar':'Borrador de este dispositivo');
-  return <section className={'dr-studio-panel'+(expanded?' dr-studio-expanded':' dr-studio-collapsed')}
+  return <>
+  {timelineOpen&&<StudioTimeline items={props.timeline} current={props.sceneIndex}
+    onNavigate={index=>props.onNavigate(index)} onClose={()=>setTimelineOpen(false)}/>}
+  <section className={'dr-studio-panel'+(expanded?' dr-studio-expanded':' dr-studio-collapsed')+
+    (studio.prefs.dock==='bottom'?' dr-studio-dock-bottom':'')}
     data-testid="dr-studio" aria-label="Decreto Real Studio">
     <header className="dr-studio-heading">
       <div><small>HERRAMIENTA QA · BORRADOR LOCAL</small><strong>Decreto Real Studio <em>v3</em></strong></div>
       <div className="dr-studio-heading-actions">
         <button type="button" data-testid="studio-preview-top" onClick={props.onPreview}>▶ Historia</button>
+        <button type="button" data-testid="studio-timeline-toggle" aria-expanded={timelineOpen}
+          aria-label="Línea de tiempo" title="Línea de tiempo" onClick={()=>setTimelineOpen(v=>!v)}>☰</button>
+        <button type="button" data-testid="studio-dock" className="dr-studio-dock-button"
+          aria-label={studio.prefs.dock==='top'?'Mover el panel abajo':'Mover el panel arriba'}
+          title="Mover el panel" onClick={()=>studio.setPrefs({dock:studio.prefs.dock==='top'?'bottom':'top'})}>⇅</button>
         <button type="button" onClick={()=>setExpanded(v=>!v)} aria-expanded={expanded}
           aria-label={expanded?'Contraer editor':'Abrir editor'}>{expanded?'−':'＋'}</button>
       </div>
@@ -244,6 +305,13 @@ export default function StudioInspector(props:Props){
         if(chosen)await withFile(file.id,chosen);
       }}/>)}
     {expanded&&<div className="dr-studio-body">
+      {studio.recovery&&<div className="dr-studio-recovery" role="alert" data-testid="studio-recovery">
+        <span>Hay cambios sin guardar de una sesión anterior{studio.recovery.savedAt?' ('+new Date(studio.recovery.savedAt).toLocaleString('es-PE')+')':''}.</span>
+        <div className="dr-studio-actions">
+          <button type="button" data-testid="studio-recover" onClick={studio.recover}>↺ Recuperar</button>
+          <button type="button" data-testid="studio-discard-recovery" onClick={studio.discardRecovery}>Descartar</button>
+        </div>
+      </div>}
       <div className="dr-studio-scene">
         <button type="button" onClick={()=>props.onNavigate(props.sceneIndex-1)} disabled={props.sceneIndex<=0} aria-label="Escena anterior">‹</button>
         <div><span>Intervención {props.sceneIndex+1} / {props.total}</span><strong>{props.title}</strong></div>
@@ -267,6 +335,11 @@ export default function StudioInspector(props:Props){
             aria-pressed={current.mirror} data-testid="studio-mirror">⇄ Espejar</button>}
           {current&&<button type="button" onClick={()=>change({visible:!current.visible})}
             aria-pressed={!current.visible}>{current.visible?'◉ Visible':'◌ Oculto'}</button>}
+          {current&&<button type="button" aria-pressed={Boolean(current.devOnly)} data-testid="studio-dev-only"
+            title="Solo desarrollador: se oculta en la versión publicada"
+            onClick={()=>change({devOnly:!current.devOnly} as Partial<StudioLayerTransform>,
+              current.devOnly?'Visible para todos':'Solo desarrollador: oculto a los jugadores')}>
+            {current.devOnly?'🛠 Solo dev':'👁 Todos'}</button>}
           <button type="button" aria-pressed={locked} data-testid="studio-lock"
             onClick={()=>change({locked:!locked},locked?'Desbloqueado: se puede arrastrar':'Bloqueado en el lienzo')}>
             {locked?'🔒 Bloqueado':'🔓 Libre'}</button>
@@ -306,6 +379,10 @@ export default function StudioInspector(props:Props){
           <input type="text" maxLength={140} value={bubbleText} data-testid="studio-bubble-text"
             onFocus={studio.begin} onBlur={studio.commit}
             onChange={e=>setBubbleText(e.target.value)}/>
+          <small>Usa **así** para poner palabras en negrita.</small>
+          <button type="button" data-testid="studio-bubble-side"
+            onClick={()=>change({side:bubbleSide==='left'?'right':'left'} as Partial<StudioLayerTransform>)}>
+            {bubbleSide==='left'?'⇥ Pasar a la derecha':'⇤ Pasar a la izquierda'}</button>
         </label>}
         <div className="dr-studio-actions">
           {current&&selected!=='bubble'&&<button type="button" onClick={()=>pick('replace')}
@@ -341,6 +418,60 @@ export default function StudioInspector(props:Props){
       <p className="dr-studio-tip" data-testid="studio-selection-count">
         {targets.length>1?targets.length+' elementos seleccionados':'Shift + clic o «Seleccionar varios» para alinear varios elementos.'}
       </p>
+      <div className="dr-studio-divider">Composición entre intervenciones</div>
+      <div className="dr-studio-actions">
+        <button type="button" data-testid="studio-apply-scene" disabled={props.sceneGroupKeys.length<2}
+          onClick={applyToScene}>⧉ Aplicar a toda la escena</button>
+        <button type="button" data-testid="studio-copy-previous" disabled={!props.previousKey}
+          onClick={copyPrevious}>⤺ Copiar de la anterior</button>
+      </div>
+      <details className="dr-studio-dialogue" open data-testid="studio-dialogue-section">
+        <summary>Diálogo y textos</summary>
+        <div className="dr-studio-bold-row">
+          <label className="dr-studio-label" htmlFor="studio-dialogue-text">Texto del bloque inferior</label>
+          <button type="button" data-testid="studio-bold" aria-label="Negrita" title="Negrita (selecciona el texto)"
+            onMouseDown={e=>e.preventDefault()} onClick={bold}><b>B</b></button>
+        </div>
+        <textarea id="studio-dialogue-text" ref={dialogueRef} rows={4} maxLength={600}
+          data-testid="studio-dialogue-text" value={dialogueText}
+          onFocus={studio.begin} onBlur={studio.commit} onChange={e=>setDialogueText(e.target.value)}/>
+        <small className="dr-studio-hint">Selecciona palabras y pulsa <b>B</b>, o escribe **así**, para ponerlas en negrita.</small>
+        <button type="button" data-testid="studio-dialogue-reset" disabled={!scene?.dialogue?.text}
+          onClick={()=>studio.apply(doc=>withDialogue(doc,sceneKey,{text:null}),'Texto original restaurado')}>↺ Texto original</button>
+        <label className="dr-studio-label">Aplicar tamaños a
+          <select data-testid="studio-dialogue-scope" value={dialogueScope} onChange={e=>setDialogueScope(e.target.value as 'beat'|'all')}>
+            <option value="beat">Solo esta intervención</option>
+            <option value="all">Todas las intervenciones</option>
+          </select>
+        </label>
+        <div className="dr-studio-slider">
+          <label htmlFor="studio-dialogue-text-scale">Tamaño del texto <output>{Math.round(dialogueStyle.textScale*100)}%</output></label>
+          <input id="studio-dialogue-text-scale" data-testid="studio-dialogue-text-scale" type="range" step=".05"
+            min={STUDIO_DIALOGUE_TEXT_SCALE.min} max={STUDIO_DIALOGUE_TEXT_SCALE.max} value={dialogueStyle.textScale}
+            {...gesture} onChange={e=>setDialogueSize('textScale',+e.target.value)}/>
+        </div>
+        <div className="dr-studio-slider">
+          <label htmlFor="studio-dialogue-box-scale">Alto del bloque <output>{Math.round(dialogueStyle.boxScale*100)}%</output></label>
+          <input id="studio-dialogue-box-scale" data-testid="studio-dialogue-box-scale" type="range" step=".05"
+            min={STUDIO_DIALOGUE_BOX_SCALE.min} max={STUDIO_DIALOGUE_BOX_SCALE.max} value={dialogueStyle.boxScale}
+            {...gesture} onChange={e=>setDialogueSize('boxScale',+e.target.value)}/>
+        </div>
+        <label className="dr-studio-label" htmlFor="studio-title-text">Rótulo de la escena</label>
+        <input id="studio-title-text" type="text" maxLength={80} data-testid="studio-title-text"
+          value={scene?.title??props.originalTitle}
+          onFocus={studio.begin} onBlur={studio.commit}
+          onChange={e=>{studio.preview(doc=>withSceneSettings(doc,sceneKey,{title:e.target.value===props.originalTitle?null:e.target.value}));}}/>
+        <div className="dr-studio-actions">
+          <button type="button" data-testid="studio-title-devonly" aria-pressed={Boolean(scene?.titleDevOnly)}
+            onClick={()=>studio.apply(doc=>withSceneSettings(doc,sceneKey,{titleDevOnly:!scene?.titleDevOnly}),
+              scene?.titleDevOnly?'Rótulo visible para todos':'Rótulo solo para desarrolladores')}>
+            {scene?.titleDevOnly?'🛠 Rótulo solo dev':'👁 Rótulo para todos'}</button>
+          <button type="button" data-testid="studio-beat-devonly" aria-pressed={Boolean(scene?.devOnly)}
+            onClick={()=>studio.apply(doc=>withSceneSettings(doc,sceneKey,{devOnly:!scene?.devOnly}),
+              scene?.devOnly?'La intervención vuelve a verse en la versión publicada':'Intervención oculta a los jugadores (solo desarrollador)')}>
+            {scene?.devOnly?'🛠 Intervención solo dev':'👁 Intervención publicada'}</button>
+        </div>
+      </details>
       <div className="dr-studio-divider">Añadir a esta intervención</div>
       <div className="dr-studio-actions">
         <button type="button" disabled={busy} onClick={()=>pick('add')} data-testid="studio-add">＋ Sprite PNG / WebP</button>
@@ -351,7 +482,8 @@ export default function StudioInspector(props:Props){
         <button type="button" onClick={()=>studio.apply(doc=>withSceneSettings(doc,sceneKey,{background:null}),'Fondo original restaurado.')}>↺ Fondo original</button>
       </div>
       <div className="dr-studio-actions">
-        <button type="button" onClick={toggleBubble} disabled={!props.nativeBubbleText} data-testid="studio-bubble">
+        {!hasBubble&&<button type="button" onClick={addBubble} data-testid="studio-add-bubble">💬 ＋ Globo</button>}
+        <button type="button" onClick={toggleBubble} disabled={!hasBubble} data-testid="studio-bubble">
           {bubbleVisible?'◉ Ocultar globo':'◌ Mostrar globo'}
         </button>
         <button type="button" onClick={toggleTitle} data-testid="studio-title">
@@ -377,7 +509,8 @@ export default function StudioInspector(props:Props){
       <div className="dr-studio-bottom">
         <span role="status">{status}</span>
       </div>
-      <p className="dr-studio-footnote">Los PNG, GIF y videos se guardan localmente. Exporta el proyecto para respaldarlos. Los ajustes no se publican a otros jugadores. Atajos: Ctrl+Z, Ctrl+Shift+Z, Ctrl+S, G, flechas, Alt (sin ajuste).</p>
+      <p className="dr-studio-footnote" data-testid="studio-footnote">Los PNG, GIF y videos se guardan localmente. Exporta el proyecto para respaldarlos. Los ajustes no se publican a otros jugadores. Atajos: Ctrl+Z, Ctrl+Shift+Z, Ctrl+S, G, flechas, Alt (sin ajuste).</p>
     </div>}
-  </section>;
+  </section>
+  </>;
 }

@@ -1,4 +1,5 @@
 import React from 'react';
+import { richTextPages } from '../campaign/studio/richText';
 
 /** Narrative text remains in the DOM; decorative dialogue assets are CSS/SVG. */
 export type DialogueTone = 'character' | 'narrator' | 'thought';
@@ -46,7 +47,17 @@ type Props={
   onAdvance:()=>void;
   lastBeforeDuel?:boolean;
   showSceneTitle?:boolean;
+  /** Tamaño del texto (1 = original). Con letra más grande, cada página lleva menos texto. */
+  textScale?:number;
+  /** Alto del bloque (1 = original): con más alto, cada página admite más texto. */
+  boxScale?:number;
+  /** Marca visible para desarrolladores cuando la intervención está oculta a los jugadores. */
+  devOnlyNotice?:boolean;
 };
+/** Texto por página según el tamaño del texto y el alto del bloque. */
+export function dialoguePageLimit(textScale=1,boxScale=1):number {
+  return Math.max(40,Math.round(150*boxScale/(textScale*textScale)));
+}
 
 /**
  * A Duel Links-inspired (not copied) two-part panel: nameplate + ivory body.
@@ -54,9 +65,12 @@ type Props={
  * Single accessible arrow controls page advance or the next story beat.
  */
 export default function StoryDialogue({
-  sceneTitle,speaker,text,beatKey,progress,tone,onAdvance,lastBeforeDuel=false,showSceneTitle=true
+  sceneTitle,speaker,text,beatKey,progress,tone,onAdvance,lastBeforeDuel=false,showSceneTitle=true,
+  textScale=1,boxScale=1,devOnlyNotice=false,
 }:Props){
-  const pages=React.useMemo(()=>dialoguePages(text),[text]);
+  const pages=React.useMemo(()=>dialoguePages(text,dialoguePageLimit(textScale,boxScale)),[text,textScale,boxScale]);
+  // **negrita** → <strong>; nunca se interpreta HTML.
+  const richPages=React.useMemo(()=>richTextPages(pages),[pages]);
   const [page,setPage]=React.useState(0);
   React.useEffect(()=>setPage(0),[beatKey]);
   const safePage=Math.min(page,pages.length-1);
@@ -68,17 +82,23 @@ export default function StoryDialogue({
   const finalLabel=lastBeforeDuel?'Comenzar duelo':'Continuar';
   const speakerLabel=tone==='thought'?'Xervias · Pensamiento':speaker;
   const plate=nameplateFor(speaker);
-  return <section className={'dcop-narrative dcop-dialog-'+tone} aria-label="Diálogo del prólogo" data-testid="prologue-dialogue">
+  const scaled=textScale!==1;
+  return <section className={'dcop-narrative dcop-dialog-'+tone+(scaled?' dcop-dialogue-text-scaled':'')}
+    style={scaled?{'--dr-dialogue-text':textScale} as React.CSSProperties:undefined}
+    aria-label="Diálogo del prólogo" data-testid="prologue-dialogue">
     {showSceneTitle&&<div className="dcop-chapter-title">
       <small>DECRETO REAL · PRÓLOGO</small>
       <h1>{sceneTitle}</h1>
     </div>}
+    {devOnlyNotice&&<div className="dcop-devonly-chip" data-testid="devonly-beat-notice">
+      Solo desarrollador · oculta a los jugadores</div>}
     <div className="dcop-dialog-box">
       <div className={'dcop-nameplate dcop-nameplate-'+plate} aria-label={'Habla '+speaker}>
         {speakerLabel}
       </div>
       <div className="dcop-dialog-body" aria-live="polite" aria-atomic="true">
-        <p key={beatKey+'-'+safePage}>{pages[safePage]}</p>
+        <p key={beatKey+'-'+safePage}>{(richPages[safePage]??[]).map((segment,index)=>
+          segment.bold?<strong key={index}>{segment.text}</strong>:<React.Fragment key={index}>{segment.text}</React.Fragment>)}</p>
         <footer>
           <span aria-label="Progreso del diálogo">{progress}{pages.length>1?' · '+(safePage+1)+'/'+pages.length:''}</span>
           <button type="button" onClick={next} aria-label={finalPage?finalLabel:'Continuar diálogo'}

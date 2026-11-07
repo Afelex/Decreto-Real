@@ -85,3 +85,12 @@ export function prologueSceneKey(beatId: string): string {
   if (!PROLOGUE_BEAT_IDS.includes(beatId)) throw new Error('Intervención del prólogo desconocida: ' + beatId);
   return PROLOGUE_STUDIO_SCREEN + '/' + beatId;
 }
+
+/** Intervenciones de la misma escena o fase que `beatId` (en orden), para «aplicar a toda la escena». */
+export function prologueBeatGroup(beatId:string):string[] {
+  const opening=OPENING_BEATS.find(beat=>beat.id===beatId);
+  if(opening)return OPENING_BEATS.filter(beat=>beat.scene===opening.scene).map(beat=>beat.id);
+  const after=AFTER_DUEL_BEATS.find(beat=>beat.id===beatId);
+  if(after)return AFTER_DUEL_BEATS.filter(beat=>beat.phase===after.phase).map(beat=>beat.id);
+  return [];
+}

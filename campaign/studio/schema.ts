@@ -43,10 +43,13 @@ export type StudioLayerBase = {
   visible:boolean;
   /** Bloqueada: no se arrastra ni se redimensiona en el lienzo (sí desde el inspector). */
   locked?:boolean;
+  /** Solo para desarrolladores: se oculta en la versión publicada. */
+  devOnly?:boolean;
 };
 export type StudioActorLayer = StudioLayerBase & {kind:'actor'; actor:StudioActor; assetId?:string};
 export type StudioMediaLayer = StudioLayerBase & {kind:'image'|'effect'; name:string; assetId:string};
-export type StudioBubbleLayer = StudioLayerBase & {kind:'bubble'; text?:string};
+/** Globo breve: el nativo de la intervención o uno nuevo (con `text`). Admite **negrita**. */
+export type StudioBubbleLayer = StudioLayerBase & {kind:'bubble'; text?:string; side?:'left'|'right'};
 export type StudioLayer = StudioActorLayer | StudioMediaLayer | StudioBubbleLayer;
 export type StudioLayerKind = StudioLayer['kind'];
 export type StudioLayerTransform = Omit<StudioLayerBase,'id'>;
@@ -59,15 +62,32 @@ export type StudioLayerTransform = Omit<StudioLayerBase,'id'>;
 export type StudioBackground = {assetId?:string;x?:number;y?:number;scale?:number;locked?:boolean};
 export const STUDIO_BACKGROUND_SCALE = Object.freeze({min:.5,max:3});
 export const isBackgroundLocked = (bg:StudioBackground|undefined):boolean => bg?.locked!==false;
+/** Estilo del bloque de texto inferior (1 = tamaño original). */
+export type StudioDialogueStyle = {textScale?:number;boxScale?:number};
+export const STUDIO_DIALOGUE_TEXT_SCALE = Object.freeze({min:.8,max:1.6});
+export const STUDIO_DIALOGUE_BOX_SCALE = Object.freeze({min:.8,max:1.8});
+export const STUDIO_V3_MAX_DIALOGUE_TEXT = 600;
+export const STUDIO_V3_MAX_TITLE = 80;
+/** Diálogo de la intervención: texto propio (con **negrita**) y tamaño del bloque. */
+export type StudioDialogue = StudioDialogueStyle & {text?:string};
 export type StudioSceneV3 = {
   layers?:StudioLayer[];
   background?:StudioBackground;
   titleVisible?:boolean;
+  /** Texto propio del rótulo de la escena. */
+  title?:string;
+  /** El rótulo solo se muestra a desarrolladores. */
+  titleDevOnly?:boolean;
+  /** La intervención completa (con su texto) se omite en la versión publicada. */
+  devOnly?:boolean;
+  dialogue?:StudioDialogue;
 };
 export type StudioDocumentV3 = {
   version:3;
   scenes:Record<string,StudioSceneV3>;
   assets?:Record<string,StudioAssetMeta>;
+  /** Valores comunes a todas las intervenciones (cada una puede sobrescribirlos). */
+  defaults?:{dialogue?:StudioDialogueStyle};
 };
 
 const ACTOR_LAYER_IDS: Readonly<Record<StudioActor,string>> = {
@@ -121,6 +141,7 @@ export function normalizeLayerTransform(value:unknown,defaults:StudioLayerTransf
     z:Math.round(num(v.z,defaults.z,L.z)),
     visible:typeof v.visible==='boolean'?v.visible:defaults.visible,
     ...(v.locked===true?{locked:true}:{}),
+    ...(v.devOnly===true?{devOnly:true}:{}),
   };
 }
 
@@ -155,6 +176,7 @@ export function normalizeStudioLayer(value:unknown,assets?:Record<string,StudioA
       id:STUDIO_BUBBLE_LAYER_ID,kind:'bubble',
       ...normalizeLayerTransform(value,defaultLayerTransform('bubble')),
       ...(typeof value.text==='string'?{text:value.text.slice(0,STUDIO_V3_MAX_BUBBLE_TEXT)}:{}),
+      ...(value.side==='left'||value.side==='right'?{side:value.side}:{}),
     };
   }
   return null;
@@ -174,6 +196,25 @@ export function normalizeStudioBackground(value:unknown,assets?:Record<string,St
     bg.scale=round2(clamp(value.scale,STUDIO_BACKGROUND_SCALE.min,STUDIO_BACKGROUND_SCALE.max));
   if(value.locked===false)bg.locked=false;
   return Object.keys(bg).length?bg:null;
+}
+
+/** Valida el estilo del bloque de diálogo; omite los valores neutros (1). */
+export function normalizeDialogueStyle(value:unknown):StudioDialogueStyle {
+  const v=isRecord(value)?value:{};
+  const style:StudioDialogueStyle={};
+  const scale=(n:unknown,limit:{min:number;max:number})=>
+    typeof n==='number'&&Number.isFinite(n)?round2(clamp(n,limit.min,limit.max)):1;
+  const text=scale(v.textScale,STUDIO_DIALOGUE_TEXT_SCALE);
+  const box=scale(v.boxScale,STUDIO_DIALOGUE_BOX_SCALE);
+  if(text!==1)style.textScale=text;
+  if(box!==1)style.boxScale=box;
+  return style;
+}
+export function normalizeDialogue(value:unknown):StudioDialogue|null {
+  if(!isRecord(value))return null;
+  const dialogue:StudioDialogue=normalizeDialogueStyle(value);
+  if(typeof value.text==='string'&&value.text.trim())dialogue.text=value.text.slice(0,STUDIO_V3_MAX_DIALOGUE_TEXT);
+  return Object.keys(dialogue).length?dialogue:null;
 }
 
 /** Ordena por z (y por id para que el resultado sea determinista). */
@@ -203,7 +244,9 @@ export function normalizeStudioDocumentV3(value:unknown):StudioDocumentV3 {
     throw new Error('Formato de Decreto Real Studio v3 no compatible.');
   if(!isRecord(value.scenes))throw new Error('No hay escenas válidas.');
   const assets=normalizeAssets(value.assets);
-  const doc:StudioDocumentV3={version:3,scenes:{},...(assets?{assets}:{})};
+  const defaultDialogue=isRecord(value.defaults)?normalizeDialogueStyle(value.defaults.dialogue):{};
+  const doc:StudioDocumentV3={version:3,scenes:{},...(assets?{assets}:{}),
+    ...(Object.keys(defaultDialogue).length?{defaults:{dialogue:defaultDialogue}}:{})};
   let mediaLayers=0;
   for(const [key,raw] of Object.entries(value.scenes)){
     if(!SCENE_KEY.test(key)||!isRecord(raw))continue;
@@ -226,6 +269,11 @@ export function normalizeStudioDocumentV3(value:unknown):StudioDocumentV3 {
     const background=normalizeStudioBackground(raw.background,assets);
     if(background)scene.background=background;
     if(typeof raw.titleVisible==='boolean')scene.titleVisible=raw.titleVisible;
+    if(typeof raw.title==='string'&&raw.title.trim())scene.title=raw.title.slice(0,STUDIO_V3_MAX_TITLE);
+    if(raw.titleDevOnly===true)scene.titleDevOnly=true;
+    if(raw.devOnly===true)scene.devOnly=true;
+    const dialogue=normalizeDialogue(raw.dialogue);
+    if(dialogue)scene.dialogue=dialogue;
     if(Object.keys(scene).length)doc.scenes[key]=scene;
   }
   return doc;

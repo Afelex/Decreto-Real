@@ -176,7 +176,7 @@ export default function StudioCanvasOverlay({sceneKey,stageRef}:Props){
           style={{left:pct(b.left),top:pct(b.top),width:pct(b.right-b.left),height:pct(b.bottom-b.top)}}/>;
       })}
     </div>
-    {primaryBox&&<div className={'dr-studio-selection'+(locked?' dr-studio-selection-locked':'')}
+    {primaryBox&&!studio.compare&&<div className={'dr-studio-selection'+(locked?' dr-studio-selection-locked':'')}
       data-testid="studio-selection-box"
       style={{left:pct(primaryBox.left),top:pct(primaryBox.top),
         width:pct(primaryBox.right-primaryBox.left),height:pct(primaryBox.bottom-primaryBox.top)}}>
@@ -195,6 +195,11 @@ export default function StudioCanvasOverlay({sceneKey,stageRef}:Props){
       {toggle('axes','Ejes','✛','studio-axes-toggle')}
       {toggle('safe','Márgenes','▭','studio-safe-toggle')}
       {toggle('smart','Guías','⌖','studio-smart-toggle')}
+      <button type="button" aria-pressed={studio.compare} data-testid="studio-compare"
+        title="Comparar con el original (sin ediciones)" className={studio.compare?'dr-studio-tool-on':''}
+        onClick={()=>studio.setCompare(!studio.compare)}>
+        <span aria-hidden="true">◐</span><span className="dr-studio-tool-label">Original</span>
+      </button>
       <button type="button" aria-expanded={settingsOpen} data-testid="studio-canvas-settings"
         title="Densidad y transparencia" onClick={()=>setSettingsOpen(v=>!v)}>
         <span aria-hidden="true">⚙</span><span className="dr-studio-tool-label">Opciones</span>

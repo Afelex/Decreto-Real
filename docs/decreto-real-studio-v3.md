@@ -36,6 +36,29 @@ Personajes, sprites, efectos y globo comparten **una sola numeración de capas**
 - **⎯ Igualar suelo:** pone los pies de todos los seleccionados en la misma línea, la más baja.
 - Cada alineación se deshace con un solo **↶ Deshacer**.
 
+## Textos: escribir, negrita y tamaño
+En **Diálogo y textos**:
+- **Texto del bloque inferior:** reescribe la línea de la intervención. Para la **negrita**, selecciona palabras y pulsa **B**, o escribe `**así**`. **↺ Texto original** recupera el guion.
+- **Tamaño del texto** (80–160 %) y **Alto del bloque** (80–180 %). En «Aplicar tamaños a» elige *Solo esta intervención* o *Todas las intervenciones*. Al subir el bloque, los personajes se apoyan sobre él.
+- **Rótulo de la escena:** el título pequeño que aparece sobre el diálogo.
+- Los globos también admiten **negrita**. Con **💬 ＋ Globo** añades uno en cualquier intervención, y con ⇤/⇥ eliges su lado.
+
+## Solo para desarrolladores
+Puedes ocultar elementos y textos **a los jugadores** y seguir viéndolos como desarrollador:
+- **🛠 Solo dev** en un personaje, sprite, efecto o globo.
+- **🛠 Rótulo solo dev** para el título de la escena.
+- **🛠 Intervención solo dev:** la intervención completa, con su texto, se salta en la versión publicada.
+
+En el editor, lo marcado lleva un contorno morado punteado. En **▶ Historia** usa **🛠 Viendo como desarrollador / 👁 Viendo como jugador** para comprobar exactamente qué verá el público.
+
+## Organizar el trabajo
+- **☰ Línea de tiempo:** las 49 intervenciones con miniatura. ● indica que está editada, ✎ que su texto cambió y DEV que está oculta a los jugadores. Toca una para ir a ella.
+- **⧉ Aplicar a toda la escena:** copia personajes, capas y fondo a las demás intervenciones de la misma escena, sin tocar sus textos.
+- **⤺ Copiar de la anterior:** trae la composición de la intervención previa.
+- **◐ Original** (barra inferior): compara con la escena sin ediciones.
+- **⇅** (en el móvil): pasa el panel arriba o abajo.
+- **Autoguardado:** si cierras o recargas sin guardar, el navegador te avisa. Al volver, Studio ofrece **↺ Recuperar** tus cambios.
+
 ## Atajos de teclado
 `Ctrl+Z` deshacer · `Ctrl+Shift+Z` rehacer · `Ctrl+S` guardar · `G` grilla · flechas para mover · `Alt` para arrastrar sin ajuste · `Esc` para vaciar la selección múltiple.
 

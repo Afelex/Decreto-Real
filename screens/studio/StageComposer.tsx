@@ -1,6 +1,7 @@
 import React from 'react';
 import type { PrologueComposition } from '../../campaign/studio/composition';
 import type { StudioLayer, StudioMediaLayer } from '../../campaign/studio/schema';
+import { parseRichText } from '../../campaign/studio/richText';
 import { BACKGROUND_ID } from './stageGeometry';
 import { useStudio } from './StudioContext';
 import { useStudioDrag } from './useStudioDrag';
@@ -57,7 +58,7 @@ export function useStudioPlane(sceneKey:string|null):boolean {
 export function StudioBackdrop({sceneKey,src,stageRef}:{sceneKey:string|null;src:string;stageRef:React.RefObject<HTMLElement|null>}){
   const studio=useStudio();
   const handlers=useStudioDrag(sceneKey,stageRef);
-  const background=studio.scene(sceneKey)?.background;
+  const background=studio.viewScene(sceneKey)?.background;
   const assetId=background?.assetId;
   const rendered=assetId?(studio.mediaUrls[assetId]??src):src;
   const isVideo=Boolean(assetId&&studio.doc.assets?.[assetId]?.mime.startsWith('video/'));
@@ -92,7 +93,7 @@ export default function StageComposer({composition,sceneKey,stageRef,showRingFal
   const studio=useStudio();
   const {editing}=studio;
   const handlers=useStudioDrag(sceneKey,stageRef);
-  const scene=studio.scene(sceneKey);
+  const scene=studio.viewScene(sceneKey);
   const layers=scene?.layers??[];
   const layer=(id:string)=>layers.find(item=>item.id===id);
   useStageSizeVars(stageRef,studio.active);
@@ -104,12 +105,19 @@ export default function StageComposer({composition,sceneKey,stageRef,showRingFal
     return (adjusted?' dcop-studio-adjusted':'')+
       (picked(id)?' dcop-studio-selected':'')+
       (l?.visible===false?' dcop-studio-hidden':'')+
-      (l?.locked?' dcop-studio-locked':'');
+      (l?.locked?' dcop-studio-locked':'')+
+      (l?.devOnly?(studio.visibleTo(true)?' dcop-studio-devonly':' dcop-studio-devonly-hidden'):'');
   };
 
-  const media=layers.filter((l):l is StudioMediaLayer=>l.kind==='image'||l.kind==='effect');
+  // Los elementos «solo desarrollador» no existen para el jugador (versión publicada).
+  const media=layers.filter((l):l is StudioMediaLayer=>(l.kind==='image'||l.kind==='effect')&&studio.visibleTo(l.devOnly));
   const bubbleLayer=layer('bubble');
-  const bubble=composition.bubble;
+  const customText=bubbleLayer?.kind==='bubble'?bubbleLayer.text:undefined;
+  // Globo nativo de la intervención, o uno nuevo creado en Studio (con texto propio).
+  const bubble=composition.bubble||customText!==undefined?{
+    text:customText??composition.bubble?.text??'',
+    side:(bubbleLayer?.kind==='bubble'?bubbleLayer.side:undefined)??composition.bubble?.side??'left',
+  }:null;
   const bubbleAdjusted=bubbleMoved(bubbleLayer);
   const {actors}=composition;
   return <>
@@ -154,14 +162,16 @@ export default function StageComposer({composition,sceneKey,stageRef,showRingFal
       </div>;
     })}
     {children}
-    {bubble&&bubbleLayer?.visible!==false&&<div
+    {bubble&&bubbleLayer?.visible!==false&&studio.visibleTo(bubbleLayer?.devOnly)&&<div
       className={'dcop-quick-bubble '+bubble.side+
         (bubbleAdjusted?' dcop-studio-bubble-adjusted':'')+
-        (picked('bubble')?' dcop-studio-bubble-selected':'')}
+        (picked('bubble')?' dcop-studio-bubble-selected':'')+
+        (bubbleLayer?.devOnly?' dcop-studio-devonly':'')}
       style={bubbleAdjusted&&bubbleLayer?studioLayerStyle(bubbleLayer):undefined}
       data-studio-actor={editing?'bubble':undefined}
       {...handlers('bubble')}>
-      {bubbleLayer?.kind==='bubble'&&bubbleLayer.text!==undefined?bubbleLayer.text:bubble.text}
+      {parseRichText(bubble.text).segments.map((segment,index)=>segment.bold
+        ?<strong key={index}>{segment.text}</strong>:<React.Fragment key={index}>{segment.text}</React.Fragment>)}
     </div>}
   </>;
 }

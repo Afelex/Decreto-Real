@@ -46,7 +46,8 @@ export function useStudioDrag(sceneKey:string|null,stageRef:React.RefObject<HTML
     if(event.currentTarget.hasPointerCapture?.(event.pointerId))event.currentTarget.releasePointerCapture(event.pointerId);
   };
 
-  return (id:string)=>!studio.editing||!sceneKey?{}:{
+  // Mientras se compara con el original no se edita.
+  return (id:string)=>!studio.editing||!sceneKey||studio.compare?{}:{
     onPointerDown:(event:React.PointerEvent<HTMLElement>)=>{
       const s=studioRef.current;
       const stage=stageRef.current;

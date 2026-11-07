@@ -110,7 +110,7 @@ StudioLayer      = { id, x, y, scale, rotation, opacity, mirror, z, visible } & 
 | **1. Fundamentos de datos** ✅ | IDs estables, `prologueScript.ts`, schema v3, migración v1/v2→v3, pruebas de migración y de corrimiento de índices | `campaign/studio/{schema,migrate,ops}.ts`, `CampaignOpening.tsx` (solo extraer datos) |
 | **2. Desacoplar** ✅ | `StudioProvider` + reducer con transacciones de deshacer/rehacer; `StageComposer` consume `SceneComposition`; quitar ~400 líneas de Studio de `CampaignOpening.tsx`; navegación sin remontar | `screens/studio/*`, `CampaignOpening.tsx`, `App.tsx` |
 | **3. Lienzo, coordenadas, capas y grilla** ✅ | Unidades % del escenario (arrastre medido con el rectángulo del escenario, no con `window.innerWidth`), plano de capas único, asas de escala/rotación, **grilla, ajuste magnético, ejes, márgenes de seguridad, guías inteligentes y alineación** (ver especificación abajo), selección múltiple para alinear, bloqueo de capa, fondo como capa con encuadre editable, nudges con teclado, inputs numéricos con borrador local (arregla el «-») | `campaign/studio/grid.ts`, `StageComposer`, `StudioCanvasOverlay`, `StudioGridOverlay`, CSS nuevo sin `!important` heredado |
-| **4. UX del editor** | Inspector acoplable (hoja inferior plegable, lateral en escritorio); timeline con miniaturas y marcas de editado; «aplicar a toda la escena» y «copiar de la anterior»; guardado explícito con indicador, autoguardado en borrador y `beforeunload`; Salir/Previsualizar separados; globos y texto de diálogo editables; comparar antes/después | `StudioInspector`, `StudioTimeline` |
+| **4. UX del editor** ✅ | Inspector acoplable (hoja inferior plegable, lateral en escritorio); timeline con miniaturas y marcas de editado; «aplicar a toda la escena» y «copiar de la anterior»; guardado explícito con indicador, autoguardado en borrador y `beforeunload`; Salir/Previsualizar separados; globos y texto de diálogo editables; comparar antes/después | `StudioInspector`, `StudioTimeline` |
 | **5. Multimedia robusta** | Refcount y GC de huérfanos, panel de biblioteca (reutilizar y renombrar recursos, ver tamaño), comprobación de firma, paquete `.zip` sin dependencias, importación con «fusionar/reemplazar» confirmada | `campaign/studio/{media,package}.ts` |
 | **6. Publicación** | `public/studio/composiciones.json` cargado por el juego público; «Exportar para publicar» genera ese JSON y los assets normalizados; workflow manual de GitHub Actions que valida el paquete y abre un PR (siguiendo el patrón de `generate-prologue-v3.yml` y `tools/art-github.mjs`) | `published.ts`, `.github/workflows/studio-publicar.yml`, `tools/studio-publish.mjs` |
 | **7. Más pantallas** | El mismo `StageComposer` y el mismo Studio en `CampaignAfterVictory`, `CampaignRegionMoment`, `CampaignStory`/`StoryDialogue`, `CampaignEpilogue` y créditos | esas pantallas |
@@ -210,6 +210,41 @@ Implementación: la matemática pura (paso de grilla, `snapValue`, `snapRect`, a
 - **Pruebas:**
   - Unitarias de grilla, ajuste, guías, alineación, nudges y preferencias.
   - `tests/e2e/studio-canvas.spec.ts` en `mobile-320`, `mobile-390`, `landscape` y el nuevo proyecto `desktop-1280` (ratón).
+
+### Estado de la fase 4 (implementada)
+- **Textos del bloque inferior:**
+  - Se pueden reescribir y marcar en **negrita** con `**así**` o con el botón **B** sobre la selección.
+  - `campaign/studio/richText.ts` convierte el marcado en segmentos y nunca interpreta HTML; la negrita se conserva aunque cruce un salto de página.
+  - Se puede editar el rótulo de la escena.
+  - «↺ Texto original» restaura el guion.
+- **Tamaño de los bloques:**
+  - Tamaño del texto (80–160 %) y alto del bloque (80–180 %), para una intervención o para todas (`defaults.dialogue`); el ajuste propio de una intervención tiene prioridad.
+  - El alto mueve `--dcop-story-panel-height`, así que los personajes se apoyan sobre el bloque.
+  - La paginación se adapta: con letra más grande cada página lleva menos texto.
+- **Solo desarrollador:**
+  - Se puede ocultar a los jugadores cualquier capa (personaje, sprite, efecto o globo), el rótulo o una intervención completa con su texto.
+  - En el editor esos elementos llevan un contorno morado.
+  - En la vista previa, «🛠 Viendo como desarrollador» / «👁 Viendo como jugador» simula la versión publicada: lo marcado desaparece y las intervenciones ocultas se saltan al avanzar.
+  - La regla se aplica en el renderer con la audiencia `player` (la de la versión pública), lista para la publicación de la fase 6.
+- **Globos en cualquier intervención:** «💬 ＋ Globo», con negrita y lado izquierdo o derecho.
+- **Línea de tiempo** (`screens/studio/StudioTimeline.tsx`):
+  - 49 miniaturas con el fondo y los personajes de cada composición.
+  - Marcas: ● editada, ✎ texto modificado, DEV oculta a los jugadores.
+  - Filtro «Solo editadas».
+  - Tira horizontal en el móvil; columna en el margen izquierdo en escritorio.
+- **Composición entre intervenciones:**
+  - «⧉ Aplicar a toda la escena» y «⤺ Copiar de la anterior» copian solo capas y fondo; los textos de cada intervención se conservan.
+  - Se deshacen con un solo paso.
+- **Comparar:** «◐ Original» muestra la escena y los textos sin ediciones.
+- **Guardado seguro:**
+  - Autoguardado continuo en `decreto-real.studio.autoguardado.v3`.
+  - Aviso del navegador al salir con cambios.
+  - Al volver, se ofrece «↺ Recuperar» o «Descartar».
+- **Móvil:** el panel se puede acoplar arriba o abajo (⇅). Esta preferencia es del editor y no del documento.
+- **Pruebas:**
+  - Unitarias de texto enriquecido, diálogo, rótulo, visibilidad y copia de composición.
+  - Integración de `StoryDialogue` (negrita sin HTML y paginación).
+  - `tests/e2e/studio-phase4.spec.ts` en móvil, horizontal y escritorio.
 
 Reutilizar sin reescribir: `normalizeStudioTransform`/`parseStudioDocument` (base del saneado v3), `validateStudioMedia`/`withStore` (IndexedDB), `isCampaignQaAvailable`/`getCampaignStorage` (gating y aislamiento del progreso), el patrón de manifiestos de `prologueV2.ts`/`prologueV3.ts` y la descarga `studioDownload`.
 

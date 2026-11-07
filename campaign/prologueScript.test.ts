@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  OPENING_BEATS, AFTER_DUEL_BEATS, PROLOGUE_BEAT_IDS, PROLOGUE_PHASE_TITLES, prologueSceneKey,
+  OPENING_BEATS, AFTER_DUEL_BEATS, PROLOGUE_BEAT_IDS, PROLOGUE_PHASE_TITLES, prologueBeatGroup, prologueSceneKey,
 } from './prologueScript.ts';
 
 test('every prologue beat has a unique, well-formed stable id',()=>{
@@ -23,4 +23,11 @@ test('prologue scene keys are stable strings, not positions',()=>{
   assert.equal(prologueSceneKey('arresto-01'),'prologo/arresto-01');
   assert.equal(prologueSceneKey('reflexion-03'),'prologo/reflexion-03');
   assert.throws(()=>prologueSceneKey('arresto-99'),/desconocida/);
+});
+
+test('beat groups list every intervention of the same scene or phase',()=>{
+  assert.deepEqual(prologueBeatGroup('arresto-02'),['arresto-01','arresto-02','arresto-03']);
+  assert.deepEqual(prologueBeatGroup('cetro-05').length,5);
+  assert.deepEqual(prologueBeatGroup('versus-01'),['versus-01']);
+  assert.deepEqual(prologueBeatGroup('nada-01'),[]);
 });

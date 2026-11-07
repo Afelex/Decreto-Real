@@ -10,7 +10,8 @@ import { isPrologueArtManifest, prologueArtManifestUrl, prologueArtUrl, PROLOGUE
 import StoryDialogue from './StoryDialogue';
 import { prologueV2Url, prologueV2ManifestUrl, isV2Complete, INVOCATION_CARD_URL, type V2ArtId } from '../campaign/prologueV2';
 import { prologueV3Url, prologueV3ManifestUrl, isV3Complete, type V3ArtId } from '../campaign/prologueV3';
-import { OPENING_BEATS, AFTER_DUEL_BEATS, PROLOGUE_PHASE_TITLES, prologueSceneKey } from '../campaign/prologueScript';
+import { OPENING_BEATS, AFTER_DUEL_BEATS, PROLOGUE_BEAT_IDS, PROLOGUE_PHASE_TITLES, prologueBeatGroup, prologueSceneKey } from '../campaign/prologueScript';
+import { effectiveDialogueStyle } from '../campaign/studio/ops';
 import {
   PROLOGUE_PORTRAITS as portraits, compositionLayerIds, prologueBeatRef, prologueCleanPlaza,
   prologueComposition, prologueDomingoSprite, type PrologueArtResolver,
@@ -177,8 +178,22 @@ const CampaignOpening:React.FC=()=>{
 
   // Decreto Real Studio: local QA drafts layered over the base composition.
   const studioKey=composition?prologueSceneKey(composition.beatId):null;
-  const studioScene=studio.scene(studioKey);
-  const titleVisible=studioScene?.titleVisible!==false;
+  // viewScene: sin ediciones mientras se compara con el original.
+  const studioScene=studio.viewScene(studioKey);
+  const titleVisible=studioScene?.titleVisible!==false&&studio.visibleTo(studioScene?.titleDevOnly);
+  const sceneTitle=studioScene?.title??(isAfter?phaseTitles[scene]??'El precio de la victoria':prologue?.title??'Prólogo');
+  const dialogueText=studioScene?.dialogue?.text??story?.text??'';
+  const dialogueStyle=studio.active&&!studio.compare?effectiveDialogueStyle(studio.doc,studioKey):{textScale:1,boxScale:1};
+  const beatHiddenForAudience=Boolean(studioScene?.devOnly)&&!studio.visibleTo(true);
+  const studioIndexOfBeat=(beatId:string)=>PROLOGUE_BEAT_IDS.indexOf(beatId);
+  /** La intervención está oculta para la audiencia actual (versión publicada). */
+  const hiddenBeat=(beatId:string)=>!studio.visibleTo(studio.doc.scenes[prologueSceneKey(beatId)]?.devOnly);
+  // Miniaturas de la línea de tiempo: composición base de cada intervención.
+  const timeline=React.useMemo(()=>studioEnabled?PROLOGUE_BEAT_IDS.map((beatId,index)=>{
+    const ref=index<OPENING_BEATS.length?prologueBeatRef('opening',index):prologueBeatRef('after',index-OPENING_BEATS.length);
+    return {index,sceneKey:prologueSceneKey(beatId),label:STUDIO_SCENE_OPTIONS[index].label,composition:prologueComposition(ref!,resolver)};
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }):[],[studioEnabled,artReady,v2Ready,v3Ready]);
   const studioPlane=useStudioPlane(studioKey);
   const currentStudioIndex=isAfter?OPENING_BEATS.length+after:beat;
   const saveIfDirty=()=>{
@@ -204,16 +219,33 @@ const CampaignOpening:React.FC=()=>{
     scene==='reflexion'&&speaker==='Xervias'?'thought':'character';
   const advance=()=>{
     playSound('CLICK');
-    if(isAfter){if(after===AFTER_DUEL_BEATS.length-1)finish();else setAfter(i=>i+1);}
-    else if(!isFinal)setBeat(i=>i+1);
+    // Las intervenciones «solo desarrollador» se saltan en la versión publicada.
+    if(isAfter){
+      let next=after+1;
+      while(next<AFTER_DUEL_BEATS.length&&hiddenBeat(AFTER_DUEL_BEATS[next].id))next++;
+      if(next>=AFTER_DUEL_BEATS.length)finish();else setAfter(next);
+    }else if(!isFinal){
+      let next=beat+1;
+      while(next<OPENING_BEATS.length&&hiddenBeat(OPENING_BEATS[next].id))next++;
+      setBeat(next);
+    }
   };
+  const previewAudience=studio.active&&previewStep!==null&&!studioEnabled;
   return <main className={'dcop-screen dcop-'+scene+(studioEnabled?' dcop-studio-mode':'')} aria-label="Prólogo de campaña: El Sello Real">
-    <div className="dcop-stage" ref={stageRef}>
+    <div className={'dcop-stage'+(dialogueStyle.boxScale!==1?' dcop-dialogue-sized':'')} ref={stageRef}
+      style={dialogueStyle.boxScale!==1?{'--dr-dialogue-box':dialogueStyle.boxScale} as React.CSSProperties:undefined}
+      data-audience={studio.active?studio.audience:undefined}>
       {!isBattle&&!isFinal&&!studioEnabled&&<CampaignPauseMenu/>}
       {!isBattle&&!isFinal&&previewStep!==null&&!studioEnabled&&
         <button type="button" className="dcop-studio-return" data-testid="studio-return"
           onClick={()=>navigate('/campania/prologo?studio=1&studioStep='+currentStudioIndex)}>
           ✎ Volver a Studio
+        </button>}
+      {!isBattle&&!isFinal&&previewAudience&&
+        <button type="button" className="dcop-studio-audience" data-testid="studio-audience"
+          aria-pressed={studio.audience==='player'}
+          onClick={()=>studio.setAudience(studio.audience==='player'?'developer':'player')}>
+          {studio.audience==='player'?'👁 Viendo como jugador':'🛠 Viendo como desarrollador'}
         </button>}
       {!isFinal&&!isBattle&&composition&&<div className={'dcop-art'+(studioPlane?' dcop-studio-plane':'')} aria-hidden="true">
         <StudioBackdrop sceneKey={studioKey} src={background} stageRef={stageRef}/>
@@ -256,6 +288,11 @@ const CampaignOpening:React.FC=()=>{
           nativeLayerIds={compositionLayerIds(composition)}
           nativeBubbleText={composition.bubble?.text??null}
           stageRef={stageRef}
+          originalText={story?.text??''}
+          originalTitle={isAfter?phaseTitles[scene]??'El precio de la victoria':prologue?.title??'Prólogo'}
+          sceneGroupKeys={prologueBeatGroup(composition.beatId).map(prologueSceneKey)}
+          previousKey={studioIndexOfBeat(composition.beatId)>0?prologueSceneKey(PROLOGUE_BEAT_IDS[studioIndexOfBeat(composition.beatId)-1]):null}
+          timeline={timeline}
           onNavigate={studioNavigate}
           onPreview={studioPreview}
           onExit={studioExit}/>
@@ -272,11 +309,14 @@ const CampaignOpening:React.FC=()=>{
           playerPortrait:portraits.Xervias,opponentPortrait:domingoDuelPortrait}}/>:
       <StoryDialogue
         beatKey={isAfter?'desenlace-'+after:'apertura-'+beat}
-        sceneTitle={isAfter?phaseTitles[scene]??'El precio de la victoria':prologue?.title??'Prólogo'}
+        sceneTitle={sceneTitle}
         speaker={speaker}
-        text={story?.text??''}
+        text={dialogueText}
         tone={dialogueTone}
         showSceneTitle={titleVisible}
+        textScale={dialogueStyle.textScale}
+        boxScale={dialogueStyle.boxScale}
+        devOnlyNotice={studio.active&&Boolean(studioScene?.devOnly)&&!beatHiddenForAudience}
         progress={isAfter?'DESENLACE '+(after+1)+'/'+AFTER_DUEL_BEATS.length:
           'ESCENA '+(beat+1)+'/'+OPENING_BEATS.length}
         lastBeforeDuel={beat===OPENING_BEATS.length-1}

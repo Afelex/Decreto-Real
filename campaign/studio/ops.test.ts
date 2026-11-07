@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { defaultLayerTransform, emptyStudioDocumentV3, isBackgroundLocked, type StudioLayer } from './schema.ts';
 import {
   changedSceneKeys, copyScene, editedSceneKeys, layerOrDefault, getLayer, referencedAssetIds, sceneLayers, withAsset, withLayer,
-  withBackgroundFrame, withLayerPatch, withSceneSettings, withoutLayer, withoutScene, withoutUnusedAssets,
+  effectiveDialogueStyle, withBackgroundFrame, withDialogue, withDialogueDefaults, withLayerPatch, withSceneSettings, withoutLayer, withoutScene, withoutUnusedAssets,
 } from './ops.ts';
 
 const MEDIA='media-11111111-1111-4111-8111-111111111111';
@@ -124,4 +124,38 @@ test('locked layers keep their flag; unlocked layers store nothing',()=>{
   assert.equal(getLayer(doc,ARRESTO,'actor-madre')?.locked,true);
   const unlocked=withLayerPatch(doc,ARRESTO,'actor-madre',{locked:false});
   assert.equal('locked' in (getLayer(unlocked,ARRESTO,'actor-madre')??{}),false);
+});
+
+test('dialogue text, sizes and common defaults; null restores the original',()=>{
+  let doc=withDialogue(emptyStudioDocumentV3(),ARRESTO,{text:'¡Por **favor**!',textScale:1.3,boxScale:9});
+  assert.deepEqual(doc.scenes[ARRESTO].dialogue,{text:'¡Por **favor**!',textScale:1.3,boxScale:1.8});
+  assert.deepEqual(effectiveDialogueStyle(doc,ARRESTO),{textScale:1.3,boxScale:1.8});
+  doc=withDialogueDefaults(doc,{textScale:1.2,boxScale:1.4});
+  assert.deepEqual(effectiveDialogueStyle(doc,'prologo/arresto-02'),{textScale:1.2,boxScale:1.4});
+  assert.deepEqual(effectiveDialogueStyle(doc,ARRESTO),{textScale:1.3,boxScale:1.8});
+  doc=withDialogue(doc,ARRESTO,{textScale:null,boxScale:null});
+  assert.deepEqual(effectiveDialogueStyle(doc,ARRESTO),{textScale:1.2,boxScale:1.4});
+  doc=withDialogue(doc,ARRESTO,{text:'   '});
+  assert.equal(doc.scenes[ARRESTO],undefined,'blank text means the original line');
+  assert.equal(withDialogueDefaults(doc,{textScale:1,boxScale:null}).defaults,undefined);
+});
+
+test('title, title visibility for players and whole-beat dev-only flags',()=>{
+  let doc=withSceneSettings(emptyStudioDocumentV3(),ARRESTO,{title:'Arresto en la plaza',titleDevOnly:true,devOnly:true});
+  assert.deepEqual(doc.scenes[ARRESTO],{title:'Arresto en la plaza',titleDevOnly:true,devOnly:true});
+  doc=withSceneSettings(doc,ARRESTO,{title:null,titleDevOnly:false,devOnly:false});
+  assert.equal(doc.scenes[ARRESTO],undefined);
+  const layer=withLayer(emptyStudioDocumentV3(),ARRESTO,{...madre,devOnly:true});
+  assert.equal(getLayer(layer,ARRESTO,'actor-madre')?.devOnly,true);
+});
+
+test('copyScene copies only the visual layout, never the texts of the target beats',()=>{
+  let doc=withLayer(emptyStudioDocumentV3(),ARRESTO,{...madre,x:8});
+  doc=withDialogue(doc,ARRESTO,{text:'Texto propio de la fuente'});
+  doc=withDialogue(doc,'prologo/arresto-02',{text:'Texto del destino'});
+  doc=withSceneSettings(doc,'prologo/arresto-02',{devOnly:true});
+  const copied=copyScene(doc,ARRESTO,['prologo/arresto-02']);
+  assert.equal(getLayer(copied,'prologo/arresto-02','actor-madre')?.x,8);
+  assert.equal(copied.scenes['prologo/arresto-02'].dialogue?.text,'Texto del destino');
+  assert.equal(copied.scenes['prologo/arresto-02'].devOnly,true);
 });
