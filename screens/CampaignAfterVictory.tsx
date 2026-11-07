@@ -4,6 +4,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { CAMPAIGN_MISSIONS, bestStars, isMissionUnlocked, loadCampaignProgress } from '../campaign/campaign.ts';
 import { afterVictoryLines } from '../campaign/afterVictory.ts';
 import { hasSeenRegionMoment, REGION_LIBERATIONS_KEY } from '../campaign/regionJourney.ts';
+import { speakerLineIds, victoryScreenKey } from '../campaign/studio/screenKeys.ts';
+import { StudioScreenLayers, StudioScreenPanel, StudioScreenProvider, StudioText, useStudioBackground, useStudioTitle } from './studio/StudioScreenKit';
+import { useStudio } from './studio/StudioContext';
 import './campaign-after-victory.css';
 
 export const CENTER_REVEAL_KEY = 'decreto-real.campania.centro-revelado.v1';
@@ -11,7 +14,7 @@ export const CENTER_REVEAL_KEY = 'decreto-real.campania.centro-revelado.v1';
 const safeStorage = getCampaignStorage;
 
 /** A chapter-specific conversation after each victory, separate from the duel. */
-const CampaignAfterVictory: React.FC = () => {
+const CampaignAfterVictoryScreen: React.FC = () => {
   const navigate = useNavigate();
   const { missionId } = useParams<{ missionId: string }>();
   const mission = CAMPAIGN_MISSIONS.find(item => item.id === missionId);
@@ -19,6 +22,18 @@ const CampaignAfterVictory: React.FC = () => {
   const [index, setIndex] = React.useState(0);
   const lines = mission ? afterVictoryLines(mission.id) : [];
   const current = lines[index];
+  const studio = useStudio();
+  const lineIds = speakerLineIds(lines.map(line => line.speaker));
+  const keyOf = (i: number) => (mission ? victoryScreenKey(mission.id) : 'victoria-x') + '/' + (lineIds[i] ?? 'linea-01');
+  const sceneKey = keyOf(index);
+  const title = useStudioTitle(sceneKey, mission?.title ?? '');
+  const sceneImage = useStudioBackground(sceneKey, './portada/portada-poster.jpg');
+  /** Siguiente línea visible para la audiencia actual (las «solo desarrollador» se saltan). */
+  const nextVisible = (from: number) => {
+    let next = from + 1;
+    while (next < lines.length && !studio.visibleTo(studio.viewScene(keyOf(next))?.devOnly)) next++;
+    return next;
+  };
   const won = !!mission && bestStars(progress, mission.id) > 0;
   const centerUnlocked = isMissionUnlocked(progress, '35');
   const following = mission ? CAMPAIGN_MISSIONS.find(item => item.chapterId === mission.chapterId
@@ -58,17 +73,17 @@ const CampaignAfterVictory: React.FC = () => {
   </main>;
 
   const isXervias = current.speaker === 'Xervias';
-  const last = index === lines.length - 1;
+  const last = nextVisible(index) >= lines.length;
 
   return <main className="dca-screen" aria-label={`Diálogo después de la misión ${Number(mission.id)}`}>
     <div className="dca-stage">
       <header className="dca-header">
         <button type="button" onClick={() => navigate(returnRoute)} aria-label="Volver al mapa">‹ Mapa</button>
         <div><small>DECRETO REAL · DESPUÉS DE LA VICTORIA</small>
-          <h1>{mission.title}</h1></div>
+          {title !== null && <h1>{title}</h1>}</div>
       </header>
       <div className="dca-scene">
-        <img src="./portada/portada-poster.jpg" alt="" draggable={false} />
+        <img src={sceneImage} alt="" draggable={false} />
         <div className="dca-scene-wash" />
         <div className="dca-scene-mark">✥</div>
         <div className="dca-victory-note"><strong>Victoria · misión {Number(mission.id)} de 38</strong>
@@ -83,7 +98,7 @@ const CampaignAfterVictory: React.FC = () => {
             <h2>{current.speaker}</h2>
           </div>
         </div>
-        <p>{current.text}</p>
+        <p><StudioText k={sceneKey} original={current.text}/></p>
       </section>
       <footer className="dca-actions">
         <div className="dca-progress" aria-label={`Diálogo ${index + 1} de ${lines.length}`}>
@@ -91,12 +106,18 @@ const CampaignAfterVictory: React.FC = () => {
         </div>
         <button type="button" className="dca-secondary" onClick={() => navigate(returnRoute)}>Volver al mapa</button>
         <button type="button" className="dca-primary"
-          onClick={last ? continueJourney : () => setIndex(i => i + 1)}>
+          onClick={last ? continueJourney : () => setIndex(i => nextVisible(i))}>
           {last ? mission.id === '38' ? 'Ver epílogo ›' : 'Continuar historia ›' : 'Siguiente diálogo ›'}
         </button>
       </footer>
     </div>
+    <StudioScreenLayers sceneKey={sceneKey}/>
+    <StudioScreenPanel label={'Conversación · misión ' + Number(mission.id)} sceneKey={sceneKey}
+      originalTitle={mission.title} texts={[{ key: sceneKey, label: current.speaker + ' · línea ' + (index + 1), original: current.text }]}/>
   </main>;
 };
+
+/** Conversación tras victoria con su capa de autoría de Decreto Real Studio (solo QA). */
+const CampaignAfterVictory: React.FC = () => <StudioScreenProvider><CampaignAfterVictoryScreen/></StudioScreenProvider>;
 
 export default CampaignAfterVictory;

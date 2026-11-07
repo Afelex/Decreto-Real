@@ -1,0 +1,50 @@
+name: Studio · Preparar publicación mediante PR
+on:
+  workflow_dispatch:
+    inputs:
+      paquete:
+        description: URL HTTPS del ZIP exportado para publicar (acceso público)
+        required: true
+        type: string
+permissions:
+  contents: write
+  pull-requests: write
+concurrency:
+  group: studio-publicacion
+  cancel-in-progress: false
+jobs:
+  preparar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Descargar paquete sin credenciales
+        env:
+          STUDIO_PACKAGE_URL: ${{ inputs.paquete }}
+        run: |
+          mkdir -p work
+          curl --fail --location --proto '=https' --proto-redir '=https' --max-time 120 --max-filesize 214715200 --output work/publicacion.zip "$STUDIO_PACKAGE_URL"
+      - name: Validar y preparar composiciones
+        run: node --experimental-strip-types tools/studio-publish.mjs work/publicacion.zip
+      - run: npm test
+      - run: npm run test:ui
+      - run: npx tsc --noEmit
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test tests/e2e/studio*.spec.ts --trace off --workers=4
+      - name: Abrir PR para revisión
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: studio/publicacion-${{ github.run_id }}
+          base: main
+          add-paths: public/studio
+          commit-message: 'feat(studio v3): preparar composiciones publicadas'
+          title: 'feat(studio v3): publicar composiciones revisadas'
+          body: 'Paquete de Studio validado por firma, referencias y límites. Revisar las composiciones y multimedia antes de fusionar. No publica directamente en main.'

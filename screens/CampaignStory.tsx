@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { STORY_CHAPTERS } from '../campaign/story.ts';
 import { generalForChapter, MAIN_CHARACTERS } from '../campaign/characters.ts';
+import { StudioScreenLayers, StudioScreenPanel, StudioScreenProvider, StudioText, useStudioBackground, useStudioTitle } from './studio/StudioScreenKit';
 import './campaign.css';
 import './one-screen-ui.css';
 
@@ -9,10 +10,20 @@ import './one-screen-ui.css';
  * Pages instead of vertical scrolling. Longer lore is divided into digestible
  * chapters, with large touch controls that remain visible on short phones.
  */
-const CampaignStory: React.FC = () => {
+const STORY_TEXTS = [
+  { id: 'p1', label: 'Párrafo 1', original: 'Xervias sirve a la **Orden de la Corona Solar**. Tras su consagración, recibió un anillo que canaliza las cartas en un combate llamado Decreto Real.' },
+  { id: 'p2', label: 'Párrafo 2', original: 'Dos órdenes con el mismo sello se contradicen: una libera familias y otra las arresta. Sigumán, excomandante, dirige la **Revolución Solar**; sus seguidores, los **solarianos**, difunden decretos falsos.' },
+  { id: 'cita', label: 'Cita', original: 'Zhinchi: «Investiga antes de obedecer. ¿Quién alteró el sello?»' },
+] as const;
+const STORY_TITLES = ['El reino escucha dos verdades', 'Cuatro destinos, un mismo secreto', 'Ocho generales, ocho decisiones'];
+
+const CampaignStoryScreen: React.FC = () => {
   const navigate = useNavigate();
   const [page, setPage] = React.useState(0);
   const headings = ['La Revolución Solar', 'Personajes', 'Ocho generales'];
+  const sceneKey = 'cronica/pagina-' + (page + 1);
+  const pageTitle = useStudioTitle(sceneKey, STORY_TITLES[page]);
+  const art = useStudioBackground(sceneKey, '');
   return <main className="dc-page dc-full-page dc-story-page dc-prologue">
     <header className="dc-header">
       <button type="button" onClick={() => navigate('/campania')}>‹ Mapa</button>
@@ -26,16 +37,17 @@ const CampaignStory: React.FC = () => {
     </nav>
     <article className="dc-full-scene" aria-labelledby="dc-story-paged-title">
       {page === 0 && <>
-        <div className="dc-full-art dc-full-art-intro" aria-hidden="true">✥ <span>162X</span></div>
+        <div className="dc-full-art dc-full-art-intro" aria-hidden="true"
+          style={art ? { backgroundImage: 'url("' + art + '")', backgroundSize: 'cover' } : undefined}>✥ <span>162X</span></div>
         <span className="dc-scene-label">PERÚ VIRREINAL FICTICIO · AÑO 162X</span>
-        <h2 id="dc-story-paged-title">El reino escucha dos verdades</h2>
-        <p>Xervias sirve a la <strong>Orden de la Corona Solar</strong>. Tras su consagración, recibió un anillo que canaliza las cartas en un combate llamado Decreto Real.</p>
-        <p>Dos órdenes con el mismo sello se contradicen: una libera familias y otra las arresta. Sigumán, excomandante, dirige la <strong>Revolución Solar</strong>; sus seguidores, los <strong>solarianos</strong>, difunden decretos falsos.</p>
-        <blockquote className="dc-story-quote">Zhinchi: «Investiga antes de obedecer. ¿Quién alteró el sello?»</blockquote>
+        {pageTitle !== null && <h2 id="dc-story-paged-title">{pageTitle}</h2>}
+        <p><StudioText k={sceneKey + '-p1'} original={STORY_TEXTS[0].original}/></p>
+        <p><StudioText k={sceneKey + '-p2'} original={STORY_TEXTS[1].original}/></p>
+        <blockquote className="dc-story-quote"><StudioText k={sceneKey + '-cita'} original={STORY_TEXTS[2].original}/></blockquote>
       </>}
       {page === 1 && <>
         <span className="dc-scene-label">PERSONAJES · ELENCO PRINCIPAL</span>
-        <h2 id="dc-story-paged-title">Cuatro destinos, un mismo secreto</h2>
+        {pageTitle !== null && <h2 id="dc-story-paged-title">{pageTitle}</h2>}
         <div className="dc-full-cast">
           <div><span>⚔</span><strong>Xervias</strong><small>{MAIN_CHARACTERS.hero.role}. Busca quién cambió las órdenes y protege a las familias.</small></div>
           <div><span>✦</span><strong>Zhinchi</strong><small>{MAIN_CHARACTERS.mentor.role}. Enseña a Xervias a pensar antes de obedecer, pero guarda un secreto.</small></div>
@@ -45,7 +57,7 @@ const CampaignStory: React.FC = () => {
       </>}
       {page === 2 && <>
         <span className="dc-scene-label">OCHO REGIONES · OCHO GENERALES</span>
-        <h2 id="dc-story-paged-title">Ocho generales, ocho decisiones</h2>
+        {pageTitle !== null && <h2 id="dc-story-paged-title">{pageTitle}</h2>}
         <div className="dc-general-list dc-full-generals">
           {STORY_CHAPTERS.filter(chapter => chapter.general).map(chapter =>
             <div key={chapter.id}><span className="dc-general-emblem" aria-hidden="true">✥</span><div><strong>{generalForChapter(chapter.id)?.name ?? chapter.general}</strong><small>{chapter.general} · {chapter.region}</small></div></div>)}
@@ -60,7 +72,13 @@ const CampaignStory: React.FC = () => {
       </div>
       <button type="button" className="dc-primary" onClick={() => navigate('/campania')}>Ver mapa de campaña →</button>
     </footer>
+    <StudioScreenLayers sceneKey={sceneKey}/>
+    <StudioScreenPanel label={'Crónica · página ' + (page + 1)} sceneKey={sceneKey} originalTitle={STORY_TITLES[page]}
+      texts={page === 0 ? STORY_TEXTS.map(t => ({ key: sceneKey + '-' + t.id, label: t.label, original: t.original })) : []}/>
   </main>;
 };
+
+/** Crónica con su capa de autoría de Decreto Real Studio (solo QA). */
+const CampaignStory: React.FC = () => <StudioScreenProvider><CampaignStoryScreen/></StudioScreenProvider>;
 
 export default CampaignStory;
