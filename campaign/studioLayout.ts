@@ -152,6 +152,11 @@ export function withStudioExtraTransform(doc:StudioDocument,scene:string,id:stri
   return {...doc,extras:{...doc.extras,[scene]:existing.map(x=>x.id===id?
     {...x,transform:normalizeStudioTransform(transform,'Madre')}:x)}};
 }
+export function withStudioExtraAsset(doc:StudioDocument,scene:string,id:string,assetId:string):StudioDocument{
+  if(!assetOk(assetId))throw Error('ID multimedia inválido');
+  return {...doc,extras:{...doc.extras,[scene]:(doc.extras?.[scene]??[]).map(x=>
+    x.id===id?{...x,assetId}:x)}};
+}
 export function removeStudioExtra(doc:StudioDocument,scene:string,id:string):StudioDocument{
   return {...doc,extras:{...doc.extras,[scene]:(doc.extras?.[scene]??[]).filter(x=>x.id!==id)}};
 }
