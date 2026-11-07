@@ -43,3 +43,20 @@ test('nameplate, progress and title can be shown only to developers; the block c
   await page.getByRole('button',{name:'Continuar'}).click();
   await expect(page.locator('.dcop-nameplate')).toHaveCount(0);
 });
+
+test('VS screen: bands, names and the VS mark are editable pieces',async({page},info)=>{
+  test.skip(only(['mobile-390','desktop-1280'])(info.project.name),'Versus');
+  await page.goto('/Decreto-Real/?drDev=1#/campania/prologo?studio=1&studioStep=20');
+  await expect(page.getByTestId('cinematic-versus')).toBeVisible();
+  for(const label of ['VS · Marco completo','VS · Franja de Domingo','VS · Nombre de Domingo','VS · Marca «VS»','VS · Franja de Xervias','VS · Nombre de Xervias'])
+    await expect(page.getByTestId('studio-actor-select').locator('option',{hasText:label})).toHaveCount(1);
+  await page.getByTestId('studio-actor-select').selectOption({label:'VS · Marca «VS»'});
+  await page.getByTestId('studio-scale-number').fill('140');
+  await page.getByTestId('studio-scale-number').press('Tab');
+  await expect(page.locator('[data-studio-actor="native-versus-vs"]')).toHaveAttribute('style',/--studio-scale: 1.4;/);
+  await page.getByTestId('studio-actor-select').selectOption({label:'VS · Nombre de Xervias'});
+  await page.getByTestId('studio-y').fill('-5');
+  await page.getByTestId('studio-y').press('Tab');
+  await expect(page.locator('[data-studio-actor="native-versus-nombre-jugador"]')).toHaveAttribute('style',/--studio-y: -5;/);
+  await expect(page.getByTestId('cinematic-versus')).toContainText(/xervias/i);
+});

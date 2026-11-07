@@ -24,6 +24,12 @@ const NATIVE_LABELS:Record<string,string>={
   [BACKGROUND_ID]:'Fondo',
   'native-pergamino-arte':'Ilustración del pergamino',
   'native-pergamino-carta':'Tarjeta «Por orden de la Corona»',
+  'native-versus-marco':'VS · Marco completo',
+  'native-versus-rival':'VS · Franja de Domingo',
+  'native-versus-nombre-rival':'VS · Nombre de Domingo',
+  'native-versus-vs':'VS · Marca «VS»',
+  'native-versus-jugador':'VS · Franja de Xervias',
+  'native-versus-nombre-jugador':'VS · Nombre de Xervias',
 };
 const FILE_INPUTS=[
   {id:'replace',accept:'image/png,image/jpeg,image/webp,image/gif'},

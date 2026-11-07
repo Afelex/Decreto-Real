@@ -44,6 +44,12 @@ function checkpoint() {
 }
 
 const phaseTitles: Record<string,string> = PROLOGUE_PHASE_TITLES;
+/** Piezas editables de la pantalla VS (prólogo, intervención 21). */
+const VERSUS_LAYER_IDS=['native-versus-marco','native-versus-rival','native-versus-nombre-rival',
+  'native-versus-vs','native-versus-jugador','native-versus-nombre-jugador'];
+/** Nombre con la inicial de cada palabra grande, como en un cartel de duelo. */
+const versusName=(name:string)=>name.split(' ').map((word,index)=><React.Fragment key={index}>
+  {index>0?' ':''}<b>{word[0]}</b>{word.slice(1)}</React.Fragment>);
 const TOTAL_STUDIO_BEATS=OPENING_BEATS.length+AFTER_DUEL_BEATS.length;
 const STUDIO_SCENE_OPTIONS=[
   ...OPENING_BEATS.map(item=>({label:item.speaker+' · '+item.title})),
@@ -282,14 +288,16 @@ const CampaignOpening:React.FC=()=>{
           </div>}
           {/* Domingo's ceremonial card is part of his transparent fighting sprite,
               never a floating card UI element hiding his face. */}
-          {composition.isVersus&&<div className="dcop-versus" data-testid="cinematic-versus">
-            <div className="dcop-versus-side dcop-versus-xervias">
-              <img src={portraits.Xervias} alt=""/><strong>XERVIAS</strong>
+          {composition.isVersus&&<div {...nativeProps('native-versus-marco','dcop-versus')} data-testid="cinematic-versus">
+            <div {...nativeProps('native-versus-rival','dcop-versus-band dcop-versus-rival')}>
+              <div className="dcop-versus-band-inner"><img src={domingoDuelPortrait} alt=""/></div>
             </div>
-            <div className="dcop-versus-mark" aria-hidden="true">VS</div>
-            <div className="dcop-versus-side dcop-versus-domingo">
-              <img src={domingoDuelPortrait} alt=""/><strong>DOMINGO QUISPE</strong>
+            <strong {...nativeProps('native-versus-nombre-rival','dcop-versus-name dcop-versus-name-rival')}>{versusName('Domingo Quispe')}</strong>
+            <div {...nativeProps('native-versus-vs','dcop-versus-mark')} aria-hidden="true"><span>VS</span></div>
+            <div {...nativeProps('native-versus-jugador','dcop-versus-band dcop-versus-player')}>
+              <div className="dcop-versus-band-inner"><img src={portraits.Xervias} alt=""/></div>
             </div>
+            <strong {...nativeProps('native-versus-nombre-jugador','dcop-versus-name dcop-versus-name-player')}>{versusName('Xervias')}</strong>
           </div>}
         </StageComposer>
       </div>}
@@ -303,7 +311,8 @@ const CampaignOpening:React.FC=()=>{
           sceneOptions={STUDIO_SCENE_OPTIONS}
           title={speaker+' · '+(prologue?.title??phaseTitles[scene]??'Desenlace')}
           nativeLayerIds={[...compositionLayerIds(composition),
-            ...(scene==='pergamino'?[...(artReady?['native-pergamino-arte']:[]),'native-pergamino-carta']:[])]}
+            ...(scene==='pergamino'?[...(artReady?['native-pergamino-arte']:[]),'native-pergamino-carta']:[]),
+            ...(composition.isVersus?VERSUS_LAYER_IDS:[])]}
           nativeBubbleText={composition.bubble?.text??null}
           stageRef={stageRef}
           speaker={speaker}

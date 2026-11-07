@@ -71,40 +71,65 @@
   from{opacity:0;transform:translateY(40px) scale(.64) rotate(5deg)}
   to{opacity:1;transform:translateY(0) scale(1) rotate(-10deg)}
 }
-/* Cinematic VS: original composition (not Duel Links artwork). */
+/* Cinematic VS: composición propia de Decreto Real (inspirada en la estructura
+   de dos franjas enfrentadas, no en su arte). Rival arriba (azul), jugador abajo (rojo).
+   Cada pieza es editable en Studio: marco, franjas, nombres y la marca VS.
+   La inclinación vive en elementos internos para que Studio pueda mover y
+   escalar cada pieza sin perderla. */
 .dcop-versus{
-  position:absolute;z-index:6;inset:9% 1% 30%;
-  display:grid;grid-template-rows:1fr 1fr;
-  background:linear-gradient(153deg,#111b3088 43%,#f1c772 50%,#4d112299 56%);
-  overflow:hidden;border:1px solid #e6c08388;border-radius:7px;
-  box-shadow:inset 0 0 50px #0009,0 0 20px #1a0815b8;
+  position:absolute;z-index:6;inset:7% 0 29%;overflow:hidden;
+  background:
+    linear-gradient(28deg,transparent 47%,#ffffff12 47.3% 47.8%,transparent 48%),
+    linear-gradient(152deg,transparent 30%,#9fd0ff10 30.3% 30.8%,transparent 31%),
+    radial-gradient(ellipse at 50% 50%,#1c2a44 0%,#070b14 75%);
 }
-.dcop-versus-side{
-  position:relative;display:flex;align-items:center;gap:12px;
-  padding:12px 6%;overflow:hidden;
+.dcop-versus-band{position:absolute;left:-6%;right:-6%;height:39%;overflow:visible}
+.dcop-versus-rival{top:9%}
+.dcop-versus-player{bottom:7%}
+.dcop-versus-band-inner{
+  position:absolute;inset:0;overflow:hidden;transform:skewY(-6deg);
+  border-top:5px solid #fff4dc;border-bottom:5px solid #fff4dc;
+  box-shadow:0 0 0 2px #0b1220,0 10px 30px #000c;
 }
-.dcop-versus-side img{
-  height:130%;width:44%;object-fit:contain;object-position:center top;
-  filter:drop-shadow(0 4px 14px #000c);
+.dcop-versus-rival .dcop-versus-band-inner{
+  background:repeating-linear-gradient(174deg,transparent 0 9px,#7fc4ff22 9px 11px),
+    linear-gradient(90deg,#0d2a55 0%,#1d5fae 55%,#7fd0ff 100%);
 }
-.dcop-versus-side strong{
-  position:relative;z-index:2;color:#fff4dc;
-  font:900 clamp(18px,5vw,30px)/1.1 Georgia,serif;letter-spacing:.05em;
-  text-shadow:2px 3px #000c;
+.dcop-versus-player .dcop-versus-band-inner{
+  background:repeating-linear-gradient(174deg,transparent 0 9px,#ffb08a22 9px 11px),
+    linear-gradient(270deg,#4a0c18 0%,#a3202f 55%,#ff8a5c 100%);
 }
-.dcop-versus-xervias{
-  background:linear-gradient(98deg,#76202ac9,#371c36b9);
-  flex-direction:row;
+.dcop-versus-band img{
+  position:absolute;top:-8%;height:150%;width:72%;
+  object-fit:cover;object-position:center 18%;transform:skewY(6deg);
+  filter:drop-shadow(0 6px 14px #000d) saturate(1.08);
 }
-.dcop-versus-domingo{
-  background:linear-gradient(98deg,#142f56cf,#11365fd9);
-  flex-direction:row-reverse;
+.dcop-versus-rival img{left:6%}
+.dcop-versus-player img{right:6%}
+.dcop-versus-name{
+  position:absolute;z-index:3;display:block;white-space:nowrap;
+  color:#fff8ea;font:italic 900 clamp(20px,6.4vw,34px)/.9 Georgia,serif;letter-spacing:.01em;
+  -webkit-text-stroke:1.5px #0a0f1a;paint-order:stroke fill;
+  text-shadow:3px 4px 0 #0a0f1a,0 0 18px #000a;
 }
+.dcop-versus-name b{
+  display:inline-block;font-size:2.05em;line-height:.8;margin-right:.02em;vertical-align:-.12em;
+  -webkit-text-stroke:2.5px #0a0f1a;
+}
+.dcop-versus-name-rival{top:1%;right:4%;rotate:-6deg}
+.dcop-versus-name-rival b{color:#5fe0ff}
+.dcop-versus-name-player{bottom:3%;right:4%;rotate:-6deg}
+.dcop-versus-name-player b{color:#ffc35c}
 .dcop-versus-mark{
-  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-9deg);
-  z-index:7;padding:2px 15px;color:#fff6d4;
-  font:900 clamp(42px,14vw,74px)/1 Georgia,serif;
-  text-shadow:-3px -3px #8f2037,3px 4px #234b8c,0 0 21px #ffdd81;
+  position:absolute;left:50%;top:50%;z-index:4;width:0;height:0;
+}
+.dcop-versus-mark>span{
+  position:absolute;left:0;top:0;transform:translate(-50%,-50%) rotate(-8deg) skewX(-14deg);
+  font:italic 900 clamp(58px,19vw,104px)/1 Georgia,serif;letter-spacing:-.06em;
+  background:linear-gradient(180deg,#ffffff 0%,#c7ced8 38%,#5b6472 52%,#e9eef4 70%,#8a93a0 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  -webkit-text-stroke:2.5px #0a0f1a;
+  filter:drop-shadow(0 0 6px #ffffffaa) drop-shadow(3px 5px 0 #0a0f1a);
 }
 .dcop-screen .dr-royal-character-frame{
   /* The two fixed HUD frames retain matched size, and never contain full-body art. */
