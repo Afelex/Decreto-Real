@@ -76,3 +76,24 @@ test('Enter in the dialogue text creates a visible new line',async({page},info)=
   expect(lines).toBeGreaterThanOrEqual(2);
   expect(await p.evaluate(el=>el.textContent)).toBe('Virreinato del Perú, siglo XVII.\nEl Sello Real da autoridad.');
 });
+
+test('copy a position, scale and rotation and paste it on another beat',async({page},info)=>{
+  test.skip(only(['mobile-390','desktop-1280'])(info.project.name),'Copy/paste transform');
+  await page.goto('/Decreto-Real/?drDev=1#/campania/prologo?studio=1&studioStep=4');
+  await page.getByTestId('studio-actor-select').selectOption('Domingo Quispe');
+  for(const [id,value] of [['studio-x','-12'],['studio-scale-number','115'],['studio-rotation','10']]){
+    await page.getByTestId(id).fill(value);await page.getByTestId(id).press('Tab');
+  }
+  await expect(page.getByTestId('studio-paste-transform')).toBeDisabled();
+  await page.getByTestId('studio-copy-transform').click();
+  await expect(page.locator('.dr-studio-bottom [role="status"]')).toContainText('Copiado: X -12');
+  await page.getByRole('button',{name:'Escena siguiente'}).click();
+  await page.getByTestId('studio-actor-select').selectOption('Domingo Quispe');
+  await expect(page.getByTestId('studio-x')).toHaveValue('0');
+  await page.getByTestId('studio-paste-transform').click();
+  await expect(page.getByTestId('studio-x')).toHaveValue('-12');
+  await expect(page.getByTestId('studio-scale-number')).toHaveValue('115');
+  await expect(page.getByTestId('studio-rotation')).toHaveValue('10');
+  await page.getByRole('button',{name:'↶ Deshacer'}).click();
+  await expect(page.getByTestId('studio-x')).toHaveValue('0');
+});

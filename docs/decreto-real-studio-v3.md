@@ -24,6 +24,7 @@ La grilla y las guías **no impiden** tocar ni arrastrar los personajes, y no ap
 - **Asa azul ⟳** (abajo a la izquierda): rota, en pasos de 15° con Ajuste.
 - **Campos exactos:** X, Y, Escala, Capa (1–100), Rotación y Opacidad. Puedes escribir números negativos y los valores escritos se respetan tal cual. Los botones − y + ajustan por pasos.
 - **Flechas** (en pantalla o en el teclado): una celda con Ajuste, 0,5 % sin él.
+- **📋 Copiar posición / 📥 Pegar posición:** copia X, Y, escala, rotación, capa, opacidad y espejado del elemento seleccionado y los aplica a otro, también en otra intervención (se deshace con un paso). También quedan en el portapapeles como texto legible.
 - 🔒 **Bloquear:** el elemento ya no se arrastra en el lienzo, pero sigue editable desde el panel.
 - **Fondo:** selecciona «Fondo» para encuadrarlo (X, Y, escala). Viene bloqueado para no moverlo sin querer.
 
