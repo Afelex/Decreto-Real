@@ -113,7 +113,7 @@ StudioLayer      = { id, x, y, scale, rotation, opacity, mirror, z, visible } & 
 | **4. UX del editor** ✅ | Inspector acoplable (hoja inferior plegable, lateral en escritorio); timeline con miniaturas y marcas de editado; «aplicar a toda la escena» y «copiar de la anterior»; guardado explícito con indicador, autoguardado en borrador y `beforeunload`; Salir/Previsualizar separados; globos y texto de diálogo editables; comparar antes/después | `StudioInspector`, `StudioTimeline` |
 | **5. Multimedia robusta** ✅ | Refcount y GC de huérfanos, panel de biblioteca (reutilizar y renombrar recursos, ver tamaño), comprobación de firma, paquete `.zip` sin dependencias, importación con «fusionar/reemplazar» confirmada | `campaign/studio/{media,package}.ts` |
 | **6. Publicación** ✅ | `public/studio/composiciones.json` cargado por el juego público; «Exportar para publicar» genera ese JSON y los assets normalizados; workflow manual de GitHub Actions que valida el paquete y abre un PR (siguiendo el patrón de `generate-prologue-v3.yml` y `tools/art-github.mjs`) | `published.ts`, `.github/workflows/studio-publicar.yml`, `tools/studio-publish.mjs` |
-| **7. Más pantallas** | El mismo `StageComposer` y el mismo Studio en `CampaignAfterVictory`, `CampaignRegionMoment`, `CampaignStory`/`StoryDialogue`, `CampaignEpilogue` y créditos | esas pantallas |
+| **7. Más pantallas** ✅ | El mismo `StageComposer` y el mismo Studio en `CampaignAfterVictory`, `CampaignRegionMoment`, `CampaignStory`/`StoryDialogue`, `CampaignEpilogue` y créditos | esas pantallas |
 
 ### Especificación: grilla, ajuste magnético y guías (fase 3)
 Studio v3 debe funcionar como un editor gráfico: personajes, sprites, globos, fondos y efectos se ubican con precisión sobre una grilla del escenario.
@@ -293,3 +293,13 @@ Reutilizar sin reescribir: `normalizeStudioTransform`/`parseStudioDocument` (bas
 - `tools/studio-publish.mjs` valida antes de escribir, prepara el manifiesto y multimedia y poda los medios antiguos.
 - Workflow manual `studio-publicar.yml`: recibe URL HTTPS, valida, ejecuta pruebas/compilación y abre un PR en `studio/publicacion-*`, sin escribir directamente en `main`.
 - Pruebas puras del publicador y e2e del juego compilado sin `drDev`, prioridad del borrador y ausencia de publicación.
+
+
+### Estado de la fase 7 (implementada)
+- **Kit compartido** (`screens/studio/StudioScreenKit.tsx`): `StudioScreenProvider` (no bloquea la pantalla mientras llega lo publicado), `StudioText` (texto con **negrita** y «solo desarrollador»), `useStudioTitle`, `useStudioBackground`, `StudioScreenLayers` (sprites y efectos en % de la pantalla, con arrastre) y `StudioScreenPanel` (inspector compacto).
+- **Pantallas integradas:** conversaciones tras victoria, entrada y liberación de regiones, crónica, epílogo y créditos. Se editan textos, rótulos, fondos y capas añadidas; los retratos y tarjetas nativos conservan su distribución.
+- **Claves estables** (`campaign/studio/screenKeys.ts`): `victoria-03/xervias-02`, `region-3/entrada-zhinchi`, `epilogo/pagina-2-p1`… Cuando un mismo personaje habla dos veces, cada intervención tiene su propio número, así que sus ajustes no se mezclan.
+- Las líneas «solo desarrollador» de una conversación se saltan para el jugador.
+- **Catálogo** `#/studio/escenas` (botón ☷ en los inspectores): abre cada pantalla con una partida temporal de QA, sin tocar la partida real. Mientras se edita no se muestra el menú de pausa.
+- Lo publicado (fase 6) se aplica también en estas pantallas.
+- **Pruebas:** `campaign/studio/screenKeys.test.ts` y `tests/e2e/studio-screens.spec.ts`. Las pruebas de interfaz existentes no se modificaron.

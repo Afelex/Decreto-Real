@@ -467,3 +467,26 @@
     width:min(420px,calc((100vw - 540px) / 2 - 24px));
   }
 }
+
+/* ——— Studio v3 · fase 7: pantallas narrativas ——— */
+.dr-studio-screen-layers{position:fixed;inset:0;z-index:40;pointer-events:none}
+.dr-studio-screen-extra{
+  position:absolute;left:50%;top:48%;width:42%;height:38%;max-width:260px;z-index:var(--studio-layer,48);
+  --dr-studio-translate:translate(calc(var(--studio-x,0) * var(--dr-stage-w,100vw) / 100),calc(var(--studio-y,0) * var(--dr-stage-h,100dvh) / 100));
+  transform:translate(-50%,-50%) var(--dr-studio-translate) rotate(var(--studio-rot,0deg)) scale(var(--studio-scale,1)) scaleX(var(--studio-mirror,1));
+}
+.dr-studio-screen-extra>img,.dr-studio-screen-extra>video{width:100%;height:100%;object-fit:contain}
+.dr-studio-screen-editing .dr-studio-screen-extra{pointer-events:auto;touch-action:none;cursor:grab}
+.dr-studio-screen-extra.dcop-studio-hidden{opacity:0}
+.dr-studio-screen-editing .dr-studio-screen-extra.dcop-studio-hidden{opacity:.2}
+.dr-studio-screen-extra.dcop-studio-extra-selected{outline:2px dashed #ffe0a0;outline-offset:3px}
+.dr-studio-screen-extra.dcop-studio-devonly,.dr-studio-text-devonly{outline:2px dotted #c58bff;outline-offset:2px}
+.dr-studio-panel.dr-studio-screen-panel{position:fixed;z-index:990;top:max(8px,env(safe-area-inset-top));left:8px;right:8px}
+@media (min-width:1180px){.dr-studio-panel.dr-studio-screen-panel{left:auto;right:12px;width:400px}}
+.dr-studio-catalog{min-height:100dvh;padding:16px;background:#0d1827;color:#fceaca;font:14px system-ui,sans-serif}
+.dr-studio-catalog h1{font-size:20px;margin:0 0 4px}
+.dr-studio-catalog p{color:#c3c9d3;margin:0 0 12px;font-size:12px}
+.dr-studio-catalog section{margin-bottom:14px}
+.dr-studio-catalog h2{font-size:13px;color:#f3cb93;margin:0 0 6px}
+.dr-studio-catalog ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px}
+.dr-studio-catalog button{width:100%;min-height:42px;text-align:left;padding:8px 10px;border-radius:8px;border:1px solid #a78a62;background:#24354c;color:inherit;font:inherit;cursor:pointer}

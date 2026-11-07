@@ -20,6 +20,7 @@ import CampaignAfterVictory from './screens/CampaignAfterVictory';
 import CampaignCenterReveal from './screens/CampaignCenterReveal';
 import CampaignRegionMoment from './screens/CampaignRegionMoment';
 import CampaignQaNavigator from './screens/CampaignQaNavigator';
+import StudioScenesCatalog from './screens/studio/StudioScenesCatalog';
 import { getCampaignStorage, isCampaignQaActive, isCampaignQaAvailable } from './campaign/campaignQA';
 import { PROLOGUE_COMPLETE_KEY } from './campaign/prologueArt';
 import CampaignCredits from './screens/CampaignCredits';
@@ -48,10 +49,11 @@ const CampaignRoutes: React.FC = () => {
   const location = useLocation();
   // Decreto Real Studio navigates between beats by changing only the query:
   // keep the editor mounted (undo history, media and art manifests survive).
-  const studioSession = location.pathname === '/campania/prologo' &&
-    new URLSearchParams(location.search).get('studio') === '1';
+  // Decreto Real Studio cambia solo el query al navegar: la pantalla sigue
+  // montada (historial, multimedia y manifiestos se conservan).
+  const studioSession = new URLSearchParams(location.search).get('studio') === '1';
   return <>
-    <React.Fragment key={studioSession ? 'decreto-real-studio' : location.key}>
+    <React.Fragment key={studioSession ? 'decreto-real-studio:' + location.pathname : location.key}>
         <Routes>
           <Route path="/" element={<MainMenu />} />
           <Route path="/game" element={<GameBoard />} />
@@ -61,6 +63,7 @@ const CampaignRoutes: React.FC = () => {
           <Route path="/studio" element={isCampaignQaAvailable()
             ? <Navigate to="/campania/prologo?studio=1&studioStep=1" replace/>
             : <Navigate to="/" replace/>} />
+          <Route path="/studio/escenas" element={<StudioScenesCatalog />} />
           <Route path="/campania/prologo" element={<CampaignOpening />} />
           <Route path="/campania/region/:chapterId" element={<LaterStoryOnlyQa><CampaignMap /></LaterStoryOnlyQa>} />
           <Route path="/campania/entrada/:chapterId" element={<LaterStoryOnlyQa><CampaignRegionMoment mode="entrada" /></LaterStoryOnlyQa>} />
@@ -79,7 +82,7 @@ const CampaignRoutes: React.FC = () => {
           <Route path="/options" element={<OptionsScreen />} />
         </Routes>
     </React.Fragment>
-    {location.pathname.startsWith('/campania') && location.pathname !== '/campania/inicio' && location.pathname !== '/campania/prologo' && <CampaignPauseMenu />}
+    {location.pathname.startsWith('/campania') && location.pathname !== '/campania/inicio' && location.pathname !== '/campania/prologo' && !studioSession && <CampaignPauseMenu />}
     <CampaignQaNavigator />
   </>;
 };

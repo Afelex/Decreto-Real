@@ -13,6 +13,8 @@ import {
 import { CENTER_REVEAL_KEY } from './CampaignAfterVictory';
 import { GeneralPortrait } from './GeneralPortrait';
 import { campaignLandscape } from '../campaign/regionAssets.ts';
+import { regionScreenKey } from '../campaign/studio/screenKeys.ts';
+import { StudioScreenLayers, StudioScreenPanel, StudioScreenProvider, StudioText, useStudioBackground, useStudioTitle } from './studio/StudioScreenKit';
 import './campaign-region-moments.css';
 
 const storage = getCampaignStorage;
@@ -20,7 +22,7 @@ const storage = getCampaignStorage;
 type RegionMomentMode = 'entrada' | 'liberada';
 
 /** Non-blocking, replayable story scenes. Every region has its own visual and text. */
-const CampaignRegionMoment: React.FC<{ mode: RegionMomentMode }> = ({ mode }) => {
+const CampaignRegionMomentScreen: React.FC<{ mode: RegionMomentMode }> = ({ mode }) => {
   const navigate = useNavigate();
   const { chapterId } = useParams<{ chapterId?: string }>();
   const [search] = useSearchParams();
@@ -35,6 +37,12 @@ const CampaignRegionMoment: React.FC<{ mode: RegionMomentMode }> = ({ mode }) =>
   const firstVisitReplay = search.get('repetir') === '1';
   const moment = validId ? REGION_MOMENTS[validId] : null;
   const visual = regionVisual(validId ?? undefined);
+  // Studio: clave visual de la escena y claves de cada texto.
+  const sceneKey = regionScreenKey(validId ?? 'x', mode);
+  const textKey = (speaker: string) => sceneKey + '-' + speaker;
+  const originalTitle = isLiberation ? 'Región liberada' : chapter?.title ?? '';
+  const studioTitle = useStudioTitle(sceneKey, originalTitle);
+  const landscape = useStudioBackground(sceneKey, validId ? campaignLandscape(validId) : '');
   const mystic = validId ? GENERAL_MYSTICS[Number(validId) - 1] : undefined;
   const reward = mystic ? mysticPowerText(mysticPower(mystic.id, 1)) : '';
   const regionCompleted = validId
@@ -76,11 +84,11 @@ const CampaignRegionMoment: React.FC<{ mode: RegionMomentMode }> = ({ mode }) =>
         {!isLiberation && <button type="button" className="dcmoment-menu"
           aria-label="Volver al Menú" onClick={() => navigate('/')}>⌂</button>}
         <small>{isLiberation ? `REGIÓN ${validId} DE 8 · CONQUISTADA` : `REGIÓN ${validId} DE 8 · NUEVO TERRITORIO`}</small>
-        <h1>{isLiberation ? 'Región liberada' : chapter.title}</h1>
+        {studioTitle !== null && <h1>{studioTitle}</h1>}
       </header>
 
       <section className="dcmoment-landscape" aria-label={visual.landmark}>
-        <img src={campaignLandscape(validId)}
+        <img src={landscape}
           alt={`Paisaje de ${chapter.region}: ${visual.landmark}`} draggable={false}/>
         <div className="dcmoment-landscape-tint" aria-hidden="true"/>
         <div className="dcmoment-portrait" aria-hidden="true"><GeneralPortrait chapterId={validId}/></div>
@@ -119,10 +127,10 @@ const CampaignRegionMoment: React.FC<{ mode: RegionMomentMode }> = ({ mode }) =>
 
       <section className="dcmoment-dialogue" aria-label={isLiberation ? 'Reflexión de Xervias' : 'Conversación de Xervias y Zhinchi'}>
         {isLiberation
-          ? <p><strong>Xervias:</strong> {moment.liberated} {liberatedCount === 8 ? 'Los ocho generales han caído. ¿Qué ocurrirá ahora en el centro del mapa?' : 'Seguiré adelante: todavía hay otras regiones que necesitan ayuda.'}</p>
+          ? <p><strong>Xervias:</strong> <StudioText k={textKey('xervias')} original={moment.liberated}/> {liberatedCount === 8 ? 'Los ocho generales han caído. ¿Qué ocurrirá ahora en el centro del mapa?' : 'Seguiré adelante: todavía hay otras regiones que necesitan ayuda.'}</p>
           : <>
-            <p><strong>Xervias:</strong> {moment.xervias}</p>
-            <p><strong>Zhinchi:</strong> {moment.zhinchi}</p>
+            <p><strong>Xervias:</strong> <StudioText k={textKey('xervias')} original={moment.xervias}/></p>
+            <p><strong>Zhinchi:</strong> <StudioText k={textKey('zhinchi')} original={moment.zhinchi}/></p>
           </>}
       </section>
 
@@ -136,7 +144,18 @@ const CampaignRegionMoment: React.FC<{ mode: RegionMomentMode }> = ({ mode }) =>
         </button>
       </footer>
     </div>
+    <StudioScreenLayers sceneKey={sceneKey}/>
+    <StudioScreenPanel label={(isLiberation ? 'Liberación · región ' : 'Entrada · región ') + validId} sceneKey={sceneKey}
+      originalTitle={originalTitle}
+      texts={isLiberation
+        ? [{ key: textKey('xervias'), label: 'Xervias', original: moment.liberated }]
+        : [{ key: textKey('xervias'), label: 'Xervias', original: moment.xervias },
+           { key: textKey('zhinchi'), label: 'Zhinchi', original: moment.zhinchi }]}/>
   </main>;
 };
+
+/** Momento de región con su capa de autoría de Decreto Real Studio (solo QA). */
+const CampaignRegionMoment: React.FC<{ mode: RegionMomentMode }> = ({ mode }) =>
+  <StudioScreenProvider><CampaignRegionMomentScreen mode={mode}/></StudioScreenProvider>;
 
 export default CampaignRegionMoment;

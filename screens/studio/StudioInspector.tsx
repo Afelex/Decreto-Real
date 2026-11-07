@@ -307,6 +307,8 @@ export default function StudioInspector(props:Props){
       <div><small>HERRAMIENTA QA · BORRADOR LOCAL</small><strong>Decreto Real Studio <em>v3</em></strong></div>
       <div className="dr-studio-heading-actions">
         <button type="button" data-testid="studio-preview-top" onClick={props.onPreview}>▶ Historia</button>
+        <button type="button" data-testid="studio-scenes-catalog" aria-label="Otras pantallas de la historia"
+          title="Otras pantallas de la historia" onClick={()=>{props.onExit();window.location.hash='#/studio/escenas';}}>☷</button>
         <button type="button" data-testid="studio-library-toggle" aria-expanded={libraryOpen}
           aria-label="Biblioteca multimedia" title="Biblioteca multimedia"
           onClick={()=>{setLibraryOpen(v=>!v);setTimelineOpen(false);}}>🖼</button>

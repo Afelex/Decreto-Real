@@ -76,6 +76,9 @@ Pulsa **🖼** para abrir la biblioteca:
   - **Cancelar:** no cambia nada.
 - Las imágenes y videos del respaldo vuelven a la biblioteca. Si te equivocas, **↶ Deshacer** revierte la importación.
 
+## Otras pantallas de la historia
+Abre **☷ Otras pantallas** (o `#/studio/escenas`) y elige una conversación tras victoria, la entrada o liberación de una región, la crónica, el epílogo o los créditos. En cada una puedes cambiar los textos (con **negrita**), el rótulo, el fondo y añadir sprites o efectos, y marcar textos o capas como «solo desarrollador». Se abren con una partida de prueba: tu partida real no cambia.
+
 ## Atajos de teclado
 `Ctrl+Z` deshacer · `Ctrl+Shift+Z` rehacer · `Ctrl+S` guardar · `G` grilla · flechas para mover · `Alt` para arrastrar sin ajuste · `Esc` para vaciar la selección múltiple.
 

@@ -135,14 +135,20 @@ const describeScene=(key:string)=>key.replace(/^prologo\//,'');
  * Estado compartido de Decreto Real Studio v3 para la pantalla del prólogo.
  * En el juego público (sin QA) no lee almacenamiento ni IndexedDB.
  */
-export function StudioProvider({children}:{children:React.ReactNode}){
+const EMPTY_PUBLISHED=emptyStudioDocumentV3();
+export function StudioProvider({children,blocking=true}:{children:React.ReactNode;
+  /** false: pinta la pantalla base mientras llega lo publicado (pantallas secundarias). */
+  blocking?:boolean}){
   const [published,setPublished]=React.useState<StudioDocumentV3|null>(null);
   React.useEffect(()=>{
     let cancelled=false;
     loadPublishedStudio(import.meta.env.BASE_URL).then(doc=>{if(!cancelled)setPublished(doc);});
     return ()=>{cancelled=true;};
   },[]);
-  return published?<LoadedStudioProvider published={published}>{children}</LoadedStudioProvider>:null;
+  // No bloqueante: el mismo proveedor desde el principio (sin remontar la
+  // pantalla); lo publicado se aplica en cuanto llega.
+  if(!published&&blocking)return null;
+  return <LoadedStudioProvider published={published??EMPTY_PUBLISHED}>{children}</LoadedStudioProvider>;
 }
 
 function LoadedStudioProvider({children,published}:{children:React.ReactNode;published:StudioDocumentV3}){
