@@ -304,11 +304,24 @@ const CampaignOpening:React.FC=()=>{
   }
   else if(scene==='reflexion'&&speaker==='Xervias'){add('Xervias',xervias);}
   const studioKey=studioSceneKey(isAfter?'after':'opening',isAfter?after:beat);
-  const studioActors:StudioActor[]=actors.flatMap(actor=>actor.child?
-    [actor.id,'Niño' as const]:[actor.id]);
+  const studioExtras=studioDoc.extras?.[studioKey]??[];
+  const studioActors:string[]=[...actors.flatMap(actor=>actor.child?
+    [actor.id,'Niño' as const]:[actor.id]),...studioExtras.map(extra=>extra.id)];
+  const studioActorLabels:Record<string,string>=Object.fromEntries(studioExtras.map(extra=>
+    [extra.id,extra.name+' · '+(extra.kind==='effect'?'Efecto':'Sprite')]));
+  const isNativeActor=(id:string):id is StudioActor=>(STUDIO_ACTORS as readonly string[]).includes(id);
   const studioVisibleSelection=studioSelected&&studioActors.includes(studioSelected)?studioSelected:null;
   const studioDirty=JSON.stringify(studioDoc)!==studioSaved;
+  const studioSceneSettings=isCampaignQaAvailable()?studioDoc.settings?.[studioKey]:undefined;
+  const bubbleVisible=studioSceneSettings?.bubbleVisible!==false;
+  const titleVisible=studioSceneSettings?.titleVisible!==false;
   const currentLayout=(actor:StudioActor)=>isCampaignQaAvailable()?studioDoc.scenes[studioKey]?.[actor]:undefined;
+  const currentExtra=(id:string)=>studioExtras.find(x=>x.id===id);
+  const currentTransform=(id:string):StudioTransform|null=>{
+    if(isNativeActor(id))return getStudioTransform(studioDoc,studioKey,id);
+    return currentExtra(id)?.transform??null;
+  };
+  const mediaSource=(id:string|undefined,fallback:string)=>id?(mediaUrls[id]??fallback):fallback;
   const studioStyle=(actor:StudioActor):React.CSSProperties|undefined=>{
     const layout=currentLayout(actor);
     if(!layout)return undefined;
@@ -318,48 +331,67 @@ const CampaignOpening:React.FC=()=>{
       '--studio-layer':layout.layer,
     } as React.CSSProperties;
   };
+  const extraStyle=(extra:StudioExtra):React.CSSProperties=>({
+    '--studio-x':extra.transform.x+'vw','--studio-y':extra.transform.y+'vh',
+    '--studio-scale':extra.transform.scale,
+    '--studio-mirror':extra.transform.mirror?-1:1,
+    '--studio-layer':extra.transform.layer,
+  } as React.CSSProperties);
   const studioClass=(actor:StudioActor)=>(currentLayout(actor)?' dcop-studio-adjusted':'')+
     (studioEnabled&&studioVisibleSelection===actor?' dcop-studio-selected':'')+
     (currentLayout(actor)?.visible===false?' dcop-studio-hidden':'');
   const pushStudioHistory=()=>{
     setStudioHistory(items=>[...items.slice(-24),studioDoc]);
   };
-  const changeStudioActor=(actor:StudioActor,next:StudioTransform)=>{
+  const changeStudioTarget=(id:string,next:StudioTransform)=>{
     pushStudioHistory();
-    setStudioDoc(doc=>withStudioTransform(doc,studioKey,actor,next));
+    setStudioDoc(doc=>isNativeActor(id)?
+      withStudioTransform(doc,studioKey,id,next):
+      withStudioExtraTransform(doc,studioKey,id,next));
     setStudioStatus('Cambios sin guardar');
   };
-  const startStudioDrag=(event:React.PointerEvent<HTMLElement>,actor:StudioActor)=>{
+  const startStudioDrag=(event:React.PointerEvent<HTMLElement>,actor:string)=>{
     if(!studioEnabled)return;
+    const origin=currentTransform(actor);
+    if(!origin)return;
     event.preventDefault();event.stopPropagation();
     setStudioSelected(actor);
     pushStudioHistory();
     studioDrag.current={
-      actor,pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,
-      origin:getStudioTransform(studioDoc,studioKey,actor)
+      actor,pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,origin,
     };
     event.currentTarget.setPointerCapture(event.pointerId);
   };
-  const moveStudioDrag=(event:React.PointerEvent<HTMLElement>,actor:StudioActor)=>{
+  const moveStudioDrag=(event:React.PointerEvent<HTMLElement>,actor:string)=>{
     const drag=studioDrag.current;
     if(!studioEnabled||!drag||drag.pointerId!==event.pointerId||drag.actor!==actor)return;
     event.preventDefault();event.stopPropagation();
     const next={...drag.origin,
       x:drag.origin.x+100*(event.clientX-drag.startX)/window.innerWidth,
-      y:drag.origin.y+100*(event.clientY-drag.startY)/window.innerHeight
+      y:drag.origin.y+100*(event.clientY-drag.startY)/window.innerHeight,
     };
-    setStudioDoc(doc=>withStudioTransform(doc,studioKey,actor,next));
+    setStudioDoc(doc=>isNativeActor(actor)?
+      withStudioTransform(doc,studioKey,actor,next):
+      withStudioExtraTransform(doc,studioKey,actor,next));
     setStudioStatus('Cambios sin guardar');
   };
-  const endStudioDrag=(event:React.PointerEvent<HTMLElement>,actor:StudioActor)=>{
+  const endStudioDrag=(event:React.PointerEvent<HTMLElement>,actor:string)=>{
     if(studioDrag.current?.pointerId!==event.pointerId||studioDrag.current?.actor!==actor)return;
     studioDrag.current=null;
     if(event.currentTarget.hasPointerCapture(event.pointerId))
       event.currentTarget.releasePointerCapture(event.pointerId);
   };
+  const saveBeforeNavigation=()=>{
+    if(!studioDirty)return true;
+    if(saveStudioDocument(studioDoc)){
+      setStudioSaved(JSON.stringify(studioDoc));return true;
+    }
+    setStudioStatus('No se pudo guardar. Exporta tu proyecto como respaldo.');
+    return false;
+  };
   const studioNavigate=(next:number)=>{
     if(next<0||next>=OPENING_BEATS.length+AFTER_DUEL_BEATS.length)return;
-    if(studioDirty&&!window.confirm('Hay cambios sin guardar. ¿Cambiar de escena sin guardarlos?'))return;
+    if(!saveBeforeNavigation())return;
     setStudioSelected(null);
     navigate('/campania/prologo?studio=1&studioStep='+next);
   };
@@ -367,39 +399,132 @@ const CampaignOpening:React.FC=()=>{
     if(saveStudioDocument(studioDoc)){
       setStudioSaved(JSON.stringify(studioDoc));
       setStudioStatus('Borrador guardado en este dispositivo');
-    }else setStudioStatus('No se pudo guardar. Exporta una copia JSON.');
+    }else setStudioStatus('No se pudo guardar. Exporta el proyecto.');
   };
-  const studioExport=()=>{
-    const blob=new Blob([JSON.stringify(studioDoc,null,2)],{type:'application/json'});
+  const studioDownload=(name:string,body:string)=>{
+    const blob=new Blob([body],{type:'application/json'});
     const url=URL.createObjectURL(blob);
     const link=document.createElement('a');
-    link.href=url;link.download='decreto-real-studio-v1.json';
+    link.href=url;link.download=name;
     document.body.appendChild(link);link.click();link.remove();
-    URL.revokeObjectURL(url);
-    setStudioStatus('Configuración exportada');
+    window.setTimeout(()=>URL.revokeObjectURL(url),1000);
+  };
+  const studioExport=async()=>{
+    try{
+      setStudioStatus('Preparando respaldo con imágenes y videos…');
+      const media=await exportStudioMedia(Object.keys(studioDoc.assets??{}));
+      studioDownload('decreto-real-studio-proyecto.json',
+        JSON.stringify({studioPackage:2,document:studioDoc,media},null,2));
+      setStudioStatus('Proyecto completo exportado con sus archivos multimedia.');
+    }catch(err){setStudioStatus(err instanceof Error?err.message:'Error al exportar.');}
   };
   const studioImport=async(file:File)=>{
     try{
-      if(file.size>1_000_000)throw new Error('Archivo demasiado grande (máximo 1 MB).');
-      const doc=parseStudioDocument(await file.text());
-      pushStudioHistory();setStudioDoc(doc);
-      setStudioStatus('Importado: revisa las escenas y pulsa Guardar');
-    }catch(err){setStudioStatus(err instanceof Error?err.message:'El archivo no es válido.');}
+      if(file.size>100_000_000)throw new Error('Archivo demasiado grande (máximo 100 MB).');
+      const payload:unknown=JSON.parse(await file.text());
+      if(payload&&typeof payload==='object'&&(payload as {studioPackage?:number}).studioPackage===2){
+        const pack=payload as {document:unknown;media:StudioPortableMedia[]};
+        const parsed=parseStudioDocument(JSON.stringify(pack.document));
+        if(!Array.isArray(pack.media))throw new Error('Faltan los recursos multimedia.');
+        await importStudioMedia(pack.media);
+        pushStudioHistory();setStudioDoc(parsed);
+      }else{
+        const parsed=parseStudioDocument(JSON.stringify(payload));
+        pushStudioHistory();setStudioDoc(parsed);
+      }
+      setStudioSelected(null);
+      setStudioStatus('Proyecto importado. Revisa las escenas y pulsa Guardar.');
+    }catch(err){setStudioStatus(err instanceof Error?err.message:'No se pudo importar.');}
   };
   const studioUndo=()=>{
     const prev=studioHistory[studioHistory.length-1];if(!prev)return;
-    setStudioDoc(prev);setStudioHistory(h=>h.slice(0,-1));setStudioStatus('Último cambio deshecho');
+    setStudioDoc(prev);setStudioHistory(h=>h.slice(0,-1));setStudioStatus('Última modificación deshecha');
   };
   const studioRestore=()=>{
     if(!studioVisibleSelection)return;
     pushStudioHistory();
-    setStudioDoc(doc=>withoutStudioTransform(doc,studioKey,studioVisibleSelection));
-    setStudioStatus('Restaurada la transformación original');
+    setStudioDoc(doc=>isNativeActor(studioVisibleSelection)?
+      withoutStudioTransform(doc,studioKey,studioVisibleSelection):
+      withStudioExtraTransform(doc,studioKey,studioVisibleSelection,{
+        x:0,y:0,scale:1,mirror:false,layer:8,visible:true,
+      }));
+    setStudioStatus('Elemento restaurado');
   };
-  const studioExit=()=>{
-    if(studioDirty&&!window.confirm('Hay cambios sin guardar. ¿Salir del editor?'))return;
-    navigate('/campania/prologo?escena='+scene);
+  const studioRemove=()=>{
+    if(!studioVisibleSelection)return;
+    pushStudioHistory();
+    setStudioDoc(doc=>isNativeActor(studioVisibleSelection)?
+      withStudioTransform(doc,studioKey,studioVisibleSelection,{
+        ...getStudioTransform(doc,studioKey,studioVisibleSelection),visible:false,
+      }):removeStudioExtra(doc,studioKey,studioVisibleSelection));
+    if(!isNativeActor(studioVisibleSelection))setStudioSelected(null);
+    setStudioStatus('Elemento oculto o retirado de esta intervención');
   };
+  const studioStoreFile=async(file:File)=>{
+    const record=await addStudioMedia(file);
+    setStudioDoc(doc=>withStudioAsset(doc,record.id,{name:record.name,mime:record.mime}));
+    return record;
+  };
+  const studioReplace=async(file:File)=>{
+    try{
+      if(!studioVisibleSelection)throw new Error('Selecciona primero un personaje o un sprite.');
+      if(!file.type.startsWith('image/'))throw new Error('Un personaje requiere una imagen PNG, WebP, JPG o GIF.');
+      const record=await studioStoreFile(file);
+      pushStudioHistory();
+      const target=studioVisibleSelection;
+      setStudioDoc(doc=>isNativeActor(target)?
+        withStudioTransform(doc,studioKey,target,{
+          ...getStudioTransform(doc,studioKey,target),assetId:record.id,visible:true,
+        }):withStudioExtraAsset(doc,studioKey,target,record.id));
+      setStudioStatus('Imagen reemplazada. Guarda el borrador para conservarla.');
+    }catch(err){setStudioStatus(err instanceof Error?err.message:'No se pudo reemplazar la imagen.');}
+  };
+  const studioAdd=async(file:File,kind:'image'|'effect')=>{
+    try{
+      if(kind==='image'&&!file.type.startsWith('image/'))
+        throw new Error('Un sprite debe ser PNG, WebP, JPG o GIF.');
+      const record=await studioStoreFile(file);
+      const item:StudioExtra={
+        id:'extra-'+crypto.randomUUID(),name:file.name.slice(0,100),assetId:record.id,kind,
+        transform:{x:0,y:0,scale:1,mirror:false,layer:kind==='effect'?9:8,visible:true},
+      };
+      pushStudioHistory();
+      setStudioDoc(doc=>addStudioExtra(doc,studioKey,item));
+      setStudioSelected(item.id);
+      setStudioStatus(kind==='effect'?'Efecto añadido. Puedes moverlo y escalarlo.':
+        'Sprite añadido. Puedes moverlo y escalarlo.');
+    }catch(err){setStudioStatus(err instanceof Error?err.message:'No se pudo añadir el archivo.');}
+  };
+  const studioBackdrop=async(file:File)=>{
+    try{
+      const record=await studioStoreFile(file);
+      pushStudioHistory();
+      setStudioDoc(doc=>withStudioSettings(doc,studioKey,{backgroundAsset:record.id}));
+      setStudioStatus('Fondo cambiado solo en esta intervención.');
+    }catch(err){setStudioStatus(err instanceof Error?err.message:'No se pudo cambiar el fondo.');}
+  };
+  const studioClearBackdrop=()=>{
+    pushStudioHistory();setStudioDoc(doc=>withStudioSettings(doc,studioKey,{backgroundAsset:undefined}));
+    setStudioStatus('Fondo original restaurado.');
+  };
+  const studioToggleBubble=()=>{
+    pushStudioHistory();
+    setStudioDoc(doc=>withStudioSettings(doc,studioKey,{
+      bubbleVisible:doc.settings?.[studioKey]?.bubbleVisible===false,
+    }));
+  };
+  const studioToggleTitle=()=>{
+    pushStudioHistory();
+    setStudioDoc(doc=>withStudioSettings(doc,studioKey,{
+      titleVisible:doc.settings?.[studioKey]?.titleVisible===false,
+    }));
+  };
+  const studioPreview=()=>{
+    if(!saveBeforeNavigation())return;
+    const currentIndex=isAfter?OPENING_BEATS.length+after:beat;
+    navigate('/campania/prologo?previewStep='+currentIndex);
+  };
+  const studioExit=studioPreview;
   const quickBubble=prologue?.scene==='arresto'&&beat===1?'¡Por favor!':
     scene==='xervias'&&speaker==='Xervias'&&beat===4?'¡Un momento!':
     scene==='desafio'&&speaker==='Domingo Quispe'&&story?.text.startsWith('¡Silencio!')?'¡Silencio!':
