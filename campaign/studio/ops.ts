@@ -4,8 +4,8 @@
  * por `z`; nunca mutan la entrada.
  */
 import {
-  STUDIO_V3_MAX_LAYERS_PER_SCENE, isStudioSceneKey, isStudioMediaId,
-  normalizeStudioLayer, sortLayers,
+  STUDIO_BUBBLE_LAYER_ID, STUDIO_V3_MAX_LAYERS_PER_SCENE, actorForLayerId, defaultLayerTransform,
+  isStudioSceneKey, isStudioMediaId, normalizeStudioLayer, sortLayers,
   type StudioAssetMeta, type StudioDocumentV3, type StudioLayer, type StudioSceneV3,
 } from './schema.ts';
 
@@ -131,3 +131,22 @@ export function withoutUnusedAssets(doc:StudioDocumentV3):StudioDocumentV3 {
 
 /** Claves de escena con alguna edición (para marcar la línea de tiempo). */
 export const editedSceneKeys = (doc:StudioDocumentV3):string[] => Object.keys(doc.scenes).sort();
+
+/** Escenas cuya composición difiere entre dos versiones del documento. */
+export function changedSceneKeys(a:StudioDocumentV3,b:StudioDocumentV3):string[] {
+  const keys=new Set([...Object.keys(a.scenes),...Object.keys(b.scenes)]);
+  return [...keys].filter(key=>a.scenes[key]!==b.scenes[key]).sort();
+}
+
+/**
+ * Capa existente o, para elementos nativos (actores, globo), una capa nueva
+ * con la transformación por defecto. Null si el id no existe en la escena.
+ */
+export function layerOrDefault(doc:StudioDocumentV3,key:string,id:string):StudioLayer|null {
+  const existing=getLayer(doc,key,id);
+  if(existing)return existing;
+  const actor=actorForLayerId(id);
+  if(actor)return {id,kind:'actor',actor,...defaultLayerTransform('actor',actor)};
+  if(id===STUDIO_BUBBLE_LAYER_ID)return {id,kind:'bubble',...defaultLayerTransform('bubble')};
+  return null;
+}

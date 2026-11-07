@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { defaultLayerTransform, emptyStudioDocumentV3, type StudioLayer } from './schema.ts';
 import {
-  copyScene, editedSceneKeys, getLayer, referencedAssetIds, sceneLayers, withAsset, withLayer,
+  changedSceneKeys, copyScene, editedSceneKeys, layerOrDefault, getLayer, referencedAssetIds, sceneLayers, withAsset, withLayer,
   withLayerPatch, withSceneSettings, withoutLayer, withoutScene, withoutUnusedAssets,
 } from './ops.ts';
 
@@ -82,4 +82,23 @@ test('unused assets are detected and pruned from the index',()=>{
   assert.deepEqual(Object.keys(withoutUnusedAssets(doc).assets??{}),[MEDIA]);
   assert.equal(withoutUnusedAssets(withoutLayer(doc,ARRESTO,'actor-madre')).assets,undefined);
   assert.throws(()=>withAsset(doc,'../x',{name:'x',mime:'image/png'}),/inválido/);
+});
+
+test('changedSceneKeys reports only the scenes touched by an edit',()=>{
+  const a=withLayer(emptyStudioDocumentV3(),ARRESTO,madre);
+  const b=withLayerPatch(a,ARRESTO,'actor-madre',{x:3});
+  const c=withLayer(b,'prologo/xervias-01',{...madre});
+  assert.deepEqual(changedSceneKeys(a,b),[ARRESTO]);
+  assert.deepEqual(changedSceneKeys(b,c),['prologo/xervias-01']);
+  assert.deepEqual(changedSceneKeys(c,c),[]);
+});
+
+test('layerOrDefault creates native actor and bubble layers on demand',()=>{
+  const blank=emptyStudioDocumentV3();
+  assert.deepEqual(layerOrDefault(blank,ARRESTO,'actor-nino'),
+    {id:'actor-nino',kind:'actor',actor:'Niño',...defaultLayerTransform('actor','Niño')});
+  assert.equal(layerOrDefault(blank,ARRESTO,'bubble')?.z,47);
+  assert.equal(layerOrDefault(blank,ARRESTO,EXTRA),null);
+  const doc=withLayer(blank,ARRESTO,{...madre,x:3});
+  assert.equal(layerOrDefault(doc,ARRESTO,'actor-madre')?.x,3);
 });

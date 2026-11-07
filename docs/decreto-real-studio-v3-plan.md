@@ -108,7 +108,7 @@ StudioLayer      = { id, x, y, scale, rotation, opacity, mirror, z, visible } & 
 |---|---|---|
 | **0. Documento** | Esta auditoría y este plan (sin cambios de código) | `docs/decreto-real-studio-v3-plan.md` |
 | **1. Fundamentos de datos** ✅ | IDs estables, `prologueScript.ts`, schema v3, migración v1/v2→v3, pruebas de migración y de corrimiento de índices | `campaign/studio/{schema,migrate,ops}.ts`, `CampaignOpening.tsx` (solo extraer datos) |
-| **2. Desacoplar** | `StudioProvider` + reducer con transacciones de deshacer/rehacer; `StageComposer` consume `SceneComposition`; quitar ~400 líneas de Studio de `CampaignOpening.tsx`; navegación sin remontar | `screens/studio/*`, `CampaignOpening.tsx`, `App.tsx` |
+| **2. Desacoplar** ✅ | `StudioProvider` + reducer con transacciones de deshacer/rehacer; `StageComposer` consume `SceneComposition`; quitar ~400 líneas de Studio de `CampaignOpening.tsx`; navegación sin remontar | `screens/studio/*`, `CampaignOpening.tsx`, `App.tsx` |
 | **3. Lienzo, coordenadas, capas y grilla** | Unidades % del escenario (arrastre medido con el rectángulo del escenario, no con `window.innerWidth`), plano de capas único, asas de escala/rotación, **grilla, ajuste magnético, ejes, márgenes de seguridad, guías inteligentes y alineación** (ver especificación abajo), selección múltiple para alinear, bloqueo de capa, fondo como capa con encuadre editable, nudges con teclado, inputs numéricos con borrador local (arregla el «-») | `campaign/studio/grid.ts`, `StageComposer`, `StudioCanvasOverlay`, `StudioGridOverlay`, CSS nuevo sin `!important` heredado |
 | **4. UX del editor** | Inspector acoplable (hoja inferior plegable, lateral en escritorio); timeline con miniaturas y marcas de editado; «aplicar a toda la escena» y «copiar de la anterior»; guardado explícito con indicador, autoguardado en borrador y `beforeunload`; Salir/Previsualizar separados; globos y texto de diálogo editables; comparar antes/después | `StudioInspector`, `StudioTimeline` |
 | **5. Multimedia robusta** | Refcount y GC de huérfanos, panel de biblioteca (reutilizar y renombrar recursos, ver tamaño), comprobación de firma, paquete `.zip` sin dependencias, importación con «fusionar/reemplazar» confirmada | `campaign/studio/{media,package}.ts` |
@@ -162,6 +162,27 @@ Implementación: la matemática pura (paso de grilla, `snapValue`, `snapRect`, a
 - `campaign/studio/ops.ts`: operaciones puras (capas, escena, fondo, título, `copyScene`, recursos usados y poda de recursos).
 - Pruebas en `campaign/prologueScript.test.ts` y `campaign/studio/*.test.ts`, incluidas en `npm test`.
 - Studio v2 sigue usando su almacenamiento actual. La fase 2 conectará el editor al documento v3.
+
+### Estado de la fase 2 (implementada)
+- **Reparto declarativo** (`campaign/studio/composition.ts`): fondo, actores, arte y globo de cada intervención se declaran por beatId; se acabaron los números mágicos (`beat===15`, `after===9`…). Una prueba con la lógica anterior transcrita como oráculo confirma resultados idénticos en las 49 intervenciones y 5 estados de arte.
+- **Historial transaccional** (`campaign/studio/history.ts`):
+  - Un arrastre o la edición de un campo cuenta como una sola entrada de deshacer; tocar para seleccionar no crea ninguna.
+  - Rehacer, `Ctrl+Z`, `Ctrl+Shift+Z` y `Ctrl+S`.
+  - El estado «sin guardar» se calcula por identidad del documento, sin `JSON.stringify` en cada render.
+- **Estado compartido** (`screens/studio/StudioContext.tsx`): documento v3, guardado en `decreto-real.studio.borradores.v3` con migración automática del borrador v2, biblioteca multimedia con carga incremental, y exportación e importación (paquete `studioPackage:3`, que también acepta los respaldos v2).
+- **`screens/studio/StageComposer.tsx`**: pinta actores, niño, capas añadidas y globo. Las coordenadas se miden en **% del escenario**: el tamaño real se publica como `--dr-stage-w/h` y el arrastre usa el rectángulo del escenario.
+- **`screens/studio/StudioInspector.tsx`**: sustituye a `DecretoRealStudioPanel` (35 props) leyendo y escribiendo a través del contexto.
+- **`CampaignOpening.tsx`**: pasa de 741 a 291 líneas, sin código del editor.
+- **Navegación sin remontar:** Studio cambia de intervención reemplazando solo el query y `App.tsx` mantiene la pantalla montada, así que se conservan el historial, los recursos multimedia y los manifiestos.
+- **Correcciones de la auditoría ya incluidas:**
+  - «Salir del editor» sale de verdad.
+  - La exportación omite los recursos que ninguna escena usa.
+  - «Restaurar» devuelve cada capa al `z` de su tipo.
+  - Deshacer un cambio de otra intervención lo indica en el estado.
+- **Provisional hasta la fase 3:** los actores siguen dentro del grupo teatral de figuras, así que el `z` del plano único se traduce al orden de v2 (`interimCssLayer`). Todavía no se puede colocar un efecto entre dos actores en pantalla, aunque el documento ya lo representa.
+- **Pruebas nuevas:**
+  - Unitarias de composición e historial.
+  - E2E: un arrastre equivale a un paso de deshacer; el historial se conserva entre intervenciones; las unidades son del escenario en 390 y en horizontal; migración del borrador v2; salir del editor.
 
 Reutilizar sin reescribir: `normalizeStudioTransform`/`parseStudioDocument` (base del saneado v3), `validateStudioMedia`/`withStore` (IndexedDB), `isCampaignQaAvailable`/`getCampaignStorage` (gating y aislamiento del progreso), el patrón de manifiestos de `prologueV2.ts`/`prologueV3.ts` y la descarga `studioDownload`.
 

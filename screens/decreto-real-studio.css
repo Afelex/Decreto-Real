@@ -1,4 +1,13 @@
-/* Decreto Real Studio v1: QA-only editor layered on top of the actual scene. */
+/* Decreto Real Studio v3: QA-only editor layered on top of the actual scene.
+   Layer offsets (--studio-x/--studio-y) are unitless percentages of the STAGE;
+   StageComposer publishes the measured stage size as --dr-stage-w/--dr-stage-h
+   (fallback: viewport, identical to the 390x844 reference). */
+.dcop-screen .dcop-studio-adjusted,.dcop-screen .dcop-studio-extra,
+.dcop-screen .dcop-studio-bubble-adjusted{
+  --dr-studio-translate:translate(
+    calc(var(--studio-x,0) * var(--dr-stage-w,100vw) / 100),
+    calc(var(--studio-y,0) * var(--dr-stage-h,100dvh) / 100));
+}
 .dcop-screen.dcop-studio-mode .dcop-scene-figures,
 .dcop-screen.dcop-studio-mode .dcop-scene-figures>div,
 .dcop-screen.dcop-studio-mode .dcop-scene-figures>div img{pointer-events:auto!important}
@@ -7,11 +16,11 @@
 .dcop-screen.dcop-studio-mode .dcop-scene-figures>div:active,
 .dcop-screen.dcop-studio-mode .dcop-child-sprite:active{cursor:grabbing}
 .dcop-screen .dcop-scene-figures>div.dcop-studio-adjusted{
-  transform:translate(var(--studio-x),var(--studio-y)) scale(var(--studio-scale)) scaleX(var(--studio-mirror))!important;
+  transform:var(--dr-studio-translate) rotate(var(--studio-rot,0deg)) scale(var(--studio-scale)) scaleX(var(--studio-mirror))!important;
   z-index:var(--studio-layer)!important;
 }
 .dcop-screen .dcop-scene-figures img.dcop-child-sprite.dcop-studio-adjusted{
-  transform:translate(var(--studio-x),var(--studio-y)) scale(var(--studio-scale)) scaleX(var(--studio-mirror))!important;
+  transform:var(--dr-studio-translate) rotate(var(--studio-rot,0deg)) scale(var(--studio-scale)) scaleX(var(--studio-mirror))!important;
   z-index:var(--studio-layer)!important;
 }
 .dcop-screen .dcop-scene-figures>div.dcop-studio-hidden,
@@ -115,7 +124,7 @@
 .dcop-screen .dcop-studio-extra{
   position:absolute;left:50%;top:48%;z-index:var(--studio-layer,8);
   width:42%;height:38%;max-width:260px;pointer-events:none;
-  transform:translate(-50%,-50%) translate(var(--studio-x),var(--studio-y))
+  transform:translate(-50%,-50%) var(--dr-studio-translate) rotate(var(--studio-rot,0deg))
     scale(var(--studio-scale)) scaleX(var(--studio-mirror));
   transform-origin:center center;
 }
@@ -163,14 +172,14 @@
 .dcop-screen .dcop-scene-figures>div.dcop-studio-adjusted.dcop-speaking,
 .dcop-screen .dcop-scene-figures>div.dcop-studio-adjusted.dcop-dim,
 .dcop-screen.dcop-studio-mode .dcop-scene-figures>div.dcop-studio-adjusted{
-  transform:translate(var(--studio-x),var(--studio-y))
+  transform:var(--dr-studio-translate) rotate(var(--studio-rot,0deg))
     scale(var(--studio-scale)) scaleX(var(--studio-mirror))!important;
   z-index:var(--studio-layer)!important;
 }
 
 /* Bubble is an authorable scene element in Studio, not baked into the background. */
 .dcop-screen .dcop-quick-bubble.dcop-studio-bubble-adjusted{
-  transform:translate(var(--studio-x),var(--studio-y))
+  transform:var(--dr-studio-translate) rotate(var(--studio-rot,0deg))
     scale(var(--studio-scale)) scaleX(var(--studio-mirror))!important;
   z-index:var(--studio-layer,7)!important;
 }
@@ -188,3 +197,5 @@
   border:1px solid #ac9269;border-radius:7px;
   background:#172336;color:#fff5e5;font:13px system-ui,sans-serif;
 }
+
+.dr-studio-actions.dr-studio-history{grid-template-columns:1fr 1fr 1.3fr}

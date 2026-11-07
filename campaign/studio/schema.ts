@@ -211,3 +211,8 @@ export function parseStudioDocumentV3(raw:string):StudioDocumentV3 {
 }
 
 export const emptyStudioDocumentV3 = ():StudioDocumentV3 => ({version:3,scenes:{}});
+
+/** Actor nativo al que corresponde un id de capa (`actor-madre` → `Madre`). */
+export function actorForLayerId(id:string):StudioActor|undefined {
+  return STUDIO_ACTORS.find(actor=>ACTOR_LAYER_IDS[actor]===id);
+}
