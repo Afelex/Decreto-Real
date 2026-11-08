@@ -670,7 +670,8 @@
         "speaker": "Domingo Quispe",
         "tone": "enojado",
         "intent": "Presentar el desafío y la arrogancia del guardia.",
-        "direction": "Domingo aparece con presencia dominante. Su provocación abre el conflicto; no tapes la moneda ni la mano."
+        "direction": "Domingo aparece con presencia dominante. Su provocación abre el conflicto; no tapes la moneda ni la mano.",
+        "spriteId": "domingo-arrogante"
       }
     },
     "tutorial/g01": {
@@ -678,7 +679,8 @@
         "speaker": "Xervias",
         "tone": "decidido",
         "intent": "Mostrar por qué Xervias arriesga su seguridad por la familia.",
-        "direction": "Respuesta de Xervias con mirada al frente; conservar el campo despejado."
+        "direction": "Respuesta de Xervias con mirada al frente; conservar el campo despejado.",
+        "spriteId": "xervias-objecion"
       }
     },
     "tutorial/g02": {
@@ -686,7 +688,8 @@
         "speaker": "Xervias",
         "tone": "sereno",
         "intent": "Explicar las dos condiciones de derrota sin interrumpir el hilo dramático.",
-        "direction": "Priorizar lectura de las reglas; cuadro de diálogo compacto, sin ocultar los indicadores de vida."
+        "direction": "Priorizar lectura de las reglas; cuadro de diálogo compacto, sin ocultar los indicadores de vida.",
+        "spriteId": "xervias-tutorial"
       },
       "dialogue": {
         "text": "Los anillos crean cartas con energía mística. Cada uno tiene 20 de vida. Pierdes al llegar a 0 o si el rival completa cuatro Impactos."
@@ -759,7 +762,9 @@
         "speaker": "Domingo Quispe",
         "tone": "enojado",
         "intent": "Demostrar que Domingo puede responder con sus propias cartas.",
-        "direction": "Situar su retrato cerca del área rival y mostrar el ataque sin obstruir los puntos de vida."
+        "direction": "Situar su retrato cerca del área rival y mostrar el ataque sin obstruir los puntos de vida.",
+        "spriteId": "domingo-invocacion",
+        "portraitMode": "show"
       }
     },
     "tutorial/g11": {
@@ -767,7 +772,8 @@
         "speaker": "Xervias",
         "tone": "sorprendido",
         "intent": "Explicar el daño recibido y anticipar el Combo ×3.",
-        "direction": "Resaltar el marcador de vida y el historial de ataques con el cuadro fuera del centro."
+        "direction": "Resaltar el marcador de vida y el historial de ataques con el cuadro fuera del centro.",
+        "spriteId": "xervias-reflexion"
       }
     },
     "tutorial/g12": {
@@ -810,7 +816,9 @@
         "speaker": "Domingo Quispe",
         "tone": "enojado",
         "intent": "Mantener la oposición activa tras el primer Impacto.",
-        "direction": "Intervención breve de Domingo, con gesto de resistencia; campo visible."
+        "direction": "Intervención breve de Domingo, con gesto de resistencia; campo visible.",
+        "spriteId": "domingo-molesto",
+        "portraitMode": "show"
       }
     },
     "tutorial/g17": {
@@ -864,7 +872,9 @@
         "speaker": "Domingo Quispe",
         "tone": "enojado",
         "intent": "Recordar que el guardia no ha sido vencido.",
-        "direction": "Réplicas cortas de Domingo para sostener la tensión narrativa."
+        "direction": "Réplicas cortas de Domingo para sostener la tensión narrativa.",
+        "spriteId": "domingo-furioso",
+        "portraitMode": "show"
       }
     },
     "tutorial/g23": {
@@ -907,7 +917,9 @@
         "speaker": "Domingo Quispe",
         "tone": "enojado",
         "intent": "Expresar frustración y resistencia ante la ventaja de Xervias.",
-        "direction": "Domingo ocupa la zona superior del tablero sin cubrir las cartas."
+        "direction": "Domingo ocupa la zona superior del tablero sin cubrir las cartas.",
+        "spriteId": "domingo-furioso",
+        "portraitMode": "show"
       }
     },
     "tutorial/g28": {
@@ -915,7 +927,8 @@
         "speaker": "Domingo Quispe",
         "tone": "preocupado",
         "intent": "Dar a Domingo una última réplica antes del desenlace.",
-        "direction": "Pausa narrativa breve con su retrato en primer plano, sin bloquear el siguiente paso."
+        "direction": "Pausa narrativa breve con su retrato en primer plano, sin bloquear el siguiente paso.",
+        "spriteId": "domingo-derrotado"
       }
     },
     "tutorial/g29": {
@@ -923,7 +936,8 @@
         "speaker": "Xervias",
         "tone": "decidido",
         "intent": "Explicar por qué el Impacto Final puede terminar el combate.",
-        "direction": "Señalar claramente la cuarta casilla y mantener el campo despejado."
+        "direction": "Señalar claramente la cuarta casilla y mantener el campo despejado.",
+        "spriteId": "xervias-energia"
       },
       "dialogue": {
         "text": "Puedo ganar sin quitarle toda la vida. El cuarto Impacto activa el Decreto Final."

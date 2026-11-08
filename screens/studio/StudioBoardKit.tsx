@@ -2,7 +2,7 @@ import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getLayer, isTutorialLayoutId, layerOrDefault, tutorialLayoutKey, withDialogue, withNarrativeCard, withLayer, withoutLayer } from '../../campaign/studio/ops';
 import { GUIDED_STEPS, type GuidedStep } from '../../campaign/guidedOpeningDuel';
-import { narrativeSpriteOptions, resolveNarrativeCardSprite } from '../../campaign/studio/narrativeSprites';
+import { narrativePortraitVisible, narrativeSpriteOptions, resolveNarrativeCardSprite } from '../../campaign/studio/narrativeSprites';
 import { tutorialCompositionMood, withMissingTutorialCompositions, withProposedTutorialComposition } from '../../campaign/studio/tutorialComposition';
 import { defaultLayerTransform, STUDIO_NARRATIVE_TONES, type StudioLayer, type StudioNarrativeTone } from '../../campaign/studio/schema';
 import { copyTransform, formatTransform, parseTransform, type CopiedTransform } from '../../campaign/studio/transformClipboard';
@@ -107,6 +107,7 @@ export function useBoardStudio(layoutRef:React.RefObject<HTMLElement|null>,guide
   const guideText=(step:GuidedStep)=>studio.viewScene('tutorial/'+step.id)?.dialogue?.text??step.text;
   const guideSpeaker=(step:GuidedStep)=>studio.viewScene('tutorial/'+step.id)?.narrative?.speaker??step.speaker;
   const guideSprite=(step:GuidedStep)=>resolveNarrativeCardSprite(studio.viewScene('tutorial/'+step.id)?.narrative,step.speaker);
+  const guidePortraitVisible=(step:GuidedStep)=>narrativePortraitVisible(step,studio.viewScene('tutorial/'+step.id)?.narrative);
   const attrs=(id:string,className:string)=>{
     const individual=Boolean(tutorialKey&&isTutorialLayoutId(id));
     const layer=(individual?tutorialScene?.layers?.find(l=>l.id===id):undefined)??
@@ -125,7 +126,7 @@ export function useBoardStudio(layoutRef:React.RefObject<HTMLElement|null>,guide
       ...(!playerPreview?(individual?dragTutorial(id):drag(id)):{}),
     };
   };
-  return {editing:studio.editing,selected:studio.selected,sceneKey,profile,attrs,guideText,guideSpeaker,guideSprite};
+  return {editing:studio.editing,selected:studio.selected,sceneKey,profile,attrs,guideText,guideSpeaker,guideSprite,guidePortraitVisible};
 }
 
 /** Lo último copiado en el tablero (se conserva entre perfiles). */
@@ -155,6 +156,7 @@ export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGu
   const narrativeSpeaker=narrative?.speaker??previewGuide.speaker;
   const narrativeTone=narrative?.tone??'neutral';
   const currentSprite=resolveNarrativeCardSprite(narrative,previewGuide.speaker);
+  const portraitMode=narrative?.portraitMode??'auto';
   const narrativeIntent=narrative?.intent??'';
   const narrativeDirection=narrative?.direction??'';
   const updateNarrative=(patch:Parameters<typeof withNarrativeCard>[2],message='Ficha narrativa modificada')=>
@@ -224,6 +226,14 @@ export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGu
               {STUDIO_NARRATIVE_TONES.map(t=><option key={t} value={t}>{t.charAt(0).toUpperCase()+t.slice(1)}</option>)}
             </select>
           </label>
+          <label className="dr-studio-label">Aparición del personaje en esta intervención
+            <select data-testid="studio-narrative-portrait-mode" value={portraitMode}
+              onChange={e=>updateNarrative({portraitMode:e.target.value==='auto'?null:e.target.value as 'show'|'hide'})}>
+              <option value="auto">Automática · mostrar en pausas, ocultar durante acciones</option>
+              <option value="show">Mostrar ilustración también durante el combate</option>
+              <option value="hide">Ocultar ilustración (mantener solo el diálogo)</option>
+            </select>
+          </label>
           <label className="dr-studio-label">Ilustración narrativa (solo recursos existentes)
             <select data-testid="studio-narrative-sprite" value={narrative?.spriteId??''}
               onChange={e=>updateNarrative({spriteId:e.target.value||null})}>
@@ -232,6 +242,26 @@ export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGu
                 <option key={sprite.id} value={sprite.id}>{sprite.label}</option>)}
             </select>
           </label>
+          {narrativeSpriteOptions(narrativeSpeaker).length>0&&
+            <details className="dr-studio-sprite-gallery" data-testid="studio-sprite-gallery">
+              <summary>Elegir desde galería visual · {narrativeSpriteOptions(narrativeSpeaker).length} ilustraciones</summary>
+              <div className="dr-studio-sprite-grid">
+                <button type="button" className={!narrative?.spriteId?'is-selected':''}
+                  data-testid="studio-sprite-auto" aria-pressed={!narrative?.spriteId}
+                  onClick={()=>updateNarrative({spriteId:null})}>
+                  <span>Automática</span>
+                  <small>Según emoción</small>
+                </button>
+                {narrativeSpriteOptions(narrativeSpeaker).map(sprite=>
+                  <button type="button" key={sprite.id} className={narrative?.spriteId===sprite.id?'is-selected':''}
+                    data-testid={'studio-sprite-option-'+sprite.id}
+                    aria-pressed={narrative?.spriteId===sprite.id}
+                    onClick={()=>updateNarrative({spriteId:sprite.id})}>
+                    <img src={import.meta.env.BASE_URL+sprite.path} alt="" loading="lazy"/>
+                    <span>{sprite.label}</span>
+                  </button>)}
+              </div>
+            </details>}
           {currentSprite&&<div className="dr-studio-narrative-sprite-preview" data-testid="studio-narrative-sprite-preview">
             <img src={import.meta.env.BASE_URL+currentSprite.path} alt={'Ilustración de '+narrativeSpeaker}
               loading="lazy"/>

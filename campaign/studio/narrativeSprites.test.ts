@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {
   NARRATIVE_SPRITES,isNarrativeSpriteId,narrativeSpriteOptions,
-  resolveNarrativeCardSprite,resolveNarrativeSprite,
+  resolveNarrativeCardSprite,resolveNarrativeSprite,narrativePortraitVisible,
 } from './narrativeSprites.ts';
 import {GUIDED_STEPS} from '../guidedOpeningDuel.ts';
 import {normalizeStudioDocumentV3} from './schema.ts';
@@ -52,4 +52,48 @@ test('only registered, same-character overrides are accepted; unsafe ids are dis
   assert.equal(resolveNarrativeCardSprite({speaker:'Sistema',tone:'enojado',spriteId:'domingo-furioso'},'Sistema'),undefined);
   const restored=normalizeStudioDocumentV3(JSON.parse(JSON.stringify(doc)));
   assert.deepEqual(restored,doc);
+});
+
+test('director audiovisual muestra retratos solo donde corresponde y permite overrides',()=>{
+  const step={speaker:'Xervias'};
+  assert.equal(narrativePortraitVisible(step),true);
+  assert.equal(narrativePortraitVisible({...step,action:'attack1'}),false);
+  assert.equal(narrativePortraitVisible({...step,action:'attack1'},{speaker:'Xervias',portraitMode:'show'}),true);
+  assert.equal(narrativePortraitVisible(step,{speaker:'Xervias',portraitMode:'hide'}),false);
+  assert.equal(narrativePortraitVisible({...step,action:'attack1'},{speaker:'Xervias',portraitMode:'auto'}),false);
+  assert.equal(narrativePortraitVisible({speaker:'Sistema'},{speaker:'Sistema',portraitMode:'show'}),false);
+  assert.equal(narrativePortraitVisible(step,{speaker:'Domingo Quispe',portraitMode:'show'}),true);
+});
+
+test('dirección artística inicial está publicada y solo usa ilustraciones aprobadas',()=>{
+  const doc=normalizeStudioDocumentV3(JSON.parse(readFileSync(
+    new URL('../../public/studio/composiciones.json',import.meta.url),'utf8')));
+  const directed=['g00','g01','g02','g10','g11','g16','g22','g27','g28','g29'];
+  for(const id of directed){
+    const step=GUIDED_STEPS.find(s=>s.id===id)!;
+    const card=doc.scenes['tutorial/'+id]?.narrative;
+    assert.ok(card?.spriteId,'Falta ilustración elegida: '+id);
+    assert.equal(resolveNarrativeCardSprite(card,step.speaker)?.id,card.spriteId);
+  }
+  for(const id of ['g10','g16','g22','g27']){
+    const step=GUIDED_STEPS.find(s=>s.id===id)!;
+    const card=doc.scenes['tutorial/'+id]?.narrative;
+    assert.equal(step.action?.startsWith('rival'),true);
+    assert.equal(card?.portraitMode,'show');
+    assert.equal(narrativePortraitVisible(step,card),true);
+  }
+  assert.equal(doc.scenes['tutorial/g05'].narrative?.portraitMode,undefined);
+  assert.equal(narrativePortraitVisible(GUIDED_STEPS[5],doc.scenes['tutorial/g05']?.narrative),false);
+});
+
+test('documentos importados ignoran modo de aparición desconocido y conservan selección válida',()=>{
+  const doc=normalizeStudioDocumentV3({version:3,scenes:{
+    'tutorial/g00':{narrative:{speaker:'Domingo Quispe',spriteId:'domingo-arrogante',portraitMode:'show'}},
+    'tutorial/g05':{narrative:{speaker:'Xervias',portraitMode:'hide'}},
+    'tutorial/g06':{narrative:{speaker:'Xervias',portraitMode:'always-and-run-code'}},
+  }});
+  assert.equal(doc.scenes['tutorial/g00'].narrative?.portraitMode,'show');
+  assert.equal(doc.scenes['tutorial/g05'].narrative?.portraitMode,'hide');
+  assert.equal(doc.scenes['tutorial/g06'].narrative?.portraitMode,undefined);
+  assert.deepEqual(normalizeStudioDocumentV3(JSON.parse(JSON.stringify(doc))),doc);
 });

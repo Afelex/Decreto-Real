@@ -272,9 +272,9 @@ test('Studio selects a real narrative expression and the guided portrait follows
   const sprite=page.getByTestId('studio-narrative-sprite');
   const preview=page.getByTestId('studio-narrative-sprite-preview').locator('img');
   const actor=page.locator('.dr-royal-guided-actor.is-rival img');
-  await expect(sprite).toHaveValue('');
-  await expect(preview).toHaveAttribute('src',/domingo_03_furioso\.webp/);
-  await expect(actor).toHaveAttribute('src',/domingo_03_furioso\.webp/);
+  await expect(sprite).toHaveValue('domingo-arrogante');
+  await expect(preview).toHaveAttribute('src',/domingo_02_arrogante\.webp/);
+  await expect(actor).toHaveAttribute('src',/domingo_02_arrogante\.webp/);
   await sprite.selectOption('domingo-burlon');
   await expect(preview).toHaveAttribute('src',/domingo_03_burlon\.webp/);
   await expect(actor).toHaveAttribute('src',/domingo_03_burlon\.webp/);
@@ -323,4 +323,47 @@ test('editorial review walks all 32 steps and updates warnings after editing',as
   await expect(page.getByTestId('studio-guide-text')).toHaveValue('Arrastra la carta de Ataque al campo.');
   await page.getByTestId('studio-narrative-review').locator('summary').click();
   await expect(page.getByTestId('studio-reading-current')).not.toContainText('No menciona claramente la acción requerida');
+});
+
+
+test('phase 2 sprite gallery and visibility direction work per guided scene without editing combat',async({page},info)=>{
+  test.skip(only(['mobile-390'])(info.project.name),'Narrative portrait direction');
+  await openBoard(page);
+  const step=page.getByTestId('studio-guide-step');
+  await step.selectOption('5');
+  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  const mode=page.getByTestId('studio-narrative-portrait-mode');
+  await expect(mode).toHaveValue('auto');
+  await expect(page.locator('.dr-royal-guided-actor.is-player')).toHaveCount(0);
+  await mode.selectOption('show');
+  await expect(page.locator('.dr-royal-guided-actor.is-player img')).toHaveAttribute('src',/xervias_/);
+  await page.getByTestId('studio-sprite-gallery').locator('summary').click();
+  await expect(page.getByTestId('studio-sprite-option-xervias-energia')).toBeVisible();
+  await page.getByTestId('studio-sprite-option-xervias-energia').click();
+  await expect(page.locator('.dr-royal-guided-actor.is-player img')).toHaveAttribute('src',/xervias_05_anillo_energia\.png/);
+  await mode.selectOption('hide');
+  await expect(page.locator('.dr-royal-guided-actor.is-player')).toHaveCount(0);
+  await mode.selectOption('show');
+  await page.getByTestId('studio-save').click();
+  await page.reload();
+  await step.selectOption('5');
+  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  await expect(page.getByTestId('studio-narrative-portrait-mode')).toHaveValue('show');
+  await expect(page.getByTestId('studio-narrative-sprite')).toHaveValue('xervias-energia');
+  await expect(page.locator('.dr-royal-guided-actor.is-player img')).toHaveAttribute('src',/xervias_05_anillo_energia\.png/);
+  await step.selectOption('6');
+  await expect(page.getByTestId('studio-narrative-portrait-mode')).toHaveValue('auto');
+});
+
+
+test('published rival reactions display chosen narrative art during guided actions',async({page},info)=>{
+  test.skip(only(['mobile-390'])(info.project.name),'Story reaction art');
+  await openBoard(page);
+  await page.getByTestId('studio-guide-step').selectOption('10');
+  await expect(page.getByTestId('campaign-guided-coach')).toContainText('Domingo Quispe');
+  await expect(page.locator('.dr-royal-guided-actor.is-rival img')).toHaveAttribute('src',/domingo_08_invocacion_combate\.png/);
+  await page.getByTestId('studio-guide-step').selectOption('16');
+  await expect(page.locator('.dr-royal-guided-actor.is-rival img')).toHaveAttribute('src',/domingo_02_molesto\.webp/);
+  await page.getByTestId('studio-guide-step').selectOption('5');
+  await expect(page.locator('.dr-royal-guided-actor.is-player')).toHaveCount(0);
 });

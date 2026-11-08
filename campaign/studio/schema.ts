@@ -86,6 +86,8 @@ export const STUDIO_NARRATIVE_TONES = [
   'neutral','decidido','preocupado','sorprendido','enojado','sereno',
 ] as const;
 export type StudioNarrativeTone = (typeof STUDIO_NARRATIVE_TONES)[number];
+/** Aparición de la ilustración narrativa, independiente del texto y del duelo. */
+export type StudioPortraitMode='auto'|'show'|'hide';
 export type StudioNarrativeCard = {
   /** Personaje mostrado en el diálogo; no altera el actor ni su mazo. */
   speaker?:string;
@@ -93,6 +95,8 @@ export type StudioNarrativeCard = {
   tone?:StudioNarrativeTone;
   /** Sprite publicado y autorizado; omitirlo usa la expresión automática. */
   spriteId?:string;
+  /** Automático: mostrar en diálogo, ocultar mientras se juega una carta. */
+  portraitMode?:StudioPortraitMode;
   /** Por qué existe la intervención en el relato. */
   intent?:string;
   /** Notas de composición que no se muestran al jugador. */
@@ -266,6 +270,7 @@ export function normalizeNarrativeCard(value:unknown):StudioNarrativeCard|null {
   if((STUDIO_NARRATIVE_TONES as readonly string[]).includes(value.tone as string))
     card.tone=value.tone as StudioNarrativeTone;
   if(isNarrativeSpriteId(value.spriteId))card.spriteId=value.spriteId;
+  if(value.portraitMode==='show'||value.portraitMode==='hide')card.portraitMode=value.portraitMode;
   return Object.keys(card).length?card:null;
 }
 export function normalizeDialogue(value:unknown):StudioDialogue|null {
