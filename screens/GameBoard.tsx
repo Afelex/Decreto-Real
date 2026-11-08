@@ -1008,9 +1008,8 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
         const id='native-tablero-tutorial-'+(side==='rival'?'rival':'jugador');
         const preview=board.editing&&board.selected===id;
         const current=previewNarrativeStep;
-        const visibleWithDialogue=Boolean(current&&!current.action&&
-          (board.guideSpeaker(current)==='Domingo Quispe')===(side==='rival')&&
-          board.guideSpeaker(current)!=='Sistema');
+        const visibleWithDialogue=Boolean(current&&board.guidePortraitVisible(current)&&
+          (board.guideSpeaker(current)==='Domingo Quispe')===(side==='rival'));
         if(!preview&&!visibleWithDialogue)return null;
         const sprite=current?board.guideSprite(current):undefined;
         const speaker=side==='rival'?'Domingo Quispe':'Xervias';
