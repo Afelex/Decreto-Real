@@ -610,3 +610,31 @@ test('one audiovisual timeline previews all 32 guided beats and saves quick edit
   await page.getByTestId('studio-av-filter').selectOption('all');
   await expect(page.getByTestId('studio-av-step')).toHaveCount(32);
 });
+
+
+test('scene audio audition starts on click and stops when switching guided intervention',async({page},info)=>{
+  test.skip(only(['mobile-390'])(info.project.name),'Manual audiovisual audition');
+  await openBoard(page);
+  await page.getByTestId('studio-guide-step').selectOption('0');
+  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  const audition=page.getByTestId('studio-audio-audition');
+  const start=page.getByTestId('studio-audition-start');
+  const stop=page.getByTestId('studio-audition-stop');
+  await expect(audition).toBeVisible();
+  await expect(start).toBeEnabled();
+  await expect(stop).toBeDisabled();
+  await start.click();
+  await expect(stop).toBeEnabled();
+  await expect(start).toBeDisabled();
+  await expect(page.getByTestId('studio-audition-status')).toContainText('s');
+  await stop.click();
+  await expect(start).toBeEnabled();
+  await expect(stop).toBeDisabled();
+  await expect(page.getByTestId('studio-audition-status')).toContainText('detenida');
+  await start.click();
+  await page.getByTestId('studio-guide-step').selectOption('1');
+  await expect(start).toBeEnabled();
+  await expect(stop).toBeDisabled();
+  await expect(page.getByTestId('studio-audition-status')).toContainText('Listo para escuchar');
+  await expect(page.getByTestId('campaign-guided-coach')).toContainText('2/32');
+});
