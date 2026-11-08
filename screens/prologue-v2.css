@@ -134,10 +134,10 @@
 .dcop-screen .dr-royal-character-frame{
   /* The two fixed HUD frames retain matched size, and never contain full-body art. */
   width:auto!important;
-  height:clamp(82px,13dvh,120px)!important;
-  max-height:120px!important;
+  height:clamp(105px,15dvh,150px)!important;
+  max-height:150px!important;
   min-width:0!important;
-  max-width:80px!important;
+  max-width:105px!important;
   aspect-ratio:2/3!important;
 }
 .dcop-screen .dr-royal-character-frame > img:first-child{
@@ -146,26 +146,25 @@
 .dcop-screen .dr-royal-character.player,
 .dcop-screen .dr-royal-character{justify-content:center}
 .dcop-screen .dr-royal-guided-actor{
-  position:absolute;z-index:55;pointer-events:none;width:clamp(70px,20vw,130px);
-  height:clamp(100px,22dvh,190px);overflow:hidden;
+  position:absolute;z-index:55;pointer-events:none;width:clamp(110px,36vw,210px);
+  height:clamp(165px,28dvh,265px);overflow:hidden;
   filter:drop-shadow(0 5px 12px #000d);
 }
 .dcop-screen .dr-royal-guided-actor img{width:100%;height:100%;object-fit:contain;object-position:top center}
 .dcop-screen .dr-royal-guided-actor.is-rival{top:16%;right:0}
 .dcop-screen .dr-royal-guided-actor.is-player{bottom:22%;left:0}
-.dcop-screen .dr-royal-story-coach.is-rival{
-  top:clamp(115px,20dvh,205px);bottom:auto;
-  left:12%;right:8%;max-width:350px;
-}
+/* Cuadro de guía por encima de las cartas jugables, nunca sobre la mano.
+   Ambas voces comparten zona segura; Studio permite moverlas. */
+.dcop-screen .dr-royal-story-coach.is-rival,
 .dcop-screen .dr-royal-story-coach.is-player{
-  bottom:clamp(142px,26dvh,240px);top:auto;
-  left:19%;right:7%;max-width:330px;
+  top:clamp(152px,19dvh,205px);bottom:auto;
+  left:6%;right:6%;max-width:380px;
 }
 @media(max-height:650px){
   .dcop-screen{--dcop-story-panel-height:clamp(150px,35dvh,185px)}
   .dcop-screen .dcop-scene-figures{top:68px;bottom:calc(var(--dcop-story-panel-height) - var(--dcop-actor-panel-overlap))}
   .dcop-screen .dr-royal-guided-actor.is-player{bottom:26%}
-  .dcop-screen .dr-royal-story-coach.is-player{bottom:24%}
+  .dcop-screen .dr-royal-story-coach.is-player{top:clamp(132px,24dvh,178px);bottom:auto}
 }
 @media(prefers-reduced-motion:reduce){
   .dcop-counter-invocation img{animation:none!important}
