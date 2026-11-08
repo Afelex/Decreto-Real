@@ -124,6 +124,20 @@ Estas fichas se almacenan en `scenes["tutorial/g11"].narrative`; el diálogo de 
 
 Por ahora, la ficha y los retoques siguen el flujo de publicación segura por ZIP y PR. La selección de retratos por emoción, animaciones, audio, sincronización entre dispositivos y publicación directa todavía son trabajos de las siguientes fases.
 
+### Primeras composiciones de la historia — Fase 1
+El repositorio incluye una **primera propuesta visual para las 32 intervenciones**, en **móvil vertical, horizontal y escritorio** (96 composiciones por paso y perfil). No son pantallas definitivas: están pensadas para que puedas revisar los encuadres y corregir detalles.
+
+El **tipo de intervención** (diálogo, ataque, réplica, moneda, combo o desenlace) y el **personaje que habla** determinan una posición y escala inicial para el cuadro narrativo; en pausas aparecen también las ilustraciones de Xervias o Domingo. Las fases futuras enlazarán las emociones con sprites y audio. En acciones donde debes tocar cartas, el diálogo es más compacto y **no bloquea los gestos del combate**. Al seleccionar una intervención en Studio, se muestran conjuntamente las piezas de esa intervención y no solo el elemento seleccionado.
+
+Dos operaciones adicionales están disponibles en **Studio · Tablero → Composición narrativa**:
+
+- **✦ Completar 32 pasos**: inserta solo las propuestas que faltan en el perfil actual. Conserva las posiciones que ya hayas editado y ofrece Deshacer.
+- **↺ Rehacer este paso**: sustituye expresamente las propuestas de la intervención seleccionada y del perfil actual, sin alterar otros pasos. Sirve para volver a empezar cuando una escena haya quedado desordenada. También puede deshacerse.
+
+Las propuestas se guardan en `scenes["tutorial/g11-movil"].layers`, no en las reglas de combate. Al actualizar desde un borrador móvil antiguo, las **capas individuales ya modificadas** y sus **posiciones generales del tablero** tienen prioridad sobre las propuestas nuevas. Se mantienen también los 47 ajustes previos del prólogo y tablero.
+
+**Limitaciones actuales:** es una composición automática inicial, no un encuadre probado visualmente en cada teléfono. Los textos extensos, las animaciones, el audio y los retratos específicos por emoción requieren ajustes y las siguientes fases. «Guardar» sigue siendo local hasta exportar y publicar; no borres tu borrador antes de probar.
+
 ## Otras pantallas de la historia
 Abre **☷ Otras pantallas** (o `#/studio/escenas`) y elige una conversación tras victoria, la entrada o liberación de una región, la crónica, el epílogo o los créditos. En cada una puedes cambiar los textos (con **negrita**), el rótulo, el fondo y añadir sprites o efectos, y marcar textos o capas como «solo desarrollador». Se abren con una partida de prueba: tu partida real no cambia.
 
