@@ -536,3 +536,40 @@ test('one action shares narrative music with four following beats without overri
   await page.getByTestId('studio-narrative-card').locator('summary').click();
   await expect(chooser).toHaveValue(selected);
 });
+
+
+test('narrative audio timeline is editable, saved and isolated between guided beats',async({page},info)=>{
+  test.skip(only(['mobile-390'])(info.project.name),'Narrative audio timeline');
+  await openBoard(page);
+  await page.getByTestId('studio-guide-step').selectOption('11');
+  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  await page.getByTestId('studio-audio-timeline').locator('summary').click();
+  const mode=page.getByTestId('studio-music-cue-mode');
+  const musicStart=page.getByTestId('studio-musicStartDelayMs');
+  const musicStop=page.getByTestId('studio-musicStopAfterMs');
+  const effectStart=page.getByTestId('studio-soundDelayMs');
+  const effectCut=page.getByTestId('studio-soundMaxDurationMs');
+  await expect(mode).toHaveValue('change');
+  await expect(effectStart).toHaveValue('0');
+  await mode.selectOption('continue');
+  await musicStart.selectOption('1000');
+  await musicStop.selectOption('5000');
+  await effectStart.selectOption('500');
+  await effectCut.selectOption('1500');
+  await expect(page.getByTestId('studio-audio-timeline-summary')).toContainText('La música comienza a los 1 s');
+  await page.getByTestId('studio-save').click();
+  await page.reload();
+  await page.getByTestId('studio-guide-step').selectOption('11');
+  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  await page.getByTestId('studio-audio-timeline').locator('summary').click();
+  await expect(mode).toHaveValue('continue');
+  await expect(musicStart).toHaveValue('1000');
+  await expect(musicStop).toHaveValue('5000');
+  await expect(effectStart).toHaveValue('500');
+  await expect(effectCut).toHaveValue('1500');
+  await page.getByTestId('studio-guide-step').selectOption('12');
+  await expect(mode).toHaveValue('change');
+  await expect(effectStart).toHaveValue('0');
+  await page.getByTestId('studio-guide-step').selectOption('11');
+  await expect(mode).toHaveValue('continue');
+});

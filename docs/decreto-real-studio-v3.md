@@ -214,6 +214,21 @@ En **Ficha narrativa → Audio narrativo**, después de escoger una canción rea
 
 Este motor de reutilización también funciona sobre claves de escenas de futuros capítulos; el panel visual disponible en este hito es el del duelo tutorial. La galería y la publicación directa entre dispositivos continúan como tareas pendientes. Los temas de Suno siguen sin estar incluidos hasta que sean importados y publicados.
 
+### Temporización precisa del audio por intervención — Fase 2
+Cada ficha del duelo guiado incluye un panel plegado **Audio narrativo → Temporización del sonido**. Puedes indicar:
+
+- **Acción de la música**: cambiar a la canción de esta intervención, continuar la canción anterior sin reiniciarla o detenerla. Se mantienen los fundidos de 700 ms cuando cambia de pista.
+- **Inicio de música**: inmediato o con retraso de 0,25–3 segundos después de aparecer el diálogo.
+- **Duración de música**: sin límite o detenerla 2–30 segundos después de que comience. Si la intervención termina antes, el temporizador queda cancelado: nunca detiene la música de la escena siguiente.
+- **Inicio del efecto**: inmediato o con retraso de 0,25–3 segundos desde que aparece el diálogo.
+- **Duración máxima del efecto**: natural o recortar a los 0,25–3 segundos. Si el jugador avanza, se cancela un efecto pendiente y se detiene el que esté limitado por duración.
+
+Los valores se guardan en `narrative.musicCueMode`, `.musicStartDelayMs`, `.musicStopAfterMs`, `.soundDelayMs` y `.soundMaxDurationMs`. El formato sigue siendo Studio v3 y los documentos anteriores se leen sin cambios; el comportamiento por defecto es **comenzar inmediatamente y no recortar el sonido**.
+
+La **vista previa de DRStudio no lanza música ni efectos automáticamente** al navegar por los pasos. Los horarios se aplican en el duelo guiado real, nunca modifican las acciones obligatorias ni la IA. El navegador puede exigir una interacción del jugador para autorizar la reproducción y los controles de sonido generales continúan teniendo prioridad.
+
+Este hito no implementa todavía una línea temporal gráfica multicanal, mezcla profesional ni sincronización al nivel de fotogramas.
+
 ## Otras pantallas de la historia
 Abre **☷ Otras pantallas** (o `#/studio/escenas`) y elige una conversación tras victoria, la entrada o liberación de una región, la crónica, el epílogo o los créditos. En cada una puedes cambiar los textos (con **negrita**), el rótulo, el fondo y añadir sprites o efectos, y marcar textos o capas como «solo desarrollador». Se abren con una partida de prueba: tu partida real no cambia.
 

@@ -12,6 +12,8 @@
  */
 import { STUDIO_ACTORS, type StudioActor, type StudioAssetMeta } from '../studioLayout.ts';
 import { isNarrativeSpriteId } from './narrativeSprites.ts';
+import {AUDIO_MUSIC_CUE_MODES, AUDIO_TIMING_PRESETS,validAudioTime,
+  type AudioMusicCueMode} from './audioTimeline.ts';
 import { STUDIO_NARRATIVE_MUSIC_MODES, STUDIO_NARRATIVE_SOUND_CUES,
   type StudioNarrativeMusicMode, type StudioNarrativeSoundCue } from './narrativeAudio.ts';
 
@@ -116,6 +118,16 @@ export type StudioNarrativeCard = {
   soundCue?:StudioNarrativeSoundCue;
   /** Canción MP3/WAV de la biblioteca compartida: ID, nunca URL externa. */
   musicAssetId?:string;
+  /** Dirección temporal: cambiar, continuar o detener la música del paso previo. */
+  musicCueMode?:AudioMusicCueMode;
+  /** Tiempo desde que aparece el diálogo hasta empezar la música. */
+  musicStartDelayMs?:number;
+  /** Tiempo desde el inicio de música hasta pausarla (0: sin límite). */
+  musicStopAfterMs?:number;
+  /** Tiempo desde que aparece el diálogo hasta disparar su efecto. */
+  soundDelayMs?:number;
+  /** Recorta solamente el efecto sonoro (0: duración natural). */
+  soundMaxDurationMs?:number;
   /** Por qué existe la intervención en el relato. */
   intent?:string;
   /** Notas de composición que no se muestran al jugador. */
@@ -299,6 +311,12 @@ export function normalizeNarrativeCard(value:unknown,
     card.musicMode=value.musicMode as StudioNarrativeMusicMode;
   if((STUDIO_NARRATIVE_SOUND_CUES as readonly string[]).includes(value.soundCue as string))
     card.soundCue=value.soundCue as StudioNarrativeSoundCue;
+  if((AUDIO_MUSIC_CUE_MODES as readonly string[]).includes(value.musicCueMode as string))
+    card.musicCueMode=value.musicCueMode as AudioMusicCueMode;
+  for(const key of Object.keys(AUDIO_TIMING_PRESETS) as (keyof typeof AUDIO_TIMING_PRESETS)[]){
+    const ms=validAudioTime(key,value[key]);
+    if(ms!==undefined&&ms!==0)card[key]=ms;
+  }
   if(value.portraitMode==='show'||value.portraitMode==='hide')card.portraitMode=value.portraitMode;
   if((STUDIO_PORTRAIT_MOTIONS as readonly string[]).includes(value.enterMotion as string))
     card.enterMotion=value.enterMotion as StudioPortraitMotion;

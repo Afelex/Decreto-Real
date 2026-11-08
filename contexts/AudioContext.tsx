@@ -23,7 +23,8 @@ interface AudioContextType {
     musicEnabled: boolean;
     toggleSfx: () => void;
     toggleMusic: () => void;
-    playSound: (type: SoundType) => void;
+    /** Devuelve un control opcional para recortar efectos con duración editorial. */
+    playSound: (type: SoundType) => void|(()=>void);
     /** Modifica solo la pista de fondo existente. El ajuste global siempre prevalece. */
     setNarrativeMusicMode: (mode: StudioNarrativeMusicMode) => void;
     /** Selecciona una pista local/publicada del editor, null restaura música base. */
@@ -78,7 +79,7 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     const toggleSfx = () => setSfxEnabled((prev: boolean) => !prev);
     const toggleMusic = () => setMusicEnabled((prev: boolean) => !prev);
 
-    const playSound = (type: SoundType) => {
+    const playSound = (type: SoundType):void|(()=>void) => {
         if (!sfxEnabled) return;
 
         const url = SOUNDS[type];
@@ -93,6 +94,7 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
             }
 
             audio.play().catch(e => console.warn("Audio play blocked", e));
+            return ()=>{ audio.pause();audio.currentTime=0; };
         }
     };
 
