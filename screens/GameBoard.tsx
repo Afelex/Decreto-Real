@@ -140,6 +140,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   // Studio · Tablero: ajustes visuales por perfil de pantalla (solo QA edita).
   const boardLayoutRef = React.useRef<HTMLDivElement | null>(null);
   const [studioGuidePreview,setStudioGuidePreview] = useState(0);
+  const [playerReview,setPlayerReview] = useState(false);
   const [studioParams]=useSearchParams();
   const { playSound, sfxEnabled, musicEnabled, toggleSfx, toggleMusic } = useAudio();
 
@@ -172,7 +173,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   // Ambos consumen el MISMO documento de composición publicado de Studio.
   const studioStep=studioParams.get('studio')==='1'
     ? GUIDED_STEPS[studioGuidePreview]?.id : currentGuide?.id;
-  const board = useBoardStudio(boardLayoutRef,studioStep);
+  const board = useBoardStudio(boardLayoutRef,studioStep,playerReview);
   // La vista previa muestra la escena COMPLETA, sin jugar sus acciones.
   const previewNarrativeStep=board.editing?GUIDED_STEPS[studioGuidePreview]:currentGuide;
   const previewNarrativeAction=board.editing?previewNarrativeStep?.action:undefined;
@@ -711,7 +712,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const endTurnUnavailable = (guidedOpening && !expectedGuideAction?.startsWith('end')) || phase !== 'PLAYER_TURN' || !!storyMoment || showSpecialSelection || !!comboAnnouncement || !!mysticComboAnnouncement || isMenuOpen || !!cardAnnouncement || announcementBusy.current;
 
   const Board = (
-    <div ref={boardLayoutRef} className={`dr-classic-screen dr-royal-screen${board.editing ? ' dr-royal-tutorial-studio' : ''} bg-[#050505] font-body w-full overflow-hidden select-none flex flex-col relative text-white ${shakeScreen ? 'animate-shake' : ''}`} style={{ width: 'min(100vw, 430px)', height: '100dvh' }}>
+    <div ref={boardLayoutRef} className={`dr-classic-screen dr-royal-screen${board.editing ? ' dr-royal-tutorial-studio' : ''}${playerReview ? ' dr-studio-player-review' : ''} bg-[#050505] font-body w-full overflow-hidden select-none flex flex-col relative text-white ${shakeScreen ? 'animate-shake' : ''}`} style={{ width: 'min(100vw, 430px)', height: '100dvh' }}>
       <style>{`
         /* Animaciones para el botón de fuego */
         @keyframes fire-glow { 0%, 100% { box-shadow: 0 0 15px #f59e0b, 0 0 30px #f97316; } 50% { box-shadow: 0 0 25px #fbbf24, 0 0 50px #ef4444; } }
@@ -852,7 +853,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
         </div>
       )}
 
-      {(showSpecialSelection || board.editing && (board.selected==='native-tablero-combo-menu'||previewNarrativeAction?.startsWith('combo'))) && (
+      {(showSpecialSelection || board.editing && ((!playerReview&&board.selected==='native-tablero-combo-menu')||previewNarrativeAction?.startsWith('combo'))) && (
         <ComboChoicePanel level={showSpecialSelection?comboChoice:previewNarrativeAction==='combo3'?3:2} preview={board.editing}
           panelProps={board.attrs('native-tablero-combo-menu','')}
           onDamage={() => {
@@ -935,7 +936,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
               </button>;
             })}
           </div>
-          {((!board.editing&&playerGauge >= 2 && phase === 'PLAYER_TURN') || (board.editing&&(board.selected==='native-tablero-combo'||previewNarrativeAction?.startsWith('combo')))) && <div key={board.editing?'studio-preview':playerGauge} {...board.attrs('native-tablero-combo', `dr-royal-combo combo-${board.editing&&previewNarrativeAction==='combo3'?3:playerGauge>=2?playerGauge:2}`)}
+          {((!board.editing&&playerGauge >= 2 && phase === 'PLAYER_TURN') || (board.editing&&((!playerReview&&board.selected==='native-tablero-combo')||previewNarrativeAction?.startsWith('combo')))) && <div key={board.editing?'studio-preview':playerGauge} {...board.attrs('native-tablero-combo', `dr-royal-combo combo-${board.editing&&previewNarrativeAction==='combo3'?3:playerGauge>=2?playerGauge:2}`)}
             aria-label={`Combo por ${board.editing&&previewNarrativeAction==='combo3'?3:playerGauge>=2?playerGauge:2}`} role="status"><strong>COMBO</strong><b>×{board.editing&&previewNarrativeAction==='combo3'?3:playerGauge>=2?playerGauge:2}</b><em>de {{ ATTACK: 'Ataque', DEFENSE: 'Defensa', IMPACT: 'Impacto', ORDER: 'Orden' }[playerLastType ?? 'ATTACK']}</em></div>}
         </section>
 
@@ -990,8 +991,21 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
           </button>
         </footer>
       </div>
-      <StudioBoardPanel sceneKey={board.sceneKey} profile={board.profile}
-        previewGuideIndex={studioGuidePreview} onPreviewGuideIndex={setStudioGuidePreview}/>
+      {board.editing&&!playerReview&&<StudioBoardPanel sceneKey={board.sceneKey} profile={board.profile}
+        previewGuideIndex={studioGuidePreview} onPreviewGuideIndex={setStudioGuidePreview}
+        rootRef={boardLayoutRef} onReview={()=>setPlayerReview(true)}/>}
+      {board.editing&&playerReview&&<nav className="dr-studio-player-review-controls"
+        aria-label="Control de vista previa" data-testid="studio-player-review">
+        <button type="button" data-testid="studio-review-back" aria-label="Intervención anterior"
+          disabled={studioGuidePreview<=0}
+          onClick={()=>setStudioGuidePreview(i=>Math.max(0,i-1))}>‹</button>
+        <span>Vista como jugador · {studioGuidePreview+1}/32</span>
+        <button type="button" data-testid="studio-review-next" aria-label="Intervención siguiente"
+          disabled={studioGuidePreview>=GUIDED_STEPS.length-1}
+          onClick={()=>setStudioGuidePreview(i=>Math.min(GUIDED_STEPS.length-1,i+1))}>›</button>
+        <button type="button" data-testid="studio-review-close"
+          onClick={()=>setPlayerReview(false)}>Volver al editor</button>
+      </nav>}
       {dragAt && <div className={`dr-royal-drag-ghost ${playerHand.find(card => card.id === dragAt.id)?.type.toLowerCase() ?? ""}`} aria-hidden="true"
         style={{ left: dragAt.x, top: dragAt.y }}>
         <img src={playerHand.find(card => card.id === dragAt.id)?.img ?? IMG_ATTACK} alt=""/>
@@ -999,7 +1013,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
 
       {(['rival','player'] as const).map(side=>{
         const id='native-tablero-tutorial-'+(side==='rival'?'rival':'jugador');
-        const preview=board.editing&&board.selected===id;
+        const preview=board.editing&&!playerReview&&board.selected===id;
         const current=previewNarrativeStep;
         const visibleWithDialogue=Boolean(current&&!current.action&&
           (board.guideSpeaker(current)==='Domingo Quispe')===(side==='rival')&&
@@ -1039,12 +1053,12 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
       })()}
       {/* Combat cues are brief overlays; the field remains visible. */}
       {/* Studio muestra ambos rótulos para ajustarlos por separado aunque no sea su turno. */}
-      {((board.editing && board.selected!=='native-tablero-turno-jugador') || (!board.editing && turnOwner === 'PLAYER' && (phase === 'PLAYER_TURN' || phase === 'OPPONENT_TURN'))) &&
+      {((board.editing&&!playerReview && board.selected!=='native-tablero-turno-jugador') || (!board.editing && turnOwner === 'PLAYER' && (phase === 'PLAYER_TURN' || phase === 'OPPONENT_TURN'))) &&
         <TurnIndicator side="PLAYER" {...board.attrs('native-tablero-turno-jugador', '')}/>}
-      {((board.editing && board.selected!=='native-tablero-turno-rival') || (!board.editing && turnOwner === 'OPPONENT' && (phase === 'PLAYER_TURN' || phase === 'OPPONENT_TURN'))) &&
+      {((board.editing&&!playerReview && board.selected!=='native-tablero-turno-rival') || (!board.editing && turnOwner === 'OPPONENT' && (phase === 'PLAYER_TURN' || phase === 'OPPONENT_TURN'))) &&
         <TurnIndicator side="OPPONENT" {...board.attrs('native-tablero-turno-rival', '')}/>}
       {/* En modo edición el estandarte seleccionado se muestra inmóvil para ajustarlo. */}
-      {board.editing && (board.selected==='native-tablero-turno-jugador'||board.selected==='native-tablero-turno-rival') &&
+      {board.editing&&!playerReview && (board.selected==='native-tablero-turno-jugador'||board.selected==='native-tablero-turno-rival') &&
         <TurnAnnouncement preview variant={board.selected==='native-tablero-turno-jugador'?'player':'opponent'}
           ribbonProps={board.attrs(board.selected,'')}/>}
       {!board.editing && (phase === 'START_BANNER' || phase === 'TURN_BANNER') &&
@@ -1053,7 +1067,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
           ribbonProps={phase === 'START_BANNER' ? undefined : board.attrs(turnOwner==='PLAYER'?'native-tablero-turno-jugador':'native-tablero-turno-rival','')}
           turn={turnCount} />}
       {((phase === 'COIN_TOSS' && !storyMoment && !board.editing)||
-        (board.editing&&(board.selected==='native-tablero-moneda'||previewNarrativeAction==='coin')))&&
+        (board.editing&&((!playerReview&&board.selected==='native-tablero-moneda')||previewNarrativeAction==='coin')))&&
         <CoinTossPanel coinSide={board.editing?null:coinSide} isFlipping={board.editing?false:isCoinFlipping}
           onToss={board.editing?()=>{}:handleCoinToss} preview={board.editing}
           panelProps={board.attrs('native-tablero-moneda','')}/>}
