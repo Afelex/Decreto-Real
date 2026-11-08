@@ -95,7 +95,7 @@ export function useBoardStudio(layoutRef:React.RefObject<HTMLElement|null>){
       ...drag(id),
     };
   };
-  return {editing:studio.editing,sceneKey,profile,attrs};
+  return {editing:studio.editing,selected:studio.selected,sceneKey,profile,attrs};
 }
 
 /** Lo último copiado en el tablero (se conserva entre perfiles). */
