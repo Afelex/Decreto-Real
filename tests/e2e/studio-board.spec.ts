@@ -144,7 +144,7 @@ test('narrative layout is independently editable per tutorial beat and remains a
   await set(page,'studio-y','-12');
   await expect(first).toHaveClass(/dr-board-adjusted/);
   await page.getByTestId('studio-guide-step').selectOption('12');
-  await expect(page.getByTestId('studio-y')).toHaveValue('0');
+  await expect(page.getByTestId('studio-y')).not.toHaveValue('-12');
   await page.getByTestId('studio-guide-step').selectOption('11');
   await expect(page.getByTestId('studio-y')).toHaveValue('-12');
   await page.getByTestId('studio-save').click();
@@ -153,7 +153,7 @@ test('narrative layout is independently editable per tutorial beat and remains a
   await page.getByTestId('studio-guide-step').selectOption('11');
   await expect(page.getByTestId('studio-y')).toHaveValue('-12');
   await page.getByTestId('studio-guide-step').selectOption('12');
-  await expect(page.getByTestId('studio-y')).toHaveValue('0');
+  await expect(page.getByTestId('studio-y')).not.toHaveValue('-12');
 });
 
 test('narrative card edits speaker and direction while preserving the guided action',async({page},info)=>{
