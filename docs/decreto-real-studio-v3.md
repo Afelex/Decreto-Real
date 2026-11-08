@@ -5,7 +5,7 @@
 Todo lo que hagas es un **borrador local de QA**: no cambia el juego publicado ni tu partida. **Guardar** conserva los ajustes en el navegador, pero para que los jugadores vean los títulos ocultos, como «Crónica», debes pulsar **⇪ Exportar publicación**, subir el ZIP al flujo de GitHub Actions y fusionar el PR que genera. El modo historia publicado ya respeta las opciones de ocultar nombre, progreso y rótulos. Los borradores de Studio v2 se convierten solos la primera vez que abres v3; el borrador anterior se conserva como respaldo.
 
 ## Lienzo
-En móviles, la barra inferior comienza **plegada**: pulsa **⚙ Herramientas** para abrirla y **✕ Cerrar** para retirarla del texto. En pantallas de escritorio continúa visible. Además, el inspector tiene **Deshacer** y **Guardar** siempre accesibles arriba; sus barras de deslizamiento y botones +/- empiezan bloqueados en pantallas táctiles para evitar movimientos accidentales. Los valores X, Y y demás se pueden seguir escribiendo directamente. Para usar deslizadores, pulsa **🔒 Desbloquear ajustes**.
+En móviles, la barra inferior comienza **plegada**: pulsa **⚙ Herramientas** para abrirla y **✕ Cerrar** para retirarla del texto. En pantallas de escritorio continúa visible. Además, el inspector tiene **Deshacer** y **Guardar** siempre accesibles arriba; sus barras de deslizamiento y botones +/- empiezan bloqueados en pantallas táctiles para evitar movimientos accidentales. Los valores X, Y y demás se pueden seguir escribiendo directamente. Para usar deslizadores, pulsa **🔒 Desbloquear ajustes**. El selector **Ir directamente a…** permite saltar a **Posición y escala**, **Diálogo y títulos** o **Guardar y publicar** sin recorrer todo el panel.
 
 Las herramientas del lienzo son:
 
