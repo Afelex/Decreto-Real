@@ -16,17 +16,20 @@ export function TurnIndicator({ side, className = '', ...props }: { side: Side }
 }
 
 /** Short centered cue on changing turns; the artwork remains separate from live text. */
-export function TurnAnnouncement({ variant, turn }: {
+export function TurnAnnouncement({ variant, turn, preview = false, ribbonProps }: {
   variant: 'opening' | 'player' | 'opponent';
   turn?: number;
+  /** Vista fija del estandarte en Studio para poder arrastrarlo. */
+  preview?: boolean;
+  ribbonProps?: React.HTMLAttributes<HTMLDivElement>;
 }) {
   const opening = variant === 'opening';
   const title = opening ? '¡INICIA EL COMBATE!' : variant === 'player' ? 'Tu Turno' : 'Turno del Rival';
   const subtitle = opening ? 'Prepárate para el duelo' : variant === 'player' ? 'Juega una carta' : 'El rival está actuando';
   return (
-    <div className={`dr-event-turn dr-event-turn--${variant}`} role="status"
+    <div className={`dr-event-turn dr-event-turn--${variant}${preview ? ' dr-event-turn--studio-preview' : ''}`} role="status"
       aria-live="polite" aria-label={`${title}. ${subtitle}${turn ? ` (turno ${turn})` : ''}`}>
-      <div className="dr-event-turn__ribbon">
+      <div {...ribbonProps} className={`dr-event-turn__ribbon${ribbonProps?.className ? ' ' + ribbonProps.className : ''}`}>
         <strong>{title}</strong>
         {opening && <small>{subtitle}</small>}
       </div>
