@@ -95,3 +95,39 @@ test('the player hand and both turn labels can be positioned separately in Studi
   await expect(page.locator('.dr-event-indicator.is-player')).toHaveClass(/dr-board-adjusted/);
   await expect(page.locator('.dr-event-indicator.is-opponent')).toHaveClass(/dr-board-adjusted/);
 });
+
+
+test('Studio previews tutorial dialogue, combo, coin and narrative portraits without playing',async({page},info)=>{
+  test.skip(only(['mobile-390','desktop-1280'])(info.project.name),'Tutorial editor');
+  await openBoard(page);
+  const pick=page.getByTestId('studio-actor-select');
+  await pick.selectOption({label:'Tutorial · Ventana de diálogo'});
+  const coach=page.getByTestId('campaign-guided-coach');
+  await expect(coach).toHaveAttribute('data-studio-actor','native-tablero-tutorial-dialogo');
+  await expect(coach).toContainText('Duelo guiado');
+  await page.getByTestId('studio-guide-step').selectOption('11');
+  await expect(coach).toContainText('12/32');
+  await page.getByTestId('studio-guide-text').fill('Arrastra el ataque para practicar el combo.');
+  await page.getByTestId('studio-guide-text').press('Tab');
+  await expect(coach).toContainText('Arrastra el ataque para practicar el combo.');
+  await set(page,'studio-y','-6');
+  await expect(coach).toHaveClass(/dr-board-adjusted/);
+  for(const [label,selector] of [
+    ['Tutorial · COMBO ×2/×3 de Ataque','.dr-royal-combo'],
+    ['Tutorial · Moneda y encabezado','.dr-event-coin-panel'],
+    ['Tutorial · Menú de combo','.dr-event-choice'],
+    ['Tutorial · Ilustración de Domingo','.dr-royal-guided-actor.is-rival'],
+    ['Tutorial · Ilustración de Xervias','.dr-royal-guided-actor.is-player'],
+  ]){
+    await pick.selectOption({label});
+    await expect(page.locator(selector)).toHaveAttribute('data-studio-actor',/native-tablero-/);
+    await set(page,'studio-y','-5');
+    await expect(page.locator(selector)).toHaveClass(/dr-board-adjusted/);
+  }
+  await page.getByTestId('studio-save').click();
+  await page.reload();
+  await page.getByTestId('studio-actor-select').selectOption({label:'Tutorial · Ventana de diálogo'});
+  await page.getByTestId('studio-guide-step').selectOption('11');
+  await expect(page.getByTestId('studio-guide-text')).toHaveValue('Arrastra el ataque para practicar el combo.');
+  await expect(page.getByTestId('campaign-guided-coach')).toHaveClass(/dr-board-adjusted/);
+});

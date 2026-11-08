@@ -548,3 +548,32 @@
 
 .dr-studio-quick-actions .dr-studio-section-jump{grid-column:1/-1;min-height:36px;background:#172336;color:#fceaca;border:1px solid #ab9370;border-radius:7px;font:12px system-ui,sans-serif;padding:5px 8px}
 .dr-studio-body{scroll-behavior:smooth}
+
+/* DRStudio: capas del tutorial editables sin capturar los controles del combate. */
+.dr-studio-board-panel .dr-studio-guide-text{display:block;box-sizing:border-box;width:100%;
+  min-height:76px;padding:9px;border:1px solid #ae9370;border-radius:8px;
+  background:#172336;color:#fff1d8;font:13px/1.4 system-ui,sans-serif;
+  resize:vertical;touch-action:pan-y;overscroll-behavior:contain}
+.dr-royal-screen:has(.dr-board-editing) .dr-royal-story-coach[data-studio-actor],
+.dr-royal-screen:has(.dr-board-editing) .dr-royal-guided-actor[data-studio-actor],
+.dr-royal-screen:has(.dr-board-editing) .dr-event-coin-panel[data-studio-actor],
+.dr-royal-screen:has(.dr-board-editing) .dr-event-choice[data-studio-actor]{
+  pointer-events:auto;touch-action:none;cursor:grab}
+.dr-royal-screen:has(.dr-board-editing) .dr-royal-story-coach[data-studio-actor] *,
+.dr-royal-screen:has(.dr-board-editing) .dr-event-coin-panel[data-studio-actor] *,
+.dr-royal-screen:has(.dr-board-editing) .dr-event-choice[data-studio-actor] *{pointer-events:none!important}
+
+/* Vista previa aislada: geometría del prólogo aun en /game?studio=1. */
+.dr-royal-screen.dr-royal-tutorial-studio .dr-royal-story-coach.is-rival,
+.dr-royal-screen.dr-royal-tutorial-studio .dr-royal-story-coach.is-player{
+  top:clamp(152px,19dvh,205px);bottom:auto;left:6%;right:6%;max-width:380px}
+.dr-royal-screen.dr-royal-tutorial-studio .dr-royal-guided-actor{
+  position:absolute;z-index:55;width:clamp(110px,36vw,210px);
+  height:clamp(165px,28dvh,265px);overflow:hidden;filter:drop-shadow(0 5px 12px #000d)}
+.dr-royal-screen.dr-royal-tutorial-studio .dr-royal-guided-actor img{
+  width:100%;height:100%;object-fit:contain;object-position:top center}
+.dr-royal-screen.dr-royal-tutorial-studio .dr-royal-guided-actor.is-rival{top:16%;right:0}
+.dr-royal-screen.dr-royal-tutorial-studio .dr-royal-guided-actor.is-player{bottom:22%;left:0}
+.dr-royal-screen.dr-royal-tutorial-studio .dr-royal-character-frame{
+  height:clamp(105px,15dvh,150px)!important;max-height:150px!important;
+  max-width:105px!important;aspect-ratio:2/3!important}

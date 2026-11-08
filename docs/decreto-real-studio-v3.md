@@ -93,6 +93,13 @@ Abre **☷ → ♜ Tablero de juego** (o `?drDev=1#/game?studio=1`). Puedes move
 - Tu mano puede moverse y escalarse como conjunto, sin cambiar los gestos de las cartas ni las casillas donde se juegan. Para evitar bloquear el juego no puede ocultarse ni marcarse «solo dev». Las zonas de juego siguen fijas.
 - 📋 Copiar / 📥 Pegar posición también funciona aquí, incluso entre formatos.
 
+## Tutorial de combate (32 intervenciones)
+En **Studio · Tablero** aparecen seis elementos nuevos: **ventana de diálogo**, **ilustración de Domingo**, **ilustración de Xervias**, **indicador COMBO ×2/×3**, **moneda** y **menú de combo**. Al seleccionar un elemento aparece una vista previa fija para moverlo, escalarlo o ajustar sus propiedades, aunque todavía no hayas llegado a ese punto de la partida.
+
+El selector **Vista previa del tutorial** permite inspeccionar cualquiera de las **32 intervenciones** sin repetir la partida. **Texto de esta intervención** edita el guion real, que se conserva en la exportación ZIP de publicación. Este selector no avanza, reinicia ni modifica las reglas del duelo. Por defecto, la ventana del tutorial se posiciona más arriba para no tapar la mano ni los botones jugables. Los retratos narrativos y retratos HUD ahora tienen tamaños mayores y se pueden ajustar individualmente.
+
+Acceso directo en móvil: `https://afelex.github.io/Decreto-Real/?drDev=1#/game?studio=1`. Después de guardar, exporta para publicar y fusiona el PR preparado para aplicar los cambios al juego de todos.
+
 ## Otras pantallas de la historia
 Abre **☷ Otras pantallas** (o `#/studio/escenas`) y elige una conversación tras victoria, la entrada o liberación de una región, la crónica, el epílogo o los créditos. En cada una puedes cambiar los textos (con **negrita**), el rótulo, el fondo y añadir sprites o efectos, y marcar textos o capas como «solo desarrollador». Se abren con una partida de prueba: tu partida real no cambia.
 
