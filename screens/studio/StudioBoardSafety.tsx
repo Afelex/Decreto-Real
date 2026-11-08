@@ -8,6 +8,7 @@ import {useStudio} from './StudioContext';
 type VisualAudit={
   stage:SafetyRect;zones:SafetyZone[];subjects:NarrativeBox[];
   findings:SafetyFinding[];cropped:string[];
+  reading:{fontPx:number;lines:number;clipped:boolean}|null;
 };
 const zoneSelectors=[
   {id:'mano',name:'tu mano de cartas',selector:'.dr-royal-player-hand',weight:5,threshold:.10},
@@ -52,7 +53,20 @@ function screenAudit(root:HTMLElement):VisualAudit {
       rect.top<stage.top-5||rect.bottom>stage.bottom+5)cropped.push(spec.name);
   }
   const findings=analyzeNarrativeLayout(subjects,zones).filter(f=>f.zoneId!==f.subjectId);
-  return {stage,zones,subjects,findings,cropped};
+  // Además de las heurísticas de 32 textos, medir el tamaño real que dibuja
+  // el navegador para esta intervención. Solo lectura: no mueve piezas.
+  const panel=root.querySelector('.dr-royal-story-coach');
+  const paragraph=panel?.querySelector('p');
+  let reading:VisualAudit['reading']=null;
+  if(rectVisible(paragraph)){
+    const style=getComputedStyle(paragraph);
+    const fontPx=parseFloat(style.fontSize)||13;
+    const lineHeight=parseFloat(style.lineHeight)||fontPx*1.3;
+    const lines=Math.max(1,Math.round(paragraph.getBoundingClientRect().height/lineHeight));
+    const clipped=paragraph.scrollHeight>paragraph.clientHeight+2;
+    reading={fontPx:Math.round(fontPx*10)/10,lines,clipped};
+  }
+  return {stage,zones,subjects,findings,cropped,reading};
 }
 
 export function StudioBoardSafety({stepId,profile,layoutRef,onPlayerPreview}:{
@@ -111,7 +125,11 @@ export function StudioBoardSafety({stepId,profile,layoutRef,onPlayerPreview}:{
           problematic+' posibles problemas'}
       </span>
     </div>
-    <p>Se comparan las posiciones visibles con cartas, Impactos y botones. Es una comprobación geométrica: revisa también la lectura del texto.</p>
+    <p>Se comparan las posiciones visibles con cartas, Impactos y botones. El análisis de lectura de los 32 pasos está en el panel superior.</p>
+    {audit?.reading&&<small data-testid="studio-reading-measure">
+      Texto visible: {audit.reading.fontPx} px · {audit.reading.lines} líneas medidas.
+      {audit.reading.clipped?' Atención: el texto puede estar recortado.':''}
+    </small>}
     {audit&&problematic>0&&<div className="dr-studio-audit-findings">
       {audit.findings.slice(0,5).map((finding,i)=>
         <button key={finding.subjectId+'-'+finding.zoneId+'-'+i} type="button"
