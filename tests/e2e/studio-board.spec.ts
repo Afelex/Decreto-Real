@@ -584,7 +584,6 @@ test('one audiovisual timeline previews all 32 guided beats and saves quick edit
   for(const lane of ['dialogue','portrait','music','effect','action']){
     await expect(page.getByTestId('studio-av-lane-'+lane)).toBeVisible();
   }
-  await page.getByTestId('studio-av-step').filter({has:page.locator('[data-step="g11"]')}).count();
   await page.locator('[data-testid="studio-av-step"][data-step="g11"]').click();
   await expect(page.getByTestId('studio-guide-step')).toHaveValue('11');
   await expect(page.getByTestId('studio-av-inspector')).toContainText('Xervias');
