@@ -9,7 +9,7 @@ const B='media-22222222-2222-4222-8222-222222222222';
 const populated=()=>{
   let doc=withAsset(emptyStudioDocumentV3(),A,{name:'Prólogo.mp3',mime:'audio/mpeg'});
   doc=withAsset(doc,B,{name:'Combate.wav',mime:'audio/wav'});
-  doc=withNarrativeCard(doc,'tutorial/g01',{musicAssetId:A,emotion:'neutral'} as never);
+  doc=withNarrativeCard(doc,'tutorial/g01',{musicAssetId:A,tone:'neutral'});
   doc=withNarrativeCard(doc,'tutorial/g03',{musicAssetId:B,intent:'Escena ya dirigida'});
   doc=withNarrativeCard(doc,'tutorial/g02',{direction:'No tocar las cartas'});
   return doc;
