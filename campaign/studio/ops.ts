@@ -6,7 +6,8 @@
 import {
   STUDIO_BUBBLE_LAYER_ID, STUDIO_V3_MAX_LAYERS_PER_SCENE, actorForLayerId, defaultLayerTransform,
   STUDIO_V3_MAX_TITLE, isStudioSceneKey, isStudioMediaId, normalizeDialogue, normalizeDialogueStyle,
-  normalizeStudioBackground, normalizeStudioLayer, sortLayers, type StudioDialogueStyle,
+  normalizeStudioBackground, normalizeStudioLayer, normalizeNarrativeCard, sortLayers, type StudioDialogueStyle,
+  type StudioNarrativeCard,
   type StudioAssetMeta, type StudioDocumentV3, type StudioLayer, type StudioSceneV3,
 } from './schema.ts';
 
@@ -23,6 +24,7 @@ function withScene(doc:StudioDocumentV3,key:string,scene:StudioSceneV3):StudioDo
   if(!clean.titleDevOnly)delete clean.titleDevOnly;
   if(!clean.devOnly)delete clean.devOnly;
   if(!clean.dialogue||!Object.keys(clean.dialogue).length)delete clean.dialogue;
+  if(!clean.narrative||!Object.keys(clean.narrative).length)delete clean.narrative;
   const scenes={...doc.scenes};
   if(Object.keys(clean).length)scenes[key]=clean;
   else delete scenes[key];
@@ -130,6 +132,23 @@ export function withDialogue(doc:StudioDocumentV3,key:string,
   const scene:StudioSceneV3={...doc.scenes[key]};
   if(dialogue)scene.dialogue=dialogue;
   else delete scene.dialogue;
+  return withScene(doc,key,scene);
+}
+
+/** Edita solo la ficha editorial del paso; sus acciones de combate son inmutables.
+ * null restaura un campo al valor propuesto inicialmente. */
+export function withNarrativeCard(doc:StudioDocumentV3,key:string,
+  patch:{[K in keyof StudioNarrativeCard]?:StudioNarrativeCard[K]|null}):StudioDocumentV3 {
+  assertSceneKey(key);
+  const merged:Record<string,unknown>={...doc.scenes[key]?.narrative};
+  for(const field of ['speaker','tone','intent','direction'] as const){
+    if(patch[field]===null)delete merged[field];
+    else if(patch[field]!==undefined)merged[field]=patch[field];
+  }
+  const narrative=normalizeNarrativeCard(merged);
+  const scene:StudioSceneV3={...doc.scenes[key]};
+  if(narrative)scene.narrative=narrative;
+  else delete scene.narrative;
   return withScene(doc,key,scene);
 }
 
