@@ -304,6 +304,7 @@ test('editorial review walks all 32 steps and updates warnings after editing',as
   await expect(page.getByTestId('studio-guide-step')).toHaveValue('5');
   await expect(page.getByTestId('campaign-guided-coach')).toContainText('6/32');
   await expect(page.getByTestId('studio-reading-current')).toContainText('Paso 6/32');
+  await expect(page.getByTestId('studio-reading-measure')).toContainText('líneas medidas');
   const editor=page.getByTestId('studio-guide-text');
   await editor.fill('Ahora.');
   await editor.press('Tab');
