@@ -799,3 +799,136 @@
 .dr-studio-board-panel .dr-studio-audio-timeline summary:focus-visible{
   outline:2px solid #ffd481;outline-offset:2px;
 }
+
+/* Director audiovisual: vista conjunta de las 32 intervenciones del tutorial.
+   Relativa a cada diálogo, nunca una reproducción automática del guion. */
+.dr-studio-board-panel .dr-studio-av-timeline{
+  margin:8px 0;border:1px solid #927b59;border-radius:10px;
+  background:#142236;color:#f3e8d3;min-width:0;
+}
+.dr-studio-board-panel .dr-studio-av-timeline>summary{
+  display:flex;justify-content:space-between;align-items:center;gap:8px;
+  padding:11px;cursor:pointer;font:700 12px/1.35 system-ui,sans-serif;
+}
+.dr-studio-board-panel .dr-studio-av-timeline>summary>span{
+  font:400 10px/1.3 system-ui,sans-serif;color:#bfcee0;text-align:right;
+}
+.dr-studio-board-panel .dr-studio-av-timeline>summary:focus-visible{
+  outline:2px solid #e9c880;outline-offset:2px;
+}
+.dr-studio-board-panel .dr-studio-av-body{
+  display:grid;gap:11px;padding:3px 10px 13px;min-width:0;
+}
+.dr-studio-board-panel .dr-studio-av-body>p{
+  font:11px/1.5 system-ui,sans-serif;margin:0;color:#cad5e3;
+}
+.dr-studio-board-panel .dr-studio-av-nav{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  font:11px/1.3 system-ui,sans-serif;
+}
+.dr-studio-board-panel .dr-studio-av-nav button{
+  min-height:38px;min-width:75px;padding:6px;
+  background:#273952;color:#f8e7cc;border:1px solid #967a58;border-radius:7px;
+}
+.dr-studio-board-panel .dr-studio-av-nav button:disabled{opacity:.35}
+.dr-studio-board-panel .dr-studio-av-sequence{
+  display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin;
+  padding:5px 3px 9px;max-width:100%;scroll-snap-type:x proximity;
+}
+.dr-studio-board-panel .dr-studio-av-step{
+  flex:0 0 76px;min-width:76px;padding:5px;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  background:#1e3045;border:1px solid #64788f;border-radius:8px;
+  color:#efdfc6;cursor:pointer;text-align:center;
+  font:10px/1.2 system-ui,sans-serif;scroll-snap-align:center;
+}
+.dr-studio-board-panel .dr-studio-av-step.is-current{
+  border-color:#f5c872;box-shadow:0 0 0 2px #d8a84d66;
+}
+.dr-studio-board-panel .dr-studio-av-step>b{font-size:12px}
+.dr-studio-board-panel .dr-studio-av-step>img{
+  width:38px;height:45px;object-fit:contain;
+}
+.dr-studio-board-panel .dr-studio-av-no-sprite{
+  display:flex;justify-content:center;align-items:center;width:38px;height:45px;
+  font-size:22px;opacity:.55;
+}
+.dr-studio-board-panel .dr-studio-av-step>small{
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;font-size:9px;
+}
+.dr-studio-board-panel .dr-studio-av-step>span:last-child{
+  max-width:100%;font-size:9px;color:#bfd7e8;white-space:nowrap;
+}
+.dr-studio-board-panel .dr-studio-av-inspector{
+  display:grid;gap:7px;border:1px solid #5e7186;border-radius:9px;
+  background:#102034;padding:9px;min-width:0;
+}
+.dr-studio-board-panel .dr-studio-av-inspector>header{
+  display:flex;flex-wrap:wrap;gap:6px;justify-content:space-between;
+  font:11px/1.3 system-ui,sans-serif;
+}
+.dr-studio-board-panel .dr-studio-av-inspector>header>span{
+  color:#c6d5e7;font-size:10px;
+}
+.dr-studio-board-panel .dr-studio-av-time-axis{
+  display:flex;justify-content:space-between;gap:2px;
+  padding-left:71px;color:#bbcbdc;font-size:9px;
+}
+.dr-studio-board-panel .dr-studio-av-lanes{display:grid;gap:7px}
+.dr-studio-board-panel .dr-studio-av-lane{
+  display:grid;grid-template-columns:63px minmax(0,1fr);
+  align-items:center;gap:8px;min-width:0;
+}
+.dr-studio-board-panel .dr-studio-av-lane>strong{
+  font:700 10px/1.2 system-ui,sans-serif;
+}
+.dr-studio-board-panel .dr-studio-av-track{
+  position:relative;min-width:0;height:31px;border-radius:5px;
+  background:repeating-linear-gradient(90deg,transparent 0,transparent calc(25% - 1px),
+    #ffffff15 calc(25% - 1px),#ffffff15 25%),#1b3146;
+  overflow:hidden;
+}
+.dr-studio-board-panel .dr-studio-av-event{
+  position:absolute;top:4px;height:23px;min-width:2px;
+  border-radius:4px;display:flex;align-items:center;
+  background:#537b9c;color:#fff;padding:0 3px;box-sizing:border-box;
+  font:10px/1.2 system-ui,sans-serif;
+}
+.dr-studio-board-panel .dr-studio-av-event>span{
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;
+}
+.dr-studio-board-panel .is-dialogue .dr-studio-av-event{background:#577a81}
+.dr-studio-board-panel .is-portrait .dr-studio-av-event{background:#987348}
+.dr-studio-board-panel .is-music .dr-studio-av-event{background:#5b6698}
+.dr-studio-board-panel .is-effect .dr-studio-av-event{background:#84658a}
+.dr-studio-board-panel .is-action .dr-studio-av-event{background:#8b5d57}
+.dr-studio-board-panel .dr-studio-av-event.is-estimate{border:1px dashed #e9f5ec}
+.dr-studio-board-panel .dr-studio-av-event.is-until-advance{border-right:2px dotted #f1ddae}
+.dr-studio-board-panel .dr-studio-av-notes{
+  font:10px/1.45 system-ui,sans-serif;color:#c1cddd;
+}
+.dr-studio-board-panel .dr-studio-av-quick{
+  display:grid;gap:9px;padding:9px;border:1px solid #526985;
+  border-radius:8px;background:#18293d;
+}
+.dr-studio-board-panel .dr-studio-av-quick>strong{font-size:12px}
+.dr-studio-board-panel .dr-studio-av-quick-grid{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;
+}
+.dr-studio-board-panel .dr-studio-av-quick textarea,
+.dr-studio-board-panel .dr-studio-av-quick select{
+  width:100%;box-sizing:border-box;min-height:37px;
+  background:#243650;color:#f8ecd8;border:1px solid #8290a1;
+  border-radius:6px;padding:7px;font:12px/1.35 system-ui,sans-serif;
+}
+.dr-studio-board-panel .dr-studio-av-quick textarea{min-height:63px;resize:vertical}
+.dr-studio-board-panel .dr-studio-av-quick>small{
+  font:10px/1.4 system-ui,sans-serif;color:#bfcbd7;
+}
+@media(max-width:380px){
+  .dr-studio-board-panel .dr-studio-av-quick-grid{grid-template-columns:1fr}
+  .dr-studio-board-panel .dr-studio-av-lane{
+    grid-template-columns:54px minmax(0,1fr);gap:5px;
+  }
+  .dr-studio-board-panel .dr-studio-av-time-axis{padding-left:59px}
+}
