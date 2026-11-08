@@ -79,6 +79,8 @@ export function parseStudioNumber(text:string):number|null {
 type NumberFieldProps={
   label:string;ariaLabel:string;testid:string;value:number;step:number;min:number;max:number;
   onLive:(value:number)=>void;onBegin:()=>void;onCommit:()=>void;
+  /** En táctil, los botones +/- se bloquean al desplazarse por el inspector. */
+  controlsUnlocked?:boolean;
 };
 /**
  * Campo numérico exacto: mientras se escribe, el texto vive en un borrador
@@ -94,7 +96,7 @@ function NumberField(p:NumberFieldProps){
   const bump=(delta:number)=>{p.onBegin();live(p.value+delta);p.onCommit();};
   return <label className="dr-studio-number">{p.label}
     <span className="dr-studio-number-row">
-      <button type="button" tabIndex={-1} aria-label={p.ariaLabel+': restar'} onClick={()=>bump(-p.step)}>−</button>
+      <button type="button" tabIndex={-1} disabled={p.controlsUnlocked===false} aria-label={p.ariaLabel+': restar'} onClick={()=>bump(-p.step)}>−</button>
       <input type="text" inputMode="decimal" aria-label={p.ariaLabel} data-testid={p.testid}
         value={text}
         onFocus={()=>{focused.current=true;p.onBegin();}}
@@ -105,7 +107,7 @@ function NumberField(p:NumberFieldProps){
           const n=parseStudioNumber(e.target.value);
           if(n!==null)live(n);
         }}/>
-      <button type="button" tabIndex={-1} aria-label={p.ariaLabel+': sumar'} onClick={()=>bump(p.step)}>+</button>
+      <button type="button" tabIndex={-1} disabled={p.controlsUnlocked===false} aria-label={p.ariaLabel+': sumar'} onClick={()=>bump(p.step)}>+</button>
     </span>
   </label>;
 }
@@ -115,6 +117,10 @@ export default function StudioInspector(props:Props){
   const studio=useStudio();
   const {sceneKey,stageRef}=props;
   const [expanded,setExpanded]=React.useState(true);
+  // No modificar valores al deslizar el dedo sobre controles del inspector.
+  // Los campos de texto siguen editables; se desbloquean rangos y +/- a demanda.
+  const [controlsUnlocked,setControlsUnlocked]=React.useState(()=>
+    typeof window==='undefined'||!window.matchMedia('(pointer: coarse)').matches);
   const [busy,setBusy]=React.useState(false);
   const [alignRef,setAlignRef]=React.useState<'auto'|AlignReference>('auto');
   const [timelineOpen,setTimelineOpen]=React.useState(false);
@@ -331,7 +337,7 @@ export default function StudioInspector(props:Props){
   const position={x:isBackground?background?.x??0:current?.x??0,y:isBackground?background?.y??0:current?.y??0};
   const scale=isBackground?background?.scale??1:current?.scale??1;
   const scaleLimits=isBackground?STUDIO_BACKGROUND_SCALE:STUDIO_LIMITS.scale;
-  const numeric={onBegin:studio.begin,onCommit:studio.commit};
+  const numeric={onBegin:studio.begin,onCommit:studio.commit,controlsUnlocked};
   const status=studio.status||(studio.dirty?'Cambios pendientes de guardar':'Borrador de este dispositivo');
   return <>
   {libraryOpen&&<StudioLibrary canReplace={Boolean(current&&selected!=='bubble')}
@@ -363,6 +369,17 @@ export default function StudioInspector(props:Props){
           aria-label={expanded?'Contraer editor':'Abrir editor'}>{expanded?'−':'＋'}</button>
       </div>
     </header>
+    {expanded&&<nav className="dr-studio-quick-actions" aria-label="Acciones rápidas de Studio">
+      <button type="button" data-testid="studio-undo-quick" disabled={!studio.canUndo}
+        onClick={studio.undo}>↶ Deshacer</button>
+      <button type="button" className="dr-studio-save" data-testid="studio-save-quick"
+        onClick={()=>{studio.commit();studio.save();}}>{studio.dirty?'● Guardar':'✓ Guardado'}</button>
+      <button type="button" data-testid="studio-controls-lock" aria-pressed={controlsUnlocked}
+        onClick={()=>setControlsUnlocked(v=>!v)}>
+        {controlsUnlocked?'🔓 Bloquear +/- y barras':'🔒 Desbloquear ajustes'}</button>
+      <button type="button" data-testid="studio-publish-quick" onClick={()=>void studio.exportProject(true)}>
+        ⇪ Exportar publicación</button>
+    </nav>}
     {FILE_INPUTS.map(file=><input key={file.id} hidden type="file" accept={file.accept}
       aria-label={'Archivo '+file.id}
       ref={node=>{inputs.current[file.id]=node;}}
@@ -370,7 +387,8 @@ export default function StudioInspector(props:Props){
         const chosen=e.currentTarget.files?.[0];e.currentTarget.value='';
         if(chosen)await withFile(file.id,chosen);
       }}/>)}
-    {expanded&&<div className="dr-studio-body">
+    {expanded&&<div className="dr-studio-body" data-testid="studio-inspector-scroll">
+      <p className="dr-studio-mobile-hint">Desliza aquí para recorrer opciones. Los controles de arrastre están bloqueados por defecto; puedes escribir valores exactos.</p>
       {studio.pendingImport&&<div className="dr-studio-import" role="alertdialog" aria-label="Confirmar importación"
         data-testid="studio-import-dialog">
         <strong>Importar «{studio.pendingImport.fileName}»</strong>
@@ -430,7 +448,7 @@ export default function StudioInspector(props:Props){
         </div>
         <div className="dr-studio-slider">
           <label htmlFor="studio-scale">Escala <output>{Math.round(scale*100)}%</output></label>
-          <input id="studio-scale" data-testid="studio-scale" type="range"
+          <input id="studio-scale" data-testid="studio-scale" type="range" disabled={!controlsUnlocked}
             min={scaleLimits.min} max={scaleLimits.max} step=".01" value={scale} {...gesture}
             onChange={e=>live({scale:round2(+e.target.value)})}/>
         </div>
@@ -537,19 +555,19 @@ export default function StudioInspector(props:Props){
         </label>
         <div className="dr-studio-slider">
           <label htmlFor="studio-dialogue-text-scale">Tamaño del texto <output>{Math.round(dialogueStyle.textScale*100)}%</output></label>
-          <input id="studio-dialogue-text-scale" data-testid="studio-dialogue-text-scale" type="range" step=".05"
+          <input id="studio-dialogue-text-scale" data-testid="studio-dialogue-text-scale" type="range" disabled={!controlsUnlocked} step=".05"
             min={STUDIO_DIALOGUE_TEXT_SCALE.min} max={STUDIO_DIALOGUE_TEXT_SCALE.max} value={dialogueStyle.textScale}
             {...gesture} onChange={e=>setDialogueSize('textScale',+e.target.value)}/>
         </div>
         <div className="dr-studio-slider">
           <label htmlFor="studio-dialogue-box-scale">Alto del bloque <output>{Math.round(dialogueStyle.boxScale*100)}%</output></label>
-          <input id="studio-dialogue-box-scale" data-testid="studio-dialogue-box-scale" type="range" step=".05"
+          <input id="studio-dialogue-box-scale" data-testid="studio-dialogue-box-scale" type="range" disabled={!controlsUnlocked} step=".05"
             min={STUDIO_DIALOGUE_BOX_SCALE.min} max={STUDIO_DIALOGUE_BOX_SCALE.max} value={dialogueStyle.boxScale}
             {...gesture} onChange={e=>setDialogueSize('boxScale',+e.target.value)}/>
         </div>
         <div className="dr-studio-slider">
           <label htmlFor="studio-dialogue-box-width">Ancho del bloque <output>{Math.round(dialogueStyle.boxWidth*100)}%</output></label>
-          <input id="studio-dialogue-box-width" data-testid="studio-dialogue-box-width" type="range" step=".05"
+          <input id="studio-dialogue-box-width" data-testid="studio-dialogue-box-width" type="range" disabled={!controlsUnlocked} step=".05"
             min={.5} max={1} value={dialogueStyle.boxWidth}
             {...gesture} onChange={e=>setDialogueSize('boxWidth',+e.target.value)}/>
         </div>
