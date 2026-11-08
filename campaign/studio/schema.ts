@@ -251,7 +251,7 @@ export function normalizeNarrativeCard(value:unknown):StudioNarrativeCard|null {
   const card:StudioNarrativeCard={};
   const bounded=(val:unknown,max:number):string|undefined=>{
     if(typeof val!=='string')return undefined;
-    const clean=val.replace(/[\\x00-\\x08\\x0b\\x0c\\x0e-\\x1f]/g,'').trim().slice(0,max);
+    const clean=Array.from(val).filter(ch=>ch==='\n'||ch==='\t'||ch.charCodeAt(0)>=32).join('').trim().slice(0,max);
     return clean||undefined;
   };
   const speaker=bounded(value.speaker,STUDIO_NARRATIVE_LIMITS.speaker);
