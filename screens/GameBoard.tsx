@@ -702,7 +702,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const endTurnUnavailable = (guidedOpening && !expectedGuideAction?.startsWith('end')) || phase !== 'PLAYER_TURN' || !!storyMoment || showSpecialSelection || !!comboAnnouncement || !!mysticComboAnnouncement || isMenuOpen || !!cardAnnouncement || announcementBusy.current;
 
   const Board = (
-    <div className={`dr-classic-screen dr-royal-screen bg-[#050505] font-body w-full overflow-hidden select-none flex flex-col relative text-white ${shakeScreen ? 'animate-shake' : ''}`} style={{ width: 'min(100vw, 430px)', height: '100dvh' }}>
+    <div ref={boardLayoutRef} className={`dr-classic-screen dr-royal-screen bg-[#050505] font-body w-full overflow-hidden select-none flex flex-col relative text-white ${shakeScreen ? 'animate-shake' : ''}`} style={{ width: 'min(100vw, 430px)', height: '100dvh' }}>
       <style>{`
         /* Animaciones para el botón de fuego */
         @keyframes fire-glow { 0%, 100% { box-shadow: 0 0 15px #f59e0b, 0 0 30px #f97316; } 50% { box-shadow: 0 0 25px #fbbf24, 0 0 50px #ef4444; } }
@@ -856,7 +856,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
       )}
 
       {/* DR-C08 — Scenic playfield. Portraits and the backdrop are independent assets. */}
-      <div ref={boardLayoutRef} className={'dr-royal-layout' + (board.editing ? ' dr-board-editing' : '')}
+      <div className={'dr-royal-layout' + (board.editing ? ' dr-board-editing' : '')}
         onClickCapture={board.editing ? event => { event.stopPropagation(); event.preventDefault(); } : undefined}>
         <header className="dr-royal-rival-area" aria-label="Estado del rival">
           <div {...board.attrs('native-tablero-mazo-rival', 'dr-royal-deck dr-royal-rival-deck')}>
@@ -929,7 +929,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
             aria-label={`Combo por ${playerGauge}`} role="status"><strong>COMBO</strong><b>×{playerGauge}</b><em>de {{ ATTACK: 'Ataque', DEFENSE: 'Defensa', IMPACT: 'Impacto', ORDER: 'Orden' }[playerLastType ?? 'ATTACK']}</em></div>}
         </section>
 
-        <section className="dr-royal-player-hand" aria-label={`Tu mano: ${playerHand.length} cartas`}>
+        <section {...board.attrs('native-tablero-mano-jugador', 'dr-royal-player-hand')} aria-label={`Tu mano: ${playerHand.length} cartas`}>
           <div className="dr-royal-player-fan">
             {playerHand.map((card, i) => {
               const distance = i - (playerHand.length - 1) / 2;
@@ -1011,8 +1011,11 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
         </section>
       )}
       {/* Combat cues are brief overlays; the field remains visible. */}
-      {turnOwner && (phase === 'PLAYER_TURN' || phase === 'OPPONENT_TURN') &&
-        <TurnIndicator side={turnOwner} />}
+      {/* Studio muestra ambos rótulos para ajustarlos por separado aunque no sea su turno. */}
+      {(board.editing || (turnOwner === 'PLAYER' && (phase === 'PLAYER_TURN' || phase === 'OPPONENT_TURN'))) &&
+        <TurnIndicator side="PLAYER" {...board.attrs('native-tablero-turno-jugador', '')}/>}
+      {(board.editing || (turnOwner === 'OPPONENT' && (phase === 'PLAYER_TURN' || phase === 'OPPONENT_TURN'))) &&
+        <TurnIndicator side="OPPONENT" {...board.attrs('native-tablero-turno-rival', '')}/>}
       {(phase === 'START_BANNER' || phase === 'TURN_BANNER') &&
         <TurnAnnouncement
           variant={phase === 'START_BANNER' ? 'opening' : turnOwner === 'PLAYER' ? 'player' : 'opponent'}
