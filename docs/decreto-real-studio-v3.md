@@ -207,6 +207,13 @@ También puedes elegir un único efecto sonoro de entrada entre los efectos ya r
 - **Todavía no se ha subido ninguna canción de Suno a la versión pública.** Este avance habilita la importación y el uso; no produce ni descarga música de Suno por sí mismo. Tus canciones guardadas en un dispositivo solo aparecen en otro cuando se haya exportado y publicado el proyecto.
 - Las pistas sonoras asociadas a cada paso se reproducen al entrar; un cambio de expresión o edición de texto no debe reiniciar la canción. No existe aún sincronización por segundos ni mezclas profesionales entre pistas.
 
+### Transiciones musicales y reutilización de canciones — Fase 2
+El audio narrativo cambia de pista con un **fundido cruzado de 700 ms**. Si dos intervenciones consecutivas utilizan el mismo archivo, el reproductor **mantiene el tiempo de la canción** (no comienza de nuevo). Si cambia solo el modo de volumen entre normal y suave, el nivel se ajusta gradualmente durante 320 ms, sin reconstruir el reproductor. La preferencia **Música apagada** y la pausa narrativa silencian inmediatamente la reproducción, sin forzar que vuelva a sonar.
+
+En **Ficha narrativa → Audio narrativo**, después de escoger una canción real de la biblioteca, puedes pulsar **Usar también en las 4 siguientes** o **Usar en las restantes sin canción**. Son acciones únicas con deshacer; solo rellenan los pasos posteriores que todavía no tienen una canción escogida. Las selecciones explícitas de otras escenas prevalecen.
+
+Este motor de reutilización también funciona sobre claves de escenas de futuros capítulos; el panel visual disponible en este hito es el del duelo tutorial. La galería y la publicación directa entre dispositivos continúan como tareas pendientes. Los temas de Suno siguen sin estar incluidos hasta que sean importados y publicados.
+
 ## Otras pantallas de la historia
 Abre **☷ Otras pantallas** (o `#/studio/escenas`) y elige una conversación tras victoria, la entrada o liberación de una región, la crónica, el epílogo o los créditos. En cada una puedes cambiar los textos (con **negrita**), el rótulo, el fondo y añadir sprites o efectos, y marcar textos o capas como «solo desarrollador». Se abren con una partida de prueba: tu partida real no cambia.
 
