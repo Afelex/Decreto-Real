@@ -155,3 +155,28 @@ test('narrative layout is independently editable per tutorial beat and remains a
   await page.getByTestId('studio-guide-step').selectOption('12');
   await expect(page.getByTestId('studio-y')).toHaveValue('0');
 });
+
+test('narrative card edits speaker and direction while preserving the guided action',async({page},info)=>{
+  test.skip(only(['mobile-390'])(info.project.name),'Narrative card editor');
+  await openBoard(page);
+  await page.getByTestId('studio-guide-step').selectOption('11');
+  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  const intent=page.getByTestId('studio-narrative-intent');
+  await expect(intent).toContainText('Explicar el daño recibido');
+  await expect(page.getByTestId('studio-narrative-trigger')).toContainText('Continuar diálogo');
+  await page.getByTestId('studio-actor-select').selectOption({label:'Tutorial · Ventana de diálogo'});
+  await page.getByTestId('studio-narrative-speaker').selectOption('Domingo Quispe');
+  await expect(page.getByTestId('campaign-guided-coach')).toContainText('Domingo Quispe');
+  await page.getByTestId('studio-narrative-tone').selectOption('sereno');
+  await page.getByTestId('studio-narrative-direction').fill('Despejar las cartas; retrato a la derecha.');
+  await page.getByTestId('studio-narrative-direction').press('Tab');
+  await page.getByTestId('studio-save').click();
+  await page.reload();
+  await page.getByTestId('studio-guide-step').selectOption('11');
+  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  await expect(page.getByTestId('studio-narrative-speaker')).toHaveValue('Domingo Quispe');
+  await expect(page.getByTestId('studio-narrative-tone')).toHaveValue('sereno');
+  await expect(page.getByTestId('studio-narrative-direction')).toHaveValue('Despejar las cartas; retrato a la derecha.');
+  await page.getByTestId('studio-guide-step').selectOption('12');
+  await expect(page.getByTestId('studio-narrative-speaker')).toHaveValue('Xervias');
+});
