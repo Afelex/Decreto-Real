@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { StudioBoardPanel, StudioBoardProvider, useBoardStudio } from './studio/StudioBoardKit';
 import { OPPONENT_IMG, PLAYER_IMG } from '../constants';
 import { CardData, GamePhase, CardType } from '../types';
@@ -139,8 +139,8 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const navigate = useNavigate();
   // Studio · Tablero: ajustes visuales por perfil de pantalla (solo QA edita).
   const boardLayoutRef = React.useRef<HTMLDivElement | null>(null);
-  const board = useBoardStudio(boardLayoutRef);
   const [studioGuidePreview,setStudioGuidePreview] = useState(0);
+  const [studioParams]=useSearchParams();
   const { playSound, sfxEnabled, musicEnabled, toggleSfx, toggleMusic } = useAudio();
 
   const [phase, setPhase] = useState<GamePhase>('INIT');
@@ -168,6 +168,11 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
     return true;
   };
   const currentGuide = guidedOpening ? GUIDED_STEPS[guideIndex] : undefined;
+  // Mientras se edita vemos el paso seleccionado; jugando, el paso real.
+  // Ambos consumen el MISMO documento de composición publicado de Studio.
+  const studioStep=studioParams.get('studio')==='1'
+    ? GUIDED_STEPS[studioGuidePreview]?.id : currentGuide?.id;
+  const board = useBoardStudio(boardLayoutRef,studioStep);
   const expectedGuideAction = currentGuide?.action;
   const guidedCardId = expectedGuideAction ? GUIDED_ACTION_CARDS[expectedGuideAction] : undefined;
 

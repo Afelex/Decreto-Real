@@ -3,7 +3,7 @@ import {
   boxGuideLines, gridStep, mergeTargets, snapDrag, snapThreshold, stageGuideLines,
   type GridStep, type SnapTargets, type StageBox,
 } from '../../campaign/studio/grid';
-import { layerOrDefault, withBackgroundFrame, withLayer } from '../../campaign/studio/ops';
+import { getLayer, layerOrDefault, withBackgroundFrame, withLayer } from '../../campaign/studio/ops';
 import { isBackgroundLocked, type StudioLayer } from '../../campaign/studio/schema';
 import { BACKGROUND_ID, elementForLayer, layerBoxes, presentLayerIds, stageBoxOf } from './stageGeometry';
 import { useStudio } from './StudioContext';
@@ -22,7 +22,7 @@ type Drag={
  * imantado a la grilla y a las guías inteligentes (Alt lo suspende) y
  * selección múltiple con Shift o con el modo «Seleccionar varios».
  */
-export function useStudioDrag(sceneKey:string|null,stageRef:React.RefObject<HTMLElement|null>){
+export function useStudioDrag(sceneKey:string|null,stageRef:React.RefObject<HTMLElement|null>,fallbackSceneKey?:string){
   const studio=useStudio();
   const drag=React.useRef<Drag|null>(null);
   const studioRef=React.useRef(studio);
@@ -57,7 +57,11 @@ export function useStudioDrag(sceneKey:string|null,stageRef:React.RefObject<HTML
       s.select(id);
       if(!s.group.includes(id))s.clearGroup();
       const background=s.doc.scenes[sceneKey]?.background;
-      const layer=id===BACKGROUND_ID?null:layerOrDefault(s.doc,sceneKey,id);
+      // La primera vez que se arrastra un elemento en una intervención,
+      // parte de su composición global y crea una sobrescritura individual.
+      const layer=id===BACKGROUND_ID?null:(getLayer(s.doc,sceneKey,id)??
+        (fallbackSceneKey?getLayer(s.doc,fallbackSceneKey,id):undefined)??
+        layerOrDefault(s.doc,sceneKey,id));
       if(id!==BACKGROUND_ID&&!layer)return;
       if(id===BACKGROUND_ID?isBackgroundLocked(background):layer?.locked)return; // bloqueado: solo se selecciona
       const rect=stage.getBoundingClientRect();

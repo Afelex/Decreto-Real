@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { defaultLayerTransform, emptyStudioDocumentV3, isBackgroundLocked, type StudioLayer } from './schema.ts';
 import {
   changedSceneKeys, copyScene, editedSceneKeys, layerOrDefault, getLayer, referencedAssetIds, sceneLayers, withAsset, withLayer,
-  effectiveDialogueStyle, withBackgroundFrame, withDialogue, withDialogueDefaults, withLayerPatch, withSceneSettings, withoutLayer, withoutScene, withoutUnusedAssets,
+  effectiveDialogueStyle, effectiveTutorialLayer, tutorialLayoutKey, isTutorialLayoutId, withBackgroundFrame, withDialogue, withDialogueDefaults, withLayerPatch, withSceneSettings, withoutLayer, withoutScene, withoutUnusedAssets,
 } from './ops.ts';
 
 const MEDIA='media-11111111-1111-4111-8111-111111111111';
@@ -168,4 +168,21 @@ test('dialogue chrome: narrower block and developer-only nameplate, progress and
   assert.equal(effectiveDialogueStyle(doc,'prologo/arresto-02').hideNameplate,false);
   doc=withDialogue(doc,ARRESTO,{hideNameplate:null,hideTitle:null});
   assert.equal(doc.scenes[ARRESTO],undefined);
+});
+
+test('director narrativo: cada intervención conserva posición visual y hereda el tablero base',()=>{
+  const id='native-tablero-tutorial-dialogo';
+  assert.equal(isTutorialLayoutId(id),true);
+  assert.equal(isTutorialLayoutId('native-tablero-retrato-jugador'),false);
+  assert.equal(tutorialLayoutKey('g11','movil'),'tutorial/g11-movil');
+  assert.throws(()=>tutorialLayoutKey('../otro','movil'),/no válida/);
+  const layer:StudioLayer={id,kind:'native',...defaultLayerTransform('native'),x:-5,y:-4};
+  let doc=withLayer(emptyStudioDocumentV3(),'tablero/movil',layer);
+  // g11 comienza heredando -5; solo g11 modifica esa ubicación.
+  assert.equal(effectiveTutorialLayer(doc,'g11','movil',id)?.x,-5);
+  doc=withLayer(doc,tutorialLayoutKey('g11','movil'),{...layer,x:-22});
+  assert.equal(effectiveTutorialLayer(doc,'g11','movil',id)?.x,-22);
+  assert.equal(effectiveTutorialLayer(doc,'g12','movil',id)?.x,-5);
+  assert.equal(effectiveTutorialLayer(doc,'g11','horizontal',id),undefined);
+  assert.equal(getLayer(doc,'tablero/movil',id)?.x,-5);
 });
