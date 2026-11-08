@@ -474,3 +474,35 @@ test('editor configures a narrative music mood and one-shot cue without changing
   await expect(music).toHaveValue('silent');
   await expect(sound).toHaveValue('IMPACT');
 });
+
+
+test('Studio uploads and reuses real MP3 in a guided intervention without manual code changes',async({page},info)=>{
+  test.skip(only(['mobile-390'])(info.project.name),'Music library in Studio');
+  await openBoard(page);
+  await page.getByTestId('studio-guide-step').selectOption('1');
+  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  const chooser=page.getByTestId('studio-narrative-music-track');
+  await expect(chooser).toHaveValue('');
+  await page.getByTestId('studio-music-upload').setInputFiles({
+    name:'Prologo - Prueba.mp3',mimeType:'audio/mpeg',
+    buffer:Buffer.from([73,68,51,4,0,0,0,0,0,12,0,0,0,0,0,0,0,0,0,0]),
+  });
+  await expect(chooser).not.toHaveValue('');
+  await expect(chooser.locator('option:checked')).toContainText('Prologo - Prueba.mp3');
+  await expect(page.getByTestId('studio-music-preview')).toHaveAttribute('src',/^blob:/);
+  await page.getByTestId('studio-save').click();
+  await page.reload();
+  await page.getByTestId('studio-guide-step').selectOption('1');
+  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  const saved=await chooser.inputValue();
+  expect(saved).toMatch(/^media-/);
+  await page.getByTestId('studio-guide-step').selectOption('2');
+  await expect(chooser).toHaveValue('');
+  await chooser.selectOption(saved);
+  await expect(chooser).toHaveValue(saved);
+  await page.getByTestId('studio-save').click();
+  const downloadPromise=page.waitForEvent('download');
+  await page.getByTestId('studio-export-publish').click();
+  const download=await downloadPromise;
+  expect(download.suggestedFilename()).toBe('decreto-real-studio-publicacion.zip');
+});
