@@ -35,6 +35,37 @@ export const sceneLayers = (doc:StudioDocumentV3,key:string):readonly StudioLaye
 export const getLayer = (doc:StudioDocumentV3,key:string,id:string):StudioLayer|undefined =>
   sceneLayers(doc,key).find(layer=>layer.id===id);
 
+/**
+ * Fase 1 del director narrativo. El diálogo sigue en `tutorial/g00`;
+ * cada escena visual tiene una variante por perfil de pantalla.
+ *
+ * Studio y las composiciones preparadas desde GitHub comparten estas claves:
+ * - `tablero/movil`: posición predeterminada compartida.
+ * - `tutorial/g00-movil`: posición SOLO para la intervención g00.
+ */
+export type TutorialLayoutProfile='movil'|'horizontal'|'escritorio';
+export const TUTORIAL_LAYOUT_IDS:readonly string[]=[
+  'native-tablero-tutorial-dialogo',
+  'native-tablero-tutorial-rival',
+  'native-tablero-tutorial-jugador',
+  'native-tablero-combo',
+  'native-tablero-moneda',
+  'native-tablero-combo-menu',
+];
+export const isTutorialLayoutId=(id:string):boolean=>TUTORIAL_LAYOUT_IDS.includes(id);
+export function tutorialLayoutKey(stepId:string,profile:TutorialLayoutProfile):string {
+  if(!/^g\d{2}$/.test(stepId))throw new Error('Intervención del tutorial no válida');
+  if(!(['movil','horizontal','escritorio'] as string[]).includes(profile))
+    throw new Error('Perfil del tutorial no válido');
+  return 'tutorial/'+stepId+'-'+profile;
+}
+export function effectiveTutorialLayer(doc:StudioDocumentV3,stepId:string,
+  profile:TutorialLayoutProfile,id:string):StudioLayer|undefined {
+  if(!isTutorialLayoutId(id))return getLayer(doc,'tablero/'+profile,id);
+  return getLayer(doc,tutorialLayoutKey(stepId,profile),id)??
+    getLayer(doc,'tablero/'+profile,id);
+}
+
 /** Inserta o reemplaza una capa (por id). Lanza si la capa no es válida. */
 export function withLayer(doc:StudioDocumentV3,key:string,layer:StudioLayer):StudioDocumentV3 {
   assertSceneKey(key);
