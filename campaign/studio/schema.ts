@@ -12,6 +12,8 @@
  */
 import { STUDIO_ACTORS, type StudioActor, type StudioAssetMeta } from '../studioLayout.ts';
 import { isNarrativeSpriteId } from './narrativeSprites.ts';
+import { STUDIO_NARRATIVE_MUSIC_MODES, STUDIO_NARRATIVE_SOUND_CUES,
+  type StudioNarrativeMusicMode, type StudioNarrativeSoundCue } from './narrativeAudio.ts';
 
 export { STUDIO_ACTORS, type StudioActor, type StudioAssetMeta };
 
@@ -108,6 +110,10 @@ export type StudioNarrativeCard = {
   exitMotion?:StudioPortraitMotion;
   /** Duración en ms de cada animación, no de la pausa narrativa. */
   motionDurationMs?:number;
+  /** Modo de la música de combate durante esta intervención. */
+  musicMode?:StudioNarrativeMusicMode;
+  /** Efecto puntual cuando comienza el texto, no al usar cartas. */
+  soundCue?:StudioNarrativeSoundCue;
   /** Por qué existe la intervención en el relato. */
   intent?:string;
   /** Notas de composición que no se muestran al jugador. */
@@ -281,6 +287,10 @@ export function normalizeNarrativeCard(value:unknown):StudioNarrativeCard|null {
   if((STUDIO_NARRATIVE_TONES as readonly string[]).includes(value.tone as string))
     card.tone=value.tone as StudioNarrativeTone;
   if(isNarrativeSpriteId(value.spriteId))card.spriteId=value.spriteId;
+  if((STUDIO_NARRATIVE_MUSIC_MODES as readonly string[]).includes(value.musicMode as string))
+    card.musicMode=value.musicMode as StudioNarrativeMusicMode;
+  if((STUDIO_NARRATIVE_SOUND_CUES as readonly string[]).includes(value.soundCue as string))
+    card.soundCue=value.soundCue as StudioNarrativeSoundCue;
   if(value.portraitMode==='show'||value.portraitMode==='hide')card.portraitMode=value.portraitMode;
   if((STUDIO_PORTRAIT_MOTIONS as readonly string[]).includes(value.enterMotion as string))
     card.enterMotion=value.enterMotion as StudioPortraitMotion;

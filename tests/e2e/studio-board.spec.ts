@@ -447,3 +447,30 @@ test('changing an expression crossfades the same character without adding anothe
   await expect(portrait.locator('.dr-narrative-crossfade-out')).toHaveCount(0);
   await expect(portrait.locator('img')).toHaveCount(1);
 });
+
+
+test('editor configures a narrative music mood and one-shot cue without changing adjacent beats',async({page},info)=>{
+  test.skip(only(['mobile-390'])(info.project.name),'Narrative audio fields');
+  await openBoard(page);
+  await page.getByTestId('studio-guide-step').selectOption('11');
+  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  const music=page.getByTestId('studio-narrative-music');
+  const sound=page.getByTestId('studio-narrative-sound');
+  await expect(music).toHaveValue('soft');
+  await expect(sound).toHaveValue('none');
+  await music.selectOption('silent');
+  await sound.selectOption('IMPACT');
+  await expect(page.getByTestId('studio-narrative-audio-preview')).toBeEnabled();
+  await page.getByTestId('studio-save').click();
+  await page.reload();
+  await page.getByTestId('studio-guide-step').selectOption('11');
+  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  await expect(music).toHaveValue('silent');
+  await expect(sound).toHaveValue('IMPACT');
+  await page.getByTestId('studio-guide-step').selectOption('12');
+  await expect(music).toHaveValue('normal');
+  await expect(sound).toHaveValue('none');
+  await page.getByTestId('studio-guide-step').selectOption('11');
+  await expect(music).toHaveValue('silent');
+  await expect(sound).toHaveValue('IMPACT');
+});
