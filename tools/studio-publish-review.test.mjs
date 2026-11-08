@@ -28,3 +28,21 @@ test('revisión previa advierte cuando una escena publicada desaparece', () => {
 test('rechaza contenido que no sea el paquete ZIP válido de DRStudio', () => {
   assert.throws(() => inspectStudioPublication(new TextEncoder().encode('contenido inválido')), /respaldo/i);
 });
+
+
+test('avisa si publicar una escena elimina un recurso multimedia antes utilizado', () => {
+  const mediaId = 'media-11111111-1111-4111-8111-111111111111';
+  const old = {
+    version:3,
+    scenes:{'prologo/a':{background:{assetId:mediaId}}},
+    assets:{[mediaId]:{name:'Ilustración',mime:'image/png'}},
+  };
+  const result = inspectStudioPublication(pack({'prologo/a':scene('Nuevo fondo sin recurso')}),old);
+  assert.deepEqual(result.media.removed,[mediaId]);
+  assert.equal(result.requiresRemovalConfirmation,true);
+});
+
+test('rechaza referencias multimedia rotas en lugar de publicar un proyecto incompleto', () => {
+  const mediaId = 'media-22222222-2222-4222-8222-222222222222';
+  assert.throws(() => pack({'prologo/a':{background:{assetId:mediaId}}}),/rota/);
+});
