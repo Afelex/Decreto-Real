@@ -141,7 +141,7 @@ export function withNarrativeCard(doc:StudioDocumentV3,key:string,
   patch:{[K in keyof StudioNarrativeCard]?:StudioNarrativeCard[K]|null}):StudioDocumentV3 {
   assertSceneKey(key);
   const merged:Record<string,unknown>={...doc.scenes[key]?.narrative};
-  for(const field of ['speaker','tone','spriteId','portraitMode','enterMotion','exitMotion','motionDurationMs','musicMode','soundCue','musicAssetId','intent','direction'] as const){
+  for(const field of ['speaker','tone','spriteId','portraitMode','enterMotion','exitMotion','motionDurationMs','musicMode','soundCue','musicAssetId','musicCueMode','musicStartDelayMs','musicStopAfterMs','soundDelayMs','soundMaxDurationMs','intent','direction'] as const){
     if(patch[field]===null)delete merged[field];
     else if(patch[field]!==undefined)merged[field]=patch[field];
   }
