@@ -4,10 +4,10 @@ import './combat-events.css';
 type Side = 'PLAYER' | 'OPPONENT';
 
 /** Compact, persistent status ribbon: blue belongs to the rival; red to the player. */
-export function TurnIndicator({ side }: { side: Side }) {
+export function TurnIndicator({ side, className = '', ...props }: { side: Side } & React.HTMLAttributes<HTMLDivElement>) {
   const player = side === 'PLAYER';
   return (
-    <div className={`dr-event-indicator ${player ? 'is-player' : 'is-opponent'}`}
+    <div {...props} className={`dr-event-indicator ${player ? 'is-player' : 'is-opponent'}${className ? ' ' + className : ''}`}
       role="status" aria-live="polite"
       aria-label={player ? 'Turno actual: tu turno' : 'Turno actual: turno del oponente'}>
       <span className="dr-event-indicator__label">{player ? 'Tu Turno' : 'Turno del Rival'}</span>
