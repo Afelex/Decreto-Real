@@ -189,11 +189,11 @@ test('Studio presents whole tutorial compositions and keeps edits isolated by st
   const coach=page.getByTestId('campaign-guided-coach');
   await expect(coach).toBeVisible();
   await expect(page.locator('.dr-royal-guided-actor.is-rival')).toBeVisible();
-  await chooser.selectOption('05');
+  await chooser.selectOption('5');
   await expect(coach).toBeVisible();
   await expect(coach).toHaveClass(/is-guided-action/);
   await expect(page.locator('.dr-royal-guided-actor.is-player')).toHaveCount(0);
-  await chooser.selectOption('08');
+  await chooser.selectOption('8');
   await expect(page.locator('.dr-royal-combo')).toBeVisible();
   await expect(page.locator('.dr-event-choice')).toBeVisible();
   await chooser.selectOption('03');
@@ -223,7 +223,7 @@ test('Studio presents whole tutorial compositions and keeps edits isolated by st
 test('visual audit flags a dialogue overlapping the hand and can suggest a reversible correction',async({page},info)=>{
   test.skip(only(['mobile-390'])(info.project.name),'Story visual audit');
   await openBoard(page);
-  await page.getByTestId('studio-guide-step').selectOption('05');
+  await page.getByTestId('studio-guide-step').selectOption('5');
   await page.getByTestId('studio-actor-select').selectOption({label:'Tutorial · Ventana de diálogo'});
   const coach=page.getByTestId('campaign-guided-coach');
   const displacement=await page.evaluate(()=>{
@@ -247,7 +247,7 @@ test('visual audit flags a dialogue overlapping the hand and can suggest a rever
 test('player preview hides Studio without advancing tutorial or changing edits',async({page},info)=>{
   test.skip(only(['mobile-390','desktop-1280'])(info.project.name),'Clean narrative preview');
   await openBoard(page);
-  await page.getByTestId('studio-guide-step').selectOption('08');
+  await page.getByTestId('studio-guide-step').selectOption('8');
   await page.getByTestId('studio-actor-select').selectOption({label:'Tutorial · Ventana de diálogo'});
   await expect(page.getByTestId('campaign-guided-coach')).toContainText('Duelo guiado · 9/32');
   await expect(page.locator('.dr-royal-combo')).toBeVisible();
