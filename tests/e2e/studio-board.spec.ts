@@ -196,7 +196,7 @@ test('Studio presents whole tutorial compositions and keeps edits isolated by st
   await chooser.selectOption('8');
   await expect(page.locator('.dr-royal-combo')).toBeVisible();
   await expect(page.locator('.dr-event-choice')).toBeVisible();
-  await chooser.selectOption('03');
+  await chooser.selectOption('3');
   await expect(page.locator('.dr-event-coin-panel')).toBeVisible();
   await chooser.selectOption('11');
   await expect(page.locator('.dr-royal-guided-actor.is-player')).toBeVisible();
