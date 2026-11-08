@@ -128,6 +128,7 @@ export default function StudioInspector(props:Props){
   const [libraryOpen,setLibraryOpen]=React.useState(false);
   const [dialogueScope,setDialogueScope]=React.useState<'beat'|'all'>('beat');
   const dialogueRef=React.useRef<HTMLTextAreaElement|null>(null);
+  const scrollAreaRef=React.useRef<HTMLDivElement|null>(null);
   const inputs=React.useRef<Partial<Record<FileInputId,HTMLInputElement|null>>>({});
   const scene=studio.scene(sceneKey);
   const media=sceneLayers(studio.doc,sceneKey).filter((l):l is StudioMediaLayer=>l.kind==='image'||l.kind==='effect');
@@ -379,6 +380,24 @@ export default function StudioInspector(props:Props){
         {controlsUnlocked?'🔓 Bloquear +/- y barras':'🔒 Desbloquear ajustes'}</button>
       <button type="button" data-testid="studio-publish-quick" onClick={()=>void studio.exportProject(true)}>
         ⇪ Exportar publicación</button>
+      <select className="dr-studio-section-jump" defaultValue="" data-testid="studio-section-jump"
+        aria-label="Ir directamente a una sección del editor"
+        onChange={e=>{
+          const value=e.currentTarget.value;
+          const section=value==="posicion"?".dr-studio-properties":
+            value==="textos"?'[data-testid="studio-dialogue-section"]':".dr-studio-history";
+          const target=scrollAreaRef.current?.querySelector<HTMLElement>(section);
+          if(target){
+            if(target instanceof HTMLDetailsElement)target.open=true;
+            target.scrollIntoView({behavior:"smooth",block:"start"});
+          }
+          e.currentTarget.value="";
+        }}>
+        <option value="">Ir directamente a…</option>
+        <option value="posicion">Posición y escala</option>
+        <option value="textos">Diálogo y títulos</option>
+        <option value="publicacion">Guardar y publicar</option>
+      </select>
     </nav>}
     {FILE_INPUTS.map(file=><input key={file.id} hidden type="file" accept={file.accept}
       aria-label={'Archivo '+file.id}
@@ -387,7 +406,7 @@ export default function StudioInspector(props:Props){
         const chosen=e.currentTarget.files?.[0];e.currentTarget.value='';
         if(chosen)await withFile(file.id,chosen);
       }}/>)}
-    {expanded&&<div className="dr-studio-body" data-testid="studio-inspector-scroll">
+    {expanded&&<div className="dr-studio-body" ref={scrollAreaRef} data-testid="studio-inspector-scroll">
       <p className="dr-studio-mobile-hint">Desliza aquí para recorrer opciones. Los controles de arrastre están bloqueados por defecto; puedes escribir valores exactos.</p>
       {studio.pendingImport&&<div className="dr-studio-import" role="alertdialog" aria-label="Confirmar importación"
         data-testid="studio-import-dialog">
