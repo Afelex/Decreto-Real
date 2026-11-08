@@ -259,7 +259,8 @@
   text-shadow:0 0 6px #fff7a8,0 0 21px #edaa34;
 }
 .dr-royal-screen .dr-royal-combo {
-  top:8px;right:-2px;
+  /* Más arriba y dentro de los márgenes; en Studio se puede reubicar. */
+  top:clamp(-46px,-4dvh,-20px);right:clamp(12px,4vw,24px);
   transform:translate(0,-18%) rotate(-8deg);
   z-index:11;
   text-shadow:2px 3px #811726,0 0 14px #ea3b48;
