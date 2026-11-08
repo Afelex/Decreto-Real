@@ -180,3 +180,41 @@ test('narrative card edits speaker and direction while preserving the guided act
   await page.getByTestId('studio-guide-step').selectOption('12');
   await expect(page.getByTestId('studio-narrative-speaker')).toHaveValue('Xervias');
 });
+
+
+test('Studio presents whole tutorial compositions and keeps edits isolated by step',async({page},info)=>{
+  test.skip(only(['mobile-390'])(info.project.name),'Narrative composition');
+  await openBoard(page);
+  const chooser=page.getByTestId('studio-guide-step');
+  const coach=page.getByTestId('campaign-guided-coach');
+  await expect(coach).toBeVisible();
+  await expect(page.locator('.dr-royal-guided-actor.is-rival')).toBeVisible();
+  await chooser.selectOption('05');
+  await expect(coach).toBeVisible();
+  await expect(coach).toHaveClass(/is-guided-action/);
+  await expect(page.locator('.dr-royal-guided-actor.is-player')).toHaveCount(0);
+  await chooser.selectOption('08');
+  await expect(page.locator('.dr-royal-combo')).toBeVisible();
+  await expect(page.locator('.dr-event-choice')).toBeVisible();
+  await chooser.selectOption('03');
+  await expect(page.locator('.dr-event-coin-panel')).toBeVisible();
+  await chooser.selectOption('11');
+  await expect(page.locator('.dr-royal-guided-actor.is-player')).toBeVisible();
+  await page.getByTestId('studio-actor-select').selectOption({label:'Tutorial · Ventana de diálogo'});
+  const before=await page.getByTestId('studio-y').inputValue();
+  await set(page,'studio-y','-16');
+  await chooser.selectOption('12');
+  const next=await page.getByTestId('studio-y').inputValue();
+  expect(next).not.toBe('-16');
+  await chooser.selectOption('11');
+  await expect(page.getByTestId('studio-y')).toHaveValue('-16');
+  await page.getByTestId('studio-layout-reapply').click();
+  await expect(page.getByTestId('studio-y')).toHaveValue(before);
+  await page.getByTestId('studio-layout-complete').click();
+  await expect(page.getByTestId('studio-y')).toHaveValue(before);
+  await page.getByTestId('studio-save').click();
+  await page.reload();
+  await chooser.selectOption('11');
+  await page.getByTestId('studio-actor-select').selectOption({label:'Tutorial · Ventana de diálogo'});
+  await expect(page.getByTestId('studio-y')).toHaveValue(before);
+});
