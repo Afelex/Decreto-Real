@@ -595,3 +595,29 @@
 .dr-studio-board-panel .dr-studio-narrative-trigger{margin:0;padding:8px;background:#243449;border-radius:6px;
   color:#fce7bf;font:12px/1.35 system-ui,sans-serif}
 .dr-studio-board-panel .dr-studio-narrative-trigger small{display:block;color:#b2c0d3;margin-top:4px}
+
+/* Dirección narrativa: propuestas que se pueden aplicar y deshacer por paso. */
+.dr-studio-board-panel .dr-studio-auto-compose{margin:8px 0;padding:10px;
+  background:#102337e8;border:1px solid #c59a5d;border-radius:10px;color:#f4e4c9}
+.dr-studio-board-panel .dr-studio-auto-compose-title{display:flex;align-items:center;
+  flex-wrap:wrap;justify-content:space-between;gap:4px;font:12px system-ui,sans-serif}
+.dr-studio-board-panel .dr-studio-auto-compose-title span{font-size:10px;color:#bad0db}
+.dr-studio-board-panel .dr-studio-auto-compose-actions{display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:10px 0}
+.dr-studio-board-panel .dr-studio-auto-compose-actions button{box-sizing:border-box;min-height:40px;
+  padding:5px;border:1px solid #bc9860;border-radius:7px;background:#273951;
+  color:#ffeecf;font:700 11px/1.3 system-ui,sans-serif}
+.dr-studio-board-panel .dr-studio-auto-compose-actions button:focus-visible{outline:2px solid #ffe09f}
+.dr-studio-board-panel .dr-studio-auto-compose small{font:11px/1.35 system-ui,sans-serif;color:#becbda}
+/* Durante acciones las instrucciones son una tarjeta compacta, sin capturar
+   toques de cartas. El motor de combate conserva las mismas acciones. */
+.dr-royal-screen .dr-royal-story-coach.is-guided-action:not([data-studio-actor]){pointer-events:none}
+.dr-royal-screen .dr-royal-story-coach.is-guided-action{
+  padding:clamp(6px,1.4dvh,10px) clamp(8px,2vw,12px);
+  max-width:min(92%,360px)}
+.dr-royal-screen .dr-royal-story-coach.is-guided-action p{
+  font-size:clamp(11px,2.7vw,13px);line-height:1.24;margin:4px 0}
+.dr-royal-screen .dr-royal-story-coach.is-guided-action .dr-royal-story-coach-header{
+  font-size:clamp(10px,2.5vw,12px);line-height:1.2}
+.dr-royal-screen .dr-royal-story-coach.is-guided-action .dr-royal-story-coach-hint{
+  font-size:clamp(10px,2.5vw,12px);line-height:1.2}
