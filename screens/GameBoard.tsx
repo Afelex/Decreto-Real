@@ -998,7 +998,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
         const id='native-tablero-tutorial-'+(side==='rival'?'rival':'jugador');
         const preview=board.editing&&board.selected===id;
         const inStory=guidedOpening&&currentGuide&&!currentGuide.action&&guideIndex<3&&
-          (currentGuide.speaker==='Domingo Quispe')===(side==='rival');
+          (board.guideSpeaker(currentGuide)==='Domingo Quispe')===(side==='rival');
         if(!preview&&(!inStory||board.editing))return null;
         return <div key={side} {...board.attrs(id,'dr-royal-guided-actor is-'+side)}
           aria-hidden="true" data-testid="guided-large-actor">
@@ -1009,11 +1009,12 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
       {((guidedOpening && currentGuide && !board.editing) || (board.editing && board.selected==='native-tablero-tutorial-dialogo')) && (()=>{
         const step=board.editing?GUIDED_STEPS[studioGuidePreview]:currentGuide!;
         const stepIndex=board.editing?studioGuidePreview:guideIndex;
+        const speaker=board.guideSpeaker(step);
         return <section {...board.attrs('native-tablero-tutorial-dialogo',
-          'dr-royal-story-coach '+(step.speaker==='Domingo Quispe'?'is-rival':'is-player'))}
+          'dr-royal-story-coach '+(speaker==='Domingo Quispe'?'is-rival':'is-player'))}
           data-testid="campaign-guided-coach" aria-live="polite">
           <div className="dr-royal-story-coach-header">
-            <strong>{step.speaker}</strong>
+            <strong>{speaker}</strong>
             <small>Duelo guiado · {stepIndex + 1}/{GUIDED_STEPS.length}</small>
           </div>
           <p>{board.guideText(step)}</p>
