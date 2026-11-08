@@ -658,3 +658,16 @@
   display:block;color:#c4d7e4;font-size:10px;font-weight:400;margin-top:3px}
 .dr-royal-screen .dr-studio-return-from-preview:focus-visible{
   outline:3px solid #ffda8b;outline-offset:2px}
+
+/* Fase 2: miniatura del sprite elegido, siempre debajo del selector narrativo. */
+.dr-studio-board-panel .dr-studio-narrative-sprite-preview{
+  display:flex;align-items:center;gap:9px;min-height:88px;padding:7px;
+  border:1px solid #665c49;border-radius:8px;background:#152439;
+}
+.dr-studio-board-panel .dr-studio-narrative-sprite-preview img{
+  display:block;width:65px;height:90px;object-fit:contain;object-position:center;
+  background:#0b1726;border-radius:6px;flex-shrink:0;
+}
+.dr-studio-board-panel .dr-studio-narrative-sprite-preview span{
+  font:11px/1.35 system-ui,sans-serif;color:#e7d3b3;
+}
