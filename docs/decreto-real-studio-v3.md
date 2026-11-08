@@ -85,6 +85,12 @@ Pulsa **🖼** para abrir la biblioteca:
 ## Pantalla VS (intervención 21)
 La pantalla de enfrentamiento tiene ahora un diseño propio: rival arriba (franja azul), Xervias abajo (franja roja), nombres con la inicial grande y una marca «VS» metálica en el centro. En «Elemento a editar» aparecen sus piezas (**Marco completo**, **Franja** y **Nombre** de cada personaje, **Marca «VS»**): puedes moverlas, escalarlas, rotarlas, cambiar su capa, ocultarlas o marcarlas «solo dev».
 
+## Tablero de juego
+Abre **☷ → ♜ Tablero de juego** (o `?drDev=1#/game?studio=1`). Puedes mover, escalar, rotar, cambiar la capa y la opacidad, espejar, ocultar o marcar «solo dev» los retratos, los mazos, los marcadores de impactos, la mano oculta del rival y los botones «Fin de turno» y menú. Mientras editas, la partida queda congelada.
+- Los ajustes se guardan **por formato de pantalla** (móvil vertical, horizontal y escritorio): el panel indica cuál estás editando. Para editar otro, gira el móvil o cambia el tamaño de la ventana.
+- La mano del jugador y las zonas donde se juegan las cartas no se pueden mover, para no romper el juego.
+- 📋 Copiar / 📥 Pegar posición también funciona aquí, incluso entre formatos.
+
 ## Otras pantallas de la historia
 Abre **☷ Otras pantallas** (o `#/studio/escenas`) y elige una conversación tras victoria, la entrada o liberación de una región, la crónica, el epílogo o los créditos. En cada una puedes cambiar los textos (con **negrita**), el rótulo, el fondo y añadir sprites o efectos, y marcar textos o capas como «solo desarrollador». Se abren con una partida de prueba: tu partida real no cambia.
 

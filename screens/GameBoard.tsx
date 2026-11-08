@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { StudioBoardPanel, StudioBoardProvider, useBoardStudio } from './studio/StudioBoardKit';
 import { OPPONENT_IMG, PLAYER_IMG } from '../constants';
 import { CardData, GamePhase, CardType } from '../types';
 import { useAudio } from '../contexts/AudioContext';
@@ -131,11 +132,14 @@ type GameBoardProps = {
   /** Overlay illustrations for narrated moments; do not replace the fixed HUD portraits. */
   guidedNarrativeSprites?: {player:string;opponent:string};
 };
-const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation, storyConversation, playerMysticSlots, opponentMysticSlots, guidedOpening = false, guidedNarrativeSprites }) => {
+const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation, storyConversation, playerMysticSlots, opponentMysticSlots, guidedOpening = false, guidedNarrativeSprites }) => {
   const scenery = resolveBattleScenery(presentation);
   const playerPortrait = presentation?.playerPortrait ?? PLAYER_IMG;
   const rivalPortrait = presentation?.opponentPortrait ?? OPPONENT_IMG;
   const navigate = useNavigate();
+  // Studio · Tablero: ajustes visuales por perfil de pantalla (solo QA edita).
+  const boardLayoutRef = React.useRef<HTMLDivElement | null>(null);
+  const board = useBoardStudio(boardLayoutRef);
   const { playSound, sfxEnabled, musicEnabled, toggleSfx, toggleMusic } = useAudio();
 
   const [phase, setPhase] = useState<GamePhase>('INIT');
@@ -852,12 +856,13 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
       )}
 
       {/* DR-C08 — Scenic playfield. Portraits and the backdrop are independent assets. */}
-      <div className="dr-royal-layout">
+      <div ref={boardLayoutRef} className={'dr-royal-layout' + (board.editing ? ' dr-board-editing' : '')}
+        onClickCapture={board.editing ? event => { event.stopPropagation(); event.preventDefault(); } : undefined}>
         <header className="dr-royal-rival-area" aria-label="Estado del rival">
-          <div className="dr-royal-deck dr-royal-rival-deck">
+          <div {...board.attrs('native-tablero-mazo-rival', 'dr-royal-deck dr-royal-rival-deck')}>
             <div className="dr-royal-deck-back"><span>{opponentDeck.length}</span><small>MAZO</small></div>
           </div>
-          <div className="dr-royal-character">
+          <div {...board.attrs('native-tablero-retrato-rival', 'dr-royal-character')}>
             <div className="dr-royal-character-frame gold-leaf-frame">
               <img src={rivalPortrait} alt="Retrato del rival"/>
               <PortraitOrnament/>
@@ -865,12 +870,12 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
             </div>
 
           </div>
-          {!guidedOpening && <button className="dr-royal-menu-button" type="button" onClick={handleMenuToggle} aria-label="Abrir menú de pausa">
+          {!guidedOpening && <button {...board.attrs('native-tablero-menu', 'dr-royal-menu-button')} type="button" onClick={handleMenuToggle} aria-label="Abrir menú de pausa">
             <span className="material-icons" aria-hidden="true">menu</span>
           </button>}
         </header>
 
-        <section className="dr-royal-rival-hand" aria-label={`Mano del rival: ${opponentHand.length} cartas ocultas`}>
+ <section {...board.attrs('native-tablero-mano-rival', 'dr-royal-rival-hand')} aria-label={`Mano del rival: ${opponentHand.length} cartas ocultas`}>
           <div className="dr-royal-rival-fan" aria-hidden="true">
             {opponentHand.map((card, i) => {
               const distance = i - (opponentHand.length - 1) / 2;
@@ -887,7 +892,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
         <section className={`dr-royal-field${selectedCard ? ' is-guiding' : ''}${dragAt ? ' is-dragging' : ''}${selectedCard && selectedCard.type !== 'IMPACT' ? ' is-regular' : ''}`}
           style={{ '--arrow-left': selectedCard?.type === 'IMPACT' ? `${((selectedCard.rank ?? 1) - .5) * 25}%` : '50%' } as React.CSSProperties}
           data-card-drop="field" aria-label="Campo central de activación">
-          <div className="dr-royal-rival-progress" role="group"
+          <div {...board.attrs('native-tablero-progreso-rival', 'dr-royal-rival-progress')} role="group"
             aria-label={`Progreso de impactos del rival: ${opponentImpactLevel} de 4`}>
             {[1, 2, 3, 4].map(lvl => {
               const completed = opponentImpactLevel >= lvl;
@@ -905,7 +910,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
             <span className="dr-royal-activation-icon" aria-hidden="true">✦</span>
             <span id="dr-royal-help" className="dr-royal-field-prompt" aria-live="polite">{helpText}</span>
           </button>
-          <div className="dr-royal-impact-track" role="group" aria-label="Las cuatro posiciones de Impacto">
+          <div {...board.attrs('native-tablero-impactos', 'dr-royal-impact-track')} role="group" aria-label="Las cuatro posiciones de Impacto">
             {[1,2,3,4].map(lvl => {
               const completed = playerImpactLevel >= lvl;
               const available = canHandleCards && selectedCard?.type === 'IMPACT' && selectedCard.rank === lvl && lvl === playerImpactLevel + 1 && !playerImpactPlayedThisTurn;
@@ -954,12 +959,12 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
         </section>
 
         <footer className="dr-royal-player-area" aria-label="Tus estadísticas y controles">
-          <div className="dr-royal-player-deck">
+          <div {...board.attrs('native-tablero-mazo-jugador', 'dr-royal-player-deck')}>
             <button className="dr-royal-audio" type="button" onClick={handleGlobalAudioToggle}
               aria-label={isMuted ? 'Activar sonido' : 'Silenciar sonido'}><span className="material-icons" aria-hidden="true">{isMuted ? 'volume_off' : 'volume_up'}</span></button>
             <div className="dr-royal-deck-back red"><span>{playerDeck.length}</span><small>MAZO</small></div>
           </div>
-          <div className="dr-royal-character player">
+          <div {...board.attrs('native-tablero-retrato-jugador', 'dr-royal-character player')}>
             <div className="dr-royal-character-frame gold-leaf-frame">
               <img src={playerPortrait} alt="Retrato de tu personaje"/>
               <PortraitOrnament/>
@@ -967,7 +972,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
             </div>
 
           </div>
-          <button className="dr-royal-finish" type="button" onClick={handleEndTurn}
+          <button {...board.attrs('native-tablero-fin-turno', 'dr-royal-finish')} type="button" onClick={handleEndTurn}
             disabled={endTurnUnavailable}
             aria-label="Terminar turno" data-art-version="hud-v4">
             <EndTurnOrnament disabled={endTurnUnavailable}/>
@@ -975,6 +980,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation
           </button>
         </footer>
       </div>
+      <StudioBoardPanel sceneKey={board.sceneKey} profile={board.profile}/>
       {dragAt && <div className={`dr-royal-drag-ghost ${playerHand.find(card => card.id === dragAt.id)?.type.toLowerCase() ?? ""}`} aria-hidden="true"
         style={{ left: dragAt.x, top: dragAt.y }}>
         <img src={playerHand.find(card => card.id === dragAt.id)?.img ?? IMG_ATTACK} alt=""/>
@@ -1047,5 +1053,8 @@ function romanize(num: number) {
   for (let i in lookup) { while (num >= lookup[i]) { roman += i; num -= lookup[i]; } }
   return roman;
 }
+
+/** Tablero con su capa de Decreto Real Studio (ajustes publicados; edición solo en QA). */
+const GameBoard: React.FC<GameBoardProps> = props => <StudioBoardProvider><GameBoardScreen {...props}/></StudioBoardProvider>;
 
 export default GameBoard;

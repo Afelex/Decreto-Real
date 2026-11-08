@@ -39,6 +39,7 @@ export default function StudioScenesCatalog(){
       <h2>Prólogo cinematográfico</h2>
       <ul>
         <li><button type="button" data-testid="studio-catalog-prologo" onClick={()=>navigate('/studio')}>✦ Prólogo · 49 intervenciones</button></li>
+        <li><button type="button" data-testid="studio-catalog-tablero" onClick={()=>navigate('/game?studio=1')}>♜ Tablero de juego · retratos, mazos y botones</button></li>
         {mapDestination&&<li><button type="button" data-testid="studio-catalog-cronica"
           onClick={()=>open(mapDestination,'/campania/historia')}>Crónica · El Sello y la Revolución Solar</button></li>}
       </ul>
