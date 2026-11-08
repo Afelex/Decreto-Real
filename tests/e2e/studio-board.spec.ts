@@ -60,3 +60,36 @@ test('the scenes catalog opens the board editor',async({page},info)=>{
   await page.getByTestId('studio-catalog-tablero').click();
   await expect(page.getByTestId('studio-board-profile')).toBeVisible();
 });
+
+
+test('the player hand and both turn labels can be positioned separately in Studio',async({page},info)=>{
+  test.skip(only(['mobile-390','landscape','desktop-1280'])(info.project.name),'Studio turn labels and hand');
+  await openBoard(page);
+  const hand=page.locator('.dr-royal-player-hand');
+  await expect(hand).toHaveAttribute('data-studio-actor','native-tablero-mano-jugador');
+  const handBefore=(await hand.boundingBox())!;
+  await page.getByTestId('studio-actor-select').selectOption({label:'Tu mano (cartas)'});
+  await expect(page.getByTestId('studio-visible')).toBeDisabled();
+  await expect(page.getByTestId('studio-dev-only')).toBeDisabled();
+  await set(page,'studio-y','-6');
+  const handAfter=(await hand.boundingBox())!;
+  expect(handAfter.y).toBeLessThan(handBefore.y-10);
+
+  for(const [label,selector] of [
+    ['Etiqueta «Tu Turno»','.dr-event-indicator.is-player'],
+    ['Etiqueta «Turno del Oponente»','.dr-event-indicator.is-opponent'],
+  ]){
+    const indicator=page.locator(selector);
+    await expect(indicator).toBeVisible();
+    const before=(await indicator.boundingBox())!;
+    await page.getByTestId('studio-actor-select').selectOption({label});
+    await set(page,'studio-x','-5');
+    const after=(await indicator.boundingBox())!;
+    expect(after.x).toBeLessThan(before.x-10);
+  }
+  await page.getByTestId('studio-save').click();
+  await page.reload();
+  await expect(hand).toHaveClass(/dr-board-adjusted/);
+  await expect(page.locator('.dr-event-indicator.is-player')).toHaveClass(/dr-board-adjusted/);
+  await expect(page.locator('.dr-event-indicator.is-opponent')).toHaveClass(/dr-board-adjusted/);
+});
