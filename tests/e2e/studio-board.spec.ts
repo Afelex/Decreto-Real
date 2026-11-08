@@ -272,7 +272,7 @@ test('Studio selects a real narrative expression and the guided portrait follows
   const sprite=page.getByTestId('studio-narrative-sprite');
   const preview=page.getByTestId('studio-narrative-sprite-preview').locator('img');
   const actor=page.locator('.dr-royal-guided-actor.is-rival img');
-  await expect(sprite).toHaveValue('');
+  await expect(sprite).toHaveValue('domingo-arrogante');
   await expect(preview).toHaveAttribute('src',/domingo_02_arrogante\.webp/);
   await expect(actor).toHaveAttribute('src',/domingo_02_arrogante\.webp/);
   await sprite.selectOption('domingo-burlon');
