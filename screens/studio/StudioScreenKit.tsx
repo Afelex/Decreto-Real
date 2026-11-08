@@ -9,6 +9,7 @@ import { StudioProvider, useStudio } from './StudioContext';
 import { studioLayerStyle } from './StageComposer';
 import { useStudioDrag } from './useStudioDrag';
 import { StudioTextArea } from './StudioTextArea';
+import {StudioSceneAVDirector} from './StudioSceneAVDirector';
 import '../decreto-real-studio.css';
 
 /**
@@ -183,6 +184,9 @@ export function StudioScreenPanel({label,sceneKey,originalTitle,texts}:PanelProp
           onClick={()=>studio.apply(d=>withSceneSettings(d,sceneKey,{titleDevOnly:!scene?.titleDevOnly}),'Visibilidad del rótulo cambiada')}>
           {scene?.titleDevOnly?'🛠 Rótulo solo dev':'👁 Rótulo para todos'}</button>
       </>}
+      <StudioSceneAVDirector sceneKey={text?.key??sceneKey}
+        originalText={text?.original??originalTitle??label}
+        defaultSpeaker={text?.label??label} label={text?.label??label}/>
       <div className="dr-studio-divider">Capas y fondo</div>
       <div className="dr-studio-actions">
         <button type="button" data-testid="studio-add" onClick={()=>pick('image')}>＋ Sprite</button>
