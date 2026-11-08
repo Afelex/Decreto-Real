@@ -649,7 +649,7 @@ test('Publicar campaña guides export and GitHub review without storing credenti
   await expect(dialog).toContainText('URL HTTPS');
   await expect(dialog).toContainText('Revisa y aprueba');
   await expect(page.getByTestId('studio-publish-github')).toHaveAttribute(
-    'href','https://github.com/Afelex/Decreto-Real/actions');
+    'href','https://github.com/Afelex/Decreto-Real/actions/workflows/studio-publicar.yml');
   await expect(page.getByTestId('studio-publish-github')).toHaveAttribute('rel',/noopener/);
   const [download]=await Promise.all([
     page.waitForEvent('download'),
