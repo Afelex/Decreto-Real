@@ -160,6 +160,15 @@ En **Ficha narrativa** aparece **Ilustración narrativa** con miniatura. El modo
 
 - Este hito **no** integra todavía animaciones de entrada/salida, expresiones con sincronización labial ni audio por intervención.
 
+### Dirección de movimiento de personajes — Fase 2
+En **Ficha narrativa → Entrada y salida animadas**, cada intervención del duelo guiado permite definir los movimientos independientes de **entrada** y **salida** del personaje: **Sin animación**, **Fundido**, **Desde/Hacia la izquierda**, **Desde/Hacia la derecha** y **Aparición dramática (zoom)**. La duración compartida de ambas transiciones se ajusta entre **180 y 1200 ms** mediante valores listos para usar. Pulsa **▶ Reproducir entrada y salida** para revisar el resultado sin avanzar el combate ni modificar tus cartas.
+
+Los nuevos campos del manifiesto v3 son `scenes["tutorial/g00"].narrative.enterMotion`, `.exitMotion` y `.motionDurationMs`. Una escena sin valores usa **fundido de 320 ms**, y cualquier dato desconocido o duración fuera del rango seguro se valida durante la importación. Los cambios de un borrador local siguen teniendo prioridad sobre propuestas que publiquemos desde GitHub.
+
+Las transiciones se aplican a **la imagen interior**, nunca al contenedor de su posición: así los ajustes de escala, coordenadas y arrastre en DRStudio permanecen intactos. El retrato saliente puede terminar su animación antes de desaparecer, y el siguiente inicia la suya sin cambiar el orden del duelo. La preferencia del sistema **reducir movimiento** evita estas animaciones.
+
+Preparé una primera dirección de movimiento en **diez escenas importantes** (g00, g01, g02, g10, g11, g16, g22, g27, g28 y g29). Es un borrador artístico, editable; no afecta modo IA ni multijugador. Aún no es una línea de tiempo audiovisual con música ni animaciones de cartas configurables: eso corresponde a los próximos hitos.
+
 ### Recorrido narrativo y lectura del tutorial — Fase 1
 El nuevo panel desplegable **«Recorrido narrativo · 32 pasos»** en Studio · Tablero permite recorrer todas las intervenciones con **Anterior**, **Siguiente** y **Siguiente aviso**. También muestra una lista filtrable (**Todos** / **Solo los que tienen avisos**) con acceso directo al paso elegido.
 
