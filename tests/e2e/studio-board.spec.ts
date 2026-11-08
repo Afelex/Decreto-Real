@@ -162,7 +162,7 @@ test('narrative card edits speaker and direction while preserving the guided act
   await page.getByTestId('studio-guide-step').selectOption('11');
   await page.getByTestId('studio-narrative-card').locator('summary').click();
   const intent=page.getByTestId('studio-narrative-intent');
-  await expect(intent).toContainText('Explicar el daño recibido');
+  await expect(intent).toHaveValue(/Explicar el daño recibido/);
   await expect(page.getByTestId('studio-narrative-trigger')).toContainText('Continuar diálogo');
   await page.getByTestId('studio-actor-select').selectOption({label:'Tutorial · Ventana de diálogo'});
   await page.getByTestId('studio-narrative-speaker').selectOption('Domingo Quispe');
