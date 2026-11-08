@@ -274,10 +274,12 @@ Abre **☷ Otras pantallas** (o `#/studio/escenas`) y elige una conversación tr
 - La publicación sigue limitada al prólogo; las demás pantallas corresponden a la fase 7.
 
 ## Publicar para todos los jugadores
-1. Pulsa **⇪ Exportar para publicar**. El ZIP contiene el documento v3 y solo los medios usados; se comprueban firmas, referencias y límites (25 MB por archivo, 200 MB en total).
-2. Aloja el ZIP en una URL HTTPS accesible sin credenciales. Ejecuta **Studio · Preparar publicación mediante PR** desde GitHub Actions e introduce esa URL.
+1. Pulsa **⇪ Publicar campaña** en DRStudio. El asistente explica los pasos y ofrece **1. Descargar ZIP**, que exporta el documento v3 y solo los medios utilizados, validando firmas, referencias y límites (25 MB por archivo, 200 MB en total).
+2. Aloja el ZIP en una URL HTTPS descargable de forma segura. El asistente ofrece **2. Abrir GitHub Actions**; allí ejecuta **Studio · Preparar publicación mediante PR** e introduce la URL. No subas contenido privado a un alojamiento público sin autorización.
 3. El workflow valida el paquete, prepara `public/studio/composiciones.json` y `public/studio/media/`, elimina los medios publicados sin uso, ejecuta pruebas y compilación, y abre una rama `studio/publicacion-*` con un PR hacia `main`.
-4. Revisa el PR antes de fusionarlo. El navegador nunca escribe en GitHub ni guarda tokens. La publicación llega al desplegar la versión fusionada.
+4. Revisa el PR antes de fusionarlo. El navegador nunca escribe en GitHub ni guarda tokens. La publicación llega al desplegar la versión fusionada. La ventana «Publicar campaña» es una guía asistida, no una subida automática del archivo ni un despliegue con un solo clic.
+
+Para inspeccionar las diferencias **antes** de aplicar el ZIP en un checkout del repositorio, ejecuta `node --experimental-strip-types tools/studio-publish-review.mjs ruta/al/paquete.zip .`. Se muestran escenas y medios añadidos, modificados o eliminados; si hay desapariciones, el comando devuelve código 2 para exigir revisión. La ejecución normal del workflow debe comprobar estas advertencias antes de aceptar una publicación.
 
 Para preparar los mismos archivos localmente con Node 22 o superior:
 ```bash
