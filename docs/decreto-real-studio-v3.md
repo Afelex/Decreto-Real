@@ -161,7 +161,7 @@ El nuevo panel desplegable **«Recorrido narrativo · 32 pasos»** en Studio · 
 
 La revisión lee los **textos realmente guardados en tu borrador**, no únicamente el guion inicial. Advierte cuando un texto está vacío, es demasiado largo para un teléfono, acumula explicaciones mientras el jugador debe tocar cartas o no deja clara la acción obligatoria. Al corregirlo en **Texto de esta intervención**, el informe se actualiza sin guardar o publicar nada automáticamente.
 
-Las métricas de **caracteres, líneas estimadas y segundos aproximados** son orientativas: no analizan la calidad literaria ni reemplazan la revisión visual del solapamiento real. El panel permanece plegado por defecto para mantener libre el espacio del móvil. Ninguna revisión modifica el combate, los puntos de vida ni el orden de las 32 acciones.
+Las métricas de **caracteres, líneas estimadas y segundos aproximados** son orientativas: no analizan la calidad literaria ni reemplazan la revisión visual del solapamiento real. En **Revisión de legibilidad** se muestra además el tamaño tipográfico y el número de líneas medido directamente en el navegador para la intervención visible; las instrucciones de acción tienen una tipografía inicial mayor. El panel permanece plegado por defecto para mantener libre el espacio del móvil. Ninguna revisión modifica el combate, los puntos de vida ni el orden de las 32 acciones.
 
 Como primer borrador editorial se sintetizaron ocho explicaciones del tutorial (`g02`, `g04`, `g08`, `g14`, `g17`, `g19`, `g23`, `g29`) en el manifiesto publicado, conservando sus 32 fichas narrativas y las 96 composiciones iniciales. Los borradores locales que ya tengan un texto editado para esos pasos prevalecen: no necesitas borrar ni volver a crear nada.
 
