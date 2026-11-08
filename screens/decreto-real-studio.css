@@ -545,3 +545,6 @@
   .dr-studio-toolbar>button{min-width:36px;min-height:40px;padding:3px 4px}
   .dr-studio-panel.dr-studio-dock-bottom{top:auto;bottom:calc(65px + env(safe-area-inset-bottom))}
 }
+
+.dr-studio-quick-actions .dr-studio-section-jump{grid-column:1/-1;min-height:36px;background:#172336;color:#fceaca;border:1px solid #ab9370;border-radius:7px;font:12px system-ui,sans-serif;padding:5px 8px}
+.dr-studio-body{scroll-behavior:smooth}
