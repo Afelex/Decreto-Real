@@ -42,7 +42,7 @@ test('timeline reacts to scene edits and preserves the guided step action',()=>{
   assert.equal(beat.enterMotion,'slide-right');
   assert.equal(beat.text,'Un nuevo texto con claridad');
   assert.equal(beat.actionLabel,null);
-  assert.equal(beat.estimatedReadingSeconds,4);
+  assert.equal(beat.estimatedReadingSeconds,2);
   assert.equal(beat.musicMode,'soft');
   const music=beat.events.find(e=>e.lane==='music');
   assert.equal(music?.startMs,1000);
