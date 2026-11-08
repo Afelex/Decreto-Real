@@ -140,6 +140,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   // Studio · Tablero: ajustes visuales por perfil de pantalla (solo QA edita).
   const boardLayoutRef = React.useRef<HTMLDivElement | null>(null);
   const board = useBoardStudio(boardLayoutRef);
+  const [studioGuidePreview,setStudioGuidePreview] = useState(0);
   const { playSound, sfxEnabled, musicEnabled, toggleSfx, toggleMusic } = useAudio();
 
   const [phase, setPhase] = useState<GamePhase>('INIT');
@@ -843,8 +844,9 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
         </div>
       )}
 
-      {showSpecialSelection && (
-        <ComboChoicePanel level={comboChoice}
+      {(showSpecialSelection || board.editing && board.selected==='native-tablero-combo-menu') && (
+        <ComboChoicePanel level={showSpecialSelection?comboChoice:2} preview={board.editing}
+          panelProps={board.attrs('native-tablero-combo-menu','')}
           onDamage={() => {
             if (guidedOpening && !guideAllows('combo2')) return;
             void triggerSpecialAbility('PLAYER', 'DAMAGE', comboChoice).then(() => guideAdvance('combo2'));
@@ -925,8 +927,8 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
               </button>;
             })}
           </div>
-          {playerGauge >= 2 && phase === 'PLAYER_TURN' && <div key={playerGauge} className={`dr-royal-combo combo-${playerGauge}`}
-            aria-label={`Combo por ${playerGauge}`} role="status"><strong>COMBO</strong><b>×{playerGauge}</b><em>de {{ ATTACK: 'Ataque', DEFENSE: 'Defensa', IMPACT: 'Impacto', ORDER: 'Orden' }[playerLastType ?? 'ATTACK']}</em></div>}
+          {(playerGauge >= 2 && phase === 'PLAYER_TURN' || board.editing && board.selected==='native-tablero-combo') && <div {...board.attrs('native-tablero-combo', `dr-royal-combo combo-${playerGauge>=2?playerGauge:2}`)}
+            aria-label={`Combo por ${playerGauge>=2?playerGauge:2}`} role="status"><strong>COMBO</strong><b>×{playerGauge>=2?playerGauge:2}</b><em>de {{ ATTACK: 'Ataque', DEFENSE: 'Defensa', IMPACT: 'Impacto', ORDER: 'Orden' }[playerLastType ?? 'ATTACK']}</em></div>}
         </section>
 
         <section {...board.attrs('native-tablero-mano-jugador', 'dr-royal-player-hand')} aria-label={`Tu mano: ${playerHand.length} cartas`}>
@@ -980,36 +982,49 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
           </button>
         </footer>
       </div>
-      <StudioBoardPanel sceneKey={board.sceneKey} profile={board.profile}/>
+      <StudioBoardPanel sceneKey={board.sceneKey} profile={board.profile}
+        previewGuideIndex={studioGuidePreview} onPreviewGuideIndex={setStudioGuidePreview}/>
       {dragAt && <div className={`dr-royal-drag-ghost ${playerHand.find(card => card.id === dragAt.id)?.type.toLowerCase() ?? ""}`} aria-hidden="true"
         style={{ left: dragAt.x, top: dragAt.y }}>
         <img src={playerHand.find(card => card.id === dragAt.id)?.img ?? IMG_ATTACK} alt=""/>
       </div>}
 
-      {guidedOpening && currentGuide && !currentGuide.action && guideIndex<3 && guidedNarrativeSprites && (
-        <div className={'dr-royal-guided-actor '+(currentGuide.speaker==='Domingo Quispe'?'is-rival':'is-player')} aria-hidden="true" data-testid="guided-large-actor">
-          <img src={currentGuide.speaker==='Domingo Quispe'?guidedNarrativeSprites.opponent:guidedNarrativeSprites.player} alt=""/>
-        </div>
-      )}
-      {guidedOpening && currentGuide && (
-        <section className={'dr-royal-story-coach '+(currentGuide.speaker==='Domingo Quispe'?'is-rival':'is-player')} data-testid="campaign-guided-coach" aria-live="polite">
+      {(['rival','player'] as const).map(side=>{
+        const id='native-tablero-tutorial-'+(side==='rival'?'rival':'jugador');
+        const preview=board.editing&&board.selected===id;
+        const inStory=guidedOpening&&currentGuide&&!currentGuide.action&&guideIndex<3&&
+          (currentGuide.speaker==='Domingo Quispe')===(side==='rival');
+        if(!preview&&(!inStory||board.editing))return null;
+        return <div key={side} {...board.attrs(id,'dr-royal-guided-actor is-'+side)}
+          aria-hidden="true" data-testid="guided-large-actor">
+          <img src={side==='rival'?(guidedNarrativeSprites?.opponent??rivalPortrait):
+            (guidedNarrativeSprites?.player??playerPortrait)} alt=""/>
+        </div>;
+      })}
+      {((guidedOpening && currentGuide && !board.editing) || (board.editing && board.selected==='native-tablero-tutorial-dialogo')) && (()=>{
+        const step=board.editing?GUIDED_STEPS[studioGuidePreview]:currentGuide!;
+        const stepIndex=board.editing?studioGuidePreview:guideIndex;
+        return <section {...board.attrs('native-tablero-tutorial-dialogo',
+          'dr-royal-story-coach '+(step.speaker==='Domingo Quispe'?'is-rival':'is-player'))}
+          data-testid="campaign-guided-coach" aria-live="polite">
           <div className="dr-royal-story-coach-header">
-            <strong>{currentGuide.speaker}</strong>
-            <small>Duelo guiado · {guideIndex + 1}/{GUIDED_STEPS.length}</small>
+            <strong>{step.speaker}</strong>
+            <small>Duelo guiado · {stepIndex + 1}/{GUIDED_STEPS.length}</small>
           </div>
-          <p>{currentGuide.text}</p>
-          {!currentGuide.action
+          <p>{board.guideText(step)}</p>
+          {!step.action
             ? <button type="button" onClick={() => {
+                if (board.editing) return;
                 if (guideIndex === GUIDED_STEPS.length - 1) handleBattleEndContinue();
                 else guideAdvance();
-              }}>{guideIndex === GUIDED_STEPS.length - 1 ? 'Ver desenlace ›' : 'Continuar ›'}</button>
-            : <small className="dr-royal-story-coach-hint">{currentGuide.action.startsWith('rival') ? 'El guardia responde…' :
-                  guidedCardId ? 'Selecciona la carta iluminada y arrástrala al campo.' :
-                  currentGuide.action === 'coin' ? 'Pulsa la moneda para lanzarla.' :
-                  currentGuide.action.startsWith('combo') ? 'Elige la opción indicada en el menú de Combo.' :
+              }}>{stepIndex === GUIDED_STEPS.length - 1 ? 'Ver desenlace ›' : 'Continuar ›'}</button>
+            : <small className="dr-royal-story-coach-hint">{step.action.startsWith('rival') ? 'El guardia responde…' :
+                  (board.editing?GUIDED_ACTION_CARDS[step.action]:guidedCardId) ? 'Selecciona la carta iluminada y arrástrala al campo.' :
+                  step.action === 'coin' ? 'Pulsa la moneda para lanzarla.' :
+                  step.action.startsWith('combo') ? 'Elige la opción indicada en el menú de Combo.' :
                   'Pulsa FIN TURNO.'}</small>}
-        </section>
-      )}
+        </section>;
+      })()}
       {/* Combat cues are brief overlays; the field remains visible. */}
       {/* Studio muestra ambos rótulos para ajustarlos por separado aunque no sea su turno. */}
       {((board.editing && board.selected!=='native-tablero-turno-jugador') || (!board.editing && turnOwner === 'PLAYER' && (phase === 'PLAYER_TURN' || phase === 'OPPONENT_TURN'))) &&
@@ -1025,8 +1040,11 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
           variant={phase === 'START_BANNER' ? 'opening' : turnOwner === 'PLAYER' ? 'player' : 'opponent'}
           ribbonProps={phase === 'START_BANNER' ? undefined : board.attrs(turnOwner==='PLAYER'?'native-tablero-turno-jugador':'native-tablero-turno-rival','')}
           turn={turnCount} />}
-      {phase === 'COIN_TOSS' && !storyMoment &&
-        <CoinTossPanel coinSide={coinSide} isFlipping={isCoinFlipping} onToss={handleCoinToss} />}
+      {((phase === 'COIN_TOSS' && !storyMoment && !board.editing)||
+        (board.editing&&board.selected==='native-tablero-moneda'))&&
+        <CoinTossPanel coinSide={board.editing?null:coinSide} isFlipping={board.editing?false:isCoinFlipping}
+          onToss={board.editing?()=>{}:handleCoinToss} preview={board.editing}
+          panelProps={board.attrs('native-tablero-moneda','')}/>}
       {storyMoment && storySpeech && storyConversation && (
         <StorySpeechPanel speech={storySpeech} rivalName={storyConversation.opponentName} rivalRole={storyConversation.opponentRole}
           playerPortrait={playerPortrait} rivalPortrait={rivalPortrait}
