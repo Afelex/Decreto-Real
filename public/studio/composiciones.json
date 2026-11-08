@@ -920,6 +920,2118 @@
         "intent": "Cerrar el tutorial con una victoria clara y satisfactoria.",
         "direction": "Anuncio de victoria y transición posterior. No ocultar la confirmación al jugador."
       }
+    },
+    "tutorial/g00-movil": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-rival",
+          "kind": "native",
+          "x": 2,
+          "y": -1,
+          "scale": 1.16,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": -7,
+          "y": -4,
+          "scale": 0.78,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g00-horizontal": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-rival",
+          "kind": "native",
+          "x": 2,
+          "y": -1,
+          "scale": 1.1,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": -7,
+          "y": -2,
+          "scale": 0.84,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g00-escritorio": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-rival",
+          "kind": "native",
+          "x": 2,
+          "y": -1,
+          "scale": 1.2,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": -7,
+          "y": -2,
+          "scale": 0.88,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g01-movil": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-jugador",
+          "kind": "native",
+          "x": -2,
+          "y": 0,
+          "scale": 1.08,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 2,
+          "y": -4,
+          "scale": 0.85,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g01-horizontal": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-jugador",
+          "kind": "native",
+          "x": -2,
+          "y": 0,
+          "scale": 1.03,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 2,
+          "y": -2,
+          "scale": 0.91,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g01-escritorio": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-jugador",
+          "kind": "native",
+          "x": -2,
+          "y": 0,
+          "scale": 1.12,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 2,
+          "y": -2,
+          "scale": 0.96,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g02-movil": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-jugador",
+          "kind": "native",
+          "x": -2,
+          "y": 0,
+          "scale": 1.08,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 2,
+          "y": -4,
+          "scale": 0.85,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g02-horizontal": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-jugador",
+          "kind": "native",
+          "x": -2,
+          "y": 0,
+          "scale": 1.03,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 2,
+          "y": -2,
+          "scale": 0.91,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g02-escritorio": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-jugador",
+          "kind": "native",
+          "x": -2,
+          "y": 0,
+          "scale": 1.12,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 2,
+          "y": -2,
+          "scale": 0.96,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g03-movil": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -9,
+          "scale": 0.77,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-moneda",
+          "kind": "native",
+          "x": 0,
+          "y": 0,
+          "scale": 0.94,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 54,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g03-horizontal": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.83,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-moneda",
+          "kind": "native",
+          "x": 0,
+          "y": 0,
+          "scale": 0.94,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 54,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g03-escritorio": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.88,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-moneda",
+          "kind": "native",
+          "x": 0,
+          "y": 0,
+          "scale": 0.94,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 54,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g04-movil": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-jugador",
+          "kind": "native",
+          "x": -2,
+          "y": 0,
+          "scale": 1.08,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 2,
+          "y": -4,
+          "scale": 0.85,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g04-horizontal": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-jugador",
+          "kind": "native",
+          "x": -2,
+          "y": 0,
+          "scale": 1.03,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 2,
+          "y": -2,
+          "scale": 0.91,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g04-escritorio": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-jugador",
+          "kind": "native",
+          "x": -2,
+          "y": 0,
+          "scale": 1.12,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 2,
+          "y": -2,
+          "scale": 0.96,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g05-movil": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -9,
+          "scale": 0.77,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g05-horizontal": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.83,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g05-escritorio": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.88,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g06-movil": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-jugador",
+          "kind": "native",
+          "x": -2,
+          "y": 0,
+          "scale": 1.16,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 2,
+          "y": -4,
+          "scale": 0.85,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g06-horizontal": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-jugador",
+          "kind": "native",
+          "x": -2,
+          "y": 0,
+          "scale": 1.1,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 2,
+          "y": -2,
+          "scale": 0.91,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g06-escritorio": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-jugador",
+          "kind": "native",
+          "x": -2,
+          "y": 0,
+          "scale": 1.2,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 2,
+          "y": -2,
+          "scale": 0.96,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g07-movil": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -9,
+          "scale": 0.77,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g07-horizontal": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.83,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g07-escritorio": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.88,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g08-movil": {
+      "layers": [
+        {
+          "id": "native-tablero-combo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.9,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 20,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -9,
+          "scale": 0.77,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-combo-menu",
+          "kind": "native",
+          "x": 0,
+          "y": -3,
+          "scale": 0.94,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 54,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g08-horizontal": {
+      "layers": [
+        {
+          "id": "native-tablero-combo",
+          "kind": "native",
+          "x": 0,
+          "y": -2,
+          "scale": 0.9,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 20,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.83,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-combo-menu",
+          "kind": "native",
+          "x": 0,
+          "y": 0,
+          "scale": 0.94,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 54,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g08-escritorio": {
+      "layers": [
+        {
+          "id": "native-tablero-combo",
+          "kind": "native",
+          "x": 0,
+          "y": -2,
+          "scale": 0.9,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 20,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.88,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-combo-menu",
+          "kind": "native",
+          "x": 0,
+          "y": 0,
+          "scale": 0.94,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 54,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g09-movil": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -9,
+          "scale": 0.77,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g09-horizontal": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.83,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g09-escritorio": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.88,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g10-movil": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -9,
+          "scale": 0.77,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g10-horizontal": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.83,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g10-escritorio": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.88,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g11-movil": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-jugador",
+          "kind": "native",
+          "x": -2,
+          "y": 0,
+          "scale": 1.16,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 2,
+          "y": -4,
+          "scale": 0.85,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g11-horizontal": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-jugador",
+          "kind": "native",
+          "x": -2,
+          "y": 0,
+          "scale": 1.1,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 2,
+          "y": -2,
+          "scale": 0.91,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g11-escritorio": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-jugador",
+          "kind": "native",
+          "x": -2,
+          "y": 0,
+          "scale": 1.2,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 2,
+          "y": -2,
+          "scale": 0.96,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g12-movil": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -9,
+          "scale": 0.77,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g12-horizontal": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.83,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g12-escritorio": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.88,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g13-movil": {
+      "layers": [
+        {
+          "id": "native-tablero-combo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.9,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 20,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -9,
+          "scale": 0.77,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-combo-menu",
+          "kind": "native",
+          "x": 0,
+          "y": -3,
+          "scale": 0.94,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 54,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g13-horizontal": {
+      "layers": [
+        {
+          "id": "native-tablero-combo",
+          "kind": "native",
+          "x": 0,
+          "y": -2,
+          "scale": 0.9,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 20,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.83,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-combo-menu",
+          "kind": "native",
+          "x": 0,
+          "y": 0,
+          "scale": 0.94,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 54,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g13-escritorio": {
+      "layers": [
+        {
+          "id": "native-tablero-combo",
+          "kind": "native",
+          "x": 0,
+          "y": -2,
+          "scale": 0.9,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 20,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.88,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-combo-menu",
+          "kind": "native",
+          "x": 0,
+          "y": 0,
+          "scale": 0.94,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 54,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g14-movil": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -9,
+          "scale": 0.77,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g14-horizontal": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.83,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g14-escritorio": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.88,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g15-movil": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -9,
+          "scale": 0.77,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g15-horizontal": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.83,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g15-escritorio": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.88,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g16-movil": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -9,
+          "scale": 0.77,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g16-horizontal": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.83,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g16-escritorio": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.88,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g17-movil": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-jugador",
+          "kind": "native",
+          "x": -2,
+          "y": 0,
+          "scale": 1.08,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 2,
+          "y": -4,
+          "scale": 0.85,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g17-horizontal": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-jugador",
+          "kind": "native",
+          "x": -2,
+          "y": 0,
+          "scale": 1.03,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 2,
+          "y": -2,
+          "scale": 0.91,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g17-escritorio": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-jugador",
+          "kind": "native",
+          "x": -2,
+          "y": 0,
+          "scale": 1.12,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 2,
+          "y": -2,
+          "scale": 0.96,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g18-movil": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -9,
+          "scale": 0.77,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g18-horizontal": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.83,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g18-escritorio": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.88,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g19-movil": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-jugador",
+          "kind": "native",
+          "x": -2,
+          "y": 0,
+          "scale": 1.16,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 2,
+          "y": -4,
+          "scale": 0.85,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g19-horizontal": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-jugador",
+          "kind": "native",
+          "x": -2,
+          "y": 0,
+          "scale": 1.1,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 2,
+          "y": -2,
+          "scale": 0.91,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g19-escritorio": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-jugador",
+          "kind": "native",
+          "x": -2,
+          "y": 0,
+          "scale": 1.2,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 2,
+          "y": -2,
+          "scale": 0.96,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g20-movil": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -9,
+          "scale": 0.77,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g20-horizontal": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.83,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g20-escritorio": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.88,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g21-movil": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -9,
+          "scale": 0.77,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g21-horizontal": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.83,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g21-escritorio": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.88,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g22-movil": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -9,
+          "scale": 0.77,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g22-horizontal": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.83,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g22-escritorio": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.88,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g23-movil": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-jugador",
+          "kind": "native",
+          "x": -2,
+          "y": 0,
+          "scale": 1.08,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 2,
+          "y": -4,
+          "scale": 0.85,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g23-horizontal": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-jugador",
+          "kind": "native",
+          "x": -2,
+          "y": 0,
+          "scale": 1.03,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 2,
+          "y": -2,
+          "scale": 0.91,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g23-escritorio": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-jugador",
+          "kind": "native",
+          "x": -2,
+          "y": 0,
+          "scale": 1.12,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 2,
+          "y": -2,
+          "scale": 0.96,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g24-movil": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -9,
+          "scale": 0.77,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g24-horizontal": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.83,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g24-escritorio": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.88,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g25-movil": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -9,
+          "scale": 0.77,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g25-horizontal": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.83,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g25-escritorio": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.88,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g26-movil": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -9,
+          "scale": 0.77,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g26-horizontal": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.83,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g26-escritorio": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.88,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g27-movil": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -9,
+          "scale": 0.77,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g27-horizontal": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.83,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g27-escritorio": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.88,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g28-movil": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-rival",
+          "kind": "native",
+          "x": 2,
+          "y": -1,
+          "scale": 1.08,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": -7,
+          "y": -4,
+          "scale": 0.78,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g28-horizontal": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-rival",
+          "kind": "native",
+          "x": 2,
+          "y": -1,
+          "scale": 1.03,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": -7,
+          "y": -2,
+          "scale": 0.84,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g28-escritorio": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-rival",
+          "kind": "native",
+          "x": 2,
+          "y": -1,
+          "scale": 1.12,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": -7,
+          "y": -2,
+          "scale": 0.88,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g29-movil": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-jugador",
+          "kind": "native",
+          "x": -2,
+          "y": 0,
+          "scale": 1.08,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 2,
+          "y": -4,
+          "scale": 0.85,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g29-horizontal": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-jugador",
+          "kind": "native",
+          "x": -2,
+          "y": 0,
+          "scale": 1.03,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 2,
+          "y": -2,
+          "scale": 0.91,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g29-escritorio": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-jugador",
+          "kind": "native",
+          "x": -2,
+          "y": 0,
+          "scale": 1.12,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 47,
+          "visible": true
+        },
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 2,
+          "y": -2,
+          "scale": 0.96,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g30-movil": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -9,
+          "scale": 0.77,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g30-horizontal": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.83,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g30-escritorio": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 0,
+          "y": -4,
+          "scale": 0.88,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g31-movil": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 2,
+          "y": -3,
+          "scale": 0.85,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g31-horizontal": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 2,
+          "y": -1,
+          "scale": 0.91,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
+    },
+    "tutorial/g31-escritorio": {
+      "layers": [
+        {
+          "id": "native-tablero-tutorial-dialogo",
+          "kind": "native",
+          "x": 2,
+          "y": -1,
+          "scale": 0.96,
+          "rotation": 0,
+          "opacity": 1,
+          "mirror": false,
+          "z": 48,
+          "visible": true
+        }
+      ]
     }
   },
   "assets": {}
