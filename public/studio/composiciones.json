@@ -664,6 +664,262 @@
         "hideTitle": true,
         "text": "Las dos Cartas Doradas de Invocación Real responden a la energía de sus portadores. El desafío ha sido aceptado. \n¡Comienza el Decreto Real!"
       }
+    },
+    "tutorial/g00": {
+      "narrative": {
+        "speaker": "Domingo Quispe",
+        "tone": "enojado",
+        "intent": "Presentar el desafío y la arrogancia del guardia.",
+        "direction": "Domingo aparece con presencia dominante. Su provocación abre el conflicto; no tapes la moneda ni la mano."
+      }
+    },
+    "tutorial/g01": {
+      "narrative": {
+        "speaker": "Xervias",
+        "tone": "decidido",
+        "intent": "Mostrar por qué Xervias arriesga su seguridad por la familia.",
+        "direction": "Respuesta de Xervias con mirada al frente; conservar el campo despejado."
+      }
+    },
+    "tutorial/g02": {
+      "narrative": {
+        "speaker": "Xervias",
+        "tone": "sereno",
+        "intent": "Explicar las dos condiciones de derrota sin interrumpir el hilo dramático.",
+        "direction": "Priorizar lectura de las reglas; cuadro de diálogo compacto, sin ocultar los indicadores de vida."
+      }
+    },
+    "tutorial/g03": {
+      "narrative": {
+        "speaker": "Xervias",
+        "tone": "decidido",
+        "intent": "Entregar al jugador el primer gesto interactivo: lanzar la moneda.",
+        "direction": "Dirigir la mirada hacia la moneda central. Texto y botón de lanzamiento deben permanecer separados."
+      }
+    },
+    "tutorial/g04": {
+      "narrative": {
+        "speaker": "Xervias",
+        "tone": "sereno",
+        "intent": "Explicar la mano inicial e invitar a jugar el primer Ataque.",
+        "direction": "Mostrar cartas legibles; señalar solo la carta correcta, sin cubrir la mano."
+      }
+    },
+    "tutorial/g05": {
+      "narrative": {
+        "speaker": "Xervias",
+        "tone": "decidido",
+        "intent": "Enseñar el efecto del Ataque mediante una acción concreta.",
+        "direction": "Retrato más pequeño durante el arrastre y texto encima del área de cartas."
+      }
+    },
+    "tutorial/g06": {
+      "narrative": {
+        "speaker": "Xervias",
+        "tone": "sorprendido",
+        "intent": "Premiar el primer Ataque e introducir los combos consecutivos.",
+        "direction": "Breve reconocimiento antes de revelar el siguiente gesto; evitar un diálogo demasiado largo."
+      }
+    },
+    "tutorial/g07": {
+      "narrative": {
+        "speaker": "Xervias",
+        "tone": "decidido",
+        "intent": "Invitar a jugar un segundo Ataque para formar Combo ×2.",
+        "direction": "Mantener visible la carta iluminada y la zona de activación."
+      }
+    },
+    "tutorial/g08": {
+      "narrative": {
+        "speaker": "Xervias",
+        "tone": "sereno",
+        "intent": "Explicar la elección entre daño adicional y curación del Combo ×2.",
+        "direction": "Dejar espacio al menú interactivo de combo; el texto debe ayudar sin tapar las dos opciones."
+      }
+    },
+    "tutorial/g09": {
+      "narrative": {
+        "speaker": "Xervias",
+        "tone": "sereno",
+        "intent": "Cerrar la lección inicial y conceder una respuesta dramática al guardia.",
+        "direction": "Transición corta. Dejar visible el control de Fin de turno."
+      }
+    },
+    "tutorial/g10": {
+      "narrative": {
+        "speaker": "Domingo Quispe",
+        "tone": "enojado",
+        "intent": "Demostrar que Domingo puede responder con sus propias cartas.",
+        "direction": "Situar su retrato cerca del área rival y mostrar el ataque sin obstruir los puntos de vida."
+      }
+    },
+    "tutorial/g11": {
+      "narrative": {
+        "speaker": "Xervias",
+        "tone": "sorprendido",
+        "intent": "Explicar el daño recibido y anticipar el Combo ×3.",
+        "direction": "Resaltar el marcador de vida y el historial de ataques con el cuadro fuera del centro."
+      }
+    },
+    "tutorial/g12": {
+      "narrative": {
+        "speaker": "Xervias",
+        "tone": "decidido",
+        "intent": "Guiar el tercer Ataque que completa el Combo ×3.",
+        "direction": "No cubrir la mano ni el campo. Separar diálogo e indicador COMBO."
+      }
+    },
+    "tutorial/g13": {
+      "narrative": {
+        "speaker": "Xervias",
+        "tone": "sereno",
+        "intent": "Enseñar la elección de Curación en un Combo ×3.",
+        "direction": "Conservar la visibilidad de ambas opciones y resaltar Curación como decisión del tutorial."
+      }
+    },
+    "tutorial/g14": {
+      "narrative": {
+        "speaker": "Xervias",
+        "tone": "sereno",
+        "intent": "Presentar los cuatro Impactos como otra vía de victoria.",
+        "direction": "Mostrar las cuatro casillas; texto de ayuda sin ocultarlas."
+      }
+    },
+    "tutorial/g15": {
+      "narrative": {
+        "speaker": "Xervias",
+        "tone": "decidido",
+        "intent": "Celebrar el primer Impacto y cerrar el turno.",
+        "direction": "Resaltar visualmente el Impacto I y el botón Fin de turno."
+      }
+    },
+    "tutorial/g16": {
+      "narrative": {
+        "speaker": "Domingo Quispe",
+        "tone": "enojado",
+        "intent": "Mantener la oposición activa tras el primer Impacto.",
+        "direction": "Intervención breve de Domingo, con gesto de resistencia; campo visible."
+      }
+    },
+    "tutorial/g17": {
+      "narrative": {
+        "speaker": "Xervias",
+        "tone": "sereno",
+        "intent": "Presentar la carta de Orden y la ventaja de robar.",
+        "direction": "Dar prioridad visual al mazo y a la carta de Orden."
+      }
+    },
+    "tutorial/g18": {
+      "narrative": {
+        "speaker": "Xervias",
+        "tone": "decidido",
+        "intent": "Solicitar la activación del Decreto de Orden.",
+        "direction": "Señalar la carta sin ocultar el texto de su efecto."
+      }
+    },
+    "tutorial/g19": {
+      "narrative": {
+        "speaker": "Xervias",
+        "tone": "sorprendido",
+        "intent": "Relacionar el robo de Defensa con la estrategia y el Impacto II.",
+        "direction": "Mostrar la nueva carta, pero destacar que el paso inmediato es Impacto II."
+      }
+    },
+    "tutorial/g20": {
+      "narrative": {
+        "speaker": "Xervias",
+        "tone": "decidido",
+        "intent": "Guiar la activación de Impacto II.",
+        "direction": "Casilla II completamente visible; indicación breve."
+      }
+    },
+    "tutorial/g21": {
+      "narrative": {
+        "speaker": "Xervias",
+        "tone": "sereno",
+        "intent": "Confirmar dos Impactos y dar paso a la réplica del rival.",
+        "direction": "Indicador de progreso visible; texto breve junto a Fin de turno."
+      }
+    },
+    "tutorial/g22": {
+      "narrative": {
+        "speaker": "Domingo Quispe",
+        "tone": "enojado",
+        "intent": "Recordar que el guardia no ha sido vencido.",
+        "direction": "Réplicas cortas de Domingo para sostener la tensión narrativa."
+      }
+    },
+    "tutorial/g23": {
+      "narrative": {
+        "speaker": "Xervias",
+        "tone": "preocupado",
+        "intent": "Reconocer el daño recibido e introducir la Defensa.",
+        "direction": "Permitir comparar vida actual con la recuperación posible."
+      }
+    },
+    "tutorial/g24": {
+      "narrative": {
+        "speaker": "Xervias",
+        "tone": "decidido",
+        "intent": "Solicitar una Defensa que recupere vida.",
+        "direction": "No ocultar Defensa ni el botón de activación."
+      }
+    },
+    "tutorial/g25": {
+      "narrative": {
+        "speaker": "Xervias",
+        "tone": "decidido",
+        "intent": "Avanzar hacia el Impacto III.",
+        "direction": "Enfocar el tercer espacio de Impacto con una señal discreta."
+      }
+    },
+    "tutorial/g26": {
+      "narrative": {
+        "speaker": "Xervias",
+        "tone": "sereno",
+        "intent": "Construir la expectativa de una victoria próxima.",
+        "direction": "Mostrar tres Impactos completos y dejar accesible Fin de turno."
+      }
+    },
+    "tutorial/g27": {
+      "narrative": {
+        "speaker": "Domingo Quispe",
+        "tone": "enojado",
+        "intent": "Expresar frustración y resistencia ante la ventaja de Xervias.",
+        "direction": "Domingo ocupa la zona superior del tablero sin cubrir las cartas."
+      }
+    },
+    "tutorial/g28": {
+      "narrative": {
+        "speaker": "Domingo Quispe",
+        "tone": "preocupado",
+        "intent": "Dar a Domingo una última réplica antes del desenlace.",
+        "direction": "Pausa narrativa breve con su retrato en primer plano, sin bloquear el siguiente paso."
+      }
+    },
+    "tutorial/g29": {
+      "narrative": {
+        "speaker": "Xervias",
+        "tone": "decidido",
+        "intent": "Explicar por qué el Impacto Final puede terminar el combate.",
+        "direction": "Señalar claramente la cuarta casilla y mantener el campo despejado."
+      }
+    },
+    "tutorial/g30": {
+      "narrative": {
+        "speaker": "Xervias",
+        "tone": "decidido",
+        "intent": "Guiar el último gesto del jugador: activar Impacto FINAL.",
+        "direction": "No superponer textos sobre la zona final. Dejar visible el efecto de la carta."
+      }
+    },
+    "tutorial/g31": {
+      "narrative": {
+        "speaker": "Sistema",
+        "tone": "sereno",
+        "intent": "Cerrar el tutorial con una victoria clara y satisfactoria.",
+        "direction": "Anuncio de victoria y transición posterior. No ocultar la confirmación al jugador."
+      }
     }
   },
   "assets": {}
