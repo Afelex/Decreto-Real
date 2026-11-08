@@ -24,7 +24,7 @@ export function validateStudioMedia(file:Blob):void {
 export async function detectStudioMedia(blob:Blob):Promise<StudioMediaMime> {
   const head=new Uint8Array(await blob.slice(0,16).arrayBuffer());
   const mime=sniffStudioMedia(head);
-  if(!mime)throw new Error('Solo PNG, JPG, WebP, GIF, MP4 o WebM (el contenido del archivo no coincide).');
+  if(!mime)throw new Error('Solo PNG, JPG, WebP, GIF, MP4, WebM, MP3 o WAV (firma no válida).');
   return mime;
 }
 async function sha256(blob:Blob):Promise<string|undefined> {
