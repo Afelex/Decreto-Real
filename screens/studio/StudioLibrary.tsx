@@ -20,6 +20,7 @@ export const formatBytes=(bytes:number)=>bytes<1024?bytes+' B':
  */
 export default function StudioLibrary({canReplace,onUse,onClose}:Props){
   const studio=useStudio();
+  const {listLibrary,libraryVersion}=studio;
   const [items,setItems]=React.useState<StudioLibraryItem[]|null>(null);
   const [urls,setUrls]=React.useState<Record<string,string>>({});
   const [confirmClean,setConfirmClean]=React.useState(false);
@@ -41,7 +42,6 @@ export default function StudioLibrary({canReplace,onUse,onClose}:Props){
     if(!w||!h)return;
     setDimensions(prev=>prev[id]===w+' × '+h+' px'?prev:{...prev,[id]:w+' × '+h+' px'});
   };
-  const {listLibrary,libraryVersion}=studio;
   const docKey=studio.doc;
   React.useEffect(()=>{
     let cancelled=false;
