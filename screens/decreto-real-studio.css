@@ -514,3 +514,7 @@
 .dr-board-selected{outline:2px dashed #ffe0a0!important;outline-offset:3px}
 .dr-board-hidden{visibility:hidden!important}
 .dr-royal-layout.dr-board-editing .dr-board-dimmed{opacity:.3!important;outline:2px dotted #c58bff;outline-offset:2px}
+
+/* Los rótulos de turno normalmente no capturan gestos; en Studio sí se pueden arrastrar. */
+.dr-royal-screen .dr-event-indicator[data-studio-actor]{pointer-events:auto;touch-action:none;cursor:grab}
+.dr-royal-screen .dr-event-indicator[data-studio-actor] *{pointer-events:none}

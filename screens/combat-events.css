@@ -513,3 +513,7 @@
   text-align:center;
   font-size:clamp(16px,4.4vw,23px);
 }
+
+/* Vista estática de Studio: la cinta del turno seleccionado se puede mover con el dedo. */
+.dr-royal-screen .dr-event-turn--studio-preview{animation:none;pointer-events:none;z-index:45}
+.dr-royal-screen .dr-event-turn--studio-preview .dr-event-turn__ribbon[data-studio-actor]{pointer-events:auto;touch-action:none;cursor:grab}
