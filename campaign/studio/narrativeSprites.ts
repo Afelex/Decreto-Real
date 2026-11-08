@@ -73,3 +73,16 @@ export function resolveNarrativeCardSprite(
 ):NarrativeSprite|undefined{
   return resolveNarrativeSprite(card?.speaker??fallbackSpeaker,card?.tone??'neutral',card?.spriteId);
 }
+
+/** Decisión narrativa de aparición: al hablar en una pausa se muestra el
+ * personaje, durante una acción la imagen se oculta salvo decisión explícita.
+ * Nunca cambia el guion, la baraja ni los tiempos del combate. */
+export function narrativePortraitVisible(
+  step:{speaker:string;action?:string},card?:StudioNarrativeCard,
+):boolean {
+  const speaker=card?.speaker??step.speaker;
+  if(speaker!=='Xervias'&&speaker!=='Domingo Quispe')return false;
+  if(card?.portraitMode==='hide')return false;
+  if(card?.portraitMode==='show')return true;
+  return !step.action;
+}
