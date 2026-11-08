@@ -291,3 +291,35 @@ test('Studio selects a real narrative expression and the guided portrait follows
   await expect(page.getByTestId('studio-narrative-sprite-preview').locator('img')).toHaveAttribute('src',/xervias_01_objecion\.webp/);
   await expect(page.locator('.dr-royal-guided-actor.is-player img')).toHaveAttribute('src',/xervias_01_objecion\.webp/);
 });
+
+
+test('editorial review walks all 32 steps and updates warnings after editing',async({page},info)=>{
+  test.skip(only(['mobile-390'])(info.project.name),'Tutorial editorial review');
+  await openBoard(page);
+  const review=page.getByTestId('studio-narrative-review');
+  await review.locator('summary').click();
+  await page.getByTestId('studio-reading-filter').selectOption('all');
+  await expect(page.getByTestId('studio-reading-step')).toHaveCount(32);
+  await page.getByTestId('studio-reading-step').nth(5).click();
+  await expect(page.getByTestId('studio-guide-step')).toHaveValue('5');
+  await expect(page.getByTestId('campaign-guided-coach')).toContainText('6/32');
+  await expect(page.getByTestId('studio-reading-current')).toContainText('Paso 6/32');
+  const editor=page.getByTestId('studio-guide-text');
+  await editor.fill('Ahora.');
+  await editor.press('Tab');
+  await expect(page.getByTestId('studio-reading-current')).toContainText('No menciona claramente la acción requerida');
+  await expect(page.getByTestId('studio-reading-count')).toContainText('por revisar');
+  await editor.fill('Arrastra la carta de Ataque al campo.');
+  await editor.press('Tab');
+  await expect(page.getByTestId('studio-reading-current')).not.toContainText('No menciona claramente la acción requerida');
+  await page.getByTestId('studio-reading-previous').click();
+  await expect(page.getByTestId('studio-guide-step')).toHaveValue('4');
+  await page.getByTestId('studio-reading-next').click();
+  await expect(page.getByTestId('studio-guide-step')).toHaveValue('5');
+  await page.getByTestId('studio-save').click();
+  await page.reload();
+  await page.getByTestId('studio-guide-step').selectOption('5');
+  await expect(page.getByTestId('studio-guide-text')).toHaveValue('Arrastra la carta de Ataque al campo.');
+  await page.getByTestId('studio-narrative-review').locator('summary').click();
+  await expect(page.getByTestId('studio-reading-current')).not.toContainText('No menciona claramente la acción requerida');
+});
