@@ -88,6 +88,12 @@ export const STUDIO_NARRATIVE_TONES = [
 export type StudioNarrativeTone = (typeof STUDIO_NARRATIVE_TONES)[number];
 /** Aparición de la ilustración narrativa, independiente del texto y del duelo. */
 export type StudioPortraitMode='auto'|'show'|'hide';
+/** Entradas y salidas de los personajes, sin afectar su posición en el lienzo. */
+export const STUDIO_PORTRAIT_MOTIONS=[
+  'none','fade','slide-left','slide-right','zoom',
+] as const;
+export type StudioPortraitMotion=(typeof STUDIO_PORTRAIT_MOTIONS)[number];
+export const STUDIO_PORTRAIT_DURATION={min:120,max:1200,default:320} as const;
 export type StudioNarrativeCard = {
   /** Personaje mostrado en el diálogo; no altera el actor ni su mazo. */
   speaker?:string;
@@ -97,6 +103,11 @@ export type StudioNarrativeCard = {
   spriteId?:string;
   /** Automático: mostrar en diálogo, ocultar mientras se juega una carta. */
   portraitMode?:StudioPortraitMode;
+  /** Animaciones independientes de entrada y salida; por defecto: fundido. */
+  enterMotion?:StudioPortraitMotion;
+  exitMotion?:StudioPortraitMotion;
+  /** Duración en ms de cada animación, no de la pausa narrativa. */
+  motionDurationMs?:number;
   /** Por qué existe la intervención en el relato. */
   intent?:string;
   /** Notas de composición que no se muestran al jugador. */
@@ -271,6 +282,13 @@ export function normalizeNarrativeCard(value:unknown):StudioNarrativeCard|null {
     card.tone=value.tone as StudioNarrativeTone;
   if(isNarrativeSpriteId(value.spriteId))card.spriteId=value.spriteId;
   if(value.portraitMode==='show'||value.portraitMode==='hide')card.portraitMode=value.portraitMode;
+  if((STUDIO_PORTRAIT_MOTIONS as readonly string[]).includes(value.enterMotion as string))
+    card.enterMotion=value.enterMotion as StudioPortraitMotion;
+  if((STUDIO_PORTRAIT_MOTIONS as readonly string[]).includes(value.exitMotion as string))
+    card.exitMotion=value.exitMotion as StudioPortraitMotion;
+  if(typeof value.motionDurationMs==='number'&&Number.isFinite(value.motionDurationMs))
+    card.motionDurationMs=Math.round(clamp(value.motionDurationMs,
+      STUDIO_PORTRAIT_DURATION.min,STUDIO_PORTRAIT_DURATION.max));
   return Object.keys(card).length?card:null;
 }
 export function normalizeDialogue(value:unknown):StudioDialogue|null {
