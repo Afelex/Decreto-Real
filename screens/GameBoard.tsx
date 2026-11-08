@@ -703,7 +703,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const endTurnUnavailable = (guidedOpening && !expectedGuideAction?.startsWith('end')) || phase !== 'PLAYER_TURN' || !!storyMoment || showSpecialSelection || !!comboAnnouncement || !!mysticComboAnnouncement || isMenuOpen || !!cardAnnouncement || announcementBusy.current;
 
   const Board = (
-    <div ref={boardLayoutRef} className={`dr-classic-screen dr-royal-screen bg-[#050505] font-body w-full overflow-hidden select-none flex flex-col relative text-white ${shakeScreen ? 'animate-shake' : ''}`} style={{ width: 'min(100vw, 430px)', height: '100dvh' }}>
+    <div ref={boardLayoutRef} className={`dr-classic-screen dr-royal-screen${board.editing ? ' dr-royal-tutorial-studio' : ''} bg-[#050505] font-body w-full overflow-hidden select-none flex flex-col relative text-white ${shakeScreen ? 'animate-shake' : ''}`} style={{ width: 'min(100vw, 430px)', height: '100dvh' }}>
       <style>{`
         /* Animaciones para el botón de fuego */
         @keyframes fire-glow { 0%, 100% { box-shadow: 0 0 15px #f59e0b, 0 0 30px #f97316; } 50% { box-shadow: 0 0 25px #fbbf24, 0 0 50px #ef4444; } }
