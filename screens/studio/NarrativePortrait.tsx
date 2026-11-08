@@ -17,27 +17,46 @@ type Props={
   attrs:React.HTMLAttributes<HTMLDivElement>;
 };
 
-/** Mantiene la ilustración saliente durante su animación y recién después
- * incorpora la siguiente. Así la salida funciona también entre personajes.
- * El wrapper conserva las posiciones/arrastre calculados por DRStudio;
- * SOLO la imagen interior recibe transformaciones de animación.
+/** Conserva la salida del personaje previo sin mover las capas de DRStudio.
+ * Cuando cambia la expresión del MISMO personaje, superpone brevemente el
+ * sprite anterior mientras entra el nuevo (crossfade o desplazamiento).
+ * Un solo <img> es el sprite actual: el anterior es un fondo decorativo.
+ * Así los lectores de pantalla y las herramientas de inspección siguen
+ * viendo una sola imagen activa por actor.
  */
 export function NarrativePortrait({stepId,visible,src,motion,attrs}:Props){
   const incomingKey=stepId?stepId+'|'+src+'|'+motion.enter+'|'+motion.exit+'|'+motion.durationMs:null;
-  const [display,setDisplay]=React.useState<PortraitFrame|null>(()=>
-    visible&&incomingKey?{id:incomingKey,src,...motion}:null);
+  const [display,setDisplay]=React.useState<PortraitFrame|null>(()=>{
+    return visible&&incomingKey?{id:incomingKey,src,...motion}:null;
+  });
+  const [outgoing,setOutgoing]=React.useState<PortraitFrame|null>(null);
   const [phase,setPhase]=React.useState<'enter'|'exit'>('enter');
   React.useEffect(()=>{
     const incoming=visible&&incomingKey?{id:incomingKey,src,...motion}:null;
     if(!display&&!incoming)return;
     if(display?.id===incoming?.id)return;
+    const reducedMotion=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches??false;
+    // Entre expresiones no dejamos una pantalla vacía entre la salida y
+    // la entrada. Las transiciones no bloquean diálogo ni acciones.
+    if(display&&incoming&&display.src!==incoming.src){
+      setDisplay(incoming);
+      setPhase('enter');
+      if(reducedMotion||display.exit==='none'){
+        setOutgoing(null);
+        return;
+      }
+      setOutgoing(display);
+      const delay=Math.max(display.durationMs, incoming.enter==='none'?0:incoming.durationMs);
+      const handle=window.setTimeout(()=>setOutgoing(null),delay);
+      return ()=>window.clearTimeout(handle);
+    }
+    setOutgoing(null);
     if(!display){
       setDisplay(incoming);
       setPhase('enter');
       return;
     }
     setPhase('exit');
-    const reducedMotion=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches??false;
     const delay=display.exit==='none'||reducedMotion?0:display.durationMs;
     const handle=window.setTimeout(()=>{
       setDisplay(incoming);
@@ -50,11 +69,18 @@ export function NarrativePortrait({stepId,visible,src,motion,attrs}:Props){
     ...attrs.style,
     '--dr-narrative-motion-duration':display.durationMs+'ms',
   } as React.CSSProperties;
+  const outgoingStyle=outgoing?{
+    backgroundImage:'url('+JSON.stringify(outgoing.src)+')',
+    '--dr-narrative-motion-duration':outgoing.durationMs+'ms',
+  } as React.CSSProperties:undefined;
   return <div {...attrs}
     className={(attrs.className??'')+' dr-narrative-portrait dr-narrative-'+phase}
     style={style} aria-hidden="true" data-testid="guided-large-actor"
     data-narrative-enter={display.enter} data-narrative-exit={display.exit}
-    data-narrative-step={display.id.split('|')[0]}>
+    data-narrative-step={display.id.split('|')[0]}
+    data-narrative-crossfade={outgoing?'true':'false'}>
+    {outgoing&&<span aria-hidden="true" className="dr-narrative-crossfade-out"
+      data-narrative-exit={outgoing.exit} style={outgoingStyle}/>}
     <img src={display.src} alt=""/>
   </div>;
 }
