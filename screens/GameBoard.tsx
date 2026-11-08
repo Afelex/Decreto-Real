@@ -5,6 +5,8 @@ import { NarrativePortrait } from './studio/NarrativePortrait';
 import { OPPONENT_IMG, PLAYER_IMG } from '../constants';
 import { CardData, GamePhase, CardType } from '../types';
 import { useAudio } from '../contexts/AudioContext';
+import {scheduleNarrativeMusic,scheduleNarrativeSound,
+  DEFAULT_NARRATIVE_TIMING,type AudioTimelineTimer} from '../campaign/studio/audioTimeline.ts';
 import { AiTurnController, runOpponentTurn } from '../game/aiTurn';
 import { cardPlacementPrompt, checkCardPlacement, resolveVisualDropZone, type CardDropZone } from '../game/cardPlacement.ts';
 import { CardActivationBanner } from './CardActivationBanner';
@@ -180,26 +182,53 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const previewNarrativeStep=board.editing?GUIDED_STEPS[studioGuidePreview]:currentGuide;
   const previewNarrativeAction=board.editing?previewNarrativeStep?.action:undefined;
   const currentNarrativeAudio=currentGuide?board.guideAudio(currentGuide):undefined;
+  const currentNarrativeTiming=currentGuide?board.guideTiming(currentGuide):DEFAULT_NARRATIVE_TIMING;
   const currentNarrativeTrack=currentGuide?board.guideMusicUrl(currentGuide):null;
-  const playedNarrativeStep=useRef<string|null>(null);
-  // Solo durante el tutorial público; la vista previa no dispara sonidos
-  // automáticamente. La limpieza devuelve el control a la música ordinaria.
+  const activeAudioStep=guidedOpening&&!board.editing?currentGuide?.id:undefined;
+  const soundRef=useRef(playSound);
+  soundRef.current=playSound;
+  // Temporizadores individuales: se cancelan cuando el paso cambia o el
+  // componente se desmonta. La vista previa nunca reproduce audio sola.
+  const audioTimers=useMemo<AudioTimelineTimer<number>>(()=>({
+    after:(ms,fn)=>window.setTimeout(fn,ms),
+    cancel:id=>window.clearTimeout(id),
+  }),[]);
   useEffect(()=>{
-    setNarrativeMusicMode(guidedOpening&&!board.editing?
-      (currentNarrativeAudio?.music??'normal'):'normal');
-  },[guidedOpening,board.editing,currentNarrativeAudio?.music,setNarrativeMusicMode]);
-  useEffect(()=>()=>setNarrativeMusicMode('normal'),[setNarrativeMusicMode]);
+    if(!activeAudioStep){
+      setNarrativeMusicMode('normal');
+      setNarrativeMusicTrack(null);
+      return;
+    }
+    return scheduleNarrativeMusic(currentNarrativeTiming,{
+      start:()=>{
+        if(currentNarrativeTiming.musicCueMode==='stop'){
+          setNarrativeMusicMode('silent');
+          return;
+        }
+        if(currentNarrativeTiming.musicCueMode==='change')
+          setNarrativeMusicTrack(currentNarrativeTrack);
+        setNarrativeMusicMode(currentNarrativeAudio?.music??'normal');
+      },
+      stop:()=>setNarrativeMusicMode('silent'),
+    },audioTimers);
+  },[
+    activeAudioStep,currentNarrativeTrack,currentNarrativeAudio?.music,
+    currentNarrativeTiming.musicCueMode,currentNarrativeTiming.musicStartDelayMs,
+    currentNarrativeTiming.musicStopAfterMs,
+    setNarrativeMusicMode,setNarrativeMusicTrack,audioTimers,
+  ]);
   useEffect(()=>{
-    setNarrativeMusicTrack(guidedOpening&&!board.editing?currentNarrativeTrack:null);
-  },[guidedOpening,board.editing,currentNarrativeTrack,setNarrativeMusicTrack]);
-  useEffect(()=>()=>setNarrativeMusicTrack(null),[setNarrativeMusicTrack]);
-  useEffect(()=>{
-    if(!guidedOpening||board.editing||!currentGuide)return;
-    if(playedNarrativeStep.current===currentGuide.id)return;
-    playedNarrativeStep.current=currentGuide.id;
-    if(currentNarrativeAudio?.sound&&currentNarrativeAudio.sound!=='none')
-      playSound(currentNarrativeAudio.sound);
-  },[guidedOpening,board.editing,guideIndex,currentNarrativeAudio?.sound,playSound]);
+    if(!activeAudioStep)return;
+    const sound=currentNarrativeAudio?.sound??'none';
+    return scheduleNarrativeSound(sound,currentNarrativeTiming,{
+      start:()=>sound==='none'?undefined:soundRef.current(sound),
+    },audioTimers);
+  },[
+    activeAudioStep,currentNarrativeAudio?.sound,
+    currentNarrativeTiming.soundDelayMs,currentNarrativeTiming.soundMaxDurationMs,audioTimers,
+  ]);
+  useEffect(()=>()=>{setNarrativeMusicMode('normal');setNarrativeMusicTrack(null);},
+    [setNarrativeMusicMode,setNarrativeMusicTrack]);
   const expectedGuideAction = currentGuide?.action;
   const guidedCardId = expectedGuideAction ? GUIDED_ACTION_CARDS[expectedGuideAction] : undefined;
 
