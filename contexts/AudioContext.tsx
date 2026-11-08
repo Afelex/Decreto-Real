@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react';
+import type {StudioNarrativeMusicMode} from '../campaign/studio/narrativeAudio.ts';
 
 // --- SOUND ASSETS ---
 const SOUNDS = {
@@ -22,6 +23,8 @@ interface AudioContextType {
     toggleSfx: () => void;
     toggleMusic: () => void;
     playSound: (type: SoundType) => void;
+    /** Modifica solo la pista de fondo existente. El ajuste global siempre prevalece. */
+    setNarrativeMusicMode: (mode: StudioNarrativeMusicMode) => void;
 }
 
 const AudioContext = createContext<AudioContextType | undefined>(undefined);
@@ -39,6 +42,7 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     });
 
     const musicRef = useRef<HTMLAudioElement | null>(null);
+    const [narrativeMusicMode,setNarrativeMusicMode]=useState<StudioNarrativeMusicMode>('normal');
 
     // Initialize Music Object
     useEffect(() => {
@@ -63,7 +67,10 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         const audio = musicRef.current;
         if (!audio) return;
 
-        if (musicEnabled) {
+        // La narración solo atenúa o pausa la pista existente; nunca fuerza
+        // reproducción cuando el jugador ha desactivado la música.
+        audio.volume=narrativeMusicMode==='soft'?0.12:0.3;
+        if (musicEnabled && narrativeMusicMode!=='silent') {
             const playPromise = audio.play();
             if (playPromise !== undefined) {
                 playPromise.catch(e => console.warn("Music play blocked:", e));
@@ -73,7 +80,7 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         }
         
         localStorage.setItem('decreto_music', JSON.stringify(musicEnabled));
-    }, [musicEnabled]);
+    }, [musicEnabled,narrativeMusicMode]);
 
     // Persistence for SFX
     useEffect(() => {
@@ -102,7 +109,7 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     };
 
     return (
-        <AudioContext.Provider value={{ sfxEnabled, musicEnabled, toggleSfx, toggleMusic, playSound }}>
+        <AudioContext.Provider value={{ sfxEnabled, musicEnabled, toggleSfx, toggleMusic, playSound, setNarrativeMusicMode }}>
             {children}
         </AudioContext.Provider>
     );
