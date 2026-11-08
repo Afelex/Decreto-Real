@@ -712,3 +712,30 @@
 .dr-studio-reading-steps button span{min-width:0;overflow:hidden;
   white-space:nowrap;text-overflow:ellipsis}
 .dr-studio-reading-steps button em{font-style:normal;color:#e5caa1;text-align:right}
+
+/* Fase 2: galería de retratos con miniaturas reales de la biblioteca del juego. */
+.dr-studio-board-panel .dr-studio-sprite-gallery{
+  border:1px solid #766449;border-radius:8px;background:#122236;overflow:hidden}
+.dr-studio-board-panel .dr-studio-sprite-gallery>summary{
+  cursor:pointer;padding:10px;color:#f5dfb8;font:700 12px/1.3 system-ui,sans-serif;
+  min-height:40px;box-sizing:border-box}
+.dr-studio-board-panel .dr-studio-sprite-gallery>summary:focus-visible{
+  outline:2px solid #ffdf96;outline-offset:-2px}
+.dr-studio-board-panel .dr-studio-sprite-grid{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:7px;padding:8px;max-height:340px;overflow-y:auto;overscroll-behavior:contain}
+.dr-studio-board-panel .dr-studio-sprite-grid button{
+  display:flex;flex-direction:column;gap:4px;justify-content:center;align-items:center;
+  min-width:0;min-height:120px;padding:6px 3px;border:1px solid #746850;
+  border-radius:8px;background:#1d2e45;color:#f7e4c8;cursor:pointer}
+.dr-studio-board-panel .dr-studio-sprite-grid button.is-selected{
+  border:2px solid #f3ce86;background:#3c3d43}
+.dr-studio-board-panel .dr-studio-sprite-grid button:focus-visible{
+  outline:2px solid #ffdf96;outline-offset:2px}
+.dr-studio-board-panel .dr-studio-sprite-grid img{
+  width:100%;max-width:85px;height:93px;object-fit:contain;object-position:center;
+  border-radius:5px;background:#0c1727}
+.dr-studio-board-panel .dr-studio-sprite-grid span{
+  font:11px/1.2 system-ui,sans-serif;text-align:center;overflow-wrap:anywhere}
+.dr-studio-board-panel .dr-studio-sprite-grid small{
+  font:10px/1.2 system-ui,sans-serif;color:#c3d0db;text-align:center}
