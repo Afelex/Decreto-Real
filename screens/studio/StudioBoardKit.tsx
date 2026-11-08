@@ -15,6 +15,7 @@ import { StudioProvider, useStudio } from './StudioContext';
 import { useStudioDrag } from './useStudioDrag';
 import { StudioBoardSafety } from './StudioBoardSafety';
 import { StudioNarrativeReview } from './StudioNarrativeReview';
+import { StudioGuidedAVTimeline } from './StudioGuidedAVTimeline';
 import '../decreto-real-studio.css';
 
 /**
@@ -242,6 +243,7 @@ export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGu
           </option>)}
         </select>
       </label>
+      <StudioGuidedAVTimeline selectedIndex={previewGuideIndex} onSelect={onPreviewGuideIndex}/>
       <StudioNarrativeReview selectedIndex={previewGuideIndex} onSelect={onPreviewGuideIndex}/>
       <label className="dr-studio-label">Texto de esta intervención (se publica en el tutorial)
         <textarea className="dr-studio-guide-text" data-testid="studio-guide-text" rows={3} maxLength={600}
