@@ -457,3 +457,27 @@
   .dr-royal-screen .dr-narrative-portrait>img{
     animation:none!important;transform:none!important;opacity:1!important;will-change:auto}
 }
+
+/* Transición audiovisual de expresiones: sprite anterior superpuesto solo
+   durante la salida; la posición de Studio no cambia. El IMG principal sigue
+   siendo único para evitar dos retratos accesibles o selecciones ambiguas. */
+.dr-royal-screen .dr-narrative-portrait>img{
+  position:relative;z-index:2;
+}
+.dr-royal-screen .dr-narrative-portrait>.dr-narrative-crossfade-out{
+  position:absolute;inset:0;display:block;z-index:1;
+  background-position:top center;background-repeat:no-repeat;
+  background-size:contain;pointer-events:none;
+}
+.dr-royal-screen .dr-narrative-crossfade-out[data-narrative-exit="fade"]{
+  animation:dr-narrative-out-fade var(--dr-narrative-motion-duration,320ms) ease-in both}
+.dr-royal-screen .dr-narrative-crossfade-out[data-narrative-exit="slide-left"]{
+  animation:dr-narrative-out-left var(--dr-narrative-motion-duration,320ms) ease-in both}
+.dr-royal-screen .dr-narrative-crossfade-out[data-narrative-exit="slide-right"]{
+  animation:dr-narrative-out-right var(--dr-narrative-motion-duration,320ms) ease-in both}
+.dr-royal-screen .dr-narrative-crossfade-out[data-narrative-exit="zoom"]{
+  animation:dr-narrative-out-zoom var(--dr-narrative-motion-duration,320ms) ease-in both}
+@media(prefers-reduced-motion:reduce){
+  .dr-royal-screen .dr-narrative-portrait>.dr-narrative-crossfade-out{
+    display:none!important;animation:none!important}
+}
