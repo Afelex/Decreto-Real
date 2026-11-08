@@ -87,10 +87,11 @@ export default function StudioLibrary({canReplace,onUse,onClose}:Props){
     <ul>
       {(items??[]).map(item=>{
         const isVideo=item.mime.startsWith('video/');
+        const isAudio=item.mime.startsWith('audio/');
         return <li key={item.id} data-testid="studio-library-item" data-id={item.id}
           data-protected={item.protected?'true':'false'}>
           <span className="dr-studio-library-thumb" aria-hidden="true">
-            {urls[item.id]&&(isVideo?<video src={urls[item.id]} muted playsInline preload="metadata"
+            {isAudio?<span aria-label="Canción">♫</span>:urls[item.id]&&(isVideo?<video src={urls[item.id]} muted playsInline preload="metadata"
               onLoadedMetadata={e=>recordDimensions(item.id,e.currentTarget.videoWidth,e.currentTarget.videoHeight)}/>:
               <img src={urls[item.id]} alt="" onLoad={e=>recordDimensions(item.id,e.currentTarget.naturalWidth,e.currentTarget.naturalHeight)}/>)}
           </span>
@@ -99,14 +100,14 @@ export default function StudioLibrary({canReplace,onUse,onClose}:Props){
               data-testid="studio-library-name"
               onKeyDown={e=>{if(e.key==='Enter')(e.currentTarget as HTMLInputElement).blur();}}
               onBlur={e=>{const name=e.currentTarget.value.trim();if(name&&name!==item.name)void run(()=>studio.renameMedia(item.id,name));}}/>
-            <small>{dimensions[item.id]??'Calculando dimensiones…'} · {item.mime.replace('image/','').replace('video/','video ').toUpperCase()} · {formatBytes(item.size)} · {
+            <small>{isAudio?'Audio narrativo':dimensions[item.id]??'Calculando dimensiones…'} · {item.mime.replace('image/','').replace('video/','video ').toUpperCase()} · {formatBytes(item.size)} · {
               item.usedIn.length?'en uso en '+item.usedIn.length+(item.usedIn.length===1?' escena':' escenas'):
               item.protected?'en el historial o un respaldo':'sin uso'}</small>
             <div className="dr-studio-library-actions">
-              {!isVideo&&<button type="button" data-testid="studio-library-use-sprite" onClick={()=>onUse(item,'sprite')}>＋ Sprite</button>}
-              <button type="button" data-testid="studio-library-use-effect" onClick={()=>onUse(item,'effect')}>✦ Efecto</button>
-              <button type="button" data-testid="studio-library-use-background" onClick={()=>onUse(item,'background')}>▧ Fondo</button>
-              {!isVideo&&canReplace&&<button type="button" data-testid="studio-library-use-replace" onClick={()=>onUse(item,'replace')}>⇄ Reemplazar</button>}
+              {!isVideo&&!isAudio&&<button type="button" data-testid="studio-library-use-sprite" onClick={()=>onUse(item,'sprite')}>＋ Sprite</button>}
+              {!isAudio&&<button type="button" data-testid="studio-library-use-effect" onClick={()=>onUse(item,'effect')}>✦ Efecto</button>}
+              {!isAudio&&<button type="button" data-testid="studio-library-use-background" onClick={()=>onUse(item,'background')}>▧ Fondo</button>}
+              {!isVideo&&!isAudio&&canReplace&&<button type="button" data-testid="studio-library-use-replace" onClick={()=>onUse(item,'replace')}>⇄ Reemplazar</button>}
               <button type="button" data-testid="studio-library-delete" disabled={item.protected}
                 title={item.protected?'En uso: quítalo de las escenas y guarda para poder eliminarlo':'Eliminar de la biblioteca'}
                 onClick={()=>run(()=>studio.deleteMedia(item.id))}>🗑</button>
