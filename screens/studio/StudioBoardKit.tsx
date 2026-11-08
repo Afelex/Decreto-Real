@@ -1,8 +1,8 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { getLayer, isTutorialLayoutId, layerOrDefault, tutorialLayoutKey, withDialogue, withLayer, withoutLayer } from '../../campaign/studio/ops';
+import { getLayer, isTutorialLayoutId, layerOrDefault, tutorialLayoutKey, withDialogue, withNarrativeCard, withLayer, withoutLayer } from '../../campaign/studio/ops';
 import { GUIDED_STEPS, type GuidedStep } from '../../campaign/guidedOpeningDuel';
-import { defaultLayerTransform, type StudioLayer } from '../../campaign/studio/schema';
+import { defaultLayerTransform, STUDIO_NARRATIVE_TONES, type StudioLayer, type StudioNarrativeTone } from '../../campaign/studio/schema';
 import { copyTransform, formatTransform, parseTransform, type CopiedTransform } from '../../campaign/studio/transformClipboard';
 import { StudioProvider, useStudio } from './StudioContext';
 import { useStudioDrag } from './useStudioDrag';
@@ -59,6 +59,14 @@ function useBoardProfile():BoardProfile {
 /** Envuelve el tablero: aplica lo publicado y, en QA con `?studio=1`, permite editarlo. */
 export const StudioBoardProvider=({children}:{children:React.ReactNode})=><StudioProvider blocking={false}>{children}</StudioProvider>;
 
+const GUIDED_ACTION_DESCRIPTIONS:Readonly<Record<string,string>>={
+  coin:'Lanzar moneda',attack1:'Primer ataque',attack2:'Segundo ataque',attack3:'Tercer ataque',
+  combo2:'Elegir combo ×2',combo3:'Elegir combo ×3',
+  end1:'Terminar primer turno',end2:'Terminar segundo turno',end3:'Terminar tercer turno',end4:'Terminar cuarto turno',
+  rival1:'Ataque del rival',rival2:'Segundo turno del rival',rival3:'Tercer turno del rival',rival4:'Cuarto turno del rival',
+  impact1:'Activar Impacto I',impact2:'Activar Impacto II',impact3:'Activar Impacto III',impact4:'Activar Impacto Final',
+  order:'Activar Decreto de Orden',defense:'Activar Defensa',
+};
 const NATIVE_Z=defaultLayerTransform('native').z;
 /** Estilo que se suma a las transformaciones propias del elemento. */
 function boardStyle(layer:StudioLayer):React.CSSProperties {
@@ -93,6 +101,7 @@ export function useBoardStudio(layoutRef:React.RefObject<HTMLElement|null>,guide
   // Cada intervención mantiene su propio texto y su composición visual.
   // Si no está editada, conserva la posición compartida para el perfil.
   const guideText=(step:GuidedStep)=>studio.viewScene('tutorial/'+step.id)?.dialogue?.text??step.text;
+  const guideSpeaker=(step:GuidedStep)=>studio.viewScene('tutorial/'+step.id)?.narrative?.speaker??step.speaker;
   const attrs=(id:string,className:string)=>{
     const individual=Boolean(tutorialKey&&isTutorialLayoutId(id));
     const layer=(individual?tutorialScene?.layers?.find(l=>l.id===id):undefined)??
@@ -111,7 +120,7 @@ export function useBoardStudio(layoutRef:React.RefObject<HTMLElement|null>,guide
       ...(individual?dragTutorial(id):drag(id)),
     };
   };
-  return {editing:studio.editing,selected:studio.selected,sceneKey,profile,attrs,guideText};
+  return {editing:studio.editing,selected:studio.selected,sceneKey,profile,attrs,guideText,guideSpeaker};
 }
 
 /** Lo último copiado en el tablero (se conserva entre perfiles). */
@@ -135,6 +144,13 @@ export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGu
     getLayer(studio.doc,sceneKey,selected)??layerOrDefault(studio.doc,editKey,selected)):null;
   const previewKey='tutorial/'+previewGuide.id;
   const previewText=studio.scene(previewKey)?.dialogue?.text??previewGuide.text;
+  const narrative=studio.scene(previewKey)?.narrative;
+  const narrativeSpeaker=narrative?.speaker??previewGuide.speaker;
+  const narrativeTone=narrative?.tone??'neutral';
+  const narrativeIntent=narrative?.intent??'';
+  const narrativeDirection=narrative?.direction??'';
+  const updateNarrative=(patch:Parameters<typeof withNarrativeCard>[2],message='Ficha narrativa modificada')=>
+    studio.apply(d=>withNarrativeCard(d,previewKey,patch),message);
   const editorOnly=selected?.startsWith('native-tablero-tutorial-')||
     selected==='native-tablero-combo'||selected==='native-tablero-moneda'||selected==='native-tablero-combo-menu';
   const cannotHide=selected!==null&&[
@@ -180,6 +196,43 @@ export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGu
           onChange={e=>{studio.preview(d=>withDialogue(d,previewKey,{text:e.target.value}));
             studio.setStatus('Texto del tutorial modificado');}}/>
       </label>
+      <details className="dr-studio-narrative-card" data-testid="studio-narrative-card">
+        <summary>Ficha narrativa · {narrativeSpeaker} <span>Editar personaje y dirección</span></summary>
+        <div className="dr-studio-narrative-fields">
+          <label className="dr-studio-label">Personaje que habla
+            <select data-testid="studio-narrative-speaker" value={narrativeSpeaker}
+              onChange={e=>updateNarrative({speaker:e.target.value})}>
+              {![ 'Xervias','Domingo Quispe','Sistema' ].includes(narrativeSpeaker)&&
+                <option value={narrativeSpeaker}>{narrativeSpeaker}</option>}
+              <option value="Xervias">Xervias</option>
+              <option value="Domingo Quispe">Domingo Quispe</option>
+              <option value="Sistema">Narrador / Sistema</option>
+            </select>
+          </label>
+          <label className="dr-studio-label">Intención emocional (fase 2: vincular retrato)
+            <select data-testid="studio-narrative-tone" value={narrativeTone}
+              onChange={e=>updateNarrative({tone:e.target.value as StudioNarrativeTone})}>
+              {STUDIO_NARRATIVE_TONES.map(t=><option key={t} value={t}>{t.charAt(0).toUpperCase()+t.slice(1)}</option>)}
+            </select>
+          </label>
+          <label className="dr-studio-label">Objetivo de esta intervención
+            <textarea data-testid="studio-narrative-intent" rows={2} maxLength={180}
+              value={narrativeIntent} onFocus={studio.begin} onBlur={studio.commit}
+              onChange={e=>studio.preview(d=>withNarrativeCard(d,previewKey,{intent:e.target.value}))}
+              placeholder="¿Qué debe comprender o sentir el jugador?"/>
+          </label>
+          <label className="dr-studio-label">Dirección visual y narrativa (solo editor)
+            <textarea data-testid="studio-narrative-direction" rows={3} maxLength={360}
+              value={narrativeDirection} onFocus={studio.begin} onBlur={studio.commit}
+              onChange={e=>studio.preview(d=>withNarrativeCard(d,previewKey,{direction:e.target.value}))}
+              placeholder="Posición, ritmo, gestos, aparición de efectos…"/>
+          </label>
+          <p className="dr-studio-narrative-trigger" data-testid="studio-narrative-trigger">
+            <strong>Acción obligatoria:</strong> {previewGuide.action?(previewGuide.label??GUIDED_ACTION_DESCRIPTIONS[previewGuide.action]??previewGuide.action):'Continuar diálogo'}
+            <small>La ficha no cambia las acciones de cartas ni el orden de los turnos.</small>
+          </p>
+        </div>
+      </details>
       <p className="dr-studio-tip">El selector cambia solo la vista previa; nunca adelanta ni reinicia tu partida. Los elementos narrativos se ajustan por intervención y por tamaño de pantalla, sin mover los demás pasos.</p>
       <label className="dr-studio-label">Elemento a editar (también puedes tocarlo)
         <select data-testid="studio-actor-select" value={selected??''} onChange={e=>studio.select(e.target.value||null)}>
