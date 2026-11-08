@@ -932,3 +932,22 @@
   }
   .dr-studio-board-panel .dr-studio-av-time-axis{padding-left:59px}
 }
+
+/* El director audiovisual comparte los carriles del tutorial con todas las
+   intervenciones del prólogo y las pantallas de campaña, sin cubrir el lienzo. */
+.dr-studio-campaign-av-host{min-width:0;width:100%;box-sizing:border-box;margin:10px 0}
+.dr-studio-campaign-av-host .dr-studio-av-quick input:not([type="file"]){
+  width:100%;box-sizing:border-box;min-height:37px;border-radius:6px;
+  background:#243650;color:#f8ecd8;border:1px solid #8290a1;
+  padding:7px;font:12px/1.35 system-ui,sans-serif;
+}
+.dr-studio-campaign-av-host .dr-studio-av-quick input[type="file"]{
+  width:100%;max-width:100%;font-size:11px;color:#efdcc7;
+}
+.dr-studio-campaign-av-host .dr-studio-av-quick audio{
+  width:100%;max-width:100%;min-height:36px;
+}
+.dr-studio-campaign-av-host .dr-studio-av-quick button{
+  min-height:38px;border:1px solid #8c9baf;background:#293e56;
+  border-radius:7px;color:#fff0dc;
+}

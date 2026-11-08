@@ -216,3 +216,28 @@ test('on phones the inspector can be docked at the bottom',async({page},info)=>{
   await page.reload();
   await expect(page.getByTestId('dr-studio')).toHaveClass(/dr-studio-dock-bottom/);
 });
+
+
+test('prologue shares audiovisual direction with the campaign without changing story navigation',async({page},info)=>{
+  test.skip(only(['mobile-390'])(info.project.name),'Shared prologue audiovisual direction');
+  await open(page,4);
+  await page.getByTestId('studio-campaign-av').locator('summary').click();
+  await expect(page.getByTestId('studio-campaign-av-inspector')).toContainText('Diálogo');
+  await page.getByTestId('studio-campaign-av-tone').selectOption('decidido');
+  await page.getByTestId('studio-campaign-av-musicStartDelayMs').selectOption('1000');
+  await page.getByTestId('studio-campaign-av-sound').selectOption('CLICK');
+  await page.getByTestId('studio-campaign-av-text').fill('¿Qué está sucediendo en la plaza?');
+  await page.getByTestId('studio-campaign-av-text').press('Tab');
+  await expect(page.getByTestId('studio-dialogue-text')).toHaveValue('¿Qué está sucediendo en la plaza?');
+  await page.getByTestId('studio-save-quick').click();
+  await page.getByTestId('studio-step-select').selectOption('5');
+  await expect(page.getByTestId('studio-campaign-av-tone')).toHaveValue('neutral');
+  await expect(page.getByTestId('studio-campaign-av-sound')).toHaveValue('none');
+  await page.getByTestId('studio-step-select').selectOption('4');
+  await expect(page.getByTestId('studio-campaign-av-tone')).toHaveValue('decidido');
+  await page.reload();
+  await page.getByTestId('studio-campaign-av').locator('summary').click();
+  await expect(page.getByTestId('studio-campaign-av-musicStartDelayMs')).toHaveValue('1000');
+  await expect(page.getByTestId('studio-campaign-av-sound')).toHaveValue('CLICK');
+  await expect(page.getByTestId('studio-campaign-av-text')).toHaveValue('¿Qué está sucediendo en la plaza?');
+});

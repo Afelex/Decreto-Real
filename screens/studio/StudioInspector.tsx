@@ -8,6 +8,7 @@ import {
 } from '../../campaign/studio/ops';
 import { toggleBold } from '../../campaign/studio/richText';
 import StudioTimeline, { type TimelineItem } from './StudioTimeline';
+import {StudioSceneAVDirector} from './StudioSceneAVDirector';
 import StudioLibrary, { formatBytes, type LibraryUse } from './StudioLibrary';
 import {
   STUDIO_ACTORS, STUDIO_BACKGROUND_SCALE, STUDIO_DIALOGUE_BOX_SCALE, STUDIO_DIALOGUE_TEXT_SCALE, STUDIO_LIMITS, actorLayerId, defaultLayerTransform, isBackgroundLocked,
@@ -552,6 +553,8 @@ export default function StudioInspector(props:Props){
         <button type="button" data-testid="studio-copy-previous" disabled={!props.previousKey}
           onClick={copyPrevious}>⤺ Copiar de la anterior</button>
       </div>
+      <StudioSceneAVDirector sceneKey={sceneKey} originalText={props.originalText}
+        defaultSpeaker={props.speaker??'Narrador'} label={props.title}/>
       <details className="dr-studio-dialogue" open data-testid="studio-dialogue-section">
         <summary>Diálogo y textos</summary>
         <div className="dr-studio-bold-row">

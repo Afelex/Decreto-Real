@@ -66,3 +66,33 @@ test('epilogue and credits accept added layers and a new background per page',as
   await page.locator('input[aria-label="Archivo background"]').setInputFiles({name:'fondo.png',mimeType:'image/png',buffer:PNG});
   await expect(page.locator('.dcredits-screen')).toHaveAttribute('style',/blob:/);
 });
+
+
+test('campaign audiovisual director edits a region dialogue without affecting other lines',async({page},info)=>{
+  test.skip(only(['mobile-390','desktop-1280'])(info.project.name),'Shared campaign AV director');
+  await catalog(page);
+  await page.locator('[data-testid="studio-catalog-item"][data-path^="/campania/entrada/"]').first().click();
+  await expect(page.getByTestId('dr-studio')).toBeVisible();
+  await page.getByTestId('studio-campaign-av').locator('summary').click();
+  for(const lane of ['dialogue','portrait','music','effect','action']){
+    await expect(page.getByTestId('studio-av-lane-'+lane)).toBeVisible();
+  }
+  await page.getByTestId('studio-campaign-av-tone').selectOption('preocupado');
+  await page.getByTestId('studio-campaign-av-sound').selectOption('CLICK');
+  await page.getByTestId('studio-campaign-av-soundDelayMs').selectOption('500');
+  await page.getByTestId('studio-campaign-av-direction').fill('Dejar libre el retrato de Xervias.');
+  await page.getByTestId('studio-campaign-av-direction').press('Tab');
+  await expect(page.getByTestId('studio-campaign-av-inspector')).toContainText('CLICK');
+  await page.getByTestId('studio-screen-text-select').selectOption({label:'Zhinchi'});
+  await expect(page.getByTestId('studio-campaign-av-tone')).toHaveValue('neutral');
+  await expect(page.getByTestId('studio-campaign-av-sound')).toHaveValue('none');
+  await page.getByTestId('studio-campaign-av-tone').selectOption('sereno');
+  await page.getByTestId('studio-save').click();
+  await page.reload();
+  await page.getByTestId('studio-campaign-av').locator('summary').click();
+  await page.getByTestId('studio-screen-text-select').selectOption({label:'Zhinchi'});
+  await expect(page.getByTestId('studio-campaign-av-tone')).toHaveValue('sereno');
+  await page.getByTestId('studio-screen-text-select').selectOption({index:0});
+  await expect(page.getByTestId('studio-campaign-av-tone')).toHaveValue('preocupado');
+  await expect(page.getByTestId('studio-campaign-av-direction')).toHaveValue('Dejar libre el retrato de Xervias.');
+});

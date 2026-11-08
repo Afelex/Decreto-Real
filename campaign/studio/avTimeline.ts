@@ -3,7 +3,6 @@
  */
 import type {GuidedStep} from '../guidedOpeningDuel.ts';
 import type {StudioDocumentV3} from './schema.ts';
-import {analyzeGuidedReading} from './tutorialReading.ts';
 import {resolveNarrativeAudio,resolveNarrativeTiming} from './narrativeAudio.ts';
 import {narrativePortraitVisible,resolveNarrativeCardSprite} from './narrativeSprites.ts';
 import {STUDIO_PORTRAIT_DURATION} from './schema.ts';
@@ -29,26 +28,37 @@ export type GuidedAVBeat={
   events:AVEvent[];
 };
 
-/** La duración de lectura nunca se usa para avanzar diálogos. */
-export function createGuidedAVBeat(
-  step:GuidedStep,index:number,doc:StudioDocumentV3,
-):GuidedAVBeat{
-  const scene=doc.scenes['tutorial/'+step.id];
+export type StudioAVSource={
+  /** Clave estable del texto/intervención, p. ej. prologo/desafio-01. */
+  sceneKey:string;
+  /** Nombre corto para la navegación; no se utiliza como clave de guardado. */
+  stepId:string;
+  index:number;
+  speaker:string;
+  text:string;
+  actionLabel?:string|null;
+};
+
+/** Construye la misma cronología editorial para cualquier escena de Studio.
+ * No cambia el reloj ni el guion del reproductor de campaña. */
+export function createSceneAVBeat(source:StudioAVSource,doc:StudioDocumentV3):GuidedAVBeat{
+  const scene=doc.scenes[source.sceneKey];
   const card=scene?.narrative;
-  const speaker=card?.speaker??step.speaker;
-  const text=scene?.dialogue?.text??step.text;
-  const reading=analyzeGuidedReading(step,text);
+  const speaker=card?.speaker??source.speaker;
+  const text=scene?.dialogue?.text??source.text;
+  const readingSeconds=Math.max(2,Math.ceil(text.trim().split(/\\s+/u).filter(Boolean).length/3));
   const tone=card?.tone??'neutral';
-  const sprite=resolveNarrativeCardSprite(card,step.speaker);
-  const portraitVisible=narrativePortraitVisible(step,card);
+  const sprite=resolveNarrativeCardSprite(card,source.speaker);
+  const portraitVisible=narrativePortraitVisible({speaker:source.speaker,
+    ...(source.actionLabel?{action:'interactive'}:{})},card);
   const portraitDuration=card?.motionDurationMs??STUDIO_PORTRAIT_DURATION.default;
   const cue=resolveNarrativeAudio(card),timing=resolveNarrativeTiming(card);
   const musicLabel=card?.musicAssetId?
     doc.assets?.[card.musicAssetId]?.name??'Canción pendiente':'Música habitual';
-  const actionLabel=step.action?(step.label??step.action):null;
+  const actionLabel=source.actionLabel??null;
   const events:AVEvent[]=[
-    {lane:'dialogue',label:'Lectura estimada · '+reading.estimatedSeconds+' s',
-      startMs:0,durationMs:reading.estimatedSeconds*1000,approximate:true},
+    {lane:'dialogue',label:'Lectura estimada · '+readingSeconds+' s',
+      startMs:0,durationMs:readingSeconds*1000,approximate:true},
   ];
   if(portraitVisible&&sprite){
     events.push({lane:'portrait',label:'Aparecer · '+(card?.enterMotion??'fade'),
@@ -74,17 +84,28 @@ export function createGuidedAVBeat(
   }
   if(actionLabel)
     events.push({lane:'action',label:actionLabel,startMs:0,durationMs:0,untilAdvance:true});
-  const windowMs=Math.min(40000,Math.max(6000,reading.estimatedSeconds*1000,
+  const windowMs=Math.min(40000,Math.max(6000,readingSeconds*1000,
     portraitDuration+250,
     timing.musicStartDelayMs+Math.max(timing.musicStopAfterMs,250),
     timing.soundDelayMs+Math.max(timing.soundMaxDurationMs,250)));
   return {
-    stepId:step.id,index,speaker,text,tone,spritePath:sprite?.path??null,
+    stepId:source.stepId,index:source.index,speaker,text,tone,spritePath:sprite?.path??null,
     portraitVisible,enterMotion:card?.enterMotion??'fade',exitMotion:card?.exitMotion??'fade',
     musicLabel,musicMode:cue.music,cueMode:timing.musicCueMode,
-    soundLabel:cue.sound,actionLabel,estimatedReadingSeconds:reading.estimatedSeconds,
+    soundLabel:cue.sound,actionLabel,estimatedReadingSeconds:readingSeconds,
     windowMs,events,
   };
+}
+
+/** La duración de lectura nunca se usa para avanzar diálogos. */
+export function createGuidedAVBeat(
+  step:GuidedStep,index:number,doc:StudioDocumentV3,
+):GuidedAVBeat{
+  return createSceneAVBeat({
+    sceneKey:'tutorial/'+step.id,stepId:step.id,index,
+    speaker:step.speaker,text:step.text,
+    actionLabel:step.action?(step.label??step.action):null,
+  },doc);
 }
 export const createGuidedAVTimeline=(steps:readonly GuidedStep[],doc:StudioDocumentV3):GuidedAVBeat[]=>
   steps.map((step,index)=>createGuidedAVBeat(step,index,doc));

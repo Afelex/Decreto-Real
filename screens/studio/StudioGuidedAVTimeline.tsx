@@ -1,6 +1,7 @@
 import React from 'react';
 import {GUIDED_STEPS} from '../../campaign/guidedOpeningDuel';
-import {createGuidedAVTimeline,avEventLeft,avEventWidth,type AVLane} from '../../campaign/studio/avTimeline';
+import {createGuidedAVTimeline} from '../../campaign/studio/avTimeline';
+import {StudioAVTracks} from './StudioAVTracks';
 import {AUDIO_MUSIC_CUE_MODES,AUDIO_TIMING_PRESETS} from '../../campaign/studio/audioTimeline';
 import {STUDIO_NARRATIVE_SOUND_CUES,STUDIO_NARRATIVE_MUSIC_MODES} from '../../campaign/studio/narrativeAudio';
 import {STUDIO_NARRATIVE_TONES,STUDIO_PORTRAIT_MOTIONS,
@@ -9,13 +10,6 @@ import {withDialogue,withNarrativeCard} from '../../campaign/studio/ops';
 import {useStudio} from './StudioContext';
 
 type Props={selectedIndex:number;onSelect:(index:number)=>void};
-const LANES:readonly {key:AVLane;label:string}[]=[
-  {key:'dialogue',label:'Diálogo'},
-  {key:'portrait',label:'Personaje'},
-  {key:'music',label:'Música'},
-  {key:'effect',label:'Efecto'},
-  {key:'action',label:'Acción'},
-];
 const fmt=(ms:number)=>(ms/1000).toLocaleString('es-EC',{maximumFractionDigits:2})+' s';
 
 /** Vista conjunta del primer duelo: la escala es relativa a CADA intervención.
@@ -74,38 +68,7 @@ export function StudioGuidedAVTimeline({selectedIndex,onSelect}:Props){
           <span>{item.soundLabel!=='none'?'♪ ':''}{item.actionLabel?'⚔ ':''}{item.tone}</span>
         </button>)}
       </div>
-      <section className="dr-studio-av-inspector" data-testid="studio-av-inspector"
-        aria-label="Pistas de la intervención seleccionada">
-        <header>
-          <strong>{beat.speaker} · paso {selectedIndex+1}</strong>
-          <span>{beat.actionLabel?'Acción: '+beat.actionLabel:'Pausa narrativa / continuar'}</span>
-        </header>
-        <div className="dr-studio-av-time-axis" aria-hidden="true">
-          {[0,.25,.5,.75,1].map(f=><span key={f}>{fmt(beat.windowMs*f)}</span>)}
-        </div>
-        <div className="dr-studio-av-lanes">
-          {LANES.map(lane=><div key={lane.key} className={'dr-studio-av-lane is-'+lane.key}
-            data-testid={'studio-av-lane-'+lane.key}>
-            <strong>{lane.label}</strong>
-            <div className="dr-studio-av-track">
-              {beat.events.filter(e=>e.lane===lane.key).map((event,i)=><span
-                key={event.label+'-'+i}
-                className={'dr-studio-av-event'+(event.approximate?' is-estimate':'')+
-                  (event.untilAdvance?' is-until-advance':'')}
-                style={{left:avEventLeft(event,beat.windowMs)+'%',
-                  width:avEventWidth(event,beat.windowMs)+'%'}}
-                title={event.label+' · '+fmt(event.startMs)} data-testid="studio-av-event">
-                <span>{event.label}</span>
-              </span>)}
-            </div>
-          </div>)}
-        </div>
-        <small className="dr-studio-av-notes" data-testid="studio-av-notes">
-          {beat.portraitVisible?'Entrada: '+beat.enterMotion+' · Salida al avanzar: '+beat.exitMotion:
-            'Sin retrato grande durante esta intervención'}.
-          La duración del diálogo es una estimación de lectura y no provoca avance automático.
-        </small>
-      </section>
+      <StudioAVTracks beat={beat} heading={beat.speaker+' · paso '+(selectedIndex+1)}/>
       <section className="dr-studio-av-quick" data-testid="studio-av-quick-edit">
         <strong>Editar esta intervención</strong>
         <label className="dr-studio-label">Diálogo
