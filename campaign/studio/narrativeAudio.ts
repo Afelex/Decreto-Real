@@ -4,6 +4,7 @@
  * global de música del jugador. Sin URLs inventadas o archivos inexistentes.
  */
 import type {StudioNarrativeCard} from './schema.ts';
+import {DEFAULT_NARRATIVE_TIMING,type NarrativeTiming} from './audioTimeline.ts';
 
 export const STUDIO_NARRATIVE_MUSIC_MODES=['normal','soft','silent'] as const;
 export type StudioNarrativeMusicMode=(typeof STUDIO_NARRATIVE_MUSIC_MODES)[number];
@@ -14,6 +15,16 @@ export type StudioNarrativeSoundCue=(typeof STUDIO_NARRATIVE_SOUND_CUES)[number]
 export type NarrativeAudioCue={music:StudioNarrativeMusicMode;sound:StudioNarrativeSoundCue};
 export function resolveNarrativeAudio(card:StudioNarrativeCard|undefined):NarrativeAudioCue {
   return {music:card?.musicMode??'normal',sound:card?.soundCue??'none'};
+}
+/** Los campos temporales ausentes mantienen el comportamiento de siempre. */
+export function resolveNarrativeTiming(card:StudioNarrativeCard|undefined):NarrativeTiming {
+  return {
+    musicCueMode:card?.musicCueMode??DEFAULT_NARRATIVE_TIMING.musicCueMode,
+    musicStartDelayMs:card?.musicStartDelayMs??0,
+    musicStopAfterMs:card?.musicStopAfterMs??0,
+    soundDelayMs:card?.soundDelayMs??0,
+    soundMaxDurationMs:card?.soundMaxDurationMs??0,
+  };
 }
 
 /** Cues modestos solo sobre texto no interactivo; las cartas tienen sus
