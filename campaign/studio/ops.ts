@@ -274,6 +274,25 @@ export function layerOrDefault(doc:StudioDocumentV3,key:string,id:string):Studio
   return null;
 }
 
+/** Incorpora las nuevas fichas publicadas en un borrador anterior sin tocar
+ * diálogos, posiciones, medios ni decisiones editoriales ya modificadas.
+ * Los campos locales tienen precedencia incluso cuando solo hay uno editado. */
+export function inheritPublishedNarrative(
+  local:StudioDocumentV3,published:StudioDocumentV3,
+):StudioDocumentV3 {
+  let next:StudioDocumentV3=local;
+  for(const [key,source] of Object.entries(published.scenes)){
+    if(!/^tutorial\/g\d{2}$/.test(key)||!source.narrative)continue;
+    const current=next.scenes[key];
+    const localCard=current?.narrative??{};
+    const incoming={...source.narrative,...localCard};
+    if(Object.keys(incoming).every(field=>
+      localCard[field as keyof StudioNarrativeCard]===incoming[field as keyof StudioNarrativeCard]))continue;
+    next={...next,scenes:{...next.scenes,[key]:{...current,narrative:incoming}}};
+  }
+  return next;
+}
+
 /**
  * Fusiona un documento importado con el actual: las escenas importadas
  * reemplazan solo a las que coinciden; el resto del borrador se conserva.
