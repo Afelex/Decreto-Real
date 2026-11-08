@@ -1,7 +1,7 @@
 import {test,expect} from '@playwright/test';
 const mediaId='media-11111111-1111-4111-8111-111111111111';
 const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO7+wL8AAAAASUVORK5CYII=','base64');
-const published={version:3,assets:{[mediaId]:{name:'Publicado',mime:'image/png'}},scenes:{
+const published={version:3,defaults:{dialogue:{hideNameplate:true,hideProgress:true,hideTitle:true}},assets:{[mediaId]:{name:'Publicado',mime:'image/png'}},scenes:{
   'prologo/arresto-01':{background:{assetId:mediaId},title:'Rótulo privado',titleDevOnly:true,dialogue:{text:'**Publicado** para todos'},layers:[
     {id:'actor-madre',kind:'actor',actor:'Madre',x:13,y:0,scale:1,rotation:0,opacity:1,mirror:false,z:14,visible:true},
     {id:'actor-nino',kind:'actor',actor:'Niño',x:0,y:0,scale:1,rotation:0,opacity:1,mirror:false,z:16,visible:true,devOnly:true},
@@ -22,6 +22,10 @@ test('el juego compilado aplica la publicación y oculta lo marcado solo dev sin
   await expect.poll(()=>page.locator('.dcop-backdrop').evaluate((el:HTMLImageElement)=>el.naturalWidth)).toBe(1);
   await expect(page.locator('.dcop-civil')).toHaveAttribute('style',/--studio-x: 13/);
   await expect(page.locator('.dcop-child-sprite')).toBeHidden();
+  // El modo público debe respetar «Solo para desarrolladores» aun sin drDev.
+  await expect(page.locator('.dcop-nameplate')).toHaveCount(0);
+  await expect(page.getByLabel('Progreso del diálogo')).toHaveCount(0);
+  await expect(page.locator('.dcop-chapter-title')).toHaveCount(0);
   await expect(page.getByText('Rótulo privado',{exact:true})).toHaveCount(0);
   await expect(page.locator('.dcop-stage')).toHaveCSS('--dr-stage-w',/px/);
   await page.getByRole('button',{name:'Continuar',exact:true}).click();
