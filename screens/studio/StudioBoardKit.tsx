@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { getLayer, isTutorialLayoutId, layerOrDefault, tutorialLayoutKey, withAsset, withDialogue, withNarrativeCard, withLayer, withoutLayer } from '../../campaign/studio/ops';
 import { GUIDED_STEPS, type GuidedStep } from '../../campaign/guidedOpeningDuel';
 import { withMusicOnFollowingGuideSteps } from '../../campaign/studio/musicReuse';
+import {AUDIO_MUSIC_CUE_MODES,AUDIO_TIMING_PRESETS} from '../../campaign/studio/audioTimeline.ts';
 import { STUDIO_NARRATIVE_MUSIC_MODES, STUDIO_NARRATIVE_SOUND_CUES,
   resolveNarrativeAudio, resolveNarrativeTiming, type StudioNarrativeMusicMode, type StudioNarrativeSoundCue } from '../../campaign/studio/narrativeAudio';
 import { useOptionalAudio } from '../../contexts/AudioContext';
@@ -178,6 +179,7 @@ export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGu
   const exitMotion=narrative?.exitMotion??'fade';
   const motionDuration=narrative?.motionDurationMs??STUDIO_PORTRAIT_DURATION.default;
   const narrativeAudio=resolveNarrativeAudio(narrative);
+  const narrativeTiming=resolveNarrativeTiming(narrative);
   const musicTracks=Object.entries(studio.doc.assets??{}).filter(([,m])=>m.mime.startsWith('audio/'));
   const chosenMusic=narrative?.musicAssetId??'';
   const musicUses=chosenMusic?Object.values(studio.doc.scenes).filter(
@@ -352,6 +354,41 @@ export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGu
                     ATTACK:'Ataque',DEFENSE:'Defensa',IMPACT:'Impacto'}[cue]}</option>)}
               </select>
             </label>
+            <details className="dr-studio-audio-timeline" data-testid="studio-audio-timeline">
+              <summary>Temporización del sonido <span>Editar inicio y duración</span></summary>
+              <div className="dr-studio-audio-timeline-fields">
+                <label className="dr-studio-label">Qué sucede con la música anterior
+                  <select data-testid="studio-music-cue-mode"
+                    value={narrativeTiming.musicCueMode}
+                    onChange={e=>updateNarrative({musicCueMode:e.target.value as typeof narrativeTiming.musicCueMode})}>
+                    {AUDIO_MUSIC_CUE_MODES.map(v=><option key={v} value={v}>{{change:'Cambiar a la canción de esta escena',
+                      continue:'Continuar la canción anterior',
+                      stop:'Detener la música'}[v]}</option>)}
+                  </select>
+                </label>
+                {([
+                  ['musicStartDelayMs','Inicio de música tras aparecer el diálogo'],
+                  ['musicStopAfterMs','Detener música después de reproducirla'],
+                  ['soundDelayMs','Inicio del efecto tras aparecer el diálogo'],
+                  ['soundMaxDurationMs','Duración máxima del efecto'],
+                ] as const).map(([field,label])=><label key={field} className="dr-studio-label">
+                  {label}
+                  <select data-testid={'studio-'+field}
+                    value={narrativeTiming[field]}
+                    onChange={e=>updateNarrative({[field]:Number(e.target.value)})}>
+                    {AUDIO_TIMING_PRESETS[field].map(ms=><option key={ms} value={ms}>
+                      {ms===0?(field.endsWith('DelayMs')?'Inmediato':'Sin límite'):(ms/1000).toLocaleString('es-EC')+' s'}
+                    </option>)}
+                  </select>
+                </label>)}
+                <small data-testid="studio-audio-timeline-summary">
+                  La música comienza a los {narrativeTiming.musicStartDelayMs/1000} s;
+                  el efecto a los {narrativeTiming.soundDelayMs/1000} s.
+                  {narrativeTiming.musicStopAfterMs>0?' Música limitada a '+narrativeTiming.musicStopAfterMs/1000+' s.':''}
+                  Los tiempos se cancelan si avanzas de intervención.
+                </small>
+              </div>
+            </details>
             <button type="button" data-testid="studio-narrative-audio-preview"
               disabled={narrativeAudio.sound==='none'||!audio?.sfxEnabled}
               onClick={()=>{if(narrativeAudio.sound!=='none')audio?.playSound(narrativeAudio.sound);}}>
