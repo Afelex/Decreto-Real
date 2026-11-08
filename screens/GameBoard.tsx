@@ -144,7 +144,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const [studioPlayerPreview,setStudioPlayerPreview] = useState(false);
   const [studioMotionReplay,setStudioMotionReplay] = useState(0);
   const [studioParams]=useSearchParams();
-  const { playSound, sfxEnabled, musicEnabled, toggleSfx, toggleMusic } = useAudio();
+  const { playSound, sfxEnabled, musicEnabled, toggleSfx, toggleMusic, setNarrativeMusicMode } = useAudio();
 
   const [phase, setPhase] = useState<GamePhase>('INIT');
   const [turnCount, setTurnCount] = useState(0);
@@ -179,6 +179,22 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   // La vista previa muestra la escena COMPLETA, sin jugar sus acciones.
   const previewNarrativeStep=board.editing?GUIDED_STEPS[studioGuidePreview]:currentGuide;
   const previewNarrativeAction=board.editing?previewNarrativeStep?.action:undefined;
+  const currentNarrativeAudio=currentGuide?board.guideAudio(currentGuide):undefined;
+  const playedNarrativeStep=useRef<string|null>(null);
+  // Solo durante el tutorial público; la vista previa no dispara sonidos
+  // automáticamente. La limpieza devuelve el control a la música ordinaria.
+  useEffect(()=>{
+    setNarrativeMusicMode(guidedOpening&&!board.editing?
+      (currentNarrativeAudio?.music??'normal'):'normal');
+  },[guidedOpening,board.editing,currentNarrativeAudio?.music,setNarrativeMusicMode]);
+  useEffect(()=>()=>setNarrativeMusicMode('normal'),[setNarrativeMusicMode]);
+  useEffect(()=>{
+    if(!guidedOpening||board.editing||!currentGuide)return;
+    if(playedNarrativeStep.current===currentGuide.id)return;
+    playedNarrativeStep.current=currentGuide.id;
+    if(currentNarrativeAudio?.sound&&currentNarrativeAudio.sound!=='none')
+      playSound(currentNarrativeAudio.sound);
+  },[guidedOpening,board.editing,guideIndex,currentNarrativeAudio?.sound,playSound]);
   const expectedGuideAction = currentGuide?.action;
   const guidedCardId = expectedGuideAction ? GUIDED_ACTION_CARDS[expectedGuideAction] : undefined;
 
