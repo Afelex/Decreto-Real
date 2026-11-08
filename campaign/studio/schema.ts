@@ -11,6 +11,7 @@
  * Módulo puro: sin DOM, sin React, ejecutable con `node --experimental-strip-types`.
  */
 import { STUDIO_ACTORS, type StudioActor, type StudioAssetMeta } from '../studioLayout.ts';
+import { isNarrativeSpriteId } from './narrativeSprites.ts';
 
 export { STUDIO_ACTORS, type StudioActor, type StudioAssetMeta };
 
@@ -80,7 +81,7 @@ export const STUDIO_V3_MAX_TITLE = 80;
 /** Diálogo de la intervención: texto propio (con **negrita**) y tamaño del bloque. */
 export type StudioDialogue = StudioDialogueStyle & {text?:string};
 /** Director narrativo: datos editoriales, sin alterar la lógica de combate.
- * La expresión es una intención artística; el selector de sprite llegará en fase 2. */
+ * La emoción propone un sprite existente. Su id puede ajustarse en Studio. */
 export const STUDIO_NARRATIVE_TONES = [
   'neutral','decidido','preocupado','sorprendido','enojado','sereno',
 ] as const;
@@ -90,6 +91,8 @@ export type StudioNarrativeCard = {
   speaker?:string;
   /** Emoción para dirigir la interpretación, no cambia el sprite todavía. */
   tone?:StudioNarrativeTone;
+  /** Sprite publicado y autorizado; omitirlo usa la expresión automática. */
+  spriteId?:string;
   /** Por qué existe la intervención en el relato. */
   intent?:string;
   /** Notas de composición que no se muestran al jugador. */
@@ -262,6 +265,7 @@ export function normalizeNarrativeCard(value:unknown):StudioNarrativeCard|null {
   if(direction)card.direction=direction;
   if((STUDIO_NARRATIVE_TONES as readonly string[]).includes(value.tone as string))
     card.tone=value.tone as StudioNarrativeTone;
+  if(isNarrativeSpriteId(value.spriteId))card.spriteId=value.spriteId;
   return Object.keys(card).length?card:null;
 }
 export function normalizeDialogue(value:unknown):StudioDialogue|null {

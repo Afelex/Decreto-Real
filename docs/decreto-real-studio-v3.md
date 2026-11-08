@@ -147,6 +147,15 @@ En **Studio · Tablero**, al cambiar de intervención se ejecuta una **revisión
 
 Esta comprobación **no sustituye** la revisión artística: puede detectar rectángulos superpuestos, pero no decidir si una expresión transmite la emoción correcta ni si el texto es suficientemente claro. Las propuestas deben probarse en un dispositivo real antes de aprobar su publicación.
 
+### Biblioteca de expresiones — Fase 2 (primer avance)
+En **Ficha narrativa** aparece **Ilustración narrativa** con miniatura. El modo **Automática según emoción** usa la emoción de la ficha para elegir un sprite existente de Xervias o Domingo Quispe. Si deseas una ilustración distinta, selecciona una de las variantes reales disponibles; se aplicará a la vista previa y a la intervención guiada cuando corresponda mostrar al personaje.
+
+- Los recursos proceden exclusivamente de la biblioteca de arte versionada en el repositorio, no de enlaces externos.
+- La selección explícita se guarda como `scenes["tutorial/g00"].narrative.spriteId` en el mismo documento v3 y viaja en los respaldos ZIP. Dejar el selector en «Automática» permite que cambiar la emoción actualice el retrato.
+- Cambiar el personaje restablece automáticamente una selección anterior que pudiera corresponder a otro personaje. Un archivo o identificador inválido nunca se carga como ilustración.
+- Las ilustraciones grandes acompañan las pausas narrativas; durante las acciones que requieren tocar cartas, la moneda o los combos, el campo sigue despejado. La ficha no modifica turnos, puntos de vida ni las cartas.
+- Este hito **no** integra todavía animaciones de entrada/salida, expresiones con sincronización labial ni audio por intervención.
+
 ## Otras pantallas de la historia
 Abre **☷ Otras pantallas** (o `#/studio/escenas`) y elige una conversación tras victoria, la entrada o liberación de una región, la crónica, el epílogo o los créditos. En cada una puedes cambiar los textos (con **negrita**), el rótulo, el fondo y añadir sprites o efectos, y marcar textos o capas como «solo desarrollador». Se abren con una partida de prueba: tu partida real no cambia.
 
