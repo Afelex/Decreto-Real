@@ -927,7 +927,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
               </button>;
             })}
           </div>
-          {(playerGauge >= 2 && phase === 'PLAYER_TURN' || board.editing && board.selected==='native-tablero-combo') && <div {...board.attrs('native-tablero-combo', `dr-royal-combo combo-${playerGauge>=2?playerGauge:2}`)}
+          {(playerGauge >= 2 && phase === 'PLAYER_TURN' || board.editing && board.selected==='native-tablero-combo') && <div key={playerGauge>=2?playerGauge:'studio-preview'} {...board.attrs('native-tablero-combo', `dr-royal-combo combo-${playerGauge>=2?playerGauge:2}`)}
             aria-label={`Combo por ${playerGauge>=2?playerGauge:2}`} role="status"><strong>COMBO</strong><b>×{playerGauge>=2?playerGauge:2}</b><em>de {{ ATTACK: 'Ataque', DEFENSE: 'Defensa', IMPACT: 'Impacto', ORDER: 'Orden' }[playerLastType ?? 'ATTACK']}</em></div>}
         </section>
 
