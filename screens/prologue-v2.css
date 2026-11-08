@@ -77,7 +77,7 @@
    La inclinación vive en elementos internos para que Studio pueda mover y
    escalar cada pieza sin perderla. */
 .dcop-versus{
-  position:absolute;z-index:6;inset:7% 0 29%;overflow:hidden;
+  position:absolute;z-index:6;inset:0;overflow:hidden;
   background:
     linear-gradient(28deg,transparent 47%,#ffffff12 47.3% 47.8%,transparent 48%),
     linear-gradient(152deg,transparent 30%,#9fd0ff10 30.3% 30.8%,transparent 31%),
@@ -85,7 +85,7 @@
 }
 .dcop-versus-band{position:absolute;left:-6%;right:-6%;height:39%;overflow:visible}
 .dcop-versus-rival{top:9%}
-.dcop-versus-player{bottom:7%}
+.dcop-versus-player{bottom:22%}
 .dcop-versus-band-inner{
   position:absolute;inset:0;overflow:hidden;transform:skewY(-6deg);
   border-top:5px solid #fff4dc;border-bottom:5px solid #fff4dc;
@@ -118,7 +118,7 @@
 }
 .dcop-versus-name-rival{top:1%;right:4%;rotate:-6deg}
 .dcop-versus-name-rival b{color:#5fe0ff}
-.dcop-versus-name-player{bottom:3%;right:4%;rotate:-6deg}
+.dcop-versus-name-player{bottom:22%;right:4%;rotate:-6deg}
 .dcop-versus-name-player b{color:#ffc35c}
 .dcop-versus-mark{
   position:absolute;left:50%;top:50%;z-index:4;width:0;height:0;
@@ -170,3 +170,7 @@
 @media(prefers-reduced-motion:reduce){
   .dcop-counter-invocation img{animation:none!important}
 }
+
+/* VS ocupa el lienzo completo del móvil; la caja narrativa sigue siendo
+   legible por encima, sin recortar el marco del duelo a un rectángulo central. */
+.dcop-versus{min-width:100%;min-height:100%}

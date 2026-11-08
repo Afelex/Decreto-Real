@@ -2,10 +2,12 @@
 
 **Acceso:** https://afelex.github.io/Decreto-Real/?drDev=1#/studio (o **QA · Historia → Abrir Decreto Real Studio**).
 
-Todo lo que hagas es un **borrador local de QA**: no cambia el juego publicado ni tu partida. Los borradores de Studio v2 se convierten solos la primera vez que abres v3; el borrador anterior se conserva como respaldo.
+Todo lo que hagas es un **borrador local de QA**: no cambia el juego publicado ni tu partida. **Guardar** conserva los ajustes en el navegador, pero para que los jugadores vean los títulos ocultos, como «Crónica», debes pulsar **⇪ Exportar publicación**, subir el ZIP al flujo de GitHub Actions y fusionar el PR que genera. El modo historia publicado ya respeta las opciones de ocultar nombre, progreso y rótulos. Los borradores de Studio v2 se convierten solos la primera vez que abres v3; el borrador anterior se conserva como respaldo.
 
 ## Lienzo
-La barra inferior siempre está visible:
+En móviles, la barra inferior comienza **plegada**: pulsa **⚙ Herramientas** para abrirla y **✕ Cerrar** para retirarla del texto. En pantallas de escritorio continúa visible. Además, el inspector tiene **Deshacer** y **Guardar** siempre accesibles arriba; sus barras de deslizamiento y botones +/- empiezan bloqueados en pantallas táctiles para evitar movimientos accidentales. Los valores X, Y y demás se pueden seguir escribiendo directamente. Para usar deslizadores, pulsa **🔒 Desbloquear ajustes**. El selector **Ir directamente a…** permite saltar a **Posición y escala**, **Diálogo y títulos** o **Guardar y publicar** sin recorrer todo el panel.
+
+Las herramientas del lienzo son:
 
 | Botón | Qué hace |
 |---|---|
@@ -83,7 +85,7 @@ Pulsa **🖼** para abrir la biblioteca:
 - En la escena 1, la **ilustración del pergamino** y la **tarjeta «Por orden de la Corona»** aparecen en «Elemento a editar»: se pueden mover, escalar, ocultar (🗑) o marcar «solo dev».
 
 ## Pantalla VS (intervención 21)
-La pantalla de enfrentamiento tiene ahora un diseño propio: rival arriba (franja azul), Xervias abajo (franja roja), nombres con la inicial grande y una marca «VS» metálica en el centro. En «Elemento a editar» aparecen sus piezas (**Marco completo**, **Franja** y **Nombre** de cada personaje, **Marca «VS»**): puedes moverlas, escalarlas, rotarlas, cambiar su capa, ocultarlas o marcarlas «solo dev».
+La pantalla VS ocupa ahora todo el lienzo vertical; la narración se superpone sin recortar el fondo de VS. La pantalla de enfrentamiento tiene ahora un diseño propio: rival arriba (franja azul), Xervias abajo (franja roja), nombres con la inicial grande y una marca «VS» metálica en el centro. En «Elemento a editar» aparecen sus piezas (**Marco completo**, **Franja** y **Nombre** de cada personaje, **Marca «VS»**): puedes moverlas, escalarlas, rotarlas, cambiar su capa, ocultarlas o marcarlas «solo dev».
 
 ## Tablero de juego
 Abre **☷ → ♜ Tablero de juego** (o `?drDev=1#/game?studio=1`). Puedes mover, escalar, rotar, cambiar la capa y la opacidad, espejar, ocultar o marcar «solo dev» los retratos, los mazos, los marcadores de impactos, la mano oculta del rival, **tu mano de cartas**, las etiquetas **«Tu Turno» y «Turno del Oponente»** y los botones «Fin de turno» y menú. Las etiquetas aparecen simultáneamente solo mientras editas. Cuando seleccionas una, puedes arrastrar **el estandarte ilustrado real** (inmóvil en la vista previa); el mismo ajuste se aplica al indicador persistente y al anuncio animado durante la partida. La mano permanece visible y jugable en las partidas. Mientras editas, la partida queda congelada.

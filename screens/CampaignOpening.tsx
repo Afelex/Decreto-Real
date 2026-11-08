@@ -187,7 +187,9 @@ const CampaignOpening:React.FC=()=>{
   const studioKey=composition?prologueSceneKey(composition.beatId):null;
   // viewScene: sin ediciones mientras se compara con el original.
   const studioScene=studio.viewScene(studioKey);
-  const chrome=studio.active&&!studio.compare?effectiveDialogueStyle(studio.doc,studioKey):null;
+  // El modo público también debe respetar los títulos/nombres/progreso ocultos
+  // en la composición publicada. Antes solo se aplicaban en sesiones QA.
+  const chrome=!studio.compare?effectiveDialogueStyle(studio.doc,studioKey):null;
   const titleVisible=studioScene?.titleVisible!==false&&studio.visibleTo(studioScene?.titleDevOnly)&&studio.visibleTo(chrome?.hideTitle);
   const sceneTitle=studioScene?.title??(isAfter?phaseTitles[scene]??'El precio de la victoria':prologue?.title??'Prólogo');
   const dialogueText=studioScene?.dialogue?.text??story?.text??'';

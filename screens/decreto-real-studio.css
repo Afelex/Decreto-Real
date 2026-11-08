@@ -518,3 +518,33 @@
 /* Los rótulos de turno normalmente no capturan gestos; en Studio sí se pueden arrastrar. */
 .dr-royal-screen .dr-event-indicator[data-studio-actor]{pointer-events:auto;touch-action:none;cursor:grab}
 .dr-royal-screen .dr-event-indicator[data-studio-actor] *{pointer-events:none}
+
+/* Studio táctil: inspector compacto y scroll seguro sin alterar coordenadas. */
+.dr-studio-quick-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;padding:5px 10px 8px;border-top:1px solid #ffffff22}
+.dr-studio-quick-actions button{min-width:0;font-size:11px;min-height:34px;padding:4px 6px}
+.dr-studio-mobile-hint{display:none}
+.dr-studio-tools-toggle{display:none}
+@media(max-width:900px) and (pointer:coarse){
+  .dr-studio-panel:not(.dr-studio-screen-panel){top:6px;max-width:calc(100% - 12px)}
+  .dr-studio-heading{display:grid;grid-template-columns:minmax(0,1fr);gap:5px;padding:6px 9px}
+  .dr-studio-heading>div{min-width:0}
+  .dr-studio-heading small{font-size:8px;white-space:nowrap}
+  .dr-studio-heading strong{font-size:14px;white-space:nowrap}
+  .dr-studio-heading-actions{display:flex;gap:5px;overflow-x:auto;overscroll-behavior-x:contain;padding:2px 0;scrollbar-width:thin}
+  .dr-studio-heading-actions button{flex:0 0 auto;min-height:34px;min-width:34px;font-size:16px;padding:3px 7px}
+  .dr-studio-body{max-height:min(37dvh,370px);overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;scrollbar-gutter:stable}
+  .dr-studio-mobile-hint{display:block;font:11px/1.3 system-ui,sans-serif;color:#c8d6e5;margin:0 0 4px}
+  .dr-studio-slider input:disabled{opacity:.5;pointer-events:none}
+  .dr-studio-number-row button:disabled{opacity:.28}
+  .dr-studio-number-row,.dr-studio-slider{touch-action:pan-y}
+  .dr-studio-tools-toggle{display:block;position:absolute;z-index:961;right:8px;bottom:max(8px,env(safe-area-inset-bottom));
+    min-height:42px;padding:7px 10px;border:1px solid #dfc18f;border-radius:12px;
+    background:#142238f2;color:#ffebcb;font:700 12px system-ui,sans-serif;box-shadow:0 4px 14px #0009}
+  .dr-studio-toolbar.dr-studio-toolbar-collapsed{display:none}
+  .dr-studio-toolbar{bottom:calc(54px + env(safe-area-inset-bottom));max-width:calc(100% - 12px);gap:2px}
+  .dr-studio-toolbar>button{min-width:36px;min-height:40px;padding:3px 4px}
+  .dr-studio-panel.dr-studio-dock-bottom{top:auto;bottom:calc(65px + env(safe-area-inset-bottom))}
+}
+
+.dr-studio-quick-actions .dr-studio-section-jump{grid-column:1/-1;min-height:36px;background:#172336;color:#fceaca;border:1px solid #ab9370;border-radius:7px;font:12px system-ui,sans-serif;padding:5px 8px}
+.dr-studio-body{scroll-behavior:smooth}

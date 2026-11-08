@@ -31,6 +31,7 @@ export default function StudioCanvasOverlay({sceneKey,stageRef}:Props){
   const studio=useStudio();
   const {prefs}=studio;
   const [settingsOpen,setSettingsOpen]=React.useState(false);
+  const [toolsExpanded,setToolsExpanded]=React.useState(false);
   const [measured,setMeasured]=React.useState<Measured>({boxes:{},dialogueTop:null,width:0,height:0});
   const targets=actionTargets(studio.selected,studio.group);
   const targetKey=targets.join('|');
@@ -189,7 +190,13 @@ export default function StudioCanvasOverlay({sceneKey,stageRef}:Props){
           onPointerUp={endHandle} onPointerCancel={endHandle}/>}
       </>}
     </div>}
-    <div className="dr-studio-toolbar" role="toolbar" aria-label="Lienzo de Studio">
+    <button type="button" className="dr-studio-tools-toggle" aria-expanded={toolsExpanded}
+      data-testid="studio-tools-toggle" onClick={()=>setToolsExpanded(v=>!v)}
+      aria-label={toolsExpanded?"Ocultar herramientas del lienzo":"Mostrar herramientas del lienzo"}>
+      {toolsExpanded?"✕ Cerrar":"⚙ Herramientas"}
+    </button>
+    <div className={"dr-studio-toolbar"+(toolsExpanded?"":" dr-studio-toolbar-collapsed")}
+      role="toolbar" aria-label="Lienzo de Studio">
       {toggle('grid','Grilla','▦','studio-grid-toggle')}
       {toggle('snap','Ajuste','🧲','studio-snap-toggle')}
       {toggle('axes','Ejes','✛','studio-axes-toggle')}
