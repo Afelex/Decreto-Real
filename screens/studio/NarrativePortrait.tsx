@@ -8,6 +8,8 @@ export type PortraitMotionSettings={
 };
 type PortraitFrame=PortraitMotionSettings&{id:string;src:string};
 type Props={
+  /** La clave es gestionada por React; presente aquí por el tipado JSX del proyecto. */
+  key?:React.Key;
   stepId:string|null;
   visible:boolean;
   src:string;
