@@ -38,7 +38,7 @@ const overflow=(r:SafetyRect,stage:SafetyRect):number=>{
 };
 export const layoutCost=(subject:SafetyRect,zones:readonly SafetyZone[],stage:SafetyRect):number=>
   zones.reduce((total,z)=>total+Math.pow(occludedFraction(subject,z.rect),2)*
-    (z.weight??1)*10,total=0)+overflow(subject,stage)*24;
+    (z.weight??1)*10,0)+overflow(subject,stage)*24;
 /** Explora desplazamientos breves, en píxeles reales. Solo propone una
  * mejora significativa; nunca mueve nada por sí sola. */
 export function suggestClearance(subject:SafetyRect,zones:readonly SafetyZone[],
