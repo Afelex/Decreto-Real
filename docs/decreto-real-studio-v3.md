@@ -98,6 +98,17 @@ En **Studio · Tablero** aparecen seis elementos nuevos: **ventana de diálogo**
 
 El selector **Vista previa del tutorial** permite inspeccionar cualquiera de las **32 intervenciones** sin repetir la partida. **Texto de esta intervención** edita el guion real, que se conserva en la exportación ZIP de publicación. Este selector no avanza, reinicia ni modifica las reglas del duelo. Por defecto, la ventana del tutorial se posiciona más arriba para no tapar la mano ni los botones jugables. Los retratos narrativos y retratos HUD ahora tienen tamaños mayores y se pueden ajustar individualmente.
 
+### Contrato de autoría compartida — Fase 1
+El editor y las versiones que prepare desde GitHub comparten **exactamente el mismo formato de composición**, el documento versión 3 que se publica como `public/studio/composiciones.json`.
+
+- **Texto de un paso:** `scenes["tutorial/g11"].dialogue.text` (g11 es la intervención 12; el identificador no cambia cuando editamos el texto).
+- **Ubicación común del tablero móvil:** `scenes["tablero/movil"].layers`.
+- **Ubicación del diálogo exclusivamente en la intervención 12 móvil:** `scenes["tutorial/g11-movil"].layers`. Equivalentes: `tutorial/g11-horizontal` y `tutorial/g11-escritorio`.
+- **Herencia:** si no existe una posición particular, el elemento adopta la del tablero para ese formato. «Restaurar este elemento» borra solo la excepción de la intervención.
+- **Seguridad:** editar composiciones no modifica el orden obligatorio de cartas, combos, puntos de vida ni resultados del tutorial.
+
+**Colaboración:** puedo preparar un borrador desde GitHub en el mismo manifiesto, y tú puedes afinarlo desde DRStudio. Por ahora, tus retoques del móvil permanecen como borrador local hasta que los exportes y publiques explícitamente; las fases 3 y 4 resolverán la sincronización y publicación sin ZIP. Importar una composición debe respetar los borradores y usar la opción de fusionar si ya hiciste cambios.
+
 Acceso directo en móvil: `https://afelex.github.io/Decreto-Real/?drDev=1#/game?studio=1`. Después de guardar, exporta para publicar y fusiona el PR preparado para aplicar los cambios al juego de todos.
 
 ## Otras pantallas de la historia
