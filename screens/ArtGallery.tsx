@@ -61,7 +61,7 @@ export default function ArtGallery(){
   },[refresh]);
   const all=React.useMemo<Art[]>(()=>[
     ...catalog.map(i=>({id:i.path,name:i.name,group:i.group,bytes:i.bytes,url:source(i.path),kind:'repo' as const,path:i.path,ext:i.path.split('.').at(-1)?.toLowerCase()??''})),
-    ...local.map(i=>({id:i.id,name:i.name,group:'Subidos desde DRStudio o esta galería',bytes:i.size,url:urls[i.id]??'',kind:'local' as const,path:i.id,ext:i.mime.split('/').at(-1)??''}))
+    ...local.filter(i=>!i.mime.startsWith('audio/')).map(i=>({id:i.id,name:i.name,group:'Subidos desde DRStudio o esta galería',bytes:i.size,url:urls[i.id]??'',kind:'local' as const,path:i.id,ext:i.mime.split('/').at(-1)??''}))
   ],[catalog,local,urls]);
   const groups=['Todos',...new Set(all.map(i=>i.group))];
   const shown=all.filter(i=>(group==='Todos'||i.group===group)&&

@@ -196,6 +196,17 @@ También puedes elegir un único efecto sonoro de entrada entre los efectos ya r
 - Las preferencias y las correcciones del borrador local prevalecen. El modo de edición no dispara sonidos automáticamente al cambiar entre las 32 vistas.
 - Sigue pendiente integrar pistas propias de Suno, elegir una canción distinta por escena, transiciones entre canciones y una línea temporal de audio.
 
+### Biblioteca musical compartida — Fase 2
+
+**Ficha narrativa → Audio narrativo → Canción de esta intervención** permite reutilizar música propia. Sube un archivo **MP3 o WAV de hasta 25 MB** desde el mismo panel, y quedará registrado en la biblioteca multimedia de DRStudio (en este navegador). Elige **Música habitual del combate** para utilizar la pista de siempre. Puedes escuchar la canción seleccionada con el control de audio antes de guardar; no se reproduce automáticamente al recorrer escenas del editor.
+
+- Los archivos se validan **por firma real**, no por extensión, se deduplican al subirlos y quedan disponibles para otras intervenciones del mismo documento.
+- La ficha guarda exclusivamente `narrative.musicAssetId` (ID interno). La biblioteca conserva el archivo y su nombre, por lo que no hay URLs externas en el manifiesto ni referencias a canciones inexistentes.
+- **Exportar para publicar** incluye automáticamente las pistas **usadas** junto con las imágenes y demás recursos en el ZIP; el flujo actual de publicación mediante PR conserva su validación. El límite es **25 MB por archivo y 200 MB por proyecto**. Para canciones WAV más grandes, conviértelas a MP3 antes de subirlas.
+- La partida guiada reproduce la canción asignada a esa intervención y vuelve a la música habitual cuando corresponde. El selector «Música suave / Pausa / Volumen habitual» sigue funcionando y se respetan los ajustes globales de sonido. La vista previa en DRStudio no cambia automáticamente el audio.
+- **Todavía no se ha subido ninguna canción de Suno a la versión pública.** Este avance habilita la importación y el uso; no produce ni descarga música de Suno por sí mismo. Tus canciones guardadas en un dispositivo solo aparecen en otro cuando se haya exportado y publicado el proyecto.
+- Las pistas sonoras asociadas a cada paso se reproducen al entrar; un cambio de expresión o edición de texto no debe reiniciar la canción. No existe aún sincronización por segundos ni mezclas profesionales entre pistas.
+
 ## Otras pantallas de la historia
 Abre **☷ Otras pantallas** (o `#/studio/escenas`) y elige una conversación tras victoria, la entrada o liberación de una región, la crónica, el epílogo o los créditos. En cada una puedes cambiar los textos (con **negrita**), el rótulo, el fondo y añadir sprites o efectos, y marcar textos o capas como «solo desarrollador». Se abren con una partida de prueba: tu partida real no cambia.
 

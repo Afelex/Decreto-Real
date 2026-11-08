@@ -114,6 +114,8 @@ export type StudioNarrativeCard = {
   musicMode?:StudioNarrativeMusicMode;
   /** Efecto puntual cuando comienza el texto, no al usar cartas. */
   soundCue?:StudioNarrativeSoundCue;
+  /** Canción MP3/WAV de la biblioteca compartida: ID, nunca URL externa. */
+  musicAssetId?:string;
   /** Por qué existe la intervención en el relato. */
   intent?:string;
   /** Notas de composición que no se muestran al jugador. */
@@ -152,7 +154,7 @@ export const actorLayerId = (actor:StudioActor):string => ACTOR_LAYER_IDS[actor]
 
 export const MEDIA_ID = /^media-[a-f\d-]{12,60}$/i;
 export const EXTRA_ID = /^extra-[a-f\d-]{12,60}$/i;
-const MEDIA_MIME = /^(image\/(png|jpeg|webp|gif)|video\/(mp4|webm))$/;
+const MEDIA_MIME = /^(image\/(png|jpeg|webp|gif)|video\/(mp4|webm)|audio\/(mpeg|wav))$/;
 /** `pantalla/beatId`, en minúsculas ASCII. */
 const SCENE_KEY = /^[a-z][a-z0-9-]{0,30}\/[a-z0-9][a-z0-9-]{0,60}$/;
 
@@ -204,7 +206,8 @@ export function normalizeLayerTransform(value:unknown,defaults:StudioLayerTransf
 export function normalizeStudioLayer(value:unknown,assets?:Record<string,StudioAssetMeta>):StudioLayer|null {
   if(!isRecord(value))return null;
   const assetKnown=(id:unknown):id is string=>
-    typeof id==='string'&&MEDIA_ID.test(id)&&(!assets||Object.prototype.hasOwnProperty.call(assets,id));
+    typeof id==='string'&&MEDIA_ID.test(id)&&(!assets||
+      (Object.prototype.hasOwnProperty.call(assets,id)&&!assets[id].mime.startsWith('audio/')));
   if(value.kind==='actor'){
     if(!isActor(value.actor))return null;
     const actor=value.actor;
@@ -242,7 +245,8 @@ export function normalizeStudioLayer(value:unknown,assets?:Record<string,StudioA
 export function normalizeStudioBackground(value:unknown,assets?:Record<string,StudioAssetMeta>):StudioBackground|null {
   if(!isRecord(value))return null;
   const bg:StudioBackground={};
-  if(typeof value.assetId==='string'&&MEDIA_ID.test(value.assetId)&&(!assets||assets[value.assetId]))
+  if(typeof value.assetId==='string'&&MEDIA_ID.test(value.assetId)&&
+    (!assets||(assets[value.assetId]&&!assets[value.assetId].mime.startsWith('audio/'))))
     bg.assetId=value.assetId;
   for(const axis of ['x','y'] as const){
     const n=value[axis];
@@ -270,7 +274,8 @@ export function normalizeDialogueStyle(value:unknown):StudioDialogueStyle {
   return style;
 }
 /** Valida una ficha narrativa y elimina datos no reconocidos de paquetes externos. */
-export function normalizeNarrativeCard(value:unknown):StudioNarrativeCard|null {
+export function normalizeNarrativeCard(value:unknown,
+  assets?:Record<string,StudioAssetMeta>):StudioNarrativeCard|null {
   if(!isRecord(value))return null;
   const card:StudioNarrativeCard={};
   const bounded=(val:unknown,max:number):string|undefined=>{
@@ -287,6 +292,9 @@ export function normalizeNarrativeCard(value:unknown):StudioNarrativeCard|null {
   if((STUDIO_NARRATIVE_TONES as readonly string[]).includes(value.tone as string))
     card.tone=value.tone as StudioNarrativeTone;
   if(isNarrativeSpriteId(value.spriteId))card.spriteId=value.spriteId;
+  if(typeof value.musicAssetId==='string'&&MEDIA_ID.test(value.musicAssetId)&&
+    assets?.[value.musicAssetId]?.mime?.startsWith('audio/'))
+    card.musicAssetId=value.musicAssetId;
   if((STUDIO_NARRATIVE_MUSIC_MODES as readonly string[]).includes(value.musicMode as string))
     card.musicMode=value.musicMode as StudioNarrativeMusicMode;
   if((STUDIO_NARRATIVE_SOUND_CUES as readonly string[]).includes(value.soundCue as string))
@@ -366,7 +374,7 @@ export function normalizeStudioDocumentV3(value:unknown):StudioDocumentV3 {
     const dialogue=normalizeDialogue(raw.dialogue);
     if(dialogue)scene.dialogue=dialogue;
     // Ficha por intervención, nunca en toda la escena ni en el tablero general.
-    const narrative=normalizeNarrativeCard(raw.narrative);
+    const narrative=normalizeNarrativeCard(raw.narrative,assets);
     if(narrative)scene.narrative=narrative;
     if(Object.keys(scene).length)doc.scenes[key]=scene;
   }

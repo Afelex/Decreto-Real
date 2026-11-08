@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { getLayer, isTutorialLayoutId, layerOrDefault, tutorialLayoutKey, withDialogue, withNarrativeCard, withLayer, withoutLayer } from '../../campaign/studio/ops';
+import { getLayer, isTutorialLayoutId, layerOrDefault, tutorialLayoutKey, withAsset, withDialogue, withNarrativeCard, withLayer, withoutLayer } from '../../campaign/studio/ops';
 import { GUIDED_STEPS, type GuidedStep } from '../../campaign/guidedOpeningDuel';
 import { STUDIO_NARRATIVE_MUSIC_MODES, STUDIO_NARRATIVE_SOUND_CUES,
   resolveNarrativeAudio, type StudioNarrativeMusicMode, type StudioNarrativeSoundCue } from '../../campaign/studio/narrativeAudio';
@@ -111,6 +111,10 @@ export function useBoardStudio(layoutRef:React.RefObject<HTMLElement|null>,guide
   const guideSpeaker=(step:GuidedStep)=>studio.viewScene('tutorial/'+step.id)?.narrative?.speaker??step.speaker;
   const guideSprite=(step:GuidedStep)=>resolveNarrativeCardSprite(studio.viewScene('tutorial/'+step.id)?.narrative,step.speaker);
   const guideAudio=(step:GuidedStep)=>resolveNarrativeAudio(studio.viewScene('tutorial/'+step.id)?.narrative);
+  const guideMusicUrl=(step:GuidedStep):string|null=>{
+    const id=studio.viewScene('tutorial/'+step.id)?.narrative?.musicAssetId;
+    return id?studio.mediaUrls[id]??null:null;
+  };
   const guidePortraitVisible=(step:GuidedStep)=>narrativePortraitVisible(step,studio.viewScene('tutorial/'+step.id)?.narrative);
   const guideMotion=(step:GuidedStep)=>{
     const card=studio.viewScene('tutorial/'+step.id)?.narrative;
@@ -135,7 +139,7 @@ export function useBoardStudio(layoutRef:React.RefObject<HTMLElement|null>,guide
       ...(!playerPreview?(individual?dragTutorial(id):drag(id)):{}),
     };
   };
-  return {editing:studio.editing,selected:studio.selected,sceneKey,profile,attrs,guideText,guideSpeaker,guideSprite,guidePortraitVisible,guideMotion,guideAudio};
+  return {editing:studio.editing,selected:studio.selected,sceneKey,profile,attrs,guideText,guideSpeaker,guideSprite,guidePortraitVisible,guideMotion,guideAudio,guideMusicUrl};
 }
 
 /** Lo último copiado en el tablero (se conserva entre perfiles). */
@@ -172,6 +176,17 @@ export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGu
   const exitMotion=narrative?.exitMotion??'fade';
   const motionDuration=narrative?.motionDurationMs??STUDIO_PORTRAIT_DURATION.default;
   const narrativeAudio=resolveNarrativeAudio(narrative);
+  const musicTracks=Object.entries(studio.doc.assets??{}).filter(([,m])=>m.mime.startsWith('audio/'));
+  const chosenMusic=narrative?.musicAssetId??'';
+  const musicPreviewUrl=chosenMusic?studio.mediaUrls[chosenMusic]:undefined;
+  const uploadMusic=async(file:File)=>{
+    try{
+      const stored=await studio.storeMedia(file);
+      if(!stored.mime.startsWith('audio/'))throw new Error('Selecciona una canción MP3 o WAV.');
+      studio.apply(d=>withNarrativeCard(withAsset(d,stored.id,{name:stored.name,mime:stored.mime}),
+        previewKey,{musicAssetId:stored.id}),'Canción añadida y asignada a esta intervención');
+    }catch(error){studio.setStatus(error instanceof Error?error.message:'No se pudo importar la canción.');}
+  };
   const narrativeIntent=narrative?.intent??'';
   const narrativeDirection=narrative?.direction??'';
   const updateNarrative=(patch:Parameters<typeof withNarrativeCard>[2],message='Ficha narrativa modificada')=>
@@ -281,6 +296,23 @@ export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGu
           </fieldset>
           <fieldset className="dr-studio-motion-controls" data-testid="studio-audio-controls">
             <legend>Audio narrativo</legend>
+            <label className="dr-studio-label">Canción de esta intervención
+              <select data-testid="studio-narrative-music-track" value={chosenMusic}
+                onChange={e=>updateNarrative({musicAssetId:e.target.value||null})}>
+                <option value="">Música habitual del combate</option>
+                {musicTracks.map(([id,meta])=><option key={id} value={id}>{meta.name}</option>)}
+              </select>
+            </label>
+            <label className="dr-studio-label">＋ Importar canción MP3 o WAV (máx. 25 MB)
+              <input type="file" data-testid="studio-music-upload" accept=".mp3,.wav,audio/mpeg,audio/wav"
+                onChange={e=>{const file=e.currentTarget.files?.[0];e.currentTarget.value='';
+                  if(file)void uploadMusic(file);}}/>
+            </label>
+            {chosenMusic&&musicPreviewUrl&&audio?.musicEnabled&&
+              <audio data-testid="studio-music-preview" controls preload="none" src={musicPreviewUrl}
+                aria-label="Escuchar canción seleccionada"/>}
+            {chosenMusic&&!musicPreviewUrl&&<small>Preparando la canción seleccionada…</small>}
+            {chosenMusic&&!audio?.musicEnabled&&<small>Activa Música en el juego para escucharla.</small>}
             <label className="dr-studio-label">Música durante esta intervención
               <select data-testid="studio-narrative-music" value={narrativeAudio.music}
                 onChange={e=>updateNarrative({musicMode:e.target.value as StudioNarrativeMusicMode})}>
@@ -301,8 +333,8 @@ export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGu
               onClick={()=>{if(narrativeAudio.sound!=='none')audio?.playSound(narrativeAudio.sound);}}>
               ▶ Escuchar efecto seleccionado
             </button>
-            <small>La música es la pista actual de combate, a volumen normal o suave, o en pausa.
-              La reproducción respeta los ajustes globales del jugador. No hay pistas de Suno integradas todavía.</small>
+            <small>La música puede utilizar una canción importada o la pista de combate habitual.
+              Las canciones se guardan en este navegador y viajan en el ZIP de publicación; en otro dispositivo aparecerán cuando se publiquen.</small>
           </fieldset>
           <label className="dr-studio-label">Ilustración narrativa (solo recursos existentes)
             <select data-testid="studio-narrative-sprite" value={narrative?.spriteId??''}
