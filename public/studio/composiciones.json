@@ -674,7 +674,9 @@
         "spriteId": "domingo-arrogante",
         "enterMotion": "slide-right",
         "exitMotion": "fade",
-        "motionDurationMs": 450
+        "motionDurationMs": 450,
+        "musicMode": "soft",
+        "soundCue": "CLICK"
       }
     },
     "tutorial/g01": {
@@ -686,7 +688,9 @@
         "spriteId": "xervias-objecion",
         "enterMotion": "slide-left",
         "exitMotion": "slide-left",
-        "motionDurationMs": 420
+        "motionDurationMs": 420,
+        "musicMode": "soft",
+        "soundCue": "none"
       }
     },
     "tutorial/g02": {
@@ -698,7 +702,9 @@
         "spriteId": "xervias-tutorial",
         "enterMotion": "fade",
         "exitMotion": "fade",
-        "motionDurationMs": 320
+        "motionDurationMs": 320,
+        "musicMode": "soft",
+        "soundCue": "none"
       },
       "dialogue": {
         "text": "Los anillos crean cartas con energía mística. Cada uno tiene 20 de vida. Pierdes al llegar a 0 o si el rival completa cuatro Impactos."
@@ -736,7 +742,9 @@
         "speaker": "Xervias",
         "tone": "sorprendido",
         "intent": "Premiar el primer Ataque e introducir los combos consecutivos.",
-        "direction": "Breve reconocimiento antes de revelar el siguiente gesto; evitar un diálogo demasiado largo."
+        "direction": "Breve reconocimiento antes de revelar el siguiente gesto; evitar un diálogo demasiado largo.",
+        "musicMode": "normal",
+        "soundCue": "CLICK"
       }
     },
     "tutorial/g07": {
@@ -788,7 +796,9 @@
         "spriteId": "xervias-reflexion",
         "enterMotion": "slide-left",
         "exitMotion": "fade",
-        "motionDurationMs": 320
+        "motionDurationMs": 320,
+        "musicMode": "soft",
+        "soundCue": "none"
       }
     },
     "tutorial/g12": {
@@ -844,7 +854,9 @@
         "speaker": "Xervias",
         "tone": "sereno",
         "intent": "Presentar la carta de Orden y la ventaja de robar.",
-        "direction": "Dar prioridad visual al mazo y a la carta de Orden."
+        "direction": "Dar prioridad visual al mazo y a la carta de Orden.",
+        "musicMode": "soft",
+        "soundCue": "none"
       },
       "dialogue": {
         "text": "Robamos una carta al comenzar cada turno. El Decreto de Orden permite robar una carta adicional."
@@ -903,7 +915,9 @@
         "speaker": "Xervias",
         "tone": "preocupado",
         "intent": "Reconocer el daño recibido e introducir la Defensa.",
-        "direction": "Permitir comparar vida actual con la recuperación posible."
+        "direction": "Permitir comparar vida actual con la recuperación posible.",
+        "musicMode": "soft",
+        "soundCue": "none"
       },
       "dialogue": {
         "text": "Domingo nos golpeó otra vez. Defensa recupera 1 de vida, sin pasar de 20."
@@ -955,7 +969,9 @@
         "spriteId": "domingo-derrotado",
         "enterMotion": "fade",
         "exitMotion": "fade",
-        "motionDurationMs": 360
+        "motionDurationMs": 360,
+        "musicMode": "soft",
+        "soundCue": "none"
       }
     },
     "tutorial/g29": {
@@ -967,7 +983,9 @@
         "spriteId": "xervias-energia",
         "enterMotion": "zoom",
         "exitMotion": "fade",
-        "motionDurationMs": 450
+        "motionDurationMs": 450,
+        "musicMode": "soft",
+        "soundCue": "none"
       },
       "dialogue": {
         "text": "Puedo ganar sin quitarle toda la vida. El cuarto Impacto activa el Decreto Final."
@@ -986,7 +1004,9 @@
         "speaker": "Sistema",
         "tone": "sereno",
         "intent": "Cerrar el tutorial con una victoria clara y satisfactoria.",
-        "direction": "Anuncio de victoria y transición posterior. No ocultar la confirmación al jugador."
+        "direction": "Anuncio de victoria y transición posterior. No ocultar la confirmación al jugador.",
+        "musicMode": "silent",
+        "soundCue": "none"
       }
     },
     "tutorial/g00-movil": {
