@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { defaultLayerTransform, emptyStudioDocumentV3, isBackgroundLocked, type StudioLayer } from './schema.ts';
 import {
   changedSceneKeys, copyScene, editedSceneKeys, layerOrDefault, getLayer, referencedAssetIds, sceneLayers, withAsset, withLayer,
-  effectiveDialogueStyle, effectiveTutorialLayer, tutorialLayoutKey, isTutorialLayoutId, withBackgroundFrame, withDialogue, withDialogueDefaults, withLayerPatch, withSceneSettings, withoutLayer, withoutScene, withoutUnusedAssets,
+  effectiveDialogueStyle, effectiveTutorialLayer, inheritPublishedNarrative, tutorialLayoutKey, isTutorialLayoutId, withBackgroundFrame, withDialogue, withDialogueDefaults, withLayerPatch, withNarrativeCard, withSceneSettings, withoutLayer, withoutScene, withoutUnusedAssets,
 } from './ops.ts';
 
 const MEDIA='media-11111111-1111-4111-8111-111111111111';
@@ -185,4 +185,41 @@ test('director narrativo: cada intervención conserva posición visual y hereda 
   assert.equal(effectiveTutorialLayer(doc,'g12','movil',id)?.x,-5);
   assert.equal(effectiveTutorialLayer(doc,'g11','horizontal',id),undefined);
   assert.equal(getLayer(doc,'tablero/movil',id)?.x,-5);
+});
+
+test('narrative metadata edits do not affect combat mechanics, dialogue or other steps',()=>{
+  const blank=emptyStudioDocumentV3();
+  const first=withDialogue(blank,'tutorial/g08',{text:'¡Elige Ataque!'});
+  const changed=withNarrativeCard(first,'tutorial/g08',{speaker:'Domingo Quispe',
+    tone:'enojado',intent:'Poner tensión',direction:'Retrato rival arriba'});
+  assert.equal(first.scenes['tutorial/g08'].narrative,undefined);
+  assert.equal(changed.scenes['tutorial/g08'].dialogue?.text,'¡Elige Ataque!');
+  assert.equal(changed.scenes['tutorial/g08'].narrative?.speaker,'Domingo Quispe');
+  assert.equal(changed.scenes['tutorial/g07'],undefined);
+  const restored=withNarrativeCard(changed,'tutorial/g08',{
+    speaker:null,tone:null,intent:null,direction:null,
+  });
+  assert.deepEqual(restored,first);
+});
+
+test('published narrative brief enriches old mobile draft while preserving local edits',()=>{
+  let draft=withDialogue(emptyStudioDocumentV3(),'tutorial/g08',{text:'Texto que escribí'});
+  draft=withLayer(draft,'tablero/movil',{id:'native-tablero-mano-jugador',kind:'native',
+    ...defaultLayerTransform('native'),y:-12});
+  draft=withNarrativeCard(draft,'tutorial/g08',{speaker:'Xervias',tone:'sereno'});
+  let published=withNarrativeCard(emptyStudioDocumentV3(),'tutorial/g08',{
+    speaker:'Domingo Quispe',intent:'Explicar el combo',tone:'decidido',
+  });
+  published=withNarrativeCard(published,'tutorial/g09',{
+    speaker:'Xervias',intent:'Terminar el turno',
+  });
+  const merged=inheritPublishedNarrative(draft,published);
+  assert.equal(merged.scenes['tutorial/g08'].dialogue?.text,'Texto que escribí');
+  assert.equal(merged.scenes['tablero/movil'].layers?.[0].y,-12);
+  assert.deepEqual(merged.scenes['tutorial/g08'].narrative,{
+    speaker:'Xervias',tone:'sereno',intent:'Explicar el combo',
+  });
+  assert.equal(merged.scenes['tutorial/g09'].narrative?.intent,'Terminar el turno');
+  assert.deepEqual(draft.scenes['tutorial/g08'].narrative,{speaker:'Xervias',tone:'sereno'});
+  assert.strictEqual(inheritPublishedNarrative(merged,published),merged);
 });
