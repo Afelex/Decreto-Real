@@ -38,16 +38,18 @@ export function TurnAnnouncement({ variant, turn, preview = false, ribbonProps }
 }
 
 /** Combo x2 y x3 comparten el mismo arte; los efectos y botones siguen siendo texto real. */
-export function ComboChoicePanel({ level, onDamage, onHeal }: {
+export function ComboChoicePanel({ level, onDamage, onHeal, preview = false, panelProps }: {
   level: 2 | 3;
   onDamage: () => void;
   onHeal: () => void;
+  preview?:boolean;
+  panelProps?:React.HTMLAttributes<HTMLDivElement>;
 }) {
   const amount = level === 2 ? 1 : 3;
   return (
     <div className="dr-event-stage dr-event-stage--combo">
       <div className="dr-event-stage__veil" aria-hidden="true" />
-      <div className={`dr-event-choice dr-event-choice--${level}`} role="dialog"
+      <div {...panelProps} className={`dr-event-choice dr-event-choice--${level}${panelProps?.className?" "+panelProps.className:""}`} role="dialog"
         aria-modal="true" aria-labelledby="dr-event-combo-title" aria-describedby="dr-event-combo-help">
         <img className="dr-event-choice__art" src={`${import.meta.env.BASE_URL}interfaz/combo-estandartes-transparente.webp?v=20261103b`}
           alt="" aria-hidden="true" draggable={false} />
@@ -55,11 +57,11 @@ export function ComboChoicePanel({ level, onDamage, onHeal }: {
         <p className="dr-event-combo-sr-only" id="dr-event-combo-help">Elige el efecto de tu combo.</p>
         <div className="dr-event-choice__options">
           <button type="button" className="dr-event-ability dr-event-ability--damage"
-            onClick={onDamage} autoFocus>
+            onClick={onDamage} disabled={preview} autoFocus={!preview}>
             <strong>Furia Real</strong>
             <small>{amount} Daño al Rival</small>
           </button>
-          <button type="button" className="dr-event-ability dr-event-ability--heal" onClick={onHeal}>
+          <button type="button" className="dr-event-ability dr-event-ability--heal" disabled={preview} onClick={onHeal}>
             <strong>Gracia Divina</strong>
             <small>Curar {amount} HP</small>
           </button>
@@ -69,20 +71,22 @@ export function ComboChoicePanel({ level, onDamage, onHeal }: {
   );
 }
 
-export function CoinTossPanel({ coinSide, isFlipping, onToss }: {
+export function CoinTossPanel({ coinSide, isFlipping, onToss, preview = false, panelProps }: {
   coinSide: 'CARA' | 'SELLO' | null;
   isFlipping: boolean;
   onToss: () => void;
+  preview?:boolean;
+  panelProps?:React.HTMLAttributes<HTMLDivElement>;
 }) {
   const result = coinSide === 'CARA' ? 'Empiezas tú' : coinSide === 'SELLO' ? 'Empieza el oponente' : '';
   return (
     <div className="dr-event-stage dr-event-stage--coin">
       <div className="dr-event-stage__veil" aria-hidden="true" />
-      <div className="dr-event-coin-panel" role="dialog" aria-modal="true"
+      <div {...panelProps} className={"dr-event-coin-panel"+(panelProps?.className?" "+panelProps.className:"")} role="dialog" aria-modal="true"
         aria-labelledby="dr-event-coin-title">
         <h2 id="dr-event-coin-title">¿Quién comienza?</h2>
         <button type="button" className={`dr-event-coin ${isFlipping ? 'is-flipping' : ''} ${coinSide === 'SELLO' ? 'show-sello' : 'show-cara'}`}
-          aria-label="Lanzar Moneda" onClick={onToss} disabled={isFlipping || coinSide !== null}>
+          aria-label="Lanzar Moneda" onClick={onToss} disabled={preview || isFlipping || coinSide !== null}>
           <span className="dr-event-coin__face" aria-hidden="true">
             <img className="dr-event-coin__art dr-event-coin__art--cara"
               src={`${import.meta.env.BASE_URL}moneda/sol.webp`} alt="" draggable={false} />
