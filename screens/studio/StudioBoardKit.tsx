@@ -4,7 +4,7 @@ import { getLayer, isTutorialLayoutId, layerOrDefault, tutorialLayoutKey, withDi
 import { GUIDED_STEPS, type GuidedStep } from '../../campaign/guidedOpeningDuel';
 import { narrativePortraitVisible, narrativeSpriteOptions, resolveNarrativeCardSprite } from '../../campaign/studio/narrativeSprites';
 import { tutorialCompositionMood, withMissingTutorialCompositions, withProposedTutorialComposition } from '../../campaign/studio/tutorialComposition';
-import { defaultLayerTransform, STUDIO_NARRATIVE_TONES, type StudioLayer, type StudioNarrativeTone } from '../../campaign/studio/schema';
+import { defaultLayerTransform, STUDIO_NARRATIVE_TONES, STUDIO_PORTRAIT_MOTIONS, STUDIO_PORTRAIT_DURATION, type StudioLayer, type StudioNarrativeTone, type StudioPortraitMotion } from '../../campaign/studio/schema';
 import { copyTransform, formatTransform, parseTransform, type CopiedTransform } from '../../campaign/studio/transformClipboard';
 import { StudioProvider, useStudio } from './StudioContext';
 import { useStudioDrag } from './useStudioDrag';
@@ -108,6 +108,11 @@ export function useBoardStudio(layoutRef:React.RefObject<HTMLElement|null>,guide
   const guideSpeaker=(step:GuidedStep)=>studio.viewScene('tutorial/'+step.id)?.narrative?.speaker??step.speaker;
   const guideSprite=(step:GuidedStep)=>resolveNarrativeCardSprite(studio.viewScene('tutorial/'+step.id)?.narrative,step.speaker);
   const guidePortraitVisible=(step:GuidedStep)=>narrativePortraitVisible(step,studio.viewScene('tutorial/'+step.id)?.narrative);
+  const guideMotion=(step:GuidedStep)=>{
+    const card=studio.viewScene('tutorial/'+step.id)?.narrative;
+    return {enter:card?.enterMotion??'fade',exit:card?.exitMotion??'fade',
+      durationMs:card?.motionDurationMs??STUDIO_PORTRAIT_DURATION.default};
+  };
   const attrs=(id:string,className:string)=>{
     const individual=Boolean(tutorialKey&&isTutorialLayoutId(id));
     const layer=(individual?tutorialScene?.layers?.find(l=>l.id===id):undefined)??
@@ -126,7 +131,7 @@ export function useBoardStudio(layoutRef:React.RefObject<HTMLElement|null>,guide
       ...(!playerPreview?(individual?dragTutorial(id):drag(id)):{}),
     };
   };
-  return {editing:studio.editing,selected:studio.selected,sceneKey,profile,attrs,guideText,guideSpeaker,guideSprite,guidePortraitVisible};
+  return {editing:studio.editing,selected:studio.selected,sceneKey,profile,attrs,guideText,guideSpeaker,guideSprite,guidePortraitVisible,guideMotion};
 }
 
 /** Lo último copiado en el tablero (se conserva entre perfiles). */
@@ -134,9 +139,10 @@ let copiedBoardTransform:CopiedTransform|null=null;
 
 /** Panel de Studio · Tablero. Mientras se edita, la partida queda congelada. */
 export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGuideIndex,
-  layoutRef,playerPreview,onPlayerPreview}:{
+  layoutRef,playerPreview,onPlayerPreview,onReplayMotion}:{
   sceneKey:string;profile:BoardProfile;previewGuideIndex:number;onPreviewGuideIndex:(index:number)=>void;
   layoutRef:React.RefObject<HTMLDivElement|null>;playerPreview:boolean;onPlayerPreview:()=>void;
+  onReplayMotion:()=>void;
 }){
   const studio=useStudio();
   const navigate=useNavigate();
@@ -157,6 +163,9 @@ export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGu
   const narrativeTone=narrative?.tone??'neutral';
   const currentSprite=resolveNarrativeCardSprite(narrative,previewGuide.speaker);
   const portraitMode=narrative?.portraitMode??'auto';
+  const enterMotion=narrative?.enterMotion??'fade';
+  const exitMotion=narrative?.exitMotion??'fade';
+  const motionDuration=narrative?.motionDurationMs??STUDIO_PORTRAIT_DURATION.default;
   const narrativeIntent=narrative?.intent??'';
   const narrativeDirection=narrative?.direction??'';
   const updateNarrative=(patch:Parameters<typeof withNarrativeCard>[2],message='Ficha narrativa modificada')=>
@@ -234,6 +243,36 @@ export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGu
               <option value="hide">Ocultar ilustración (mantener solo el diálogo)</option>
             </select>
           </label>
+          <fieldset className="dr-studio-motion-controls" data-testid="studio-motion-controls">
+            <legend>Entrada y salida animadas</legend>
+            <label className="dr-studio-label">Cómo aparece
+              <select data-testid="studio-motion-enter" value={enterMotion}
+                onChange={e=>updateNarrative({enterMotion:e.target.value as StudioPortraitMotion})}>
+                {STUDIO_PORTRAIT_MOTIONS.map(m=><option key={m} value={m}>{
+                  {'none':'Sin animación','fade':'Fundido','slide-left':'Desde la izquierda',
+                  'slide-right':'Desde la derecha','zoom':'Aparición dramática'}[m]}</option>)}
+              </select>
+            </label>
+            <label className="dr-studio-label">Cómo desaparece
+              <select data-testid="studio-motion-exit" value={exitMotion}
+                onChange={e=>updateNarrative({exitMotion:e.target.value as StudioPortraitMotion})}>
+                {STUDIO_PORTRAIT_MOTIONS.map(m=><option key={m} value={m}>{
+                  {'none':'Sin animación','fade':'Fundido','slide-left':'Hacia la izquierda',
+                  'slide-right':'Hacia la derecha','zoom':'Desvanecer y alejar'}[m]}</option>)}
+              </select>
+            </label>
+            <label className="dr-studio-label">Duración por transición
+              <select data-testid="studio-motion-duration" value={motionDuration}
+                onChange={e=>updateNarrative({motionDurationMs:Number(e.target.value)})}>
+                {[180,260,320,450,650,900,1200].map(ms=><option key={ms} value={ms}>{ms} ms</option>)}
+              </select>
+            </label>
+            <button type="button" data-testid="studio-motion-replay" onClick={onReplayMotion}>
+              ▶ Reproducir entrada y salida
+            </button>
+            <small>Solo anima la ilustración; no adelanta el diálogo ni mueve cartas.
+              En dispositivos con movimiento reducido se muestra sin efectos.</small>
+          </fieldset>
           <label className="dr-studio-label">Ilustración narrativa (solo recursos existentes)
             <select data-testid="studio-narrative-sprite" value={narrative?.spriteId??''}
               onChange={e=>updateNarrative({spriteId:e.target.value||null})}>

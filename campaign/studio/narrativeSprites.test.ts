@@ -7,6 +7,7 @@ import {
 } from './narrativeSprites.ts';
 import {GUIDED_STEPS} from '../guidedOpeningDuel.ts';
 import {normalizeStudioDocumentV3} from './schema.ts';
+import {withNarrativeCard} from './ops.ts';
 
 test('all narrative sprite references exist in the versioned art catalog',()=>{
   const catalog=JSON.parse(readFileSync(new URL('../../public/artes/catalogo.json',import.meta.url),'utf8')) as
@@ -96,4 +97,45 @@ test('documentos importados ignoran modo de aparición desconocido y conservan s
   assert.equal(doc.scenes['tutorial/g05'].narrative?.portraitMode,'hide');
   assert.equal(doc.scenes['tutorial/g06'].narrative?.portraitMode,undefined);
   assert.deepEqual(normalizeStudioDocumentV3(JSON.parse(JSON.stringify(doc))),doc);
+});
+
+test('animación por intervención se valida, guarda y no cambia las acciones',()=>{
+  const initial=normalizeStudioDocumentV3({version:3,scenes:{
+    'tutorial/g00':{narrative:{speaker:'Domingo Quispe',enterMotion:'slide-right',
+      exitMotion:'zoom',motionDurationMs:520}},
+    'tutorial/g01':{narrative:{speaker:'Xervias',enterMotion:'código arbitrario',
+      exitMotion:'fade',motionDurationMs:999999}},
+    'tutorial/g02':{narrative:{speaker:'Xervias',motionDurationMs:-900,enterMotion:'none'}},
+  }});
+  assert.equal(initial.scenes['tutorial/g00'].narrative?.enterMotion,'slide-right');
+  assert.equal(initial.scenes['tutorial/g00'].narrative?.exitMotion,'zoom');
+  assert.equal(initial.scenes['tutorial/g00'].narrative?.motionDurationMs,520);
+  assert.equal(initial.scenes['tutorial/g01'].narrative?.enterMotion,undefined);
+  assert.equal(initial.scenes['tutorial/g01'].narrative?.motionDurationMs,1200);
+  assert.equal(initial.scenes['tutorial/g02'].narrative?.motionDurationMs,120);
+  let draft=withNarrativeCard(initial,'tutorial/g00',{enterMotion:'slide-left',
+    exitMotion:'fade',motionDurationMs:260});
+  assert.equal(draft.scenes['tutorial/g00'].narrative?.enterMotion,'slide-left');
+  assert.equal(initial.scenes['tutorial/g00'].narrative?.enterMotion,'slide-right');
+  draft=withNarrativeCard(draft,'tutorial/g00',{enterMotion:null,exitMotion:null,motionDurationMs:null});
+  assert.equal(draft.scenes['tutorial/g00'].narrative?.enterMotion,undefined);
+  assert.equal(draft.scenes['tutorial/g00'].narrative?.motionDurationMs,undefined);
+  assert.equal(draft.scenes['tutorial/g00'].narrative?.speaker,'Domingo Quispe');
+  assert.deepEqual(normalizeStudioDocumentV3(JSON.parse(JSON.stringify(initial))),initial);
+});
+test('primera dirección de diez momentos usa transiciones permitidas',()=>{
+  const published=normalizeStudioDocumentV3(JSON.parse(readFileSync(
+    new URL('../../public/studio/composiciones.json',import.meta.url),'utf8')));
+  const chosen=['g00','g01','g02','g10','g11','g16','g22','g27','g28','g29'];
+  const allowed=new Set(['none','fade','slide-left','slide-right','zoom']);
+  for(const id of chosen){
+    const scene=published.scenes['tutorial/'+id];
+    assert.ok(allowed.has(scene.narrative?.enterMotion??''));
+    assert.ok(allowed.has(scene.narrative?.exitMotion??''));
+    assert.ok((scene.narrative?.motionDurationMs??0)>=120);
+    assert.ok(scene.narrative?.spriteId);
+    assert.ok(published.scenes['tutorial/'+id+'-movil'].layers);
+  }
+  assert.equal(published.scenes['tutorial/g05'].narrative?.enterMotion,undefined);
+  assert.equal(GUIDED_STEPS.length,32);
 });

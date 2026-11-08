@@ -424,3 +424,36 @@
   text-shadow:0 2px #070606;
   pointer-events:none;
 }
+
+/* Director narrativo / Fase 2: entrada y salida de retratos.
+   El contenedor conserva transformaciones de Studio; solo se anima el IMG.
+   Evita cambiar la geometría del tablero y las zonas táctiles. */
+.dr-royal-screen .dr-narrative-portrait>img{will-change:transform,opacity}
+.dr-royal-screen .dr-narrative-enter[data-narrative-enter="fade"]>img{
+  animation:dr-narrative-in-fade var(--dr-narrative-motion-duration,320ms) ease-out both}
+.dr-royal-screen .dr-narrative-exit[data-narrative-exit="fade"]>img{
+  animation:dr-narrative-out-fade var(--dr-narrative-motion-duration,320ms) ease-in both}
+.dr-royal-screen .dr-narrative-enter[data-narrative-enter="slide-left"]>img{
+  animation:dr-narrative-in-left var(--dr-narrative-motion-duration,320ms) ease-out both}
+.dr-royal-screen .dr-narrative-exit[data-narrative-exit="slide-left"]>img{
+  animation:dr-narrative-out-left var(--dr-narrative-motion-duration,320ms) ease-in both}
+.dr-royal-screen .dr-narrative-enter[data-narrative-enter="slide-right"]>img{
+  animation:dr-narrative-in-right var(--dr-narrative-motion-duration,320ms) ease-out both}
+.dr-royal-screen .dr-narrative-exit[data-narrative-exit="slide-right"]>img{
+  animation:dr-narrative-out-right var(--dr-narrative-motion-duration,320ms) ease-in both}
+.dr-royal-screen .dr-narrative-enter[data-narrative-enter="zoom"]>img{
+  animation:dr-narrative-in-zoom var(--dr-narrative-motion-duration,320ms) ease-out both}
+.dr-royal-screen .dr-narrative-exit[data-narrative-exit="zoom"]>img{
+  animation:dr-narrative-out-zoom var(--dr-narrative-motion-duration,320ms) ease-in both}
+@keyframes dr-narrative-in-fade{from{opacity:0}to{opacity:1}}
+@keyframes dr-narrative-out-fade{from{opacity:1}to{opacity:0}}
+@keyframes dr-narrative-in-left{from{opacity:0;transform:translateX(-32px)}to{opacity:1;transform:translateX(0)}}
+@keyframes dr-narrative-out-left{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(-32px)}}
+@keyframes dr-narrative-in-right{from{opacity:0;transform:translateX(32px)}to{opacity:1;transform:translateX(0)}}
+@keyframes dr-narrative-out-right{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(32px)}}
+@keyframes dr-narrative-in-zoom{from{opacity:0;transform:scale(.78)}to{opacity:1;transform:scale(1)}}
+@keyframes dr-narrative-out-zoom{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(1.13)}}
+@media(prefers-reduced-motion:reduce){
+  .dr-royal-screen .dr-narrative-portrait>img{
+    animation:none!important;transform:none!important;opacity:1!important;will-change:auto}
+}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { StudioBoardPanel, StudioBoardProvider, useBoardStudio } from './studio/StudioBoardKit';
+import { NarrativePortrait } from './studio/NarrativePortrait';
 import { OPPONENT_IMG, PLAYER_IMG } from '../constants';
 import { CardData, GamePhase, CardType } from '../types';
 import { useAudio } from '../contexts/AudioContext';
@@ -141,6 +142,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const boardLayoutRef = React.useRef<HTMLDivElement | null>(null);
   const [studioGuidePreview,setStudioGuidePreview] = useState(0);
   const [studioPlayerPreview,setStudioPlayerPreview] = useState(false);
+  const [studioMotionReplay,setStudioMotionReplay] = useState(0);
   const [studioParams]=useSearchParams();
   const { playSound, sfxEnabled, musicEnabled, toggleSfx, toggleMusic } = useAudio();
 
@@ -994,7 +996,8 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
       <StudioBoardPanel sceneKey={board.sceneKey} profile={board.profile}
         previewGuideIndex={studioGuidePreview} onPreviewGuideIndex={setStudioGuidePreview}
         layoutRef={boardLayoutRef} playerPreview={studioPlayerPreview}
-        onPlayerPreview={()=>setStudioPlayerPreview(true)}/>
+        onPlayerPreview={()=>setStudioPlayerPreview(true)}
+        onReplayMotion={()=>setStudioMotionReplay(v=>v+1)}/>
       {board.editing&&studioPlayerPreview&&<button type="button" className="dr-studio-return-from-preview"
         data-testid="studio-player-return" onClick={()=>setStudioPlayerPreview(false)}>
         ↶ Volver a DRStudio <small>Vista visual · partida congelada</small>
@@ -1010,7 +1013,6 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
         const current=previewNarrativeStep;
         const visibleWithDialogue=Boolean(current&&board.guidePortraitVisible(current)&&
           (board.guideSpeaker(current)==='Domingo Quispe')===(side==='rival'));
-        if(!preview&&!visibleWithDialogue)return null;
         const sprite=current?board.guideSprite(current):undefined;
         const speaker=side==='rival'?'Domingo Quispe':'Xervias';
         const fallback=side==='rival'?(guidedNarrativeSprites?.opponent??rivalPortrait):
@@ -1019,10 +1021,11 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
         // La ilustración existente permanece como respaldo seguro.
         const source=sprite?.speaker===speaker
           ?import.meta.env.BASE_URL+sprite.path:fallback;
-        return <div key={side} {...board.attrs(id,'dr-royal-guided-actor is-'+side)}
-          aria-hidden="true" data-testid="guided-large-actor">
-          <img src={source} alt=""/>
-        </div>;
+        return <NarrativePortrait key={side}
+          stepId={current?current.id+(board.editing?':'+studioMotionReplay:''):null}
+          visible={Boolean(preview||visibleWithDialogue)} src={source}
+          motion={current?board.guideMotion(current):{enter:'fade',exit:'fade',durationMs:320}}
+          attrs={board.attrs(id,'dr-royal-guided-actor is-'+side)}/>;
       })}
       {((guidedOpening && currentGuide && !board.editing) || board.editing) && (()=>{
         const step=board.editing?GUIDED_STEPS[studioGuidePreview]:currentGuide!;
