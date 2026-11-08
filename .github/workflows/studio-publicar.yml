@@ -6,6 +6,11 @@ on:
         description: URL HTTPS del ZIP exportado para publicar (acceso público)
         required: true
         type: string
+      confirmar_eliminaciones:
+        description: Confirmo que revisé y acepto eliminar escenas o medios que ya no se usan
+        required: false
+        type: boolean
+        default: false
 permissions:
   contents: write
   pull-requests: write
@@ -31,6 +36,20 @@ jobs:
         run: |
           mkdir -p work
           curl --fail --location --proto '=https' --proto-redir '=https' --max-time 120 --max-filesize 214715200 --output work/publicacion.zip "$STUDIO_PACKAGE_URL"
+      - name: Inspeccionar cambios antes de modificar archivos
+        env:
+          CONFIRMAR_ELIMINACIONES: ${{ inputs.confirmar_eliminaciones }}
+        run: |
+          set +e
+          node --experimental-strip-types tools/studio-publish-review.mjs work/publicacion.zip .
+          result=$?
+          set -e
+          if [ "$result" -eq 2 ] && [ "$CONFIRMAR_ELIMINACIONES" = "true" ]; then
+            echo "Eliminaciones confirmadas explícitamente por quien ejecutó el workflow."
+          elif [ "$result" -ne 0 ]; then
+            echo "::error::La revisión preventiva ha bloqueado esta publicación."
+            exit "$result"
+          fi
       - name: Validar y preparar composiciones
         run: node --experimental-strip-types tools/studio-publish.mjs work/publicacion.zip
       - run: npm test
