@@ -546,7 +546,7 @@ export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGu
               onClick={()=>{studio.commit();studio.save();void studio.exportProject(true);}}>
               1. Descargar ZIP
             </button>
-            <a href="https://github.com/Afelex/Decreto-Real/actions"
+            <a href="https://github.com/Afelex/Decreto-Real/actions/workflows/studio-publicar.yml"
               target="_blank" rel="noopener noreferrer"
               data-testid="studio-publish-github">
               2. Abrir GitHub Actions ↗
