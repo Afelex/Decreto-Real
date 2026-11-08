@@ -111,6 +111,19 @@ El editor y las versiones que prepare desde GitHub comparten **exactamente el mi
 
 Acceso directo en móvil: `https://afelex.github.io/Decreto-Real/?drDev=1#/game?studio=1`. Después de guardar, exporta para publicar y fusiona el PR preparado para aplicar los cambios al juego de todos.
 
+### Fichas narrativas (Fase 1 · primer borrador)
+Todas las **32 intervenciones** del primer duelo guiado tienen ahora una propuesta editorial de **personaje, intención emocional, objetivo dramático y dirección visual** en `public/studio/composiciones.json`. No se cambió ningún diálogo previo ni el orden de las acciones.
+
+En **Studio · Tablero**, selecciona una intervención y abre **Ficha narrativa**. Puedes editar:
+- **Personaje que habla**: se aplica inmediatamente al encabezado del diálogo del tutorial y permite cambiar entre Xervias, Domingo Quispe y Sistema; no modifica la baraja ni las reglas.
+- **Intención emocional**: dato editorial para escoger las expresiones ilustradas en la fase 2; aún no cambia automáticamente la imagen.
+- **Objetivo** y **Dirección visual**: indicaciones de autoría, que no ve el jugador.
+- **Acción obligatoria**: lectura informativa, no editable, para que los cambios visuales no alteren el curso del duelo.
+
+Estas fichas se almacenan en `scenes["tutorial/g11"].narrative`; el diálogo de ese mismo paso permanece en `.dialogue.text`. Al abrir un borrador antiguo, las nuevas anotaciones publicadas se incorporan **solo donde falten campos**: los textos, medios y posiciones que ya editaste prevalecen. No borres tus borradores para obtener las fichas.
+
+Por ahora, la ficha y los retoques siguen el flujo de publicación segura por ZIP y PR. La selección de retratos por emoción, animaciones, audio, sincronización entre dispositivos y publicación directa todavía son trabajos de las siguientes fases.
+
 ## Otras pantallas de la historia
 Abre **☷ Otras pantallas** (o `#/studio/escenas`) y elige una conversación tras victoria, la entrada o liberación de una región, la crónica, el epílogo o los créditos. En cada una puedes cambiar los textos (con **negrita**), el rótulo, el fondo y añadir sprites o efectos, y marcar textos o capas como «solo desarrollador». Se abren con una partida de prueba: tu partida real no cambia.
 
