@@ -229,6 +229,18 @@ La **vista previa de DRStudio no lanza música ni efectos automáticamente** al 
 
 Este hito no implementa todavía una línea temporal gráfica multicanal, mezcla profesional ni sincronización al nivel de fotogramas.
 
+### Vista de línea audiovisual del duelo guiado — Fase 2
+
+Dentro de **Studio · Tablero**, justo después del selector de intervenciones, abre **Línea audiovisual · 32 intervenciones**. Es un director de escena compacto para visualizar conjuntamente:
+
+- **Secuencia**: 32 miniaturas numeradas con el personaje, la emoción y marcadores de acción o efecto. Toca una para abrirla sin disputar el duelo. Puedes mostrar todas, únicamente acciones del combate o intervenciones con dirección musical.
+- **Pistas del momento**: cinco carriles — diálogo, personaje, música, efecto y acción — en una escala relativa desde **0 segundos al aparecer el diálogo**. Los fundidos de retrato, retrasos y máximos de sonido se muestran conforme a las fichas ya configuradas. Un evento que dura «hasta avanzar» llega al borde del carril.
+- **Duración de lectura aproximada**: calculada a partir de palabras, marcada con línea discontinua. **No es un temporizador de avance**: la historia y las cartas siguen necesitando la intervención del jugador.
+- **Edición rápida sin salir de la vista**: texto del diálogo, emoción, entrada del personaje, canción registrada, intensidad, continuidad de música, efecto, retrasos de música y efecto. Las opciones avanzadas (salida del personaje, límites de duración, notas) siguen disponibles en la Ficha narrativa justo debajo.
+- **Persistencia**: utiliza el documento v3 actual, y por tanto conserva Guardar, Deshacer, el respaldo ZIP y el mecanismo de publicación existente. No duplica datos ni crea un segundo formato de escenas.
+
+La escala es **individual para cada intervención**, no una reproducción en tiempo real ni una duración cerrada del prólogo. Los carriles son una herramienta editorial. Todavía no incorporamos scrubbing de audio a fotograma, multicanal profesional ni publicación directa entre dispositivos.
+
 ## Otras pantallas de la historia
 Abre **☷ Otras pantallas** (o `#/studio/escenas`) y elige una conversación tras victoria, la entrada o liberación de una región, la crónica, el epílogo o los créditos. En cada una puedes cambiar los textos (con **negrita**), el rótulo, el fondo y añadir sprites o efectos, y marcar textos o capas como «solo desarrollador». Se abren con una partida de prueba: tu partida real no cambia.
 
