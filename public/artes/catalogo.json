@@ -1,0 +1,864 @@
+{
+  "version": 1,
+  "description": "Catálogo de recursos gráficos versionados. Los medios nuevos de Studio aparecen desde IndexedDB.",
+  "items": [
+    {
+      "path": "art-reference/xervias-estilo.webp",
+      "group": "Otros",
+      "name": "Xervias Estilo",
+      "bytes": 3220
+    },
+    {
+      "path": "public/animaciones/banner-jugador-rojo.webm",
+      "group": "Animaciones",
+      "name": "Banner Jugador Rojo",
+      "bytes": 1006814
+    },
+    {
+      "path": "public/animaciones/banner-rival-azul.webm",
+      "group": "Animaciones",
+      "name": "Banner Rival Azul",
+      "bytes": 1165357
+    },
+    {
+      "path": "public/animaciones/decreto-orden.webm",
+      "group": "Animaciones",
+      "name": "Decreto Orden",
+      "bytes": 22779
+    },
+    {
+      "path": "public/campania/arte/fondos/region-1-base.webp",
+      "group": "Fondos de campaña",
+      "name": "Region 1 Base",
+      "bytes": 215790
+    },
+    {
+      "path": "public/campania/arte/fondos/region-1-jefe.webp",
+      "group": "Fondos de campaña",
+      "name": "Region 1 Jefe",
+      "bytes": 206810
+    },
+    {
+      "path": "public/campania/arte/fondos/region-2-base.webp",
+      "group": "Fondos de campaña",
+      "name": "Region 2 Base",
+      "bytes": 204266
+    },
+    {
+      "path": "public/campania/arte/fondos/region-2-jefe.webp",
+      "group": "Fondos de campaña",
+      "name": "Region 2 Jefe",
+      "bytes": 225634
+    },
+    {
+      "path": "public/campania/arte/fondos/region-3-base.webp",
+      "group": "Fondos de campaña",
+      "name": "Region 3 Base",
+      "bytes": 282296
+    },
+    {
+      "path": "public/campania/arte/fondos/region-3-jefe.webp",
+      "group": "Fondos de campaña",
+      "name": "Region 3 Jefe",
+      "bytes": 277386
+    },
+    {
+      "path": "public/campania/arte/fondos/region-4-base.webp",
+      "group": "Fondos de campaña",
+      "name": "Region 4 Base",
+      "bytes": 169558
+    },
+    {
+      "path": "public/campania/arte/fondos/region-4-jefe.webp",
+      "group": "Fondos de campaña",
+      "name": "Region 4 Jefe",
+      "bytes": 179364
+    },
+    {
+      "path": "public/campania/arte/fondos/region-5-base.webp",
+      "group": "Fondos de campaña",
+      "name": "Region 5 Base",
+      "bytes": 182422
+    },
+    {
+      "path": "public/campania/arte/fondos/region-5-jefe.webp",
+      "group": "Fondos de campaña",
+      "name": "Region 5 Jefe",
+      "bytes": 255494
+    },
+    {
+      "path": "public/campania/arte/fondos/region-6-base.webp",
+      "group": "Fondos de campaña",
+      "name": "Region 6 Base",
+      "bytes": 181450
+    },
+    {
+      "path": "public/campania/arte/fondos/region-6-jefe.webp",
+      "group": "Fondos de campaña",
+      "name": "Region 6 Jefe",
+      "bytes": 209620
+    },
+    {
+      "path": "public/campania/arte/fondos/region-7-base.webp",
+      "group": "Fondos de campaña",
+      "name": "Region 7 Base",
+      "bytes": 248288
+    },
+    {
+      "path": "public/campania/arte/fondos/region-7-jefe.webp",
+      "group": "Fondos de campaña",
+      "name": "Region 7 Jefe",
+      "bytes": 250540
+    },
+    {
+      "path": "public/campania/arte/fondos/region-8-base.webp",
+      "group": "Fondos de campaña",
+      "name": "Region 8 Base",
+      "bytes": 161650
+    },
+    {
+      "path": "public/campania/arte/fondos/region-8-jefe.webp",
+      "group": "Fondos de campaña",
+      "name": "Region 8 Jefe",
+      "bytes": 179054
+    },
+    {
+      "path": "public/campania/arte/fondos/region-f-base.webp",
+      "group": "Fondos de campaña",
+      "name": "Region F Base",
+      "bytes": 170458
+    },
+    {
+      "path": "public/campania/arte/fondos/region-f-jefe.webp",
+      "group": "Fondos de campaña",
+      "name": "Region F Jefe",
+      "bytes": 160348
+    },
+    {
+      "path": "public/campania/arte/retratos/rival-01-domingo-quispe.webp",
+      "group": "Rivales de campaña",
+      "name": "Rival 01 Domingo Quispe",
+      "bytes": 170502
+    },
+    {
+      "path": "public/campania/arte/retratos/rival-02-mateo-salcedo.webp",
+      "group": "Rivales de campaña",
+      "name": "Rival 02 Mateo Salcedo",
+      "bytes": 137134
+    },
+    {
+      "path": "public/campania/arte/retratos/rival-03-elias-renteria.webp",
+      "group": "Rivales de campaña",
+      "name": "Rival 03 Elias Renteria",
+      "bytes": 155366
+    },
+    {
+      "path": "public/campania/arte/retratos/rival-04-bartolome-de-aviles.webp",
+      "group": "Rivales de campaña",
+      "name": "Rival 04 Bartolome De Aviles",
+      "bytes": 136956
+    },
+    {
+      "path": "public/campania/arte/retratos/rival-05-tomas-arciniega.webp",
+      "group": "Rivales de campaña",
+      "name": "Rival 05 Tomas Arciniega",
+      "bytes": 162962
+    },
+    {
+      "path": "public/campania/arte/retratos/rival-07-alonso-tarazona.webp",
+      "group": "Rivales de campaña",
+      "name": "Rival 07 Alonso Tarazona",
+      "bytes": 164604
+    },
+    {
+      "path": "public/campania/arte/retratos/rival-08-gaspar-montoro.webp",
+      "group": "Rivales de campaña",
+      "name": "Rival 08 Gaspar Montoro",
+      "bytes": 172330
+    },
+    {
+      "path": "public/campania/arte/retratos/rival-09-nicanor-valcarcel.webp",
+      "group": "Rivales de campaña",
+      "name": "Rival 09 Nicanor Valcarcel",
+      "bytes": 195394
+    },
+    {
+      "path": "public/campania/arte/retratos/rival-11-melchor-quispe.webp",
+      "group": "Rivales de campaña",
+      "name": "Rival 11 Melchor Quispe",
+      "bytes": 177448
+    },
+    {
+      "path": "public/campania/arte/retratos/rival-12-esteban-salvatierra.webp",
+      "group": "Rivales de campaña",
+      "name": "Rival 12 Esteban Salvatierra",
+      "bytes": 161772
+    },
+    {
+      "path": "public/campania/arte/retratos/rival-13-blas-cordova.webp",
+      "group": "Rivales de campaña",
+      "name": "Rival 13 Blas Cordova",
+      "bytes": 190162
+    },
+    {
+      "path": "public/campania/arte/retratos/rival-15-diego-hernan.webp",
+      "group": "Rivales de campaña",
+      "name": "Rival 15 Diego Hernan",
+      "bytes": 190526
+    },
+    {
+      "path": "public/campania/arte/retratos/rival-16-mauro-de-la-pena.webp",
+      "group": "Rivales de campaña",
+      "name": "Rival 16 Mauro De La Pena",
+      "bytes": 163444
+    },
+    {
+      "path": "public/campania/arte/retratos/rival-17-hernando-arce.webp",
+      "group": "Rivales de campaña",
+      "name": "Rival 17 Hernando Arce",
+      "bytes": 160618
+    },
+    {
+      "path": "public/campania/arte/retratos/rival-19-uriel-huaman.webp",
+      "group": "Rivales de campaña",
+      "name": "Rival 19 Uriel Huaman",
+      "bytes": 155920
+    },
+    {
+      "path": "public/campania/arte/retratos/rival-20-amaru-llaguno.webp",
+      "group": "Rivales de campaña",
+      "name": "Rival 20 Amaru Llaguno",
+      "bytes": 134198
+    },
+    {
+      "path": "public/campania/arte/retratos/rival-21-ivo-maldonado.webp",
+      "group": "Rivales de campaña",
+      "name": "Rival 21 Ivo Maldonado",
+      "bytes": 164646
+    },
+    {
+      "path": "public/campania/arte/retratos/rival-23-cristobal-lujan.webp",
+      "group": "Rivales de campaña",
+      "name": "Rival 23 Cristobal Lujan",
+      "bytes": 183264
+    },
+    {
+      "path": "public/campania/arte/retratos/rival-24-pedro-elari.webp",
+      "group": "Rivales de campaña",
+      "name": "Rival 24 Pedro Elari",
+      "bytes": 182432
+    },
+    {
+      "path": "public/campania/arte/retratos/rival-25-rafael-de-trejo.webp",
+      "group": "Rivales de campaña",
+      "name": "Rival 25 Rafael De Trejo",
+      "bytes": 228410
+    },
+    {
+      "path": "public/campania/arte/retratos/rival-27-julian-chambi.webp",
+      "group": "Rivales de campaña",
+      "name": "Rival 27 Julian Chambi",
+      "bytes": 161838
+    },
+    {
+      "path": "public/campania/arte/retratos/rival-28-martin-ancajima.webp",
+      "group": "Rivales de campaña",
+      "name": "Rival 28 Martin Ancajima",
+      "bytes": 181592
+    },
+    {
+      "path": "public/campania/arte/retratos/rival-29-sebastian-vilca.webp",
+      "group": "Rivales de campaña",
+      "name": "Rival 29 Sebastian Vilca",
+      "bytes": 159064
+    },
+    {
+      "path": "public/campania/arte/retratos/rival-31-rodrigo-esquivel.webp",
+      "group": "Rivales de campaña",
+      "name": "Rival 31 Rodrigo Esquivel",
+      "bytes": 205222
+    },
+    {
+      "path": "public/campania/arte/retratos/rival-32-lucas-de-orduna.webp",
+      "group": "Rivales de campaña",
+      "name": "Rival 32 Lucas De Orduna",
+      "bytes": 178836
+    },
+    {
+      "path": "public/campania/arte/retratos/rival-33-alonso-bermudez.webp",
+      "group": "Rivales de campaña",
+      "name": "Rival 33 Alonso Bermudez",
+      "bytes": 198260
+    },
+    {
+      "path": "public/campania/arte/retratos/rival-35-leocadio-del-alba.webp",
+      "group": "Rivales de campaña",
+      "name": "Rival 35 Leocadio Del Alba",
+      "bytes": 162292
+    },
+    {
+      "path": "public/campania/arte/retratos/rival-36-vandalo-rojo.webp",
+      "group": "Rivales de campaña",
+      "name": "Rival 36 Vandalo Rojo",
+      "bytes": 179820
+    },
+    {
+      "path": "public/campania/arte/retratos/rival-37-bruno-serrat.webp",
+      "group": "Rivales de campaña",
+      "name": "Rival 37 Bruno Serrat",
+      "bytes": 151516
+    },
+    {
+      "path": "public/campania/escenas/familia-suplicando.svg",
+      "group": "Mapas y capítulos",
+      "name": "Familia Suplicando",
+      "bytes": 4476
+    },
+    {
+      "path": "public/campania/prologo-ruta.svg",
+      "group": "Prólogo",
+      "name": "Prologo Ruta",
+      "bytes": 7408
+    },
+    {
+      "path": "public/campania/prologo-v2/fondos/despacho_vacio.webp",
+      "group": "Prólogo",
+      "name": "Despacho Vacio",
+      "bytes": 238750
+    },
+    {
+      "path": "public/campania/prologo-v2/fondos/plaza_vacia.webp",
+      "group": "Prólogo",
+      "name": "Plaza Vacia",
+      "bytes": 383848
+    },
+    {
+      "path": "public/campania/prologo-v2/retratos/domingo_perfil_duelo.webp",
+      "group": "Prólogo",
+      "name": "Domingo Perfil Duelo",
+      "bytes": 116750
+    },
+    {
+      "path": "public/campania/prologo-v2/sprites/domingo_01_serio.webp",
+      "group": "Prólogo",
+      "name": "Domingo 01 Serio",
+      "bytes": 149212
+    },
+    {
+      "path": "public/campania/prologo-v2/sprites/domingo_02_molesto.webp",
+      "group": "Prólogo",
+      "name": "Domingo 02 Molesto",
+      "bytes": 143062
+    },
+    {
+      "path": "public/campania/prologo-v2/sprites/domingo_03_burlon.webp",
+      "group": "Prólogo",
+      "name": "Domingo 03 Burlon",
+      "bytes": 148924
+    },
+    {
+      "path": "public/campania/prologo-v2/sprites/domingo_04_derrotado.webp",
+      "group": "Prólogo",
+      "name": "Domingo 04 Derrotado",
+      "bytes": 151602
+    },
+    {
+      "path": "public/campania/prologo-v3/props/carta_dorada_invocacion.png",
+      "group": "Prólogo",
+      "name": "Carta Dorada Invocacion",
+      "bytes": 2753140
+    },
+    {
+      "path": "public/campania/prologo-v3/sprites/domingo_07_enojado.png",
+      "group": "Prólogo",
+      "name": "Domingo 07 Enojado",
+      "bytes": 1844828
+    },
+    {
+      "path": "public/campania/prologo-v3/sprites/domingo_08_invocacion_combate.png",
+      "group": "Prólogo",
+      "name": "Domingo 08 Invocacion Combate",
+      "bytes": 2143962
+    },
+    {
+      "path": "public/campania/prologo-v3/sprites/nino_03_asustado.png",
+      "group": "Prólogo",
+      "name": "Nino 03 Asustado",
+      "bytes": 1559042
+    },
+    {
+      "path": "public/campania/prologo-v3/sprites/nino_04_aliviado.png",
+      "group": "Prólogo",
+      "name": "Nino 04 Aliviado",
+      "bytes": 1547429
+    },
+    {
+      "path": "public/campania/prologo-v3/sprites/xervias_05_anillo_energia.png",
+      "group": "Prólogo",
+      "name": "Xervias 05 Anillo Energia",
+      "bytes": 2493157
+    },
+    {
+      "path": "public/campania/prologo/fondos/fondo_01_mesa.webp",
+      "group": "Prólogo",
+      "name": "Fondo 01 Mesa",
+      "bytes": 253222
+    },
+    {
+      "path": "public/campania/prologo/fondos/fondo_02_plaza.webp",
+      "group": "Prólogo",
+      "name": "Fondo 02 Plaza",
+      "bytes": 407330
+    },
+    {
+      "path": "public/campania/prologo/planos/plano_01_pergamino.webp",
+      "group": "Prólogo",
+      "name": "Plano 01 Pergamino",
+      "bytes": 292548
+    },
+    {
+      "path": "public/campania/prologo/planos/plano_02_anillo.webp",
+      "group": "Prólogo",
+      "name": "Plano 02 Anillo",
+      "bytes": 261464
+    },
+    {
+      "path": "public/campania/prologo/planos/plano_03_cetro.webp",
+      "group": "Prólogo",
+      "name": "Plano 03 Cetro",
+      "bytes": 257444
+    },
+    {
+      "path": "public/campania/prologo/props/carta-invocacion-real.svg",
+      "group": "Prólogo",
+      "name": "Carta Invocacion Real",
+      "bytes": 2598
+    },
+    {
+      "path": "public/campania/prologo/sprites/domingo_01_neutro.webp",
+      "group": "Prólogo",
+      "name": "Domingo 01 Neutro",
+      "bytes": 191332
+    },
+    {
+      "path": "public/campania/prologo/sprites/domingo_02_arrogante.webp",
+      "group": "Prólogo",
+      "name": "Domingo 02 Arrogante",
+      "bytes": 184926
+    },
+    {
+      "path": "public/campania/prologo/sprites/domingo_03_furioso.webp",
+      "group": "Prólogo",
+      "name": "Domingo 03 Furioso",
+      "bytes": 219332
+    },
+    {
+      "path": "public/campania/prologo/sprites/domingo_04_derrotado.webp",
+      "group": "Prólogo",
+      "name": "Domingo 04 Derrotado",
+      "bytes": 186270
+    },
+    {
+      "path": "public/campania/prologo/sprites/madre_01_protectora.webp",
+      "group": "Prólogo",
+      "name": "Madre 01 Protectora",
+      "bytes": 199718
+    },
+    {
+      "path": "public/campania/prologo/sprites/madre_02_suplicante.webp",
+      "group": "Prólogo",
+      "name": "Madre 02 Suplicante",
+      "bytes": 201152
+    },
+    {
+      "path": "public/campania/prologo/sprites/madre_03_asustada.webp",
+      "group": "Prólogo",
+      "name": "Madre 03 Asustada",
+      "bytes": 195834
+    },
+    {
+      "path": "public/campania/prologo/sprites/madre_04_aliviada.webp",
+      "group": "Prólogo",
+      "name": "Madre 04 Aliviada",
+      "bytes": 193046
+    },
+    {
+      "path": "public/campania/prologo/sprites/nino_01_asustado.webp",
+      "group": "Prólogo",
+      "name": "Nino 01 Asustado",
+      "bytes": 165078
+    },
+    {
+      "path": "public/campania/prologo/sprites/nino_02_aliviado.webp",
+      "group": "Prólogo",
+      "name": "Nino 02 Aliviado",
+      "bytes": 159072
+    },
+    {
+      "path": "public/campania/prologo/sprites/xervias_01_objecion.webp",
+      "group": "Prólogo",
+      "name": "Xervias 01 Objecion",
+      "bytes": 294290
+    },
+    {
+      "path": "public/campania/prologo/sprites/xervias_02_invoca.webp",
+      "group": "Prólogo",
+      "name": "Xervias 02 Invoca",
+      "bytes": 368276
+    },
+    {
+      "path": "public/campania/prologo/sprites/xervias_03_tutorial.webp",
+      "group": "Prólogo",
+      "name": "Xervias 03 Tutorial",
+      "bytes": 300632
+    },
+    {
+      "path": "public/campania/prologo/sprites/xervias_04_reflexion.webp",
+      "group": "Prólogo",
+      "name": "Xervias 04 Reflexion",
+      "bytes": 262078
+    },
+    {
+      "path": "public/campania/prologo/sprites/zhinchi_01_entrada.webp",
+      "group": "Prólogo",
+      "name": "Zhinchi 01 Entrada",
+      "bytes": 282670
+    },
+    {
+      "path": "public/campania/prologo/sprites/zhinchi_02_investiga.webp",
+      "group": "Prólogo",
+      "name": "Zhinchi 02 Investiga",
+      "bytes": 308912
+    },
+    {
+      "path": "public/campania/prologo/sprites/zhinchi_03_cetro.webp",
+      "group": "Prólogo",
+      "name": "Zhinchi 03 Cetro",
+      "bytes": 335420
+    },
+    {
+      "path": "public/campania/prologo/sprites/zhinchi_04_ordena.webp",
+      "group": "Prólogo",
+      "name": "Zhinchi 04 Ordena",
+      "bytes": 270052
+    },
+    {
+      "path": "public/campania/regiones/region-1.svg",
+      "group": "Mapas y capítulos",
+      "name": "Region 1",
+      "bytes": 3761
+    },
+    {
+      "path": "public/campania/regiones/region-2.svg",
+      "group": "Mapas y capítulos",
+      "name": "Region 2",
+      "bytes": 3739
+    },
+    {
+      "path": "public/campania/regiones/region-3.svg",
+      "group": "Mapas y capítulos",
+      "name": "Region 3",
+      "bytes": 1876
+    },
+    {
+      "path": "public/campania/regiones/region-4.svg",
+      "group": "Mapas y capítulos",
+      "name": "Region 4",
+      "bytes": 1904
+    },
+    {
+      "path": "public/campania/regiones/region-5.svg",
+      "group": "Mapas y capítulos",
+      "name": "Region 5",
+      "bytes": 1946
+    },
+    {
+      "path": "public/campania/regiones/region-6.svg",
+      "group": "Mapas y capítulos",
+      "name": "Region 6",
+      "bytes": 2023
+    },
+    {
+      "path": "public/campania/regiones/region-7.svg",
+      "group": "Mapas y capítulos",
+      "name": "Region 7",
+      "bytes": 2045
+    },
+    {
+      "path": "public/campania/regiones/region-8.svg",
+      "group": "Mapas y capítulos",
+      "name": "Region 8",
+      "bytes": 1922
+    },
+    {
+      "path": "public/campania/regiones/region-f.svg",
+      "group": "Mapas y capítulos",
+      "name": "Region F",
+      "bytes": 1843
+    },
+    {
+      "path": "public/campania/salon-generales.webp",
+      "group": "Mapas y capítulos",
+      "name": "Salon Generales",
+      "bytes": 559014
+    },
+    {
+      "path": "public/campania/seleccion-1.webp",
+      "group": "Mapas y capítulos",
+      "name": "Seleccion 1",
+      "bytes": 9954
+    },
+    {
+      "path": "public/campania/seleccion-2.webp",
+      "group": "Mapas y capítulos",
+      "name": "Seleccion 2",
+      "bytes": 9730
+    },
+    {
+      "path": "public/campania/seleccion-3.webp",
+      "group": "Mapas y capítulos",
+      "name": "Seleccion 3",
+      "bytes": 8966
+    },
+    {
+      "path": "public/campania/seleccion-4.webp",
+      "group": "Mapas y capítulos",
+      "name": "Seleccion 4",
+      "bytes": 9820
+    },
+    {
+      "path": "public/campania/seleccion-5.webp",
+      "group": "Mapas y capítulos",
+      "name": "Seleccion 5",
+      "bytes": 9450
+    },
+    {
+      "path": "public/campania/seleccion-6.webp",
+      "group": "Mapas y capítulos",
+      "name": "Seleccion 6",
+      "bytes": 9922
+    },
+    {
+      "path": "public/campania/seleccion-7.webp",
+      "group": "Mapas y capítulos",
+      "name": "Seleccion 7",
+      "bytes": 9938
+    },
+    {
+      "path": "public/campania/seleccion-8.webp",
+      "group": "Mapas y capítulos",
+      "name": "Seleccion 8",
+      "bytes": 9192
+    },
+    {
+      "path": "public/cartas/arcilla-atlas.avif",
+      "group": "Cartas",
+      "name": "Arcilla Atlas",
+      "bytes": 7725
+    },
+    {
+      "path": "public/cartas/decreto-ataque.webp",
+      "group": "Cartas",
+      "name": "Decreto Ataque",
+      "bytes": 14718
+    },
+    {
+      "path": "public/cartas/decreto-defensa.webp",
+      "group": "Cartas",
+      "name": "Decreto Defensa",
+      "bytes": 15810
+    },
+    {
+      "path": "public/cartas/decreto-impacto.webp",
+      "group": "Cartas",
+      "name": "Decreto Impacto",
+      "bytes": 26094
+    },
+    {
+      "path": "public/cartas/decreto-orden.webp",
+      "group": "Cartas",
+      "name": "Decreto Orden",
+      "bytes": 31440
+    },
+    {
+      "path": "public/efectos/ataque.webm",
+      "group": "Animaciones",
+      "name": "Ataque",
+      "bytes": 42979
+    },
+    {
+      "path": "public/efectos/combo-ataque-x2.webm",
+      "group": "Animaciones",
+      "name": "Combo Ataque X2",
+      "bytes": 177259
+    },
+    {
+      "path": "public/efectos/combo-ataque-x3.webm",
+      "group": "Animaciones",
+      "name": "Combo Ataque X3",
+      "bytes": 108279
+    },
+    {
+      "path": "public/efectos/combo-defensa-x2.webm",
+      "group": "Animaciones",
+      "name": "Combo Defensa X2",
+      "bytes": 74478
+    },
+    {
+      "path": "public/efectos/combo-defensa-x3.webm",
+      "group": "Animaciones",
+      "name": "Combo Defensa X3",
+      "bytes": 237892
+    },
+    {
+      "path": "public/efectos/defensa.webm",
+      "group": "Animaciones",
+      "name": "Defensa",
+      "bytes": 95769
+    },
+    {
+      "path": "public/efectos/orden.webm",
+      "group": "Animaciones",
+      "name": "Orden",
+      "bytes": 55104
+    },
+    {
+      "path": "public/escenarios/gemini_generated_video_b8059a5c.mp4",
+      "group": "Animaciones",
+      "name": "Gemini Generated Video B8059a5c",
+      "bytes": 4643374
+    },
+    {
+      "path": "public/escenarios/plaza-arcilla-estandar.webp",
+      "group": "Otros",
+      "name": "Plaza Arcilla Estandar",
+      "bytes": 160418
+    },
+    {
+      "path": "public/escenarios/plaza-virreinal-v2.svg",
+      "group": "Otros",
+      "name": "Plaza Virreinal V2",
+      "bytes": 11351
+    },
+    {
+      "path": "public/escenarios/plaza-virreinal.svg",
+      "group": "Otros",
+      "name": "Plaza Virreinal",
+      "bytes": 6542
+    },
+    {
+      "path": "public/final/derrota.webp",
+      "group": "Interfaz",
+      "name": "Derrota",
+      "bytes": 62198
+    },
+    {
+      "path": "public/final/victoria.webp",
+      "group": "Interfaz",
+      "name": "Victoria",
+      "bytes": 69902
+    },
+    {
+      "path": "public/interfaz/banner-tu-turno.webp",
+      "group": "Interfaz",
+      "name": "Banner Tu Turno",
+      "bytes": 19640
+    },
+    {
+      "path": "public/interfaz/banner-turno-rival.webp",
+      "group": "Interfaz",
+      "name": "Banner Turno Rival",
+      "bytes": 24692
+    },
+    {
+      "path": "public/interfaz/cinta-turno-jugador.svg",
+      "group": "Interfaz",
+      "name": "Cinta Turno Jugador",
+      "bytes": 2856
+    },
+    {
+      "path": "public/interfaz/cinta-turno-rival.svg",
+      "group": "Interfaz",
+      "name": "Cinta Turno Rival",
+      "bytes": 2813
+    },
+    {
+      "path": "public/interfaz/combo-estandartes-nuevo.webp",
+      "group": "Interfaz",
+      "name": "Combo Estandartes Nuevo",
+      "bytes": 84934
+    },
+    {
+      "path": "public/interfaz/combo-estandartes-transparente.webp",
+      "group": "Interfaz",
+      "name": "Combo Estandartes Transparente",
+      "bytes": 299026
+    },
+    {
+      "path": "public/interfaz/combo-estandartes.webp",
+      "group": "Interfaz",
+      "name": "Combo Estandartes",
+      "bytes": 6218
+    },
+    {
+      "path": "public/interfaz/combo-sin-fondo.webp",
+      "group": "Interfaz",
+      "name": "Combo Sin Fondo",
+      "bytes": 14766
+    },
+    {
+      "path": "public/interfaz/retratos-fin-turno.avif",
+      "group": "Interfaz",
+      "name": "Retratos Fin Turno",
+      "bytes": 7911
+    },
+    {
+      "path": "public/moneda/cruz.webp",
+      "group": "Otros",
+      "name": "Cruz",
+      "bytes": 3714
+    },
+    {
+      "path": "public/moneda/sol.webp",
+      "group": "Otros",
+      "name": "Sol",
+      "bytes": 4106
+    },
+    {
+      "path": "public/portada/decreto-real-logo.png",
+      "group": "Portada",
+      "name": "Decreto Real Logo",
+      "bytes": 175615
+    },
+    {
+      "path": "public/portada/portada-loop.mp4",
+      "group": "Animaciones",
+      "name": "Portada Loop",
+      "bytes": 925995
+    },
+    {
+      "path": "public/portada/portada-poster.jpg",
+      "group": "Portada",
+      "name": "Portada Poster",
+      "bytes": 118441
+    },
+    {
+      "path": "public/retratos/jugador.webp",
+      "group": "Interfaz",
+      "name": "Jugador",
+      "bytes": 26390
+    },
+    {
+      "path": "public/retratos/rival.webp",
+      "group": "Interfaz",
+      "name": "Rival",
+      "bytes": 28792
+    },
+    {
+      "path": "public/virreinato-map.svg",
+      "group": "Otros",
+      "name": "Virreinato Map",
+      "bytes": 6589
+    }
+  ]
+}
