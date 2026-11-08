@@ -97,3 +97,31 @@ test('copy a position, scale and rotation and paste it on another beat',async({p
   await page.getByRole('button',{name:'↶ Deshacer'}).click();
   await expect(page.getByTestId('studio-x')).toHaveValue('0');
 });
+
+
+test('mobile inspector protects accidental edits while scrolling and offers quick undo/save',async({page},info)=>{
+  test.skip(only(['mobile-390'])(info.project.name),'Mobile touch editor');
+  await page.goto('/Decreto-Real/?drDev=1#/campania/prologo?studio=1&studioStep=20');
+  await expect(page.getByTestId('dr-studio')).toBeVisible();
+  const versus=page.getByTestId('cinematic-versus');
+  const stage=page.locator('.dcop-stage');
+  const vb=(await versus.boundingBox())!;
+  const sb=(await stage.boundingBox())!;
+  expect(vb.height).toBeGreaterThan(sb.height*.95);
+  await page.getByTestId('studio-actor-select').selectOption({label:'VS · Marca «VS»'});
+  await expect(page.getByTestId('studio-scale')).toBeDisabled();
+  await expect(page.getByRole('button',{name:'Escala en porcentaje: sumar'})).toBeDisabled();
+  await page.getByTestId('studio-inspector-scroll').evaluate(el=>{el.scrollTop=el.scrollHeight;});
+  await expect(page.getByTestId('studio-scale-number')).toHaveValue('100');
+  await page.getByTestId('studio-controls-lock').click();
+  await expect(page.getByTestId('studio-scale')).toBeEnabled();
+  await page.getByTestId('studio-scale-number').fill('140');
+  await page.getByTestId('studio-scale-number').press('Tab');
+  await page.getByTestId('studio-undo-quick').click();
+  await expect(page.getByTestId('studio-scale-number')).toHaveValue('100');
+  await page.getByTestId('studio-save-quick').click();
+  await expect(page.getByTestId('studio-tools-toggle')).toBeVisible();
+  await expect(page.getByRole('toolbar',{name:'Lienzo de Studio'})).toBeHidden();
+  await page.getByTestId('studio-tools-toggle').click();
+  await expect(page.getByRole('toolbar',{name:'Lienzo de Studio'})).toBeVisible();
+});
