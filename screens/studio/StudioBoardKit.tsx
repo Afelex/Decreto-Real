@@ -7,6 +7,7 @@ import { defaultLayerTransform, STUDIO_NARRATIVE_TONES, type StudioLayer, type S
 import { copyTransform, formatTransform, parseTransform, type CopiedTransform } from '../../campaign/studio/transformClipboard';
 import { StudioProvider, useStudio } from './StudioContext';
 import { useStudioDrag } from './useStudioDrag';
+import { StudioBoardSafety } from './StudioBoardSafety';
 import '../decreto-real-studio.css';
 
 /**
@@ -81,7 +82,7 @@ function boardStyle(layer:StudioLayer):React.CSSProperties {
 }
 
 /** Ajustes del tablero para el perfil actual: atributos para cada elemento editable. */
-export function useBoardStudio(layoutRef:React.RefObject<HTMLElement|null>,guideStepId?:string){
+export function useBoardStudio(layoutRef:React.RefObject<HTMLElement|null>,guideStepId?:string,playerPreview=false){
   const studio=useStudio();
   const profile=useBoardProfile();
   const sceneKey='tablero/'+profile;
@@ -113,12 +114,12 @@ export function useBoardStudio(layoutRef:React.RefObject<HTMLElement|null>,guide
     const hiddenForAudience=!gameplayCritical&&Boolean(layer&&(!studio.visibleTo(layer.devOnly)||(!studio.editing&&layer.visible===false)));
     return {
       className:className+(layer?' dr-board-adjusted':'')+
-        (studio.editing&&studio.selected===id?' dr-board-selected':'')+
+        (studio.editing&&!playerPreview&&studio.selected===id?' dr-board-selected':'')+
         (hiddenForAudience?' dr-board-hidden':'')+
-        (studio.editing&&layer&&(layer.visible===false||layer.devOnly)?' dr-board-dimmed':''),
+        (studio.editing&&!playerPreview&&layer&&(layer.visible===false||layer.devOnly)?' dr-board-dimmed':''),
       style:layer?boardStyle(layer):undefined,
-      'data-studio-actor':studio.editing?id:undefined,
-      ...(individual?dragTutorial(id):drag(id)),
+      'data-studio-actor':studio.editing&&!playerPreview?id:undefined,
+      ...(!playerPreview?(individual?dragTutorial(id):drag(id)):{}),
     };
   };
   return {editing:studio.editing,selected:studio.selected,sceneKey,profile,attrs,guideText,guideSpeaker};
@@ -128,15 +129,17 @@ export function useBoardStudio(layoutRef:React.RefObject<HTMLElement|null>,guide
 let copiedBoardTransform:CopiedTransform|null=null;
 
 /** Panel de Studio · Tablero. Mientras se edita, la partida queda congelada. */
-export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGuideIndex}:{
+export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGuideIndex,
+  layoutRef,playerPreview,onPlayerPreview}:{
   sceneKey:string;profile:BoardProfile;previewGuideIndex:number;onPreviewGuideIndex:(index:number)=>void;
+  layoutRef:React.RefObject<HTMLDivElement|null>;playerPreview:boolean;onPlayerPreview:()=>void;
 }){
   const studio=useStudio();
   const navigate=useNavigate();
   const location=useLocation();
   const [expanded,setExpanded]=React.useState(true);
   const [hasCopy,setHasCopy]=React.useState(()=>copiedBoardTransform!==null);
-  if(!studio.editing)return null;
+  if(!studio.editing||playerPreview)return null;
   const selected=BOARD_ELEMENTS.some(e=>e.id===studio.selected)?studio.selected:null;
   const previewGuide=GUIDED_STEPS[previewGuideIndex];
   const individualKey=tutorialLayoutKey(previewGuide.id,profile);
@@ -254,6 +257,8 @@ export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGu
         <small>Las propuestas relacionan el personaje, el tipo de intervención y los elementos visuales. «Completar» respeta los ajustes existentes; «Rehacer» sustituye las posiciones propuestas solo de este paso. Ambos permiten deshacer.</small>
       </section>
       <p className="dr-studio-tip">El selector muestra la composición conjunta sin avanzar ni reiniciar la partida. Selecciona un elemento para moverlo individualmente.</p>
+      <StudioBoardSafety stepId={previewGuide.id} profile={profile} layoutRef={layoutRef}
+        onPlayerPreview={onPlayerPreview}/>
       <label className="dr-studio-label">Elemento a editar (también puedes tocarlo)
         <select data-testid="studio-actor-select" value={selected??''} onChange={e=>studio.select(e.target.value||null)}>
           <option value="">Seleccionar elemento</option>
