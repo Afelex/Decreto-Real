@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { layerOrDefault, withDialogue, withLayer, withoutLayer } from '../../campaign/studio/ops';
+import { getLayer, isTutorialLayoutId, layerOrDefault, tutorialLayoutKey, withDialogue, withLayer, withoutLayer } from '../../campaign/studio/ops';
 import { GUIDED_STEPS, type GuidedStep } from '../../campaign/guidedOpeningDuel';
 import { defaultLayerTransform, type StudioLayer } from '../../campaign/studio/schema';
 import { copyTransform, formatTransform, parseTransform, type CopiedTransform } from '../../campaign/studio/transformClipboard';
@@ -72,11 +72,13 @@ function boardStyle(layer:StudioLayer):React.CSSProperties {
 }
 
 /** Ajustes del tablero para el perfil actual: atributos para cada elemento editable. */
-export function useBoardStudio(layoutRef:React.RefObject<HTMLElement|null>){
+export function useBoardStudio(layoutRef:React.RefObject<HTMLElement|null>,guideStepId?:string){
   const studio=useStudio();
   const profile=useBoardProfile();
   const sceneKey='tablero/'+profile;
+  const tutorialKey=guideStepId?tutorialLayoutKey(guideStepId,profile):null;
   const drag=useStudioDrag(sceneKey,layoutRef);
+  const dragTutorial=useStudioDrag(tutorialKey,layoutRef,sceneKey);
   React.useEffect(()=>{
     const el=layoutRef.current;
     if(!el)return;
@@ -87,10 +89,14 @@ export function useBoardStudio(layoutRef:React.RefObject<HTMLElement|null>){
     return ()=>window.removeEventListener('resize',apply);
   },[layoutRef]);
   const scene=studio.viewScene(sceneKey);
-  // Cada intervención mantiene su propio texto y el tablero conserva su perfil.
+  const tutorialScene=studio.viewScene(tutorialKey);
+  // Cada intervención mantiene su propio texto y su composición visual.
+  // Si no está editada, conserva la posición compartida para el perfil.
   const guideText=(step:GuidedStep)=>studio.viewScene('tutorial/'+step.id)?.dialogue?.text??step.text;
   const attrs=(id:string,className:string)=>{
-    const layer=scene?.layers?.find(l=>l.id===id);
+    const individual=Boolean(tutorialKey&&isTutorialLayoutId(id));
+    const layer=(individual?tutorialScene?.layers?.find(l=>l.id===id):undefined)??
+      scene?.layers?.find(l=>l.id===id);
     // La mano debe seguir visible para poder jugar, incluso si un documento importado la oculta.
     const gameplayCritical=['native-tablero-mano-jugador','native-tablero-tutorial-dialogo',
       'native-tablero-moneda','native-tablero-combo-menu','native-tablero-combo'].includes(id);
@@ -102,7 +108,7 @@ export function useBoardStudio(layoutRef:React.RefObject<HTMLElement|null>){
         (studio.editing&&layer&&(layer.visible===false||layer.devOnly)?' dr-board-dimmed':''),
       style:layer?boardStyle(layer):undefined,
       'data-studio-actor':studio.editing?id:undefined,
-      ...drag(id),
+      ...(individual?dragTutorial(id):drag(id)),
     };
   };
   return {editing:studio.editing,selected:studio.selected,sceneKey,profile,attrs,guideText};
@@ -122,8 +128,11 @@ export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGu
   const [hasCopy,setHasCopy]=React.useState(()=>copiedBoardTransform!==null);
   if(!studio.editing)return null;
   const selected=BOARD_ELEMENTS.some(e=>e.id===studio.selected)?studio.selected:null;
-  const layer=selected?layerOrDefault(studio.doc,sceneKey,selected):null;
   const previewGuide=GUIDED_STEPS[previewGuideIndex];
+  const individualKey=tutorialLayoutKey(previewGuide.id,profile);
+  const editKey=selected&&isTutorialLayoutId(selected)?individualKey:sceneKey;
+  const layer=selected?(getLayer(studio.doc,editKey,selected)??
+    getLayer(studio.doc,sceneKey,selected)??layerOrDefault(studio.doc,editKey,selected)):null;
   const previewKey='tutorial/'+previewGuide.id;
   const previewText=studio.scene(previewKey)?.dialogue?.text??previewGuide.text;
   const editorOnly=selected?.startsWith('native-tablero-tutorial-')||
@@ -134,7 +143,8 @@ export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGu
   ].includes(selected);
   const patch=(part:Partial<StudioLayer>,text='Cambios sin guardar')=>{
     if(!selected)return;
-    studio.apply(d=>withLayer(d,sceneKey,{...(layerOrDefault(d,sceneKey,selected) as StudioLayer),...part} as StudioLayer),text);
+    studio.apply(d=>withLayer(d,editKey,{...(getLayer(d,editKey,selected)??
+      getLayer(d,sceneKey,selected)??layerOrDefault(d,editKey,selected)),...part} as StudioLayer),text);
   };
   const n=(label:string,testid:string,value:number,on:(v:number)=>void)=><label className="dr-studio-number">{label}
     <input type="text" inputMode="decimal" data-testid={testid} defaultValue={String(value)} key={testid+':'+selected+':'+value}
@@ -170,13 +180,14 @@ export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGu
           onChange={e=>{studio.preview(d=>withDialogue(d,previewKey,{text:e.target.value}));
             studio.setStatus('Texto del tutorial modificado');}}/>
       </label>
-      <p className="dr-studio-tip">El selector cambia solo la vista previa; nunca adelanta ni reinicia tu partida. Selecciona una pieza para verla y arrastrarla en el tablero.</p>
+      <p className="dr-studio-tip">El selector cambia solo la vista previa; nunca adelanta ni reinicia tu partida. Los elementos narrativos se ajustan por intervención y por tamaño de pantalla, sin mover los demás pasos.</p>
       <label className="dr-studio-label">Elemento a editar (también puedes tocarlo)
         <select data-testid="studio-actor-select" value={selected??''} onChange={e=>studio.select(e.target.value||null)}>
           <option value="">Seleccionar elemento</option>
           {BOARD_ELEMENTS.map(e=><option key={e.id} value={e.id}>{e.label}</option>)}
         </select></label>
       {layer&&selected&&<div className="dr-studio-properties">
+        {isTutorialLayoutId(selected)&&<p className="dr-studio-tip" data-testid="studio-narrative-scope">Composición individual: paso {previewGuideIndex+1}/32 · {PROFILE_LABELS[profile]}. Puedes editar también el texto del paso. Al restaurar, se conserva la posición general del tablero.</p>}
         <div className="dr-studio-two">
           {n('X (% tablero)','studio-x',layer.x,x=>patch({x}))}
           {n('Y (% tablero)','studio-y',layer.y,y=>patch({y}))}
@@ -206,7 +217,7 @@ export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGu
             if(c)patch(c,'Transformación pegada');
           }}>📥 Pegar posición</button>
         </div>
-        <button type="button" data-testid="studio-restore" onClick={()=>studio.apply(d=>withoutLayer(d,sceneKey,selected),'Elemento restaurado')}>↺ Restaurar este elemento</button>
+        <button type="button" data-testid="studio-restore" onClick={()=>studio.apply(d=>withoutLayer(d,editKey,selected),'Elemento restaurado')}>↺ Restaurar este elemento</button>
       </div>}
       <div className="dr-studio-actions dr-studio-history">
         <button type="button" onClick={studio.undo} disabled={!studio.canUndo}>↶ Deshacer</button>
