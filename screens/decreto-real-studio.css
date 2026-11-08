@@ -543,5 +543,5 @@
   .dr-studio-toolbar.dr-studio-toolbar-collapsed{display:none}
   .dr-studio-toolbar{bottom:calc(54px + env(safe-area-inset-bottom));max-width:calc(100% - 12px);gap:2px}
   .dr-studio-toolbar>button{min-width:36px;min-height:40px;padding:3px 4px}
-  .dr-studio-panel.dr-studio-dock-bottom{bottom:calc(65px + env(safe-area-inset-bottom))}
+  .dr-studio-panel.dr-studio-dock-bottom{top:auto;bottom:calc(65px + env(safe-area-inset-bottom))}
 }
