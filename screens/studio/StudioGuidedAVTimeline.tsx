@@ -29,7 +29,7 @@ export function StudioGuidedAVTimeline({selectedIndex,onSelect}:Props){
   const step=GUIDED_STEPS[selectedIndex]??GUIDED_STEPS[0];
   const sceneKey='tutorial/'+step.id;
   const narrative=studio.doc.scenes[sceneKey]?.narrative;
-  const patch=(data:Partial<StudioNarrativeCard>)=>
+  const patch=(data:Parameters<typeof withNarrativeCard>[2])=>
     studio.apply(doc=>withNarrativeCard(doc,sceneKey,data),'Dirección audiovisual actualizada');
   const shown=beats.filter(item=>filter==='all'||
     filter==='action'&&Boolean(item.actionLabel)||
@@ -128,7 +128,7 @@ export function StudioGuidedAVTimeline({selectedIndex,onSelect}:Props){
           </label>
           <label className="dr-studio-label">Música
             <select data-testid="studio-av-music-track" value={narrative?.musicAssetId??''}
-              onChange={e=>patch({musicAssetId:e.target.value||undefined})}>
+              onChange={e=>patch({musicAssetId:e.target.value||null})}>
               <option value="">Pista habitual</option>
               {audioAssets.map(([id,meta])=><option value={id} key={id}>{meta.name}</option>)}
             </select>
