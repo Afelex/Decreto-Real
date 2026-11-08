@@ -638,3 +638,24 @@ test('scene audio audition starts on click and stops when switching guided inter
   await expect(page.getByTestId('studio-audition-status')).toContainText('Listo para escuchar');
   await expect(page.getByTestId('campaign-guided-coach')).toContainText('2/32');
 });
+
+
+test('Publicar campaña guides export and GitHub review without storing credentials',async({page},info)=>{
+  test.skip(info.project.name!=='mobile-390','Mobile publication assistant');
+  await openBoard(page);
+  await page.getByTestId('studio-open-publish').click();
+  const dialog=page.getByTestId('studio-publish-dialog');
+  await expect(dialog).toBeVisible();
+  await expect(dialog).toContainText('URL HTTPS');
+  await expect(dialog).toContainText('Revisa y aprueba');
+  await expect(page.getByTestId('studio-publish-github')).toHaveAttribute(
+    'href','https://github.com/Afelex/Decreto-Real/actions');
+  await expect(page.getByTestId('studio-publish-github')).toHaveAttribute('rel',/noopener/);
+  const [download]=await Promise.all([
+    page.waitForEvent('download'),
+    page.getByTestId('studio-export-publish').click(),
+  ]);
+  expect(download.suggestedFilename()).toBe('decreto-real-studio-publicacion.zip');
+  await page.getByRole('button',{name:'Cerrar publicación'}).click();
+  await expect(dialog).toHaveCount(0);
+});
