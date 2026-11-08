@@ -189,14 +189,14 @@ test('Studio presents whole tutorial compositions and keeps edits isolated by st
   const coach=page.getByTestId('campaign-guided-coach');
   await expect(coach).toBeVisible();
   await expect(page.locator('.dr-royal-guided-actor.is-rival')).toBeVisible();
-  await chooser.selectOption('05');
+  await chooser.selectOption('5');
   await expect(coach).toBeVisible();
   await expect(coach).toHaveClass(/is-guided-action/);
   await expect(page.locator('.dr-royal-guided-actor.is-player')).toHaveCount(0);
-  await chooser.selectOption('08');
+  await chooser.selectOption('8');
   await expect(page.locator('.dr-royal-combo')).toBeVisible();
   await expect(page.locator('.dr-event-choice')).toBeVisible();
-  await chooser.selectOption('03');
+  await chooser.selectOption('3');
   await expect(page.locator('.dr-event-coin-panel')).toBeVisible();
   await chooser.selectOption('11');
   await expect(page.locator('.dr-royal-guided-actor.is-player')).toBeVisible();
@@ -217,4 +217,48 @@ test('Studio presents whole tutorial compositions and keeps edits isolated by st
   await chooser.selectOption('11');
   await page.getByTestId('studio-actor-select').selectOption({label:'Tutorial · Ventana de diálogo'});
   await expect(page.getByTestId('studio-y')).toHaveValue(before);
+});
+
+
+test('visual audit flags a dialogue overlapping the hand and can suggest a reversible correction',async({page},info)=>{
+  test.skip(only(['mobile-390'])(info.project.name),'Story visual audit');
+  await openBoard(page);
+  await page.getByTestId('studio-guide-step').selectOption('5');
+  await page.getByTestId('studio-actor-select').selectOption({label:'Tutorial · Ventana de diálogo'});
+  const coach=page.getByTestId('campaign-guided-coach');
+  const displacement=await page.evaluate(()=>{
+    const coach=document.querySelector('[data-testid="campaign-guided-coach"]')!;
+    const hand=document.querySelector('.dr-royal-player-hand')!;
+    const stage=document.querySelector('.dr-royal-screen')!;
+    const a=coach.getBoundingClientRect(),b=hand.getBoundingClientRect(),root=stage.getBoundingClientRect();
+    return ((b.top+b.height/2)-(a.top+a.height/2))/root.height*100;
+  });
+  const original=Number(await page.getByTestId('studio-y').inputValue());
+  await set(page,'studio-y',String(Math.round((original+displacement)*100)/100));
+  await page.getByTestId('studio-audit-refresh').click();
+  await expect(page.getByTestId('studio-overlap-count')).toContainText('problema');
+  await expect(page.getByTestId('studio-overlap-warning').first()).toBeVisible();
+  await page.getByTestId('studio-audit-fix').click();
+  await expect(page.getByTestId('studio-y')).not.toHaveValue(String(Math.round((original+displacement)*100)/100));
+  await page.getByRole('button',{name:'↶ Deshacer'}).click();
+  await expect(coach).toBeVisible();
+});
+
+test('player preview hides Studio without advancing tutorial or changing edits',async({page},info)=>{
+  test.skip(only(['mobile-390','desktop-1280'])(info.project.name),'Clean narrative preview');
+  await openBoard(page);
+  await page.getByTestId('studio-guide-step').selectOption('8');
+  await page.getByTestId('studio-actor-select').selectOption({label:'Tutorial · Ventana de diálogo'});
+  await expect(page.getByTestId('campaign-guided-coach')).toContainText('Duelo guiado · 9/32');
+  await expect(page.locator('.dr-royal-combo')).toBeVisible();
+  await page.getByTestId('studio-preview-player').click();
+  await expect(page.getByTestId('dr-studio')).toBeHidden();
+  await expect(page.getByTestId('studio-player-return')).toBeVisible();
+  await expect(page.getByTestId('campaign-guided-coach')).toBeVisible();
+  await expect(page.getByTestId('campaign-guided-coach')).not.toHaveAttribute('data-studio-actor',/.+/);
+  await expect(page.getByTestId('campaign-guided-coach')).toContainText('9/32');
+  await expect(page.locator('.dr-royal-layout')).toHaveClass(/dr-board-editing/);
+  await page.getByTestId('studio-player-return').click();
+  await expect(page.getByTestId('dr-studio')).toBeVisible();
+  await expect(page.getByTestId('studio-guide-step')).toHaveValue('8');
 });

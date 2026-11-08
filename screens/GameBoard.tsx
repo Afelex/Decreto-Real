@@ -140,6 +140,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   // Studio · Tablero: ajustes visuales por perfil de pantalla (solo QA edita).
   const boardLayoutRef = React.useRef<HTMLDivElement | null>(null);
   const [studioGuidePreview,setStudioGuidePreview] = useState(0);
+  const [studioPlayerPreview,setStudioPlayerPreview] = useState(false);
   const [studioParams]=useSearchParams();
   const { playSound, sfxEnabled, musicEnabled, toggleSfx, toggleMusic } = useAudio();
 
@@ -172,7 +173,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   // Ambos consumen el MISMO documento de composición publicado de Studio.
   const studioStep=studioParams.get('studio')==='1'
     ? GUIDED_STEPS[studioGuidePreview]?.id : currentGuide?.id;
-  const board = useBoardStudio(boardLayoutRef,studioStep);
+  const board = useBoardStudio(boardLayoutRef,studioStep,studioPlayerPreview);
   // La vista previa muestra la escena COMPLETA, sin jugar sus acciones.
   const previewNarrativeStep=board.editing?GUIDED_STEPS[studioGuidePreview]:currentGuide;
   const previewNarrativeAction=board.editing?previewNarrativeStep?.action:undefined;
@@ -711,7 +712,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const endTurnUnavailable = (guidedOpening && !expectedGuideAction?.startsWith('end')) || phase !== 'PLAYER_TURN' || !!storyMoment || showSpecialSelection || !!comboAnnouncement || !!mysticComboAnnouncement || isMenuOpen || !!cardAnnouncement || announcementBusy.current;
 
   const Board = (
-    <div ref={boardLayoutRef} className={`dr-classic-screen dr-royal-screen${board.editing ? ' dr-royal-tutorial-studio' : ''} bg-[#050505] font-body w-full overflow-hidden select-none flex flex-col relative text-white ${shakeScreen ? 'animate-shake' : ''}`} style={{ width: 'min(100vw, 430px)', height: '100dvh' }}>
+    <div ref={boardLayoutRef} className={`dr-classic-screen dr-royal-screen${board.editing ? ' dr-royal-tutorial-studio' : ''}${board.editing&&studioPlayerPreview ? ' dr-royal-player-preview' : ''} bg-[#050505] font-body w-full overflow-hidden select-none flex flex-col relative text-white ${shakeScreen ? 'animate-shake' : ''}`} style={{ width: 'min(100vw, 430px)', height: '100dvh' }}>
       <style>{`
         /* Animaciones para el botón de fuego */
         @keyframes fire-glow { 0%, 100% { box-shadow: 0 0 15px #f59e0b, 0 0 30px #f97316; } 50% { box-shadow: 0 0 25px #fbbf24, 0 0 50px #ef4444; } }
@@ -991,7 +992,13 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
         </footer>
       </div>
       <StudioBoardPanel sceneKey={board.sceneKey} profile={board.profile}
-        previewGuideIndex={studioGuidePreview} onPreviewGuideIndex={setStudioGuidePreview}/>
+        previewGuideIndex={studioGuidePreview} onPreviewGuideIndex={setStudioGuidePreview}
+        layoutRef={boardLayoutRef} playerPreview={studioPlayerPreview}
+        onPlayerPreview={()=>setStudioPlayerPreview(true)}/>
+      {board.editing&&studioPlayerPreview&&<button type="button" className="dr-studio-return-from-preview"
+        data-testid="studio-player-return" onClick={()=>setStudioPlayerPreview(false)}>
+        ↶ Volver a DRStudio <small>Vista visual · partida congelada</small>
+      </button>}
       {dragAt && <div className={`dr-royal-drag-ghost ${playerHand.find(card => card.id === dragAt.id)?.type.toLowerCase() ?? ""}`} aria-hidden="true"
         style={{ left: dragAt.x, top: dragAt.y }}>
         <img src={playerHand.find(card => card.id === dragAt.id)?.img ?? IMG_ATTACK} alt=""/>

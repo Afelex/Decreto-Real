@@ -138,6 +138,15 @@ Las propuestas se guardan en `scenes["tutorial/g11-movil"].layers`, no en las re
 
 **Limitaciones actuales:** es una composición automática inicial, no un encuadre probado visualmente en cada teléfono. Los textos extensos, las animaciones, el audio y los retratos específicos por emoción requieren ajustes y las siguientes fases. «Guardar» sigue siendo local hasta exportar y publicar; no borres tu borrador antes de probar.
 
+### Revisión visual automática y vista como jugador — Fase 1
+En **Studio · Tablero**, al cambiar de intervención se ejecuta una **revisión geométrica** de los elementos que aparecen: diálogo, retratos narrativos e indicador COMBO. Se comparan con las zonas funcionales (mano, Impactos, botón Fin de turno, activación de cartas, moneda y menú de combo), usando las medidas reales del navegador.
+
+- **Revisión de legibilidad:** muestra advertencias cuando un gráfico tapa demasiado una zona funcional o queda fuera de los bordes de pantalla. Puedes tocar una advertencia para seleccionar su elemento.
+- **✧ Despejar automáticamente:** prueba desplazamientos cortos para reducir la superposición de **un elemento por vez**, modifica solamente la capa de esa intervención y perfil y permite **Deshacer**. Si ninguna alternativa mejora la situación, no mueve nada. No modifica la lógica de cartas.
+- **◉ Ver como jugador:** oculta temporalmente todo el panel, los indicadores de selección y la edición por arrastre; muestra la composición del paso seleccionado sin los controles de DRStudio. Una pequeña barra **Volver a DRStudio** restaura la edición. La simulación es **visual y mantiene el combate congelado**; no permite avanzar acciones durante la inspección.
+
+Esta comprobación **no sustituye** la revisión artística: puede detectar rectángulos superpuestos, pero no decidir si una expresión transmite la emoción correcta ni si el texto es suficientemente claro. Las propuestas deben probarse en un dispositivo real antes de aprobar su publicación.
+
 ## Otras pantallas de la historia
 Abre **☷ Otras pantallas** (o `#/studio/escenas`) y elige una conversación tras victoria, la entrada o liberación de una región, la crónica, el epílogo o los créditos. En cada una puedes cambiar los textos (con **negrita**), el rótulo, el fondo y añadir sprites o efectos, y marcar textos o capas como «solo desarrollador». Se abren con una partida de prueba: tu partida real no cambia.
 
