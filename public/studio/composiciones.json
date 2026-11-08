@@ -671,7 +671,10 @@
         "tone": "enojado",
         "intent": "Presentar el desafío y la arrogancia del guardia.",
         "direction": "Domingo aparece con presencia dominante. Su provocación abre el conflicto; no tapes la moneda ni la mano.",
-        "spriteId": "domingo-arrogante"
+        "spriteId": "domingo-arrogante",
+        "enterMotion": "slide-right",
+        "exitMotion": "fade",
+        "motionDurationMs": 450
       }
     },
     "tutorial/g01": {
@@ -680,7 +683,10 @@
         "tone": "decidido",
         "intent": "Mostrar por qué Xervias arriesga su seguridad por la familia.",
         "direction": "Respuesta de Xervias con mirada al frente; conservar el campo despejado.",
-        "spriteId": "xervias-objecion"
+        "spriteId": "xervias-objecion",
+        "enterMotion": "slide-left",
+        "exitMotion": "slide-left",
+        "motionDurationMs": 420
       }
     },
     "tutorial/g02": {
@@ -689,7 +695,10 @@
         "tone": "sereno",
         "intent": "Explicar las dos condiciones de derrota sin interrumpir el hilo dramático.",
         "direction": "Priorizar lectura de las reglas; cuadro de diálogo compacto, sin ocultar los indicadores de vida.",
-        "spriteId": "xervias-tutorial"
+        "spriteId": "xervias-tutorial",
+        "enterMotion": "fade",
+        "exitMotion": "fade",
+        "motionDurationMs": 320
       },
       "dialogue": {
         "text": "Los anillos crean cartas con energía mística. Cada uno tiene 20 de vida. Pierdes al llegar a 0 o si el rival completa cuatro Impactos."
@@ -764,7 +773,10 @@
         "intent": "Demostrar que Domingo puede responder con sus propias cartas.",
         "direction": "Situar su retrato cerca del área rival y mostrar el ataque sin obstruir los puntos de vida.",
         "spriteId": "domingo-invocacion",
-        "portraitMode": "show"
+        "portraitMode": "show",
+        "enterMotion": "zoom",
+        "exitMotion": "fade",
+        "motionDurationMs": 520
       }
     },
     "tutorial/g11": {
@@ -773,7 +785,10 @@
         "tone": "sorprendido",
         "intent": "Explicar el daño recibido y anticipar el Combo ×3.",
         "direction": "Resaltar el marcador de vida y el historial de ataques con el cuadro fuera del centro.",
-        "spriteId": "xervias-reflexion"
+        "spriteId": "xervias-reflexion",
+        "enterMotion": "slide-left",
+        "exitMotion": "fade",
+        "motionDurationMs": 320
       }
     },
     "tutorial/g12": {
@@ -818,7 +833,10 @@
         "intent": "Mantener la oposición activa tras el primer Impacto.",
         "direction": "Intervención breve de Domingo, con gesto de resistencia; campo visible.",
         "spriteId": "domingo-molesto",
-        "portraitMode": "show"
+        "portraitMode": "show",
+        "enterMotion": "slide-right",
+        "exitMotion": "fade",
+        "motionDurationMs": 400
       }
     },
     "tutorial/g17": {
@@ -874,7 +892,10 @@
         "intent": "Recordar que el guardia no ha sido vencido.",
         "direction": "Réplicas cortas de Domingo para sostener la tensión narrativa.",
         "spriteId": "domingo-furioso",
-        "portraitMode": "show"
+        "portraitMode": "show",
+        "enterMotion": "zoom",
+        "exitMotion": "fade",
+        "motionDurationMs": 480
       }
     },
     "tutorial/g23": {
@@ -919,7 +940,10 @@
         "intent": "Expresar frustración y resistencia ante la ventaja de Xervias.",
         "direction": "Domingo ocupa la zona superior del tablero sin cubrir las cartas.",
         "spriteId": "domingo-furioso",
-        "portraitMode": "show"
+        "portraitMode": "show",
+        "enterMotion": "slide-right",
+        "exitMotion": "slide-right",
+        "motionDurationMs": 480
       }
     },
     "tutorial/g28": {
@@ -928,7 +952,10 @@
         "tone": "preocupado",
         "intent": "Dar a Domingo una última réplica antes del desenlace.",
         "direction": "Pausa narrativa breve con su retrato en primer plano, sin bloquear el siguiente paso.",
-        "spriteId": "domingo-derrotado"
+        "spriteId": "domingo-derrotado",
+        "enterMotion": "fade",
+        "exitMotion": "fade",
+        "motionDurationMs": 360
       }
     },
     "tutorial/g29": {
@@ -937,7 +964,10 @@
         "tone": "decidido",
         "intent": "Explicar por qué el Impacto Final puede terminar el combate.",
         "direction": "Señalar claramente la cuarta casilla y mantener el campo despejado.",
-        "spriteId": "xervias-energia"
+        "spriteId": "xervias-energia",
+        "enterMotion": "zoom",
+        "exitMotion": "fade",
+        "motionDurationMs": 450
       },
       "dialogue": {
         "text": "Puedo ganar sin quitarle toda la vida. El cuarto Impacto activa el Decreto Final."
