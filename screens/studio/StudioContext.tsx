@@ -2,7 +2,7 @@ import React from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { isCampaignQaAvailable } from '../../campaign/campaignQA';
 import { emptyStudioDocumentV3, normalizeStudioDocumentV3, type StudioDocumentV3, type StudioSceneV3 } from '../../campaign/studio/schema';
-import { assetUsage, changedSceneKeys, inheritPublishedNarrative, mergeStudioDocuments, referencedAssetIds, withAsset, withoutUnusedAssets } from '../../campaign/studio/ops';
+import { assetUsage, changedSceneKeys, inheritPublishedNarrative, inheritPublishedTutorialLayouts, mergeStudioDocuments, referencedAssetIds, withAsset, withoutUnusedAssets } from '../../campaign/studio/ops';
 import {
   migrateLegacyStudioDocument, readStudioDocumentV3, saveStudioDocumentV3,
 } from '../../campaign/studio/migrate';
@@ -147,6 +147,8 @@ export function StudioProvider({children,blocking=true}:{children:React.ReactNod
   },[]);
   // No bloqueante: el mismo proveedor desde el principio (sin remontar la
   // pantalla); lo publicado se aplica en cuanto llega.
+  // Las pantallas existentes siguen renderizando mientras se descarga el JSON.
+  // Un efecto posterior incorpora la publicación sin perder ediciones locales.
   if(!published&&blocking)return null;
   return <LoadedStudioProvider published={published??EMPTY_PUBLISHED}>{children}</LoadedStudioProvider>;
 }
@@ -158,9 +160,33 @@ function LoadedStudioProvider({children,published}:{children:React.ReactNode;pub
   const [initial]=React.useState(()=>active?readStudioDocumentV3(draftStorage()):null);
   const [history,dispatch]=React.useReducer(studioHistoryReducer,undefined,
     ()=>createStudioHistory(initial&&initial.source!=='empty'
-      ?inheritPublishedNarrative(initial.doc,published):published));
+      ?inheritPublishedTutorialLayouts(inheritPublishedNarrative(initial.doc,published),published):published));
   const historyRef=React.useRef<StudioHistoryState>(history);
   historyRef.current=history;
+  const lastPublishedRef=React.useRef<StudioDocumentV3|null>(null);
+  React.useEffect(()=>{
+    if(!active||published===EMPTY_PUBLISHED||lastPublishedRef.current===published)return;
+    lastPublishedRef.current=published;
+    const current=historyRef.current.doc;
+    const unsaved=isStudioDirty(historyRef.current);
+    const hasSavedDraft=initial&&initial.source!=='empty';
+    // Si Studio comenzó antes de que llegara el JSON publicado, completar
+    // SOLO lo que falta. Un borrador propio siempre tiene prioridad.
+    const mergedBase=!hasSavedDraft&&!Object.keys(current.scenes).length
+      ?published
+      :current;
+    const enriched=inheritPublishedTutorialLayouts(
+      inheritPublishedNarrative(mergedBase,published),published);
+    if(enriched===current)return;
+    if(unsaved){
+      dispatch({type:'apply',update:doc=>inheritPublishedTutorialLayouts(
+        inheritPublishedNarrative(doc,published),published)});
+    }else{
+      dispatch({type:'replace',doc:enriched});
+      // Cargar lo publicado automáticamente no debe señalar cambios del usuario.
+      dispatch({type:'saved'});
+    }
+  },[active,published,initial]);
   const [status,setStatus]=React.useState(()=>{
     if(initial?.source!=='legacy')return '';
     const dropped=initial.report?.dropped.length??0;

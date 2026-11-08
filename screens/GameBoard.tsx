@@ -173,6 +173,9 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const studioStep=studioParams.get('studio')==='1'
     ? GUIDED_STEPS[studioGuidePreview]?.id : currentGuide?.id;
   const board = useBoardStudio(boardLayoutRef,studioStep);
+  // La vista previa muestra la escena COMPLETA, sin jugar sus acciones.
+  const previewNarrativeStep=board.editing?GUIDED_STEPS[studioGuidePreview]:currentGuide;
+  const previewNarrativeAction=board.editing?previewNarrativeStep?.action:undefined;
   const expectedGuideAction = currentGuide?.action;
   const guidedCardId = expectedGuideAction ? GUIDED_ACTION_CARDS[expectedGuideAction] : undefined;
 
@@ -849,8 +852,8 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
         </div>
       )}
 
-      {(showSpecialSelection || board.editing && board.selected==='native-tablero-combo-menu') && (
-        <ComboChoicePanel level={showSpecialSelection?comboChoice:2} preview={board.editing}
+      {(showSpecialSelection || board.editing && (board.selected==='native-tablero-combo-menu'||previewNarrativeAction?.startsWith('combo'))) && (
+        <ComboChoicePanel level={showSpecialSelection?comboChoice:previewNarrativeAction==='combo3'?3:2} preview={board.editing}
           panelProps={board.attrs('native-tablero-combo-menu','')}
           onDamage={() => {
             if (guidedOpening && !guideAllows('combo2')) return;
@@ -932,8 +935,8 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
               </button>;
             })}
           </div>
-          {(playerGauge >= 2 && phase === 'PLAYER_TURN' || board.editing && board.selected==='native-tablero-combo') && <div key={playerGauge>=2?playerGauge:'studio-preview'} {...board.attrs('native-tablero-combo', `dr-royal-combo combo-${playerGauge>=2?playerGauge:2}`)}
-            aria-label={`Combo por ${playerGauge>=2?playerGauge:2}`} role="status"><strong>COMBO</strong><b>×{playerGauge>=2?playerGauge:2}</b><em>de {{ ATTACK: 'Ataque', DEFENSE: 'Defensa', IMPACT: 'Impacto', ORDER: 'Orden' }[playerLastType ?? 'ATTACK']}</em></div>}
+          {((!board.editing&&playerGauge >= 2 && phase === 'PLAYER_TURN') || (board.editing&&(board.selected==='native-tablero-combo'||previewNarrativeAction?.startsWith('combo')))) && <div key={board.editing?'studio-preview':playerGauge} {...board.attrs('native-tablero-combo', `dr-royal-combo combo-${board.editing&&previewNarrativeAction==='combo3'?3:playerGauge>=2?playerGauge:2}`)}
+            aria-label={`Combo por ${board.editing&&previewNarrativeAction==='combo3'?3:playerGauge>=2?playerGauge:2}`} role="status"><strong>COMBO</strong><b>×{board.editing&&previewNarrativeAction==='combo3'?3:playerGauge>=2?playerGauge:2}</b><em>de {{ ATTACK: 'Ataque', DEFENSE: 'Defensa', IMPACT: 'Impacto', ORDER: 'Orden' }[playerLastType ?? 'ATTACK']}</em></div>}
         </section>
 
         <section {...board.attrs('native-tablero-mano-jugador', 'dr-royal-player-hand')} aria-label={`Tu mano: ${playerHand.length} cartas`}>
@@ -997,21 +1000,24 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
       {(['rival','player'] as const).map(side=>{
         const id='native-tablero-tutorial-'+(side==='rival'?'rival':'jugador');
         const preview=board.editing&&board.selected===id;
-        const inStory=guidedOpening&&currentGuide&&!currentGuide.action&&guideIndex<3&&
-          (board.guideSpeaker(currentGuide)==='Domingo Quispe')===(side==='rival');
-        if(!preview&&(!inStory||board.editing))return null;
+        const current=previewNarrativeStep;
+        const visibleWithDialogue=Boolean(current&&!current.action&&
+          (board.guideSpeaker(current)==='Domingo Quispe')===(side==='rival')&&
+          board.guideSpeaker(current)!=='Sistema');
+        if(!preview&&!visibleWithDialogue)return null;
         return <div key={side} {...board.attrs(id,'dr-royal-guided-actor is-'+side)}
           aria-hidden="true" data-testid="guided-large-actor">
           <img src={side==='rival'?(guidedNarrativeSprites?.opponent??rivalPortrait):
             (guidedNarrativeSprites?.player??playerPortrait)} alt=""/>
         </div>;
       })}
-      {((guidedOpening && currentGuide && !board.editing) || (board.editing && board.selected==='native-tablero-tutorial-dialogo')) && (()=>{
+      {((guidedOpening && currentGuide && !board.editing) || board.editing) && (()=>{
         const step=board.editing?GUIDED_STEPS[studioGuidePreview]:currentGuide!;
         const stepIndex=board.editing?studioGuidePreview:guideIndex;
         const speaker=board.guideSpeaker(step);
         return <section {...board.attrs('native-tablero-tutorial-dialogo',
-          'dr-royal-story-coach '+(speaker==='Domingo Quispe'?'is-rival':'is-player'))}
+          'dr-royal-story-coach '+(speaker==='Domingo Quispe'?'is-rival':'is-player')+
+          (step.action?' is-guided-action':''))}
           data-testid="campaign-guided-coach" aria-live="polite">
           <div className="dr-royal-story-coach-header">
             <strong>{speaker}</strong>
@@ -1047,7 +1053,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
           ribbonProps={phase === 'START_BANNER' ? undefined : board.attrs(turnOwner==='PLAYER'?'native-tablero-turno-jugador':'native-tablero-turno-rival','')}
           turn={turnCount} />}
       {((phase === 'COIN_TOSS' && !storyMoment && !board.editing)||
-        (board.editing&&board.selected==='native-tablero-moneda'))&&
+        (board.editing&&(board.selected==='native-tablero-moneda'||previewNarrativeAction==='coin')))&&
         <CoinTossPanel coinSide={board.editing?null:coinSide} isFlipping={board.editing?false:isCoinFlipping}
           onToss={board.editing?()=>{}:handleCoinToss} preview={board.editing}
           panelProps={board.attrs('native-tablero-moneda','')}/>}

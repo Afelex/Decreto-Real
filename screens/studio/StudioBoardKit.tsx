@@ -2,6 +2,7 @@ import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getLayer, isTutorialLayoutId, layerOrDefault, tutorialLayoutKey, withDialogue, withNarrativeCard, withLayer, withoutLayer } from '../../campaign/studio/ops';
 import { GUIDED_STEPS, type GuidedStep } from '../../campaign/guidedOpeningDuel';
+import { tutorialCompositionMood, withMissingTutorialCompositions, withProposedTutorialComposition } from '../../campaign/studio/tutorialComposition';
 import { defaultLayerTransform, STUDIO_NARRATIVE_TONES, type StudioLayer, type StudioNarrativeTone } from '../../campaign/studio/schema';
 import { copyTransform, formatTransform, parseTransform, type CopiedTransform } from '../../campaign/studio/transformClipboard';
 import { StudioProvider, useStudio } from './StudioContext';
@@ -233,7 +234,26 @@ export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGu
           </p>
         </div>
       </details>
-      <p className="dr-studio-tip">El selector cambia solo la vista previa; nunca adelanta ni reinicia tu partida. Los elementos narrativos se ajustan por intervención y por tamaño de pantalla, sin mover los demás pasos.</p>
+      <section className="dr-studio-auto-compose" aria-label="Composición narrativa asistida">
+        <div className="dr-studio-auto-compose-title">
+          <strong>Composición narrativa</strong>
+          <span data-testid="studio-layout-kind">Escena: {tutorialCompositionMood(previewGuide)} · {PROFILE_LABELS[profile]}</span>
+        </div>
+        <div className="dr-studio-auto-compose-actions">
+          <button type="button" data-testid="studio-layout-complete"
+            onClick={()=>studio.apply(d=>withMissingTutorialCompositions(d,profile),
+              'Composiciones faltantes completadas sin modificar tus ajustes')}>
+            ✦ Completar 32 pasos
+          </button>
+          <button type="button" data-testid="studio-layout-reapply"
+            onClick={()=>studio.apply(d=>withProposedTutorialComposition(d,previewGuide,profile,true),
+              'Propuesta reaplicada únicamente a este paso; usa Deshacer si lo necesitas')}>
+            ↺ Rehacer este paso
+          </button>
+        </div>
+        <small>Las propuestas relacionan el personaje, el tipo de intervención y los elementos visuales. «Completar» respeta los ajustes existentes; «Rehacer» sustituye las posiciones propuestas solo de este paso. Ambos permiten deshacer.</small>
+      </section>
+      <p className="dr-studio-tip">El selector muestra la composición conjunta sin avanzar ni reiniciar la partida. Selecciona un elemento para moverlo individualmente.</p>
       <label className="dr-studio-label">Elemento a editar (también puedes tocarlo)
         <select data-testid="studio-actor-select" value={selected??''} onChange={e=>studio.select(e.target.value||null)}>
           <option value="">Seleccionar elemento</option>
