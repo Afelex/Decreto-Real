@@ -206,7 +206,8 @@ export function normalizeLayerTransform(value:unknown,defaults:StudioLayerTransf
 export function normalizeStudioLayer(value:unknown,assets?:Record<string,StudioAssetMeta>):StudioLayer|null {
   if(!isRecord(value))return null;
   const assetKnown=(id:unknown):id is string=>
-    typeof id==='string'&&MEDIA_ID.test(id)&&(!assets||Object.prototype.hasOwnProperty.call(assets,id));
+    typeof id==='string'&&MEDIA_ID.test(id)&&(!assets||
+      (Object.prototype.hasOwnProperty.call(assets,id)&&!assets[id].mime.startsWith('audio/')));
   if(value.kind==='actor'){
     if(!isActor(value.actor))return null;
     const actor=value.actor;
@@ -244,7 +245,8 @@ export function normalizeStudioLayer(value:unknown,assets?:Record<string,StudioA
 export function normalizeStudioBackground(value:unknown,assets?:Record<string,StudioAssetMeta>):StudioBackground|null {
   if(!isRecord(value))return null;
   const bg:StudioBackground={};
-  if(typeof value.assetId==='string'&&MEDIA_ID.test(value.assetId)&&(!assets||assets[value.assetId]))
+  if(typeof value.assetId==='string'&&MEDIA_ID.test(value.assetId)&&
+    (!assets||(assets[value.assetId]&&!assets[value.assetId].mime.startsWith('audio/'))))
     bg.assetId=value.assetId;
   for(const axis of ['x','y'] as const){
     const n=value[axis];
