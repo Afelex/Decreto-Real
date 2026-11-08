@@ -21,6 +21,7 @@ import CampaignCenterReveal from './screens/CampaignCenterReveal';
 import CampaignRegionMoment from './screens/CampaignRegionMoment';
 import CampaignQaNavigator from './screens/CampaignQaNavigator';
 import StudioScenesCatalog from './screens/studio/StudioScenesCatalog';
+import ArtGallery from './screens/ArtGallery';
 import { getCampaignStorage, isCampaignQaActive, isCampaignQaAvailable } from './campaign/campaignQA';
 import { PROLOGUE_COMPLETE_KEY } from './campaign/prologueArt';
 import CampaignCredits from './screens/CampaignCredits';
@@ -64,6 +65,7 @@ const CampaignRoutes: React.FC = () => {
             ? <Navigate to="/campania/prologo?studio=1&studioStep=1" replace/>
             : <Navigate to="/" replace/>} />
           <Route path="/studio/escenas" element={<StudioScenesCatalog />} />
+          <Route path="/artes" element={<ArtGallery />} />
           <Route path="/campania/prologo" element={<CampaignOpening />} />
           <Route path="/campania/region/:chapterId" element={<LaterStoryOnlyQa><CampaignMap /></LaterStoryOnlyQa>} />
           <Route path="/campania/entrada/:chapterId" element={<LaterStoryOnlyQa><CampaignRegionMoment mode="entrada" /></LaterStoryOnlyQa>} />
