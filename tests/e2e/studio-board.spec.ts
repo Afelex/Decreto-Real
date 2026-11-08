@@ -131,3 +131,27 @@ test('Studio previews tutorial dialogue, combo, coin and narrative portraits wit
   await expect(page.getByTestId('studio-guide-text')).toHaveValue('Arrastra el ataque para practicar el combo.');
   await expect(page.getByTestId('campaign-guided-coach')).toHaveClass(/dr-board-adjusted/);
 });
+
+
+test('narrative layout is independently editable per tutorial beat and remains after reload',async({page},info)=>{
+  test.skip(only(['mobile-390'])(info.project.name),'Individual tutorial scenes');
+  await openBoard(page);
+  await page.getByTestId('studio-actor-select').selectOption({label:'Tutorial · Ventana de diálogo'});
+  await page.getByTestId('studio-guide-step').selectOption('11');
+  await expect(page.getByTestId('studio-narrative-scope')).toContainText('paso 12/32');
+  const first=page.getByTestId('campaign-guided-coach');
+  await expect(first).toBeVisible();
+  await set(page,'studio-y','-12');
+  await expect(first).toHaveClass(/dr-board-adjusted/);
+  await page.getByTestId('studio-guide-step').selectOption('12');
+  await expect(page.getByTestId('studio-y')).toHaveValue('0');
+  await page.getByTestId('studio-guide-step').selectOption('11');
+  await expect(page.getByTestId('studio-y')).toHaveValue('-12');
+  await page.getByTestId('studio-save').click();
+  await page.reload();
+  await page.getByTestId('studio-actor-select').selectOption({label:'Tutorial · Ventana de diálogo'});
+  await page.getByTestId('studio-guide-step').selectOption('11');
+  await expect(page.getByTestId('studio-y')).toHaveValue('-12');
+  await page.getByTestId('studio-guide-step').selectOption('12');
+  await expect(page.getByTestId('studio-y')).toHaveValue('0');
+});
