@@ -181,7 +181,11 @@ function LoadedStudioProvider({children,published}:{children:React.ReactNode;pub
     if(unsaved){
       dispatch({type:'apply',update:doc=>inheritPublishedTutorialLayouts(
         inheritPublishedNarrative(doc,published),published)});
-    }else dispatch({type:'replace',doc:enriched});
+    }else{
+      dispatch({type:'replace',doc:enriched});
+      // Cargar lo publicado automáticamente no debe señalar cambios del usuario.
+      dispatch({type:'saved'});
+    }
   },[active,published,initial]);
   const [status,setStatus]=React.useState(()=>{
     if(initial?.source!=='legacy')return '';
