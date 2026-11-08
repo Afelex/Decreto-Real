@@ -9,6 +9,7 @@ import { copyTransform, formatTransform, parseTransform, type CopiedTransform } 
 import { StudioProvider, useStudio } from './StudioContext';
 import { useStudioDrag } from './useStudioDrag';
 import { StudioBoardSafety } from './StudioBoardSafety';
+import { StudioNarrativeReview } from './StudioNarrativeReview';
 import '../decreto-real-studio.css';
 
 /**
@@ -197,6 +198,7 @@ export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGu
           </option>)}
         </select>
       </label>
+      <StudioNarrativeReview selectedIndex={previewGuideIndex} onSelect={onPreviewGuideIndex}/>
       <label className="dr-studio-label">Texto de esta intervención (se publica en el tutorial)
         <textarea className="dr-studio-guide-text" data-testid="studio-guide-text" rows={3} maxLength={600}
           value={previewText} onFocus={studio.begin} onBlur={studio.commit}
