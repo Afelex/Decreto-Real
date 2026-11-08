@@ -147,9 +147,9 @@ export function StudioProvider({children,blocking=true}:{children:React.ReactNod
   },[]);
   // No bloqueante: el mismo proveedor desde el principio (sin remontar la
   // pantalla); lo publicado se aplica en cuanto llega.
-  // En QA, no crear un borrador vacío mientras se descarga lo publicado.
-  // Esto también permite que las nuevas propuestas lleguen al móvil antes de editar.
-  if(!published&&(blocking||isCampaignQaAvailable()))return null;
+  // Las pantallas existentes siguen renderizando mientras se descarga el JSON.
+  // Un efecto posterior incorpora la publicación sin perder ediciones locales.
+  if(!published&&blocking)return null;
   return <LoadedStudioProvider published={published??EMPTY_PUBLISHED}>{children}</LoadedStudioProvider>;
 }
 
@@ -163,6 +163,26 @@ function LoadedStudioProvider({children,published}:{children:React.ReactNode;pub
       ?inheritPublishedTutorialLayouts(inheritPublishedNarrative(initial.doc,published),published):published));
   const historyRef=React.useRef<StudioHistoryState>(history);
   historyRef.current=history;
+  const lastPublishedRef=React.useRef<StudioDocumentV3|null>(null);
+  React.useEffect(()=>{
+    if(!active||published===EMPTY_PUBLISHED||lastPublishedRef.current===published)return;
+    lastPublishedRef.current=published;
+    const current=historyRef.current.doc;
+    const unsaved=isStudioDirty(historyRef.current);
+    const hasSavedDraft=initial&&initial.source!=='empty';
+    // Si Studio comenzó antes de que llegara el JSON publicado, completar
+    // SOLO lo que falta. Un borrador propio siempre tiene prioridad.
+    const mergedBase=!hasSavedDraft&&!Object.keys(current.scenes).length
+      ?published
+      :current;
+    const enriched=inheritPublishedTutorialLayouts(
+      inheritPublishedNarrative(mergedBase,published),published);
+    if(enriched===current)return;
+    if(unsaved){
+      dispatch({type:'apply',update:doc=>inheritPublishedTutorialLayouts(
+        inheritPublishedNarrative(doc,published),published)});
+    }else dispatch({type:'replace',doc:enriched});
+  },[active,published,initial]);
   const [status,setStatus]=React.useState(()=>{
     if(initial?.source!=='legacy')return '';
     const dropped=initial.report?.dropped.length??0;
