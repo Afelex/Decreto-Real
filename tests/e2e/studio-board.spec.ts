@@ -501,6 +501,7 @@ test('Studio uploads and reuses real MP3 in a guided intervention without manual
   await chooser.selectOption(saved);
   await expect(chooser).toHaveValue(saved);
   await page.getByTestId('studio-save').click();
+  await page.getByTestId('studio-open-publish').click();
   const downloadPromise=page.waitForEvent('download');
   await page.getByTestId('studio-export-publish').click();
   const download=await downloadPromise;
