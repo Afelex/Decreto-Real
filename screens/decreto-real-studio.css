@@ -753,3 +753,26 @@
   outline:2px solid #ffe19e;outline-offset:2px}
 .dr-studio-board-panel .dr-studio-motion-controls>small{
   font:11px/1.35 system-ui,sans-serif;color:#bfcddd}
+
+/* Música reutilizable: controles sencillos y táctiles, sin ampliar el HUD. */
+.dr-studio-board-panel .dr-studio-music-reuse{
+  display:grid;gap:7px;padding:8px;border:1px solid #75684d;
+  border-radius:8px;background:#182b3a;
+}
+.dr-studio-board-panel .dr-studio-music-reuse>div{
+  display:flex;flex-wrap:wrap;gap:6px;
+}
+.dr-studio-board-panel .dr-studio-music-reuse button{
+  flex:1 1 150px;min-height:40px;padding:7px 8px;
+  border:1px solid #b59a73;border-radius:7px;background:#364760;
+  color:#ffe7c3;font:700 11px/1.35 system-ui,sans-serif;
+}
+.dr-studio-board-panel .dr-studio-music-reuse button:disabled{
+  opacity:.5;cursor:not-allowed;
+}
+.dr-studio-board-panel .dr-studio-music-reuse small{
+  color:#c6d1dc;font:11px/1.35 system-ui,sans-serif;
+}
+.dr-studio-board-panel [data-testid="studio-music-preview"]{
+  display:block;width:100%;max-width:100%;min-height:36px;
+}

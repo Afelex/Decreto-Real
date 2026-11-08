@@ -2,6 +2,7 @@ import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getLayer, isTutorialLayoutId, layerOrDefault, tutorialLayoutKey, withAsset, withDialogue, withNarrativeCard, withLayer, withoutLayer } from '../../campaign/studio/ops';
 import { GUIDED_STEPS, type GuidedStep } from '../../campaign/guidedOpeningDuel';
+import { withMusicOnFollowingGuideSteps } from '../../campaign/studio/musicReuse';
 import { STUDIO_NARRATIVE_MUSIC_MODES, STUDIO_NARRATIVE_SOUND_CUES,
   resolveNarrativeAudio, type StudioNarrativeMusicMode, type StudioNarrativeSoundCue } from '../../campaign/studio/narrativeAudio';
 import { useOptionalAudio } from '../../contexts/AudioContext';
@@ -178,6 +179,14 @@ export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGu
   const narrativeAudio=resolveNarrativeAudio(narrative);
   const musicTracks=Object.entries(studio.doc.assets??{}).filter(([,m])=>m.mime.startsWith('audio/'));
   const chosenMusic=narrative?.musicAssetId??'';
+  const musicUses=chosenMusic?Object.values(studio.doc.scenes).filter(
+    scene=>scene.narrative?.musicAssetId===chosenMusic).length:0;
+  const nextMusicCount=GUIDED_STEPS.length-previewGuideIndex-1;
+  const repeatMusic=(count:number)=>{
+    if(!chosenMusic)return;
+    studio.apply(doc=>withMusicOnFollowingGuideSteps(doc,previewGuide.id,chosenMusic,count),
+      'Canción compartida con las intervenciones siguientes sin reemplazar las existentes');
+  };
   const musicPreviewUrl=chosenMusic?studio.mediaUrls[chosenMusic]:undefined;
   const uploadMusic=async(file:File)=>{
     try{
@@ -313,6 +322,20 @@ export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGu
                 aria-label="Escuchar canción seleccionada"/>}
             {chosenMusic&&!musicPreviewUrl&&<small>Preparando la canción seleccionada…</small>}
             {chosenMusic&&!audio?.musicEnabled&&<small>Activa Música en el juego para escucharla.</small>}
+            {chosenMusic&&<div className="dr-studio-music-reuse" data-testid="studio-music-reuse">
+              <small>Esta canción se utiliza en {musicUses} {musicUses===1?'intervención':'intervenciones'}.</small>
+              <div>
+                <button type="button" data-testid="studio-music-follow-four"
+                  disabled={nextMusicCount===0} onClick={()=>repeatMusic(4)}>
+                  Usar también en las 4 siguientes
+                </button>
+                <button type="button" data-testid="studio-music-follow-all"
+                  disabled={nextMusicCount===0} onClick={()=>repeatMusic(nextMusicCount)}>
+                  Usar en las restantes sin canción
+                </button>
+              </div>
+              <small>Se conservan las canciones que hayas elegido manualmente en otros pasos. Ambos cambios se pueden deshacer.</small>
+            </div>}
             <label className="dr-studio-label">Música durante esta intervención
               <select data-testid="studio-narrative-music" value={narrativeAudio.music}
                 onChange={e=>updateNarrative({musicMode:e.target.value as StudioNarrativeMusicMode})}>

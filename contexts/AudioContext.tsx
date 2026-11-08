@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react';
+import {NarrativeMusicDirector} from '../campaign/studio/musicDirector.ts';
 import type {StudioNarrativeMusicMode} from '../campaign/studio/narrativeAudio.ts';
 
 // --- SOUND ASSETS ---
@@ -43,49 +44,31 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         return saved !== null ? JSON.parse(saved) : true;
     });
 
-    const musicRef = useRef<HTMLAudioElement | null>(null);
+    const directorRef = useRef<NarrativeMusicDirector|null>(null);
     const [narrativeMusicMode,setNarrativeMusicMode]=useState<StudioNarrativeMusicMode>('normal');
     const [narrativeMusicTrack,setNarrativeMusicTrack]=useState<string|null>(null);
 
-    // Initialize Music Object
-    useEffect(() => {
-        const audio = new Audio(narrativeMusicTrack??BG_MUSIC_URL);
-        audio.loop = true;
-        audio.volume = 0.3; // Low volume for background ambience
-        musicRef.current = audio;
-
-        // Attempt to play immediately if enabled, though browsers may block autoplay until interaction
-        // La selección de la pista nunca ignora el silencio elegido por el
-        // jugador; los navegadores pueden exigir un gesto antes de reproducir.
-        if (musicEnabled&&narrativeMusicMode!=='silent') {
-            audio.play().catch(e => console.warn("Music autoplay blocked (waiting for interaction):", e));
-        }
-
-        return () => {
-            audio.pause();
-            musicRef.current = null;
+    // Un reproductor compartido conserva la pista durante todo el juego.
+    // Dos canciones solo se solapan durante los 700 ms del fundido.
+    useEffect(()=>{
+        const director=new NarrativeMusicDirector({
+            create:url=>new Audio(url),
+            requestFrame:callback=>window.requestAnimationFrame(callback),
+            cancelFrame:id=>window.cancelAnimationFrame(id),
+            now:()=>performance.now(),
+        });
+        directorRef.current=director;
+        return ()=>{
+            director.dispose();
+            if(directorRef.current===director)directorRef.current=null;
         };
-    }, [narrativeMusicTrack]);
+    },[]);
 
-    // Handle Music Toggle Changes
-    useEffect(() => {
-        const audio = musicRef.current;
-        if (!audio) return;
-
-        // La narración solo atenúa o pausa la pista existente; nunca fuerza
-        // reproducción cuando el jugador ha desactivado la música.
-        audio.volume=narrativeMusicMode==='soft'?0.12:0.3;
-        if (musicEnabled && narrativeMusicMode!=='silent') {
-            const playPromise = audio.play();
-            if (playPromise !== undefined) {
-                playPromise.catch(e => console.warn("Music play blocked:", e));
-            }
-        } else {
-            audio.pause();
-        }
-        
+    useEffect(()=>{
+        directorRef.current?.setSoundtrack(
+            narrativeMusicTrack??BG_MUSIC_URL,musicEnabled,narrativeMusicMode);
         localStorage.setItem('decreto_music', JSON.stringify(musicEnabled));
-    }, [musicEnabled,narrativeMusicMode]);
+    },[musicEnabled,narrativeMusicMode,narrativeMusicTrack]);
 
     // Persistence for SFX
     useEffect(() => {

@@ -506,3 +506,33 @@ test('Studio uploads and reuses real MP3 in a guided intervention without manual
   const download=await downloadPromise;
   expect(download.suggestedFilename()).toBe('decreto-real-studio-publicacion.zip');
 });
+
+
+test('one action shares narrative music with four following beats without overriding choices',async({page},info)=>{
+  test.skip(only(['mobile-390'])(info.project.name),'Music reuse');
+  await openBoard(page);
+  const steps=page.getByTestId('studio-guide-step');
+  await steps.selectOption('1');
+  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  await page.getByTestId('studio-music-upload').setInputFiles({
+    name:'Ambiente del prologo.mp3',mimeType:'audio/mpeg',
+    buffer:Buffer.from([73,68,51,4,0,0,0,0,0,12,0,0,0,0,0,0,0,0,0,0]),
+  });
+  const chooser=page.getByTestId('studio-narrative-music-track');
+  const selected=await chooser.inputValue();
+  expect(selected).toMatch(/^media-/);
+  await expect(page.getByTestId('studio-music-reuse')).toContainText('1 intervención');
+  await page.getByTestId('studio-music-follow-four').click();
+  await expect(page.getByTestId('studio-music-reuse')).toContainText('5 intervenciones');
+  for(const index of [2,3,4,5]){
+    await steps.selectOption(String(index));
+    await expect(chooser).toHaveValue(selected);
+  }
+  await steps.selectOption('6');
+  await expect(chooser).toHaveValue('');
+  await page.getByTestId('studio-save').click();
+  await page.reload();
+  await steps.selectOption('4');
+  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  await expect(chooser).toHaveValue(selected);
+});
