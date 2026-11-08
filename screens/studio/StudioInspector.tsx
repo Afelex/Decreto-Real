@@ -371,7 +371,7 @@ export default function StudioInspector(props:Props){
     </header>
     {expanded&&<nav className="dr-studio-quick-actions" aria-label="Acciones rápidas de Studio">
       <button type="button" data-testid="studio-undo-quick" disabled={!studio.canUndo}
-        onClick={studio.undo}>↶ Deshacer</button>
+        onClick={studio.undo} aria-label="Deshacer rápido">↶ Revertir</button>
       <button type="button" className="dr-studio-save" data-testid="studio-save-quick"
         onClick={()=>{studio.commit();studio.save();}}>{studio.dirty?'● Guardar':'✓ Guardado'}</button>
       <button type="button" data-testid="studio-controls-lock" aria-pressed={controlsUnlocked}
