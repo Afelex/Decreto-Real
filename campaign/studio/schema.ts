@@ -79,6 +79,23 @@ export const STUDIO_V3_MAX_DIALOGUE_TEXT = 600;
 export const STUDIO_V3_MAX_TITLE = 80;
 /** Diálogo de la intervención: texto propio (con **negrita**) y tamaño del bloque. */
 export type StudioDialogue = StudioDialogueStyle & {text?:string};
+/** Director narrativo: datos editoriales, sin alterar la lógica de combate.
+ * La expresión es una intención artística; el selector de sprite llegará en fase 2. */
+export const STUDIO_NARRATIVE_TONES = [
+  'neutral','decidido','preocupado','sorprendido','enojado','sereno',
+] as const;
+export type StudioNarrativeTone = (typeof STUDIO_NARRATIVE_TONES)[number];
+export type StudioNarrativeCard = {
+  /** Personaje mostrado en el diálogo; no altera el actor ni su mazo. */
+  speaker?:string;
+  /** Emoción para dirigir la interpretación, no cambia el sprite todavía. */
+  tone?:StudioNarrativeTone;
+  /** Por qué existe la intervención en el relato. */
+  intent?:string;
+  /** Notas de composición que no se muestran al jugador. */
+  direction?:string;
+};
+export const STUDIO_NARRATIVE_LIMITS={speaker:80,intent:180,direction:360} as const;
 export type StudioSceneV3 = {
   layers?:StudioLayer[];
   background?:StudioBackground;
@@ -90,6 +107,7 @@ export type StudioSceneV3 = {
   /** La intervención completa (con su texto) se omite en la versión publicada. */
   devOnly?:boolean;
   dialogue?:StudioDialogue;
+  narrative?:StudioNarrativeCard;
 };
 export type StudioDocumentV3 = {
   version:3;
@@ -227,6 +245,25 @@ export function normalizeDialogueStyle(value:unknown):StudioDialogueStyle {
   for(const flag of ['hideNameplate','hideProgress','hideTitle'] as const)if(v[flag]===true)style[flag]=true;
   return style;
 }
+/** Valida una ficha narrativa y elimina datos no reconocidos de paquetes externos. */
+export function normalizeNarrativeCard(value:unknown):StudioNarrativeCard|null {
+  if(!isRecord(value))return null;
+  const card:StudioNarrativeCard={};
+  const bounded=(val:unknown,max:number):string|undefined=>{
+    if(typeof val!=='string')return undefined;
+    const clean=Array.from(val).filter(ch=>ch==='\n'||ch==='\t'||ch.charCodeAt(0)>=32).join('').trim().slice(0,max);
+    return clean||undefined;
+  };
+  const speaker=bounded(value.speaker,STUDIO_NARRATIVE_LIMITS.speaker);
+  const intent=bounded(value.intent,STUDIO_NARRATIVE_LIMITS.intent);
+  const direction=bounded(value.direction,STUDIO_NARRATIVE_LIMITS.direction);
+  if(speaker)card.speaker=speaker;
+  if(intent)card.intent=intent;
+  if(direction)card.direction=direction;
+  if((STUDIO_NARRATIVE_TONES as readonly string[]).includes(value.tone as string))
+    card.tone=value.tone as StudioNarrativeTone;
+  return Object.keys(card).length?card:null;
+}
 export function normalizeDialogue(value:unknown):StudioDialogue|null {
   if(!isRecord(value))return null;
   const dialogue:StudioDialogue=normalizeDialogueStyle(value);
@@ -291,6 +328,9 @@ export function normalizeStudioDocumentV3(value:unknown):StudioDocumentV3 {
     if(raw.devOnly===true)scene.devOnly=true;
     const dialogue=normalizeDialogue(raw.dialogue);
     if(dialogue)scene.dialogue=dialogue;
+    // Ficha por intervención, nunca en toda la escena ni en el tablero general.
+    const narrative=normalizeNarrativeCard(raw.narrative);
+    if(narrative)scene.narrative=narrative;
     if(Object.keys(scene).length)doc.scenes[key]=scene;
   }
   return doc;

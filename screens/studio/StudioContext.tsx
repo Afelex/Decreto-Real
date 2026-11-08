@@ -2,7 +2,7 @@ import React from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { isCampaignQaAvailable } from '../../campaign/campaignQA';
 import { emptyStudioDocumentV3, normalizeStudioDocumentV3, type StudioDocumentV3, type StudioSceneV3 } from '../../campaign/studio/schema';
-import { assetUsage, changedSceneKeys, mergeStudioDocuments, referencedAssetIds, withAsset, withoutUnusedAssets } from '../../campaign/studio/ops';
+import { assetUsage, changedSceneKeys, inheritPublishedNarrative, mergeStudioDocuments, referencedAssetIds, withAsset, withoutUnusedAssets } from '../../campaign/studio/ops';
 import {
   migrateLegacyStudioDocument, readStudioDocumentV3, saveStudioDocumentV3,
 } from '../../campaign/studio/migrate';
@@ -157,7 +157,8 @@ function LoadedStudioProvider({children,published}:{children:React.ReactNode;pub
   const editing=active&&query.get('studio')==='1';
   const [initial]=React.useState(()=>active?readStudioDocumentV3(draftStorage()):null);
   const [history,dispatch]=React.useReducer(studioHistoryReducer,undefined,
-    ()=>createStudioHistory(initial&&initial.source!=='empty'?initial.doc:published));
+    ()=>createStudioHistory(initial&&initial.source!=='empty'
+      ?inheritPublishedNarrative(initial.doc,published):published));
   const historyRef=React.useRef<StudioHistoryState>(history);
   historyRef.current=history;
   const [status,setStatus]=React.useState(()=>{
