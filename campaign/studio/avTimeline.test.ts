@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 import {GUIDED_STEPS} from '../guidedOpeningDuel.ts';
 import {normalizeStudioDocumentV3,emptyStudioDocumentV3} from './schema.ts';
 import {withNarrativeCard,withDialogue,withAsset} from './ops.ts';
-import {createGuidedAVBeat,createGuidedAVTimeline,
+import {createSceneAVBeat,createGuidedAVBeat,createGuidedAVTimeline,
   avEventLeft,avEventWidth} from './avTimeline.ts';
 
 const published=normalizeStudioDocumentV3(JSON.parse(readFileSync(
@@ -79,4 +79,52 @@ test('event percentages stay on the canvas with indefinite and estimated duratio
     durationMs:0},6000),100);
   assert.equal(avEventWidth({lane:'music',label:'x',startMs:999999,
     durationMs:1000},6000),0);
+});
+
+test('shared audiovisual director works for prologue and chapter scene keys',()=>{
+  const original=emptyStudioDocumentV3();
+  let doc=withDialogue(original,'prologo/desafio-01',{text:'Xervias entra en la plaza.'});
+  doc=withNarrativeCard(doc,'prologo/desafio-01',{
+    speaker:'Xervias',tone:'decidido',enterMotion:'fade',soundCue:'CLICK',
+    soundDelayMs:500,musicCueMode:'continue',
+  });
+  doc=withDialogue(doc,'victoria-03/xervias-01',{text:'La misión está cumplida.'});
+  doc=withNarrativeCard(doc,'victoria-03/xervias-01',{
+    speaker:'Xervias',tone:'sereno',musicCueMode:'stop',musicStartDelayMs:1500,
+  });
+  const opening=createSceneAVBeat({
+    sceneKey:'prologo/desafio-01',stepId:'desafio-01',index:1,
+    speaker:'Domingo Quispe',text:'Original',
+  },doc);
+  assert.equal(opening.text,'Xervias entra en la plaza.');
+  assert.equal(opening.speaker,'Xervias');
+  assert.equal(opening.actionLabel,null);
+  assert.equal(opening.events.find(e=>e.lane==='effect')?.startMs,500);
+  assert.equal(opening.events.find(e=>e.lane==='music')?.label,'Continuar pista anterior');
+  assert.ok(opening.events.some(e=>e.lane==='portrait'));
+  const victory=createSceneAVBeat({
+    sceneKey:'victoria-03/xervias-01',stepId:'victoria',index:0,
+    speaker:'Xervias',text:'Texto base',
+  },doc);
+  assert.equal(victory.text,'La misión está cumplida.');
+  assert.equal(victory.events.find(e=>e.lane==='music')?.label,'Detener música');
+  assert.equal(victory.events.find(e=>e.lane==='music')?.startMs,1500);
+  assert.equal(victory.events.find(e=>e.lane==='effect'),undefined);
+  assert.equal(original.scenes['victoria-03/xervias-01'],undefined);
+  assert.equal(GUIDED_STEPS.length,32);
+});
+
+test('director can describe Zhinchi dialogue without fabricating an unavailable sprite',()=>{
+  const doc=withNarrativeCard(emptyStudioDocumentV3(),'prologo/zhinchi-01',{
+    speaker:'Zhinchi',tone:'sereno',direction:'Plano medio de Zhinchi',
+  });
+  const beat=createSceneAVBeat({
+    sceneKey:'prologo/zhinchi-01',stepId:'zhinchi-01',index:0,
+    speaker:'Zhinchi',text:'Estoy contigo, Xervias.',
+  },doc);
+  assert.equal(beat.speaker,'Zhinchi');
+  assert.equal(beat.spritePath,null);
+  assert.ok(beat.events.some(e=>e.lane==='dialogue'));
+  assert.equal(beat.events.some(e=>e.lane==='portrait'),false);
+  assert.equal(beat.events.some(e=>e.lane==='action'),false);
 });
