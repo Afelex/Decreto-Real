@@ -141,11 +141,11 @@ export function withNarrativeCard(doc:StudioDocumentV3,key:string,
   patch:{[K in keyof StudioNarrativeCard]?:StudioNarrativeCard[K]|null}):StudioDocumentV3 {
   assertSceneKey(key);
   const merged:Record<string,unknown>={...doc.scenes[key]?.narrative};
-  for(const field of ['speaker','tone','spriteId','portraitMode','enterMotion','exitMotion','motionDurationMs','musicMode','soundCue','intent','direction'] as const){
+  for(const field of ['speaker','tone','spriteId','portraitMode','enterMotion','exitMotion','motionDurationMs','musicMode','soundCue','musicAssetId','intent','direction'] as const){
     if(patch[field]===null)delete merged[field];
     else if(patch[field]!==undefined)merged[field]=patch[field];
   }
-  const narrative=normalizeNarrativeCard(merged);
+  const narrative=normalizeNarrativeCard(merged,doc.assets);
   const scene:StudioSceneV3={...doc.scenes[key]};
   if(narrative)scene.narrative=narrative;
   else delete scene.narrative;
@@ -233,6 +233,7 @@ export function referencedAssetIds(doc:StudioDocumentV3):Set<string> {
   const used=new Set<string>();
   for(const scene of Object.values(doc.scenes)){
     if(scene.background?.assetId)used.add(scene.background.assetId);
+    if(scene.narrative?.musicAssetId)used.add(scene.narrative.musicAssetId);
     for(const layer of scene.layers??[]){
       if((layer.kind==='actor'||layer.kind==='image'||layer.kind==='effect')&&layer.assetId)used.add(layer.assetId);
     }
@@ -342,6 +343,7 @@ export function assetUsage(doc:StudioDocumentV3):Record<string,string[]> {
   const add=(id:string,key:string)=>{(usage[id]??=[]).includes(key)||usage[id].push(key);};
   for(const [key,scene] of Object.entries(doc.scenes)){
     if(scene.background?.assetId)add(scene.background.assetId,key);
+    if(scene.narrative?.musicAssetId)add(scene.narrative.musicAssetId,key);
     for(const layer of scene.layers??[])
       if((layer.kind==='actor'||layer.kind==='image'||layer.kind==='effect')&&layer.assetId)add(layer.assetId,key);
   }
