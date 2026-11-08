@@ -151,8 +151,8 @@ export default function ArtGallery(){
         <a href={import.meta.env.BASE_URL+'?drDev=1#/studio'}>Abrir DRStudio ↗</a>
       </div>
     </header>
-    <input ref={addInput} type="file" accept=".png,.jpg,.jpeg,.webp,.gif,.mp4,.webm" multiple hidden onChange={e=>{const f=Array.from(e.currentTarget.files??[]);e.currentTarget.value='';void putFiles(f,null);}}/>
-    <input ref={replaceInput} type="file" accept=".png,.jpg,.jpeg,.webp,.gif,.mp4,.webm" hidden onChange={e=>{const f=Array.from(e.currentTarget.files??[]);e.currentTarget.value='';void putFiles(f,replaceTarget);}}/>
+    <input ref={addInput} type="file" accept=".png,.jpg,.jpeg,.webp,.gif,.mp4,.webm" multiple hidden onChange={e=>{const f:File[]=e.currentTarget.files?Array.from(e.currentTarget.files):[];e.currentTarget.value='';void putFiles(f,null);}}/>
+    <input ref={replaceInput} type="file" accept=".png,.jpg,.jpeg,.webp,.gif,.mp4,.webm" hidden onChange={e=>{const f:File[]=e.currentTarget.files?Array.from(e.currentTarget.files):[];e.currentTarget.value='';void putFiles(f,replaceTarget);}}/>
     <div className="dr-art-notice"><strong>{catalog.length} artes del repositorio</strong> · {local.length} archivos subidos · {Object.values(flags).filter(x=>x==='hidden').length} ocultos · {Object.values(flags).filter(x=>x==='delete').length} por eliminar.
       <p>Las cargas y decisiones se guardan en este navegador; DRStudio comparte los archivos subidos en el mismo dispositivo y origen web. Ocultar o marcar para eliminar no modifica el juego publicado. Para sincronizar otros dispositivos y actualizar el juego se requiere una publicación revisada en GitHub.</p></div>
     {message&&<p className="dr-art-feedback" role="status">{message} <button type="button" onClick={()=>setMessage('')}>×</button></p>}
