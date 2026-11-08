@@ -506,3 +506,11 @@
 
 /* Saltos de línea escritos con Enter en Studio: se respetan en diálogos, globos y textos. */
 .dcop-dialog-body p,.dcop-quick-bubble,[data-studio-text],.dr-studio-rich{white-space:pre-line}
+
+/* ——— Studio · Tablero ——— */
+.dr-royal-layout.dr-board-editing *{pointer-events:none}
+.dr-royal-layout.dr-board-editing [data-studio-actor]{pointer-events:auto;touch-action:none;cursor:grab}
+.dr-royal-layout.dr-board-editing [data-studio-actor] *{pointer-events:none}
+.dr-board-selected{outline:2px dashed #ffe0a0!important;outline-offset:3px}
+.dr-board-hidden{visibility:hidden!important}
+.dr-royal-layout.dr-board-editing .dr-board-dimmed{opacity:.3!important;outline:2px dotted #c58bff;outline-offset:2px}
