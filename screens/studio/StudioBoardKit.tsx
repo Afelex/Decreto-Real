@@ -2,6 +2,9 @@ import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getLayer, isTutorialLayoutId, layerOrDefault, tutorialLayoutKey, withDialogue, withNarrativeCard, withLayer, withoutLayer } from '../../campaign/studio/ops';
 import { GUIDED_STEPS, type GuidedStep } from '../../campaign/guidedOpeningDuel';
+import { STUDIO_NARRATIVE_MUSIC_MODES, STUDIO_NARRATIVE_SOUND_CUES,
+  resolveNarrativeAudio, type StudioNarrativeMusicMode, type StudioNarrativeSoundCue } from '../../campaign/studio/narrativeAudio';
+import { useOptionalAudio } from '../../contexts/AudioContext';
 import { narrativePortraitVisible, narrativeSpriteOptions, resolveNarrativeCardSprite } from '../../campaign/studio/narrativeSprites';
 import { tutorialCompositionMood, withMissingTutorialCompositions, withProposedTutorialComposition } from '../../campaign/studio/tutorialComposition';
 import { defaultLayerTransform, STUDIO_NARRATIVE_TONES, STUDIO_PORTRAIT_MOTIONS, STUDIO_PORTRAIT_DURATION, type StudioLayer, type StudioNarrativeTone, type StudioPortraitMotion } from '../../campaign/studio/schema';
@@ -107,6 +110,7 @@ export function useBoardStudio(layoutRef:React.RefObject<HTMLElement|null>,guide
   const guideText=(step:GuidedStep)=>studio.viewScene('tutorial/'+step.id)?.dialogue?.text??step.text;
   const guideSpeaker=(step:GuidedStep)=>studio.viewScene('tutorial/'+step.id)?.narrative?.speaker??step.speaker;
   const guideSprite=(step:GuidedStep)=>resolveNarrativeCardSprite(studio.viewScene('tutorial/'+step.id)?.narrative,step.speaker);
+  const guideAudio=(step:GuidedStep)=>resolveNarrativeAudio(studio.viewScene('tutorial/'+step.id)?.narrative);
   const guidePortraitVisible=(step:GuidedStep)=>narrativePortraitVisible(step,studio.viewScene('tutorial/'+step.id)?.narrative);
   const guideMotion=(step:GuidedStep)=>{
     const card=studio.viewScene('tutorial/'+step.id)?.narrative;
@@ -131,7 +135,7 @@ export function useBoardStudio(layoutRef:React.RefObject<HTMLElement|null>,guide
       ...(!playerPreview?(individual?dragTutorial(id):drag(id)):{}),
     };
   };
-  return {editing:studio.editing,selected:studio.selected,sceneKey,profile,attrs,guideText,guideSpeaker,guideSprite,guidePortraitVisible,guideMotion};
+  return {editing:studio.editing,selected:studio.selected,sceneKey,profile,attrs,guideText,guideSpeaker,guideSprite,guidePortraitVisible,guideMotion,guideAudio};
 }
 
 /** Lo último copiado en el tablero (se conserva entre perfiles). */
@@ -145,6 +149,7 @@ export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGu
   onReplayMotion:()=>void;
 }){
   const studio=useStudio();
+  const audio=useOptionalAudio();
   const navigate=useNavigate();
   const location=useLocation();
   const [expanded,setExpanded]=React.useState(true);
@@ -166,6 +171,7 @@ export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGu
   const enterMotion=narrative?.enterMotion??'fade';
   const exitMotion=narrative?.exitMotion??'fade';
   const motionDuration=narrative?.motionDurationMs??STUDIO_PORTRAIT_DURATION.default;
+  const narrativeAudio=resolveNarrativeAudio(narrative);
   const narrativeIntent=narrative?.intent??'';
   const narrativeDirection=narrative?.direction??'';
   const updateNarrative=(patch:Parameters<typeof withNarrativeCard>[2],message='Ficha narrativa modificada')=>
@@ -272,6 +278,31 @@ export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGu
             </button>
             <small>Solo anima la ilustración; no adelanta el diálogo ni mueve cartas.
               En dispositivos con movimiento reducido se muestra sin efectos.</small>
+          </fieldset>
+          <fieldset className="dr-studio-motion-controls" data-testid="studio-audio-controls">
+            <legend>Audio narrativo</legend>
+            <label className="dr-studio-label">Música durante esta intervención
+              <select data-testid="studio-narrative-music" value={narrativeAudio.music}
+                onChange={e=>updateNarrative({musicMode:e.target.value as StudioNarrativeMusicMode})}>
+                {STUDIO_NARRATIVE_MUSIC_MODES.map(mode=>
+                  <option key={mode} value={mode}>{{normal:'Volumen habitual',soft:'Música suave',silent:'Pausa musical'}[mode]}</option>)}
+              </select>
+            </label>
+            <label className="dr-studio-label">Efecto al comenzar la intervención
+              <select data-testid="studio-narrative-sound" value={narrativeAudio.sound}
+                onChange={e=>updateNarrative({soundCue:e.target.value as StudioNarrativeSoundCue})}>
+                {STUDIO_NARRATIVE_SOUND_CUES.map(cue=>
+                  <option key={cue} value={cue}>{{none:'Sin efecto',CLICK:'Confirmación',FLIP:'Movimiento de carta',
+                    ATTACK:'Ataque',DEFENSE:'Defensa',IMPACT:'Impacto'}[cue]}</option>)}
+              </select>
+            </label>
+            <button type="button" data-testid="studio-narrative-audio-preview"
+              disabled={narrativeAudio.sound==='none'||!audio?.sfxEnabled}
+              onClick={()=>{if(narrativeAudio.sound!=='none')audio?.playSound(narrativeAudio.sound);}}>
+              ▶ Escuchar efecto seleccionado
+            </button>
+            <small>La música es la pista actual de combate, a volumen normal o suave, o en pausa.
+              La reproducción respeta los ajustes globales del jugador. No hay pistas de Suno integradas todavía.</small>
           </fieldset>
           <label className="dr-studio-label">Ilustración narrativa (solo recursos existentes)
             <select data-testid="studio-narrative-sprite" value={narrative?.spriteId??''}
