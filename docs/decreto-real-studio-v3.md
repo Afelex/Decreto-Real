@@ -229,6 +229,14 @@ La **vista previa de DRStudio no lanza música ni efectos automáticamente** al 
 
 Este hito no implementa todavía una línea temporal gráfica multicanal, mezcla profesional ni sincronización al nivel de fotogramas.
 
+### Audición sincronizada de una escena — Fase 2
+
+**Ficha narrativa → Audio narrativo → Audición de escena** permite pulsar **▶ Escuchar música + efecto** para comprobar en una sola acción los tiempos que configuraste. Reutiliza las reglas de música y efectos del duelo guiado: **cambiar**, **continuar** o **detener** la canción; retrasos de entrada; límite de duración de música y del efecto. La prueba dura **como máximo 8 segundos** (solo en Studio), con un indicador de avance y botón **■ Detener**.
+
+La audición **nunca se inicia al cambiar de escena**, requiere pulsar el botón y se cancela completamente al seleccionar otra intervención, modificar los parámetros o cerrar el editor. Al detener, restaura la música habitual del juego y recorta cualquier efecto de la audición que siga reproduciéndose. Esto no cambia la preferencia global de música o efectos del jugador. Si ambos están apagados, los tiempos pueden visualizarse, pero no se escuchará sonido; algunos navegadores exigen permiso de reproducción.
+
+Si la intervención señala una canción local que todavía no está disponible en la biblioteca del dispositivo, la audición se deshabilita para no sustituirla silenciosamente por una pista incorrecta. La selección de música, los tiempos y los efectos continúan guardándose en la **misma ficha v3**: no se crean datos nuevos ni se edita la secuencia obligatoria del combate. Esta audición es una comprobación breve, no una exportación de audio ni un renderizado del prólogo completo.
+
 ### Vista de línea audiovisual del duelo guiado — Fase 2
 
 Dentro de **Studio · Tablero**, justo después del selector de intervenciones, abre **Línea audiovisual · 32 intervenciones**. Es un director de escena compacto para visualizar conjuntamente:

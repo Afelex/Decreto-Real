@@ -16,6 +16,7 @@ import { useStudioDrag } from './useStudioDrag';
 import { StudioBoardSafety } from './StudioBoardSafety';
 import { StudioNarrativeReview } from './StudioNarrativeReview';
 import { StudioGuidedAVTimeline } from './StudioGuidedAVTimeline';
+import { StudioAudioAudition } from './StudioAudioAudition';
 import '../decreto-real-studio.css';
 
 /**
@@ -391,6 +392,9 @@ export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGu
                 </small>
               </div>
             </details>
+            <StudioAudioAudition stepId={previewGuide.id} cue={narrativeAudio}
+              timing={narrativeTiming} trackUrl={musicPreviewUrl??null}
+              missingTrack={Boolean(chosenMusic&&!musicPreviewUrl)}/>
             <button type="button" data-testid="studio-narrative-audio-preview"
               disabled={narrativeAudio.sound==='none'||!audio?.sfxEnabled}
               onClick={()=>{if(narrativeAudio.sound!=='none')audio?.playSound(narrativeAudio.sound);}}>
