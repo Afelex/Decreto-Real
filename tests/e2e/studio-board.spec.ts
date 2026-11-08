@@ -354,3 +354,16 @@ test('phase 2 sprite gallery and visibility direction work per guided scene with
   await step.selectOption('6');
   await expect(page.getByTestId('studio-narrative-portrait-mode')).toHaveValue('auto');
 });
+
+
+test('published rival reactions display chosen narrative art during guided actions',async({page},info)=>{
+  test.skip(only(['mobile-390'])(info.project.name),'Story reaction art');
+  await openBoard(page);
+  await page.getByTestId('studio-guide-step').selectOption('10');
+  await expect(page.getByTestId('campaign-guided-coach')).toContainText('Domingo Quispe');
+  await expect(page.locator('.dr-royal-guided-actor.is-rival img')).toHaveAttribute('src',/domingo_08_invocacion_combate\.png/);
+  await page.getByTestId('studio-guide-step').selectOption('16');
+  await expect(page.locator('.dr-royal-guided-actor.is-rival img')).toHaveAttribute('src',/domingo_02_molesto\.webp/);
+  await page.getByTestId('studio-guide-step').selectOption('5');
+  await expect(page.locator('.dr-royal-guided-actor.is-player')).toHaveCount(0);
+});
