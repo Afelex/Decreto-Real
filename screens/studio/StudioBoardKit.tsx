@@ -9,8 +9,8 @@ import '../decreto-real-studio.css';
 
 /**
  * Studio · Tablero: ajustar la posición, escala, rotación, capa y visibilidad
- * de los elementos visuales del duelo (retratos, mazos, marcadores y botones)
- * SIN tocar las reglas, la mano ni las zonas donde se juegan las cartas.
+ * de los elementos visuales del duelo (retratos, mazos, marcadores, mano,
+ * rótulos de turno y botones) SIN cambiar las reglas ni las zonas de juego.
  *
  * Los ajustes se guardan por perfil de pantalla (`tablero/movil`,
  * `tablero/horizontal`, `tablero/escritorio`), porque un tablero no se
@@ -24,6 +24,9 @@ export const BOARD_ELEMENTS:readonly {id:string;label:string}[] = [
   {id:'native-tablero-mano-rival',label:'Mano del rival (cartas ocultas)'},
   {id:'native-tablero-progreso-rival',label:'Impactos del rival'},
   {id:'native-tablero-impactos',label:'Tus impactos'},
+  {id:'native-tablero-mano-jugador',label:'Tu mano (cartas)'},
+  {id:'native-tablero-turno-jugador',label:'Etiqueta «Tu Turno»'},
+  {id:'native-tablero-turno-rival',label:'Etiqueta «Turno del Oponente»'},
   {id:'native-tablero-retrato-jugador',label:'Tu retrato'},
   {id:'native-tablero-mazo-jugador',label:'Tu mazo y sonido'},
   {id:'native-tablero-fin-turno',label:'Botón «Fin de turno»'},
@@ -79,7 +82,9 @@ export function useBoardStudio(layoutRef:React.RefObject<HTMLElement|null>){
   const scene=studio.viewScene(sceneKey);
   const attrs=(id:string,className:string)=>{
     const layer=scene?.layers?.find(l=>l.id===id);
-    const hiddenForAudience=Boolean(layer&&(!studio.visibleTo(layer.devOnly)||(!studio.editing&&layer.visible===false)));
+    // La mano debe seguir visible para poder jugar, incluso si un documento importado la oculta.
+    const gameplayCritical=id==='native-tablero-mano-jugador';
+    const hiddenForAudience=!gameplayCritical&&Boolean(layer&&(!studio.visibleTo(layer.devOnly)||(!studio.editing&&layer.visible===false)));
     return {
       className:className+(layer?' dr-board-adjusted':'')+
         (studio.editing&&studio.selected===id?' dr-board-selected':'')+
@@ -146,11 +151,12 @@ export function StudioBoardPanel({sceneKey,profile}:{sceneKey:string;profile:Boa
         </div>
         <div className="dr-studio-actions">
           <button type="button" data-testid="studio-mirror" aria-pressed={layer.mirror} onClick={()=>patch({mirror:!layer.mirror})}>⇄ Espejar</button>
-          <button type="button" data-testid="studio-visible" aria-pressed={!layer.visible}
+          <button type="button" data-testid="studio-visible" aria-pressed={!layer.visible} disabled={selected==='native-tablero-mano-jugador'}
             onClick={()=>patch({visible:!layer.visible},layer.visible?'Oculto para todos':'Visible')}>{layer.visible?'◉ Visible':'◌ Oculto'}</button>
-          <button type="button" data-testid="studio-dev-only" aria-pressed={Boolean(layer.devOnly)}
+          <button type="button" data-testid="studio-dev-only" aria-pressed={Boolean(layer.devOnly)} disabled={selected==='native-tablero-mano-jugador'}
             onClick={()=>patch({devOnly:!layer.devOnly},layer.devOnly?'Visible para todos':'Solo para desarrolladores')}>{layer.devOnly?'🛠 Solo dev':'👁 Todos'}</button>
         </div>
+        {selected==='native-tablero-mano-jugador'&&<p className="dr-studio-tip">La mano se puede mover y escalar; permanece visible y jugable durante la partida.</p>}
         <div className="dr-studio-actions">
           <button type="button" data-testid="studio-copy-transform" onClick={()=>{
             copiedBoardTransform=copyTransform(layer);setHasCopy(true);
