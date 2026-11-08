@@ -417,3 +417,33 @@ test('Studio edits, replays and persists portrait entrance, exit and duration on
   await expect(page.getByTestId('studio-motion-enter')).toHaveValue('fade');
   await expect(page.getByTestId('studio-motion-duration')).toHaveValue('320');
 });
+
+
+test('changing an expression crossfades the same character without adding another portrait image',async({page},info)=>{
+  test.skip(only(['mobile-390'])(info.project.name),'Expression transition');
+  await openBoard(page);
+  await page.getByTestId('studio-guide-step').selectOption('0');
+  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  const sprite=page.getByTestId('studio-narrative-sprite');
+  const portrait=page.locator('.dr-royal-guided-actor.is-rival');
+  const img=portrait.locator('img');
+  const oldSrc=await img.getAttribute('src');
+  expect(oldSrc).toBeTruthy();
+  const target=oldSrc!.includes('domingo_03_burlon.webp')?'domingo-furioso':'domingo-burlon';
+  await sprite.selectOption(target);
+  await expect(img).toHaveAttribute('src',target==='domingo-burlon'
+    ?/domingo_03_burlon\.webp/:/domingo_03_furioso\.webp/);
+  await expect(portrait).toHaveAttribute('data-narrative-crossfade','true');
+  await expect(portrait.locator('.dr-narrative-crossfade-out')).toHaveCount(1);
+  expect(await portrait.locator('.dr-narrative-crossfade-out').evaluate(
+    el=>getComputedStyle(el).backgroundImage)).toContain(oldSrc!.split('/').at(-1)!);
+  await expect(portrait.locator('img')).toHaveCount(1);
+  await expect(portrait).toHaveAttribute('data-narrative-crossfade','false');
+  await expect(portrait.locator('.dr-narrative-crossfade-out')).toHaveCount(0);
+  // Preferencias de accesibilidad: la imagen cambia sin animación superpuesta.
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await sprite.selectOption(target==='domingo-burlon'?'domingo-furioso':'domingo-burlon');
+  await expect(portrait).toHaveAttribute('data-narrative-crossfade','false');
+  await expect(portrait.locator('.dr-narrative-crossfade-out')).toHaveCount(0);
+  await expect(portrait.locator('img')).toHaveCount(1);
+});
