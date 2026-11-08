@@ -101,3 +101,27 @@ test('v3 limits media layers across the whole document',()=>{
   const total=Object.values(parsed.scenes).reduce((n,s)=>n+(s.layers?.length??0),0);
   assert.equal(total,100);
 });
+
+test('narrative cards survive v3 serialization and reject unknown fields',()=>{
+  const intent='Explicar el combo';
+  const source={version:3,scenes:{
+    'tutorial/g08':{narrative:{
+      speaker:'  Xervias  ',tone:'decidido',intent,direction:'Mostrar mano y menú.',
+      script:'alert(1)',action:'autoWin',
+    }},
+    'tutorial/g09':{narrative:{speaker:'',tone:'invalid',intent:' '.repeat(5)}},
+  }};
+  const parsed=normalizeStudioDocumentV3(source);
+  assert.deepEqual(parsed.scenes['tutorial/g08']?.narrative,{
+    speaker:'Xervias',tone:'decidido',intent,direction:'Mostrar mano y menú.',
+  });
+  assert.equal(parsed.scenes['tutorial/g09'],undefined);
+  assert.deepEqual(parseStudioDocumentV3(JSON.stringify(parsed)),parsed);
+  const lengthy=normalizeStudioDocumentV3({version:3,scenes:{
+    'tutorial/g11':{narrative:{speaker:'a'.repeat(200),intent:'i'.repeat(300),
+      direction:'d'.repeat(800),tone:'sorprendido'}},
+  }});
+  assert.equal(lengthy.scenes['tutorial/g11'].narrative?.speaker?.length,80);
+  assert.equal(lengthy.scenes['tutorial/g11'].narrative?.intent?.length,180);
+  assert.equal(lengthy.scenes['tutorial/g11'].narrative?.direction?.length,360);
+});
