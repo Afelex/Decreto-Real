@@ -241,6 +241,19 @@ Dentro de **Studio · Tablero**, justo después del selector de intervenciones, 
 
 La escala es **individual para cada intervención**, no una reproducción en tiempo real ni una duración cerrada del prólogo. Los carriles son una herramienta editorial. Todavía no incorporamos scrubbing de audio a fotograma, multicanal profesional ni publicación directa entre dispositivos.
 
+### Director audiovisual reutilizable — prólogo y campaña
+
+El motor de pistas del **tutorial de 32 intervenciones** ahora admite también escenas identificadas con las claves estables de DRStudio, como `prologo/desafio-01` y `victoria-03/xervias-01`. No se crean nuevos tipos de documento: todo permanece en Studio v3.
+
+En **Prólogo · 49 intervenciones**, abre una intervención y despliega **Director audiovisual**. En **☷ Otras pantallas**, el mismo panel está disponible en las conversaciones tras victoria, entradas/liberaciones de región, epílogo, créditos y otras pantallas que ya usan el editor de escenas. Allí puedes:
+
+- Ver los **cinco carriles** del mismo director: diálogo, personaje, música, efecto y acción (cuando corresponda), con lectura estimada y tiempos relativos, sin avance automático.
+- Editar **texto**, personaje y emoción editorial, entrada/salida y duración propuesta, pista MP3/WAV de la biblioteca común, intensidad, continuidad, efecto y retrasos/duración. Los medios se guardan bajo el ID interno, no en URLs arbitrarias.
+- Importar una canción de la biblioteca o subir MP3/WAV desde esta misma vista, y usarla en otras escenas. Los cambios se guardan con el documento v3 y el ZIP de publicación, y participan en Deshacer y el autoguardado.
+- Al cambiar de conversación o página, **cada clave conserva sus propias decisiones**; los ajustes de una línea no sobrescriben los de otra.
+
+**Alcance de esta entrega:** la ficha de dirección de escenas distintas del tutorial es **editorial**. El reproductor de campaña todavía usa sus retratos, sonidos y reglas actuales; las nuevas anotaciones de música y expresión de esos capítulos **aún no se disparan automáticamente durante la historia**. Su integración en el reproductor es una tarea siguiente. Para otros personajes como Zhinchi, cuyo catálogo de expresiones narrativas aún no está vinculado, el director no inventa sprites ni imágenes; el arte del escenario continúa tal como estaba.
+
 ## Otras pantallas de la historia
 Abre **☷ Otras pantallas** (o `#/studio/escenas`) y elige una conversación tras victoria, la entrada o liberación de una región, la crónica, el epílogo o los créditos. En cada una puedes cambiar los textos (con **negrita**), el rótulo, el fondo y añadir sprites o efectos, y marcar textos o capas como «solo desarrollador». Se abren con una partida de prueba: tu partida real no cambia.
 
