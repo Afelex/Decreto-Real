@@ -153,7 +153,11 @@ En **Ficha narrativa** aparece **Ilustración narrativa** con miniatura. El modo
 - Los recursos proceden exclusivamente de la biblioteca de arte versionada en el repositorio, no de enlaces externos.
 - La selección explícita se guarda como `scenes["tutorial/g00"].narrative.spriteId` en el mismo documento v3 y viaja en los respaldos ZIP. Dejar el selector en «Automática» permite que cambiar la emoción actualice el retrato.
 - Cambiar el personaje restablece automáticamente una selección anterior que pudiera corresponder a otro personaje. Un archivo o identificador inválido nunca se carga como ilustración.
-- Las ilustraciones grandes acompañan las pausas narrativas; durante las acciones que requieren tocar cartas, la moneda o los combos, el campo sigue despejado. La ficha no modifica turnos, puntos de vida ni las cartas.
+- **Aparición del personaje** permite elegir entre **Automática** (visible en pausas, oculta durante acciones), **Mostrar también durante el combate** y **Ocultar**. Estas opciones afectan solo a la ilustración de la intervención; el diálogo permanece visible y las cartas siguen siendo jugables.
+- **Elegir desde galería visual** abre una cuadrícula de miniaturas de los recursos existentes para ese personaje. Puedes seleccionar una ilustración o devolverla a **Automática según emoción**; conserva las opciones tradicionales del desplegable para accesibilidad y uso con teclado.
+- Hay una primera dirección artística publicada para **diez intervenciones clave** (`g00`, `g01`, `g02`, `g10`, `g11`, `g16`, `g22`, `g27`, `g28`, `g29`). Las cuatro respuestas de Domingo (`g10`, `g16`, `g22`, `g27`) presentan su ilustración incluso cuando el rival actúa. El resto mantiene las reglas de aparición automáticas. Todos estos valores se pueden modificar individualmente sin tocar la lógica del combate.
+- El documento guarda las opciones en `scenes["tutorial/g10"].narrative.spriteId` y `portraitMode`. Los cambios propios de un borrador móvil prevalecen cuando se descargan nuevas fichas publicadas. Puedes usar la revisión de solapamientos si algún personaje invade la zona de juego.
+
 - Este hito **no** integra todavía animaciones de entrada/salida, expresiones con sincronización labial ni audio por intervención.
 
 ### Recorrido narrativo y lectura del tutorial — Fase 1
