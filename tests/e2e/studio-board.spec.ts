@@ -573,3 +573,41 @@ test('narrative audio timeline is editable, saved and isolated between guided be
   await page.getByTestId('studio-guide-step').selectOption('11');
   await expect(mode).toHaveValue('continue');
 });
+
+
+test('one audiovisual timeline previews all 32 guided beats and saves quick edits',async({page},info)=>{
+  test.skip(only(['mobile-390'])(info.project.name),'Guided audiovisual timeline');
+  await openBoard(page);
+  const details=page.getByTestId('studio-av-timeline');
+  await details.locator('summary').click();
+  await expect(page.getByTestId('studio-av-step')).toHaveCount(32);
+  for(const lane of ['dialogue','portrait','music','effect','action']){
+    await expect(page.getByTestId('studio-av-lane-'+lane)).toBeVisible();
+  }
+  await page.getByTestId('studio-av-step').filter({has:page.locator('[data-step="g11"]')}).count();
+  await page.locator('[data-testid="studio-av-step"][data-step="g11"]').click();
+  await expect(page.getByTestId('studio-guide-step')).toHaveValue('11');
+  await expect(page.getByTestId('studio-av-inspector')).toContainText('Xervias');
+  await page.getByTestId('studio-av-tone').selectOption('sorprendido');
+  await page.getByTestId('studio-av-music-delay').selectOption('1000');
+  await page.getByTestId('studio-av-sound').selectOption('CLICK');
+  const dialogue=page.getByTestId('studio-av-dialogue');
+  await dialogue.fill('¡Ahora activaremos el siguiente combo de ataque!');
+  await dialogue.press('Tab');
+  await expect(page.getByTestId('studio-guide-text')).toHaveValue('¡Ahora activaremos el siguiente combo de ataque!');
+  await expect(page.getByTestId('studio-av-inspector')).toContainText('CLICK');
+  await page.getByTestId('studio-save').click();
+  await page.reload();
+  await page.getByTestId('studio-av-timeline').locator('summary').click();
+  await page.locator('[data-testid="studio-av-step"][data-step="g11"]').click();
+  await expect(page.getByTestId('studio-av-tone')).toHaveValue('sorprendido');
+  await expect(page.getByTestId('studio-av-music-delay')).toHaveValue('1000');
+  await expect(page.getByTestId('studio-av-sound')).toHaveValue('CLICK');
+  await expect(page.getByTestId('studio-av-dialogue')).toHaveValue('¡Ahora activaremos el siguiente combo de ataque!');
+  await page.getByTestId('studio-av-filter').selectOption('action');
+  const filtered=await page.getByTestId('studio-av-step').count();
+  expect(filtered).toBeGreaterThan(0);
+  expect(filtered).toBeLessThan(32);
+  await page.getByTestId('studio-av-filter').selectOption('all');
+  await expect(page.getByTestId('studio-av-step')).toHaveCount(32);
+});
