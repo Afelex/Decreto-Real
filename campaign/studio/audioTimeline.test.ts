@@ -56,7 +56,7 @@ test('advancing before a delayed sound or music cancels both events',()=>{
     start:()=>events.push('music on'),stop:()=>events.push('music off'),
   },c.timers);
   const b=scheduleNarrativeSound('CLICK',timing,{
-    start:()=>events.push('click'),
+    start:()=>{events.push('click');},
   },c.timers);
   c.advance(400);a();b();c.advance(30000);
   assert.deepEqual(events,[]);
