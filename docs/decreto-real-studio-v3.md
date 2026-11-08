@@ -178,6 +178,13 @@ Las métricas de **caracteres, líneas estimadas y segundos aproximados** son or
 
 Como primer borrador editorial se sintetizaron ocho explicaciones del tutorial (`g02`, `g04`, `g08`, `g14`, `g17`, `g19`, `g23`, `g29`) en el manifiesto publicado, conservando sus 32 fichas narrativas y las 96 composiciones iniciales. Los borradores locales que ya tengan un texto editado para esos pasos prevalecen: no necesitas borrar ni volver a crear nada.
 
+### Transición de expresiones sin salto visual
+Cuando el personaje continúa hablando y cambia la ilustración (por ejemplo, de sereno a sorprendido), el motor de historia dibuja el nuevo sprite mientras el anterior termina su salida. Esta superposición evita el hueco visual de una salida completa seguida de una nueva entrada. Los controles existentes **Cómo aparece**, **Cómo desaparece** y **Duración** se aplican igualmente; no se agrega un paso al tutorial ni se altera el combate. El contenedor sigue siendo la misma pieza posicionada desde Studio.
+
+- El sprite anterior es únicamente una capa decorativa temporal; solo hay una ilustración principal en el DOM.
+- Con **movimiento reducido** la imagen cambia directamente y no se muestra la superposición.
+- El diálogo, la mano de cartas y los botones se mantienen accesibles mientras sucede la transición.
+
 ## Otras pantallas de la historia
 Abre **☷ Otras pantallas** (o `#/studio/escenas`) y elige una conversación tras victoria, la entrada o liberación de una región, la crónica, el epílogo o los créditos. En cada una puedes cambiar los textos (con **negrita**), el rótulo, el fondo y añadir sprites o efectos, y marcar textos o capas como «solo desarrollador». Se abren con una partida de prueba: tu partida real no cambia.
 
