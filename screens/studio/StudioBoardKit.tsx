@@ -4,7 +4,7 @@ import { getLayer, isTutorialLayoutId, layerOrDefault, tutorialLayoutKey, withAs
 import { GUIDED_STEPS, type GuidedStep } from '../../campaign/guidedOpeningDuel';
 import { withMusicOnFollowingGuideSteps } from '../../campaign/studio/musicReuse';
 import { STUDIO_NARRATIVE_MUSIC_MODES, STUDIO_NARRATIVE_SOUND_CUES,
-  resolveNarrativeAudio, type StudioNarrativeMusicMode, type StudioNarrativeSoundCue } from '../../campaign/studio/narrativeAudio';
+  resolveNarrativeAudio, resolveNarrativeTiming, type StudioNarrativeMusicMode, type StudioNarrativeSoundCue } from '../../campaign/studio/narrativeAudio';
 import { useOptionalAudio } from '../../contexts/AudioContext';
 import { narrativePortraitVisible, narrativeSpriteOptions, resolveNarrativeCardSprite } from '../../campaign/studio/narrativeSprites';
 import { tutorialCompositionMood, withMissingTutorialCompositions, withProposedTutorialComposition } from '../../campaign/studio/tutorialComposition';
@@ -112,6 +112,7 @@ export function useBoardStudio(layoutRef:React.RefObject<HTMLElement|null>,guide
   const guideSpeaker=(step:GuidedStep)=>studio.viewScene('tutorial/'+step.id)?.narrative?.speaker??step.speaker;
   const guideSprite=(step:GuidedStep)=>resolveNarrativeCardSprite(studio.viewScene('tutorial/'+step.id)?.narrative,step.speaker);
   const guideAudio=(step:GuidedStep)=>resolveNarrativeAudio(studio.viewScene('tutorial/'+step.id)?.narrative);
+  const guideTiming=(step:GuidedStep)=>resolveNarrativeTiming(studio.viewScene('tutorial/'+step.id)?.narrative);
   const guideMusicUrl=(step:GuidedStep):string|null=>{
     const id=studio.viewScene('tutorial/'+step.id)?.narrative?.musicAssetId;
     return id?studio.mediaUrls[id]??null:null;
@@ -140,7 +141,7 @@ export function useBoardStudio(layoutRef:React.RefObject<HTMLElement|null>,guide
       ...(!playerPreview?(individual?dragTutorial(id):drag(id)):{}),
     };
   };
-  return {editing:studio.editing,selected:studio.selected,sceneKey,profile,attrs,guideText,guideSpeaker,guideSprite,guidePortraitVisible,guideMotion,guideAudio,guideMusicUrl};
+  return {editing:studio.editing,selected:studio.selected,sceneKey,profile,attrs,guideText,guideSpeaker,guideSprite,guidePortraitVisible,guideMotion,guideAudio,guideTiming,guideMusicUrl};
 }
 
 /** Lo último copiado en el tablero (se conserva entre perfiles). */
