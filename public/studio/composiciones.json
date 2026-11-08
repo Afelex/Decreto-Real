@@ -687,6 +687,9 @@
         "tone": "sereno",
         "intent": "Explicar las dos condiciones de derrota sin interrumpir el hilo dramático.",
         "direction": "Priorizar lectura de las reglas; cuadro de diálogo compacto, sin ocultar los indicadores de vida."
+      },
+      "dialogue": {
+        "text": "Los anillos crean cartas con energía mística. Cada uno tiene 20 de vida. Pierdes al llegar a 0 o si el rival completa cuatro Impactos."
       }
     },
     "tutorial/g03": {
@@ -703,6 +706,9 @@
         "tone": "sereno",
         "intent": "Explicar la mano inicial e invitar a jugar el primer Ataque.",
         "direction": "Mostrar cartas legibles; señalar solo la carta correcta, sin cubrir la mano."
+      },
+      "dialogue": {
+        "text": "¡Cara! Comenzamos. Tenemos tres cartas y robamos una al empezar cada turno. Arrastra un Ataque al campo."
       }
     },
     "tutorial/g05": {
@@ -735,6 +741,9 @@
         "tone": "sereno",
         "intent": "Explicar la elección entre daño adicional y curación del Combo ×2.",
         "direction": "Dejar espacio al menú interactivo de combo; el texto debe ayudar sin tapar las dos opciones."
+      },
+      "dialogue": {
+        "text": "El COMBO ×2 permite hacer 1 de daño o curarte 1 de vida. Esta vez elige Ataque."
       }
     },
     "tutorial/g09": {
@@ -783,6 +792,9 @@
         "tone": "sereno",
         "intent": "Presentar los cuatro Impactos como otra vía de victoria.",
         "direction": "Mostrar las cuatro casillas; texto de ayuda sin ocultarlas."
+      },
+      "dialogue": {
+        "text": "Con cuatro Impactos también ganas. Debes jugarlos en orden, uno por turno. ¡Activa Impacto I!"
       }
     },
     "tutorial/g15": {
@@ -807,6 +819,9 @@
         "tone": "sereno",
         "intent": "Presentar la carta de Orden y la ventaja de robar.",
         "direction": "Dar prioridad visual al mazo y a la carta de Orden."
+      },
+      "dialogue": {
+        "text": "Robamos una carta al comenzar cada turno. El Decreto de Orden permite robar una carta adicional."
       }
     },
     "tutorial/g18": {
@@ -823,6 +838,9 @@
         "tone": "sorprendido",
         "intent": "Relacionar el robo de Defensa con la estrategia y el Impacto II.",
         "direction": "Mostrar la nueva carta, pero destacar que el paso inmediato es Impacto II."
+      },
+      "dialogue": {
+        "text": "Robamos una Defensa; la usaremos después. Ahora coloca Impacto II."
       }
     },
     "tutorial/g20": {
@@ -855,6 +873,9 @@
         "tone": "preocupado",
         "intent": "Reconocer el daño recibido e introducir la Defensa.",
         "direction": "Permitir comparar vida actual con la recuperación posible."
+      },
+      "dialogue": {
+        "text": "Domingo nos golpeó otra vez. Defensa recupera 1 de vida, sin pasar de 20."
       }
     },
     "tutorial/g24": {
@@ -903,6 +924,9 @@
         "tone": "decidido",
         "intent": "Explicar por qué el Impacto Final puede terminar el combate.",
         "direction": "Señalar claramente la cuarta casilla y mantener el campo despejado."
+      },
+      "dialogue": {
+        "text": "No necesito quitarle toda la vida. El cuarto Impacto activa el Decreto Final y termina el combate."
       }
     },
     "tutorial/g30": {
