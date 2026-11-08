@@ -4,10 +4,13 @@ import { act, cleanup, fireEvent, render, screen, within } from '@testing-librar
 import { MemoryRouter } from 'react-router-dom';
 import GameBoard from '../../screens/GameBoard';
 
-vi.mock('../../contexts/AudioContext', () => ({ useAudio: () => ({
-  playSound: vi.fn(), sfxEnabled: false, musicEnabled: false,
-  toggleSfx: vi.fn(), toggleMusic: vi.fn(),
-}) }));
+vi.mock('../../contexts/AudioContext', () => {
+  const audio={
+    playSound:vi.fn(),sfxEnabled:false,musicEnabled:false,
+    toggleSfx:vi.fn(),toggleMusic:vi.fn(),setNarrativeMusicMode:vi.fn(),
+  };
+  return {useAudio:()=>audio,useOptionalAudio:()=>audio};
+});
 afterEach(() => { cleanup(); vi.useRealTimers(); vi.restoreAllMocks(); });
 
 test('rival row follows a real AI Impact while player slots remain independent', async () => {
