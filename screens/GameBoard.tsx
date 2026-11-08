@@ -1012,10 +1012,17 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
           (board.guideSpeaker(current)==='Domingo Quispe')===(side==='rival')&&
           board.guideSpeaker(current)!=='Sistema');
         if(!preview&&!visibleWithDialogue)return null;
+        const sprite=current?board.guideSprite(current):undefined;
+        const speaker=side==='rival'?'Domingo Quispe':'Xervias';
+        const fallback=side==='rival'?(guidedNarrativeSprites?.opponent??rivalPortrait):
+          (guidedNarrativeSprites?.player??playerPortrait);
+        // Solo el combate guiado utiliza la expresión de cada intervención.
+        // La ilustración existente permanece como respaldo seguro.
+        const source=sprite?.speaker===speaker
+          ?import.meta.env.BASE_URL+sprite.path:fallback;
         return <div key={side} {...board.attrs(id,'dr-royal-guided-actor is-'+side)}
           aria-hidden="true" data-testid="guided-large-actor">
-          <img src={side==='rival'?(guidedNarrativeSprites?.opponent??rivalPortrait):
-            (guidedNarrativeSprites?.player??playerPortrait)} alt=""/>
+          <img src={source} alt=""/>
         </div>;
       })}
       {((guidedOpening && currentGuide && !board.editing) || board.editing) && (()=>{
