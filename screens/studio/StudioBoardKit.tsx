@@ -2,6 +2,7 @@ import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getLayer, isTutorialLayoutId, layerOrDefault, tutorialLayoutKey, withDialogue, withNarrativeCard, withLayer, withoutLayer } from '../../campaign/studio/ops';
 import { GUIDED_STEPS, type GuidedStep } from '../../campaign/guidedOpeningDuel';
+import { narrativeSpriteOptions, resolveNarrativeCardSprite } from '../../campaign/studio/narrativeSprites';
 import { tutorialCompositionMood, withMissingTutorialCompositions, withProposedTutorialComposition } from '../../campaign/studio/tutorialComposition';
 import { defaultLayerTransform, STUDIO_NARRATIVE_TONES, type StudioLayer, type StudioNarrativeTone } from '../../campaign/studio/schema';
 import { copyTransform, formatTransform, parseTransform, type CopiedTransform } from '../../campaign/studio/transformClipboard';
@@ -104,6 +105,7 @@ export function useBoardStudio(layoutRef:React.RefObject<HTMLElement|null>,guide
   // Si no está editada, conserva la posición compartida para el perfil.
   const guideText=(step:GuidedStep)=>studio.viewScene('tutorial/'+step.id)?.dialogue?.text??step.text;
   const guideSpeaker=(step:GuidedStep)=>studio.viewScene('tutorial/'+step.id)?.narrative?.speaker??step.speaker;
+  const guideSprite=(step:GuidedStep)=>resolveNarrativeCardSprite(studio.viewScene('tutorial/'+step.id)?.narrative,step.speaker);
   const attrs=(id:string,className:string)=>{
     const individual=Boolean(tutorialKey&&isTutorialLayoutId(id));
     const layer=(individual?tutorialScene?.layers?.find(l=>l.id===id):undefined)??
@@ -122,7 +124,7 @@ export function useBoardStudio(layoutRef:React.RefObject<HTMLElement|null>,guide
       ...(!playerPreview?(individual?dragTutorial(id):drag(id)):{}),
     };
   };
-  return {editing:studio.editing,selected:studio.selected,sceneKey,profile,attrs,guideText,guideSpeaker};
+  return {editing:studio.editing,selected:studio.selected,sceneKey,profile,attrs,guideText,guideSpeaker,guideSprite};
 }
 
 /** Lo último copiado en el tablero (se conserva entre perfiles). */
@@ -151,6 +153,7 @@ export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGu
   const narrative=studio.scene(previewKey)?.narrative;
   const narrativeSpeaker=narrative?.speaker??previewGuide.speaker;
   const narrativeTone=narrative?.tone??'neutral';
+  const currentSprite=resolveNarrativeCardSprite(narrative,previewGuide.speaker);
   const narrativeIntent=narrative?.intent??'';
   const narrativeDirection=narrative?.direction??'';
   const updateNarrative=(patch:Parameters<typeof withNarrativeCard>[2],message='Ficha narrativa modificada')=>
@@ -205,7 +208,7 @@ export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGu
         <div className="dr-studio-narrative-fields">
           <label className="dr-studio-label">Personaje que habla
             <select data-testid="studio-narrative-speaker" value={narrativeSpeaker}
-              onChange={e=>updateNarrative({speaker:e.target.value})}>
+              onChange={e=>updateNarrative({speaker:e.target.value,spriteId:null})}>
               {![ 'Xervias','Domingo Quispe','Sistema' ].includes(narrativeSpeaker)&&
                 <option value={narrativeSpeaker}>{narrativeSpeaker}</option>}
               <option value="Xervias">Xervias</option>
@@ -219,6 +222,19 @@ export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGu
               {STUDIO_NARRATIVE_TONES.map(t=><option key={t} value={t}>{t.charAt(0).toUpperCase()+t.slice(1)}</option>)}
             </select>
           </label>
+          <label className="dr-studio-label">Ilustración narrativa (solo recursos existentes)
+            <select data-testid="studio-narrative-sprite" value={narrative?.spriteId??''}
+              onChange={e=>updateNarrative({spriteId:e.target.value||null})}>
+              <option value="">Automática según emoción</option>
+              {narrativeSpriteOptions(narrativeSpeaker).map(sprite=>
+                <option key={sprite.id} value={sprite.id}>{sprite.label}</option>)}
+            </select>
+          </label>
+          {currentSprite&&<div className="dr-studio-narrative-sprite-preview" data-testid="studio-narrative-sprite-preview">
+            <img src={import.meta.env.BASE_URL+currentSprite.path} alt={'Ilustración de '+narrativeSpeaker}
+              loading="lazy"/>
+            <span>{narrative?.spriteId?'Ilustración elegida':'Sugerida automáticamente'} · {currentSprite.label}</span>
+          </div>}
           <label className="dr-studio-label">Objetivo de esta intervención
             <textarea data-testid="studio-narrative-intent" rows={2} maxLength={180}
               value={narrativeIntent} onFocus={studio.begin} onBlur={studio.commit}
