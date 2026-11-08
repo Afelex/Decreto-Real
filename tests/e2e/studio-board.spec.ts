@@ -81,10 +81,12 @@ test('the player hand and both turn labels can be positioned separately in Studi
   ]){
     const indicator=page.locator(selector);
     await expect(indicator).toBeVisible();
-    const before=(await indicator.boundingBox())!;
     await page.getByTestId('studio-actor-select').selectOption({label});
+    const ribbon=page.locator('.dr-event-turn--studio-preview .dr-event-turn__ribbon');
+    await expect(ribbon).toBeVisible();
+    const before=(await ribbon.boundingBox())!;
     await set(page,'studio-x','-5');
-    const after=(await indicator.boundingBox())!;
+    const after=(await ribbon.boundingBox())!;
     expect(after.x).toBeLessThan(before.x-10);
   }
   await page.getByTestId('studio-save').click();
