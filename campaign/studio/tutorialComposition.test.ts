@@ -87,7 +87,7 @@ test('las 96 propuestas publicadas coinciden con el plan y preservan las 32 fich
     const key=tutorialLayoutKey(step.id,profile);
     const expected=proposeTutorialComposition(step,profile,published.scenes['tutorial/'+step.id]?.narrative);
     const actual=published.scenes[key]?.layers??[];
-    assert.deepEqual(actual,expected.toSorted((a,b)=>a.z-b.z||a.id.localeCompare(b.id)),key);
+    assert.deepEqual(actual,[...expected].sort((a,b)=>a.z-b.z||a.id.localeCompare(b.id)),key);
     assert.ok(published.scenes['tutorial/'+step.id]?.narrative);
   }
 });
