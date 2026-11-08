@@ -185,6 +185,17 @@ Cuando el personaje continúa hablando y cambia la ilustración (por ejemplo, de
 - Con **movimiento reducido** la imagen cambia directamente y no se muestra la superposición.
 - El diálogo, la mano de cartas y los botones se mantienen accesibles mientras sucede la transición.
 
+### Audio narrativo por intervención — Fase 2 (primer avance)
+En **Ficha narrativa → Audio narrativo** puedes ajustar la música de fondo de cada intervención con tres modos: **Volumen habitual**, **Música suave** (0,12 frente a 0,30) y **Pausa musical**. De momento solo existe la pista de combate que ya utilizaba la aplicación; **no son tres canciones ni se han importado temas de Suno**.
+
+También puedes elegir un único efecto sonoro de entrada entre los efectos ya registrados: confirmación, movimiento de carta, ataque, defensa e impacto, o ninguno. **Escuchar efecto seleccionado** reproduce el efecto únicamente por acción del editor. Durante la partida guiada el efecto se solicita una sola vez al entrar en la intervención; los efectos propios de jugar cartas se mantienen.
+
+- Los ajustes se guardan en `scenes["tutorial/gXX"].narrative.musicMode` y `.soundCue`, con validación por valores permitidos: no se admiten URLs arbitrarias ni rutas de audio inexistentes.
+- **Se han propuesto diez ambientes sonoros iniciales** (g00, g01, g02, g06, g11, g17, g23, g28, g29 y g31), con solo dos sonidos de confirmación. Las acciones que reproducen sus propios efectos se dejan sin nuevo sonido para evitar duplicaciones.
+- Se respetan siempre **Música apagada** y **Efectos apagados** del jugador; la música vuelve a su volumen normal al salir del combate guiado. El navegador puede impedir audio automático hasta una interacción del jugador.
+- Las preferencias y las correcciones del borrador local prevalecen. El modo de edición no dispara sonidos automáticamente al cambiar entre las 32 vistas.
+- Sigue pendiente integrar pistas propias de Suno, elegir una canción distinta por escena, transiciones entre canciones y una línea temporal de audio.
+
 ## Otras pantallas de la historia
 Abre **☷ Otras pantallas** (o `#/studio/escenas`) y elige una conversación tras victoria, la entrada o liberación de una región, la crónica, el epílogo o los créditos. En cada una puedes cambiar los textos (con **negrita**), el rótulo, el fondo y añadir sprites o efectos, y marcar textos o capas como «solo desarrollador». Se abren con una partida de prueba: tu partida real no cambia.
 
