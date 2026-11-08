@@ -367,3 +367,53 @@ test('published rival reactions display chosen narrative art during guided actio
   await page.getByTestId('studio-guide-step').selectOption('5');
   await expect(page.locator('.dr-royal-guided-actor.is-player')).toHaveCount(0);
 });
+
+
+test('animated portraits respect published narrative direction across consecutive guided steps',async({page},info)=>{
+  test.skip(only(['mobile-390'])(info.project.name),'Narrative entry/exit');
+  await openBoard(page);
+  const steps=page.getByTestId('studio-guide-step');
+  await steps.selectOption('0');
+  const rival=page.locator('.dr-royal-guided-actor.is-rival');
+  await expect(rival).toHaveAttribute('data-narrative-enter','slide-right');
+  await expect(rival).toHaveAttribute('data-narrative-exit','fade');
+  await expect(rival).toHaveCSS('--dr-narrative-motion-duration','450ms');
+  await steps.selectOption('1');
+  await expect(page.locator('.dr-royal-guided-actor.is-player')).toHaveAttribute('data-narrative-enter','slide-left');
+  await expect(rival).toHaveCount(0);
+  await steps.selectOption('10');
+  await expect(rival).toHaveAttribute('data-narrative-enter','zoom');
+  await expect(rival).toHaveCSS('--dr-narrative-motion-duration','520ms');
+});
+
+test('Studio edits, replays and persists portrait entrance, exit and duration on one beat',async({page},info)=>{
+  test.skip(only(['mobile-390'])(info.project.name),'Narrative motion editing');
+  await openBoard(page);
+  const steps=page.getByTestId('studio-guide-step');
+  await steps.selectOption('5');
+  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  await page.getByTestId('studio-narrative-portrait-mode').selectOption('show');
+  const enter=page.getByTestId('studio-motion-enter');
+  const exit=page.getByTestId('studio-motion-exit');
+  const duration=page.getByTestId('studio-motion-duration');
+  await enter.selectOption('slide-left');
+  await exit.selectOption('zoom');
+  await duration.selectOption('650');
+  const portrait=page.locator('.dr-royal-guided-actor.is-player');
+  await expect(portrait).toHaveAttribute('data-narrative-enter','slide-left');
+  await expect(portrait).toHaveAttribute('data-narrative-exit','zoom');
+  await expect(portrait).toHaveCSS('--dr-narrative-motion-duration','650ms');
+  await page.getByTestId('studio-motion-replay').click();
+  await expect(portrait).toHaveAttribute('data-narrative-step','g05:1');
+  await page.getByTestId('studio-save').click();
+  await page.reload();
+  await steps.selectOption('5');
+  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  await expect(page.getByTestId('studio-motion-enter')).toHaveValue('slide-left');
+  await expect(page.getByTestId('studio-motion-exit')).toHaveValue('zoom');
+  await expect(page.getByTestId('studio-motion-duration')).toHaveValue('650');
+  await expect(page.locator('.dr-royal-guided-actor.is-player')).toHaveCSS('--dr-narrative-motion-duration','650ms');
+  await steps.selectOption('6');
+  await expect(page.getByTestId('studio-motion-enter')).toHaveValue('fade');
+  await expect(page.getByTestId('studio-motion-duration')).toHaveValue('320');
+});
