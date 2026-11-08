@@ -156,6 +156,15 @@ En **Ficha narrativa** aparece **Ilustración narrativa** con miniatura. El modo
 - Las ilustraciones grandes acompañan las pausas narrativas; durante las acciones que requieren tocar cartas, la moneda o los combos, el campo sigue despejado. La ficha no modifica turnos, puntos de vida ni las cartas.
 - Este hito **no** integra todavía animaciones de entrada/salida, expresiones con sincronización labial ni audio por intervención.
 
+### Recorrido narrativo y lectura del tutorial — Fase 1
+El nuevo panel desplegable **«Recorrido narrativo · 32 pasos»** en Studio · Tablero permite recorrer todas las intervenciones con **Anterior**, **Siguiente** y **Siguiente aviso**. También muestra una lista filtrable (**Todos** / **Solo los que tienen avisos**) con acceso directo al paso elegido.
+
+La revisión lee los **textos realmente guardados en tu borrador**, no únicamente el guion inicial. Advierte cuando un texto está vacío, es demasiado largo para un teléfono, acumula explicaciones mientras el jugador debe tocar cartas o no deja clara la acción obligatoria. Al corregirlo en **Texto de esta intervención**, el informe se actualiza sin guardar o publicar nada automáticamente.
+
+Las métricas de **caracteres, líneas estimadas y segundos aproximados** son orientativas: no analizan la calidad literaria ni reemplazan la revisión visual del solapamiento real. El panel permanece plegado por defecto para mantener libre el espacio del móvil. Ninguna revisión modifica el combate, los puntos de vida ni el orden de las 32 acciones.
+
+Como primer borrador editorial se sintetizaron ocho explicaciones del tutorial (`g02`, `g04`, `g08`, `g14`, `g17`, `g19`, `g23`, `g29`) en el manifiesto publicado, conservando sus 32 fichas narrativas y las 96 composiciones iniciales. Los borradores locales que ya tengan un texto editado para esos pasos prevalecen: no necesitas borrar ni volver a crear nada.
+
 ## Otras pantallas de la historia
 Abre **☷ Otras pantallas** (o `#/studio/escenas`) y elige una conversación tras victoria, la entrada o liberación de una región, la crónica, el epílogo o los créditos. En cada una puedes cambiar los textos (con **negrita**), el rótulo, el fondo y añadir sprites o efectos, y marcar textos o capas como «solo desarrollador». Se abren con una partida de prueba: tu partida real no cambia.
 
