@@ -294,6 +294,32 @@ export function inheritPublishedNarrative(
 }
 
 /**
+ * Fase 1: al abrir Studio desde un borrador antiguo se adoptan solo las
+ * composiciones nuevas. Las posiciones propias de cada paso tienen prioridad;
+ * un ajuste GLOBAL local también prevalece sobre la propuesta de ese actor.
+ */
+export function inheritPublishedTutorialLayouts(
+  local:StudioDocumentV3,published:StudioDocumentV3,
+):StudioDocumentV3 {
+  let next=local;
+  for(const [key,scene] of Object.entries(published.scenes)){
+    const match=/^tutorial\/(g\d{2})-(movil|horizontal|escritorio)$/.exec(key);
+    if(!match||!scene.layers?.length)continue;
+    const profile=match[2] as TutorialLayoutProfile;
+    const current=next.scenes[key];
+    const existing=current?.layers??[];
+    const shared=local.scenes['tablero/'+profile]?.layers??[];
+    const missing=scene.layers.filter(layer=>!existing.some(old=>old.id===layer.id)&&
+      !shared.some(old=>old.id===layer.id));
+    if(!missing.length)continue;
+    next={...next,scenes:{...next.scenes,[key]:{
+      ...current,layers:sortLayers([...existing,...missing.map(layer=>({...layer}))]),
+    }}};
+  }
+  return next;
+}
+
+/**
  * Fusiona un documento importado con el actual: las escenas importadas
  * reemplazan solo a las que coinciden; el resto del borrador se conserva.
  * Los recursos se unen y los tamaños comunes importados, si existen, ganan.
