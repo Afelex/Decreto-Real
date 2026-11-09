@@ -22,6 +22,7 @@ import CampaignRegionMoment from './screens/CampaignRegionMoment';
 import CampaignQaNavigator from './screens/CampaignQaNavigator';
 import StudioScenesCatalog from './screens/studio/StudioScenesCatalog';
 import ArtGallery from './screens/ArtGallery';
+import MultiplayerScreen from './screens/MultiplayerScreen';
 import { getCampaignStorage, isCampaignQaActive, isCampaignQaAvailable } from './campaign/campaignQA';
 import { PROLOGUE_COMPLETE_KEY } from './campaign/prologueArt';
 import CampaignCredits from './screens/CampaignCredits';
@@ -58,6 +59,7 @@ const CampaignRoutes: React.FC = () => {
         <Routes>
           <Route path="/" element={<MainMenu />} />
           <Route path="/game" element={<GameBoard />} />
+          <Route path="/multijugador" element={<MultiplayerScreen />} />
           <Route path="/duelo-v1" element={<CombatPrototype />} />
           <Route path="/campania" element={<LaterStoryOnlyQa><CampaignMap /></LaterStoryOnlyQa>} />
           <Route path="/campania/inicio" element={<CampaignIntro />} />
