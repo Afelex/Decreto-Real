@@ -167,6 +167,16 @@ const MainMenu: React.FC = () => {
 
         <MenuButton
           artKey="duel"
+          className="dr-cinematic-button-secondary"
+          ariaLabel="Multijugador"
+          onClick={() => navigate('/multijugador')}
+        >
+          <span className="dr-cinematic-button-icon" aria-hidden="true">🌐</span>
+          <strong>MULTIJUGADOR</strong>
+        </MenuButton>
+
+        <MenuButton
+          artKey="duel"
           className="dr-cinematic-button-secondary dr-cinematic-button-disabled dr-cinematic-button-deck"
           ariaLabel="Creación de baraja - No disponible"
           disabled
