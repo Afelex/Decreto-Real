@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#121521">
+<title>Decreto Real — Prueba multijugador</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#f3e8d6;color-scheme:dark;background:#121521}
+*{box-sizing:border-box}body{margin:0;min-height:100dvh;background:radial-gradient(ellipse at 50% 30%,#342534,#111824 70%)}
+main{max-width:510px;margin:0 auto;min-height:100dvh;padding:max(16px,env(safe-area-inset-top)) 14px max(16px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:13px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #75603f;padding-bottom:10px}
+header div{display:grid;gap:2px}h1{font-family:Georgia,serif;font-size:25px;margin:0;color:#f7d9a8}h2{font-family:Georgia,serif;margin:0;font-size:21px}
+small{font-size:11px;color:#b9b3ac}p{line-height:1.5;margin:0;font-size:14px}.online{color:#83e1b0}.offline{color:#dfaa8f}
+section{border:1px solid #7f6745;background:#171c28e8;border-radius:15px;padding:16px;display:grid;gap:14px}
+#lobby{margin:auto 0}label{display:grid;gap:6px;font-size:13px;font-weight:600}
+input{font:inherit;width:100%;border:1px solid #7b765f;padding:12px;border-radius:9px;background:#0e1320;color:#fff}
+button{font:inherit;font-weight:600;cursor:pointer;border:1px solid #a89369;color:#f7e9d1;background:#2b2b39;border-radius:9px;min-height:45px;padding:9px 13px}
+button:disabled{opacity:.42;cursor:not-allowed}button:focus-visible,input:focus-visible{outline:3px solid #ffe4a0;outline-offset:3px}
+.primary{background:linear-gradient(100deg,#8d2838,#612436);border-color:#d8a870}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:9px}.help{text-align:center;font-size:12px;color:#c1b4a3}
+#alert{color:#ffd5bb;background:#522e36;border:1px solid #bb675f;padding:10px;border-radius:9px}
+#waiting{margin:auto 0;text-align:center}
+.code{font-size:clamp(26px,8vw,37px);font-weight:800;letter-spacing:2px;color:#f8dba6;overflow-wrap:anywhere}
+#duel{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:space-between;gap:10px;padding:12px}
+.player{display:flex;justify-content:space-between;align-items:center;border:1px solid #725c47;background:#212533;border-radius:8px;padding:10px}
+.player.rival{border-color:#596d93}.player b{font-size:26px}.player div{display:grid;gap:5px}.player strong{font-size:15px}
+.tracks{display:flex;gap:7px;justify-content:center}.tracks span{border:1px solid #655c5c;min-width:44px;padding:8px 5px;text-align:center;border-radius:5px;font-size:12px}
+.tracks span.on{background:#694532;border-color:#dcab68;color:#ffe7a6}
+.arena{flex:1;min-height:90px;display:grid;place-content:center;gap:8px;text-align:center}
+.arena strong{font-family:Georgia,serif;font-size:clamp(22px,6vw,30px);color:#f1c988}.arena p{font-size:12px}
+#hand{display:flex;gap:7px;overflow-x:auto;padding:5px 0;scrollbar-width:thin}
+.card{flex:0 0 91px;min-height:128px;display:grid;align-content:space-between;justify-items:center;gap:10px;padding:9px 6px;font-size:13px;border:2px solid #c99b53;border-radius:10px;text-align:center;background:linear-gradient(145deg,#572733,#161d2c);white-space:normal}
+.card.DEFENSE{background:linear-gradient(145deg,#164b67,#121e31)}.card.ORDER{background:linear-gradient(145deg,#70467a,#1a1e31)}.card.IMPACT{background:linear-gradient(145deg,#71613b,#202338)}
+.symbol{font-size:38px;font-weight:400}
+#combo{background:#332637;border:1px solid #d6a05d;padding:10px;border-radius:10px;display:grid;gap:8px;text-align:center}
+footer{display:flex;gap:8px}footer button{flex:1}
+#resultPanel{text-align:center;border:1px solid #dec086;border-radius:10px;padding:9px}
+[hidden]{display:none!important}
+@media(max-height:730px){main{gap:7px}#duel{gap:6px;padding:8px}.card{min-height:100px}.arena{min-height:50px}.player{padding:6px}.tracks span{padding:5px}.symbol{font-size:26px}}
+</style>
+</head>
+<body>
+<main>
+<header><div><small>DECRETO REAL · PRUEBA DE RED</small><h1>Duelo multijugador</h1></div><small id="network" class="offline" role="status">Conectando…</small></header>
+<p id="alert" role="alert" hidden></p>
+<section id="lobby">
+<h2>Enfréntate a otro jugador</h2>
+<p>Versión de prueba. No altera tu campaña, no guarda clasificaciones ni usa tu cuenta de Peruanistas.</p>
+<label>Tu apodo<input id="name" placeholder="2 a 24 caracteres" maxlength="24" autocomplete="nickname"></label>
+<button id="create" class="primary" disabled>Crear sala privada</button>
+<label>Código de invitación<input id="code" maxlength="10" placeholder="Código de 10 caracteres" autocapitalize="characters"></label>
+<button id="join" disabled>Unirme a una sala</button>
+<button id="queue" disabled>Buscar rival aleatorio</button>
+<p class="help">Abre esta página en dos celulares. El primero crea una sala y comparte el enlace con el segundo.</p>
+</section>
+<section id="waiting" hidden>
+<h2 id="waitingTitle">Esperando al rival…</h2>
+<div id="invite" hidden><p>Comparte el siguiente código o la invitación:</p><p class="code" id="room"></p><button id="copy">Copiar enlace de invitación</button></div>
+<button id="cancel">Cancelar espera</button>
+<p class="help">La partida comenzará cuando entren las dos personas.</p>
+</section>
+<section id="duel" hidden>
+<div class="player rival"><div><strong id="rivalName"></strong><small id="rivalInfo"></small></div><b><span id="rivalHp">20</span><small> / 20 PV</small></b></div>
+<div id="rivalImpacts" class="tracks" aria-label="Impactos del rival"></div>
+<p id="rivalCards" class="help"></p>
+<div class="arena"><strong id="turn">TU TURNO</strong><p id="event" role="status"></p></div>
+<div id="myImpacts" class="tracks" aria-label="Tus impactos"></div>
+<div class="player"><div><strong id="myName"></strong><small id="myInfo"></small></div><b><span id="myHp">20</span><small> / 20 PV</small></b></div>
+<div id="combo" hidden><h2 id="comboTitle">COMBO</h2><div class="two"><button id="damage">Ataque</button><button id="heal">Curación</button></div></div>
+<div id="hand" aria-label="Tus cartas"></div>
+<div id="resultPanel" hidden><strong id="result"></strong></div>
+<footer><button id="end" class="primary">Fin de turno</button><button id="surrender">Rendirse</button><button id="new" hidden>Nueva partida</button></footer>
+</section>
+<small class="help">Prueba técnica 1v1 · Server-authoritative WebSocket · Sin recompensas ni ranking</small>
+</main>
+<script>
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const key = 'dr-pvp-preview-session-v1';
+  const nameKey = 'dr-pvp-preview-name';
+  let ws, online = false, session = null, view = null, waiting = false, pending = false, retry = null;
+  const symbols = {ATTACK:'⚔',DEFENSE:'⬟',ORDER:'✧',IMPACT:'✦'};
+  const labels = {ATTACK:'Ataque',DEFENSE:'Defensa',ORDER:'Orden',IMPACT:'Impacto'};
+  try { session = JSON.parse(sessionStorage.getItem(key) || 'null'); } catch {}
+  try { $('name').value = localStorage.getItem(nameKey) || ''; } catch {}
+  $('code').value = (new URL(location.href)).searchParams.get('sala') || '';
+  const alert = message => { $('alert').hidden = !message; $('alert').textContent = message || ''; };
+  function send(data) {
+    if(!ws || ws.readyState !== WebSocket.OPEN) { alert('No hay conexión con el servidor.'); return false; }
+    ws.send(JSON.stringify(data)); return true;
+  }
+  function reset() {
+    session = null; waiting = false; view = null; pending = false; alert('');
+    try { sessionStorage.removeItem(key); } catch {}
+    if(ws) ws.close(4000,'Salir de la sala');
+    render();
+  }
+  function enter(type) {
+    const name = $('name').value.trim();
+    if(name.length < 2 || name.length > 24) return alert('El apodo debe tener entre 2 y 24 caracteres.');
+    if(type === 'join' && !/^[0-9A-F]{10}$/.test($('code').value.trim().toUpperCase())) return alert('Introduce un código de sala válido.');
+    try { localStorage.setItem(nameKey, name); } catch {}
+    alert('');
+    send({type,name,...(type === 'join' ? {code:$('code').value.trim().toUpperCase()} : {})});
+  }
+  function action(data) {
+    if(!view || !online || pending) return;
+    const id = (crypto.randomUUID ? crypto.randomUUID() : 'act' + Date.now() + Math.random().toString(36).slice(2));
+    pending = true; alert(''); render();
+    if(!send({type:'action',id,revision:view.revision,action:data})) { pending = false; render(); }
+  }
+  function track(element, count) {
+    element.replaceChildren();
+    for(let i=1;i<=4;i++) {
+      const span=document.createElement('span'); span.textContent=i===4?'FINAL':String(i);
+      if(count>=i) span.className='on';
+      element.append(span);
+    }
+  }
+  function render() {
+    $('network').textContent = online ? '● Conectado' : '○ Desconectado';
+    $('network').className = online ? 'online' : 'offline';
+    ['create','join','queue'].forEach(id => $(id).disabled = !online || !!session);
+    $('lobby').hidden = !!session;
+    $('waiting').hidden = !session || !waiting;
+    $('duel').hidden = !view || waiting;
+    if(session && waiting) {
+      $('waitingTitle').textContent = session.randomQueue ? 'Buscando rival…' : 'Esperando al rival…';
+      $('invite').hidden = !!session.randomQueue;
+      $('room').textContent = session.code;
+    }
+    if(!view || waiting) return;
+    $('myName').textContent = view.me.name;
+    $('rivalName').textContent = view.opponent.name;
+    $('myHp').textContent = view.me.hp;
+    $('rivalHp').textContent = view.opponent.hp;
+    $('rivalInfo').textContent = view.opponent.connected ? 'Conectado' : 'Reconectando…';
+    $('myInfo').textContent = 'Mazo: '+view.me.deckCount+' · Combo: ×'+(view.me.comboCount||0);
+    $('rivalCards').textContent = 'Cartas rivales: '+view.opponent.handCount+' · Mazo rival: '+view.opponent.deckCount;
+    track($('myImpacts'),view.me.impact);track($('rivalImpacts'),view.opponent.impact);
+    const finished=view.status==='finished';
+    $('turn').textContent= finished ? (view.winner==='me'?'¡VICTORIA!':view.winner==='opponent'?'DERROTA':'EMPATE') :
+      !view.opponent.connected ? 'ESPERANDO CONEXIÓN' : view.isMyTurn?'TU TURNO':'TURNO DEL RIVAL';
+    $('event').textContent='Turno '+view.turnNumber+' · '+view.lastEvent;
+    const canAct=online&&!pending&&view.isMyTurn&&!finished&&view.opponent.connected;
+    $('end').disabled=!canAct||!!view.pendingCombo;
+    $('end').hidden=finished;
+    $('surrender').hidden=finished;
+    $('surrender').disabled=!online||pending;
+    $('new').hidden=!finished;
+    $('resultPanel').hidden=!finished;
+    $('result').textContent=finished ? $('turn').textContent : '';
+    $('combo').hidden=!view.pendingCombo||finished;
+    if(view.pendingCombo) {
+      const bonus=view.pendingCombo===3?3:1;
+      $('comboTitle').textContent='COMBO ×'+view.pendingCombo;
+      $('damage').textContent='Ataque −'+bonus+' PV';
+      $('heal').textContent='Curación +'+bonus+' PV';
+      $('damage').disabled=$('heal').disabled=!canAct;
+    }
+    $('hand').replaceChildren();
+    for(const card of view.me.hand) {
+      const button=document.createElement('button');
+      button.type='button';button.className='card '+card.type;
+      const symbol=document.createElement('span');symbol.className='symbol';symbol.textContent=symbols[card.type];
+      const label=document.createElement('strong');
+      label.textContent=card.type==='IMPACT' ? 'Impacto '+(card.rank===4?'Final':card.rank) : labels[card.type];
+      button.append(symbol,label);
+      const legalImpact=card.type!=='IMPACT'||(card.rank===view.me.impact+1&&!view.me.impactThisTurn);
+      button.disabled=!canAct||!!view.pendingCombo||!legalImpact;
+      button.addEventListener('click',()=>action({type:'play',cardId:card.id}));
+      $('hand').append(button);
+    }
+  }
+  function connect() {
+    const url=(location.protocol==='https:'?'wss://':'ws://')+location.host;
+    ws=new WebSocket(url);
+    ws.addEventListener('open',()=>{
+      online=true;alert('');
+      if(session) send({type:'resume',code:session.code,token:session.token});
+      render();
+    });
+    ws.addEventListener('message',event=>{
+      let data;try{data=JSON.parse(event.data);}catch{return;}
+      if(data.type==='session') {
+        session={code:data.code,token:data.token,randomQueue:!!data.randomQueue};
+        try{sessionStorage.setItem(key,JSON.stringify(session));}catch{}
+      } else if(data.type==='waiting') {
+        waiting=true;view=null;
+      } else if(data.type==='state') {
+        waiting=false;view=data.view;pending=false;
+      } else if(data.type==='ack') pending=false;
+      else if(data.type==='error') {
+        pending=false;alert(data.reason||'Error inesperado.');
+        if((data.reason||'').includes('Sesión caducada')){
+          session=null;view=null;waiting=false;
+          try{sessionStorage.removeItem(key);}catch{}
+        }
+      }
+      render();
+    });
+    ws.addEventListener('close',()=>{
+      online=false;pending=false;
+      clearTimeout(retry);retry=setTimeout(connect,1800);render();
+    });
+    ws.addEventListener('error',()=>{alert('No fue posible conectar con el servidor.');});
+  }
+  $('create').onclick=()=>enter('create');
+  $('join').onclick=()=>enter('join');
+  $('queue').onclick=()=>enter('queue');
+  $('cancel').onclick=reset;
+  $('new').onclick=reset;
+  $('end').onclick=()=>action({type:'end_turn'});
+  $('surrender').onclick=()=>{if(confirm('¿Rendirte? Esto cuenta como derrota.')) action({type:'surrender'});};
+  $('damage').onclick=()=>action({type:'combo',choice:'DAMAGE'});
+  $('heal').onclick=()=>action({type:'combo',choice:'HEAL'});
+  $('copy').onclick=async()=>{
+    const invite=location.origin+'/prueba?sala='+encodeURIComponent(session.code);
+    try{await navigator.clipboard.writeText(invite);$('copy').textContent='¡Enlace copiado!';}
+    catch{prompt('Copia esta dirección',invite);}
+  };
+  render();connect();
+})();
+</script>
+</body>
+</html>
