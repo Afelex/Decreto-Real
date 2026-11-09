@@ -163,6 +163,7 @@ export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGu
   const location=useLocation();
   const [expanded,setExpanded]=React.useState(true);
   const [hasCopy,setHasCopy]=React.useState(()=>copiedBoardTransform!==null);
+  const [publishOpen,setPublishOpen]=React.useState(false);
   if(!studio.editing||playerPreview)return null;
   const selected=BOARD_ELEMENTS.some(e=>e.id===studio.selected)?studio.selected:null;
   const previewGuide=GUIDED_STEPS[previewGuideIndex];
@@ -521,10 +522,40 @@ export function StudioBoardPanel({sceneKey,profile,previewGuideIndex,onPreviewGu
           {studio.dirty?'● Guardar borrador':'✓ Guardado'}</button>
       </div>
       <div className="dr-studio-actions">
-        <button type="button" data-testid="studio-export-publish" onClick={()=>void studio.exportProject(true)}>⇪ Exportar para publicar</button>
+        <button type="button" data-testid="studio-open-publish" onClick={()=>setPublishOpen(true)}>⇪ Publicar campaña</button>
         <button type="button" onClick={()=>void studio.exportProject()}>⇩ Exportar proyecto (.zip)</button>
         <button type="button" data-testid="studio-exit" onClick={exit}>Salir del editor</button>
       </div>
+      {publishOpen&&<div className="dr-studio-publish-backdrop" onClick={()=>setPublishOpen(false)}>
+        <div role="dialog" aria-modal="true" aria-labelledby="dr-studio-publish-title"
+          className="dr-studio-publish-dialog" data-testid="studio-publish-dialog"
+          onClick={event=>event.stopPropagation()}>
+          <div className="dr-studio-publish-heading">
+            <h2 id="dr-studio-publish-title">Publicar campaña</h2>
+            <button type="button" aria-label="Cerrar publicación" onClick={()=>setPublishOpen(false)}>✕</button>
+          </div>
+          <p>Tu borrador sigue siendo privado. La publicación requiere una revisión en GitHub antes de que los jugadores vean los cambios.</p>
+          <ol>
+            <li><strong>Descarga tu campaña.</strong> Se crea un ZIP con las escenas y los medios utilizados.</li>
+            <li><strong>Prepara el enlace.</strong> Aloja el ZIP en una URL HTTPS descargable. No compartas proyectos privados en servicios públicos.</li>
+            <li><strong>Solicita publicación.</strong> Abre GitHub Actions, ejecuta «Studio · Preparar publicación mediante PR» y pega la URL del ZIP.</li>
+            <li><strong>Revisa y aprueba.</strong> Comprueba el PR y las pruebas antes de fusionar a main. Solo entonces se desplegará.</li>
+          </ol>
+          <div className="dr-studio-publish-actions">
+            <button type="button" data-testid="studio-export-publish"
+              onClick={()=>{studio.commit();studio.save();void studio.exportProject(true);}}>
+              1. Descargar ZIP
+            </button>
+            <a href="https://github.com/Afelex/Decreto-Real/actions/workflows/studio-publicar.yml"
+              target="_blank" rel="noopener noreferrer"
+              data-testid="studio-publish-github">
+              2. Abrir GitHub Actions ↗
+            </a>
+          </div>
+          <small>DRStudio no almacena tokens ni publica automáticamente. Si falla la exportación, revisa el mensaje de estado antes de continuar.</small>
+          <div role="status" className="dr-studio-publish-status">{studio.status}</div>
+        </div>
+      </div>}
       <div className="dr-studio-bottom"><span role="status">{studio.status||(studio.dirty?'Cambios pendientes de guardar':'Borrador de este dispositivo')}</span></div>
     </div>}
   </section>;

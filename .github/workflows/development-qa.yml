@@ -34,7 +34,7 @@ jobs:
 
   browser:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -43,7 +43,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      - run: npm run test:e2e -- --workers=2
+      - name: Smoke de publicación de DRStudio
+        run: npx playwright test tests/e2e/studio-board.spec.ts --grep 'Publicar campaña' --workers=1 --trace off
+      - name: E2E general
+        run: npm run test:e2e -- --workers=4
       - uses: actions/upload-artifact@v4
         if: always()
         with:

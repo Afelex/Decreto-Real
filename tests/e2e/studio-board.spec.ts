@@ -1,4 +1,7 @@
 import {test,expect,type Page} from '@playwright/test';
+import {readFile} from 'node:fs/promises';
+import {parseStudioPackage} from '../../campaign/studio/package';
+import {GUIDED_STEPS} from '../../campaign/guidedOpeningDuel';
 
 /** Studio · Tablero: ajustes visuales del duelo por perfil de pantalla, sin tocar el juego. */
 const only=(names:string[])=>(projectName:string)=>!names.includes(projectName);
@@ -160,7 +163,7 @@ test('narrative card edits speaker and direction while preserving the guided act
   test.skip(only(['mobile-390'])(info.project.name),'Narrative card editor');
   await openBoard(page);
   await page.getByTestId('studio-guide-step').selectOption('11');
-  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  await page.getByTestId('studio-narrative-card').locator(':scope > summary').click();
   const intent=page.getByTestId('studio-narrative-intent');
   await expect(intent).toHaveValue(/Explicar el daño recibido/);
   await expect(page.getByTestId('studio-narrative-trigger')).toContainText('Continuar diálogo');
@@ -173,7 +176,7 @@ test('narrative card edits speaker and direction while preserving the guided act
   await page.getByTestId('studio-save').click();
   await page.reload();
   await page.getByTestId('studio-guide-step').selectOption('11');
-  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  await page.getByTestId('studio-narrative-card').locator(':scope > summary').click();
   await expect(page.getByTestId('studio-narrative-speaker')).toHaveValue('Domingo Quispe');
   await expect(page.getByTestId('studio-narrative-tone')).toHaveValue('sereno');
   await expect(page.getByTestId('studio-narrative-direction')).toHaveValue('Despejar las cartas; retrato a la derecha.');
@@ -268,7 +271,7 @@ test('Studio selects a real narrative expression and the guided portrait follows
   test.skip(only(['mobile-390'])(info.project.name),'Narrative sprites');
   await openBoard(page);
   await page.getByTestId('studio-guide-step').selectOption('0');
-  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  await page.getByTestId('studio-narrative-card').locator(':scope > summary').click();
   const sprite=page.getByTestId('studio-narrative-sprite');
   const preview=page.getByTestId('studio-narrative-sprite-preview').locator('img');
   const actor=page.locator('.dr-royal-guided-actor.is-rival img');
@@ -282,7 +285,7 @@ test('Studio selects a real narrative expression and the guided portrait follows
   await expect(actor).toHaveAttribute('src',/domingo_03_burlon\.webp/);
   await page.getByTestId('studio-save').click();
   await page.reload();
-  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  await page.getByTestId('studio-narrative-card').locator(':scope > summary').click();
   await expect(page.getByTestId('studio-narrative-sprite')).toHaveValue('domingo-burlon');
   await expect(page.locator('.dr-royal-guided-actor.is-rival img')).toHaveAttribute('src',/domingo_03_burlon\.webp/);
   await sprite.selectOption('');
@@ -331,7 +334,7 @@ test('phase 2 sprite gallery and visibility direction work per guided scene with
   await openBoard(page);
   const step=page.getByTestId('studio-guide-step');
   await step.selectOption('5');
-  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  await page.getByTestId('studio-narrative-card').locator(':scope > summary').click();
   const mode=page.getByTestId('studio-narrative-portrait-mode');
   await expect(mode).toHaveValue('auto');
   await expect(page.locator('.dr-royal-guided-actor.is-player')).toHaveCount(0);
@@ -347,7 +350,7 @@ test('phase 2 sprite gallery and visibility direction work per guided scene with
   await page.getByTestId('studio-save').click();
   await page.reload();
   await step.selectOption('5');
-  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  await page.getByTestId('studio-narrative-card').locator(':scope > summary').click();
   await expect(page.getByTestId('studio-narrative-portrait-mode')).toHaveValue('show');
   await expect(page.getByTestId('studio-narrative-sprite')).toHaveValue('xervias-energia');
   await expect(page.locator('.dr-royal-guided-actor.is-player img')).toHaveAttribute('src',/xervias_05_anillo_energia\.png/);
@@ -391,7 +394,7 @@ test('Studio edits, replays and persists portrait entrance, exit and duration on
   await openBoard(page);
   const steps=page.getByTestId('studio-guide-step');
   await steps.selectOption('5');
-  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  await page.getByTestId('studio-narrative-card').locator(':scope > summary').click();
   await page.getByTestId('studio-narrative-portrait-mode').selectOption('show');
   const enter=page.getByTestId('studio-motion-enter');
   const exit=page.getByTestId('studio-motion-exit');
@@ -408,7 +411,7 @@ test('Studio edits, replays and persists portrait entrance, exit and duration on
   await page.getByTestId('studio-save').click();
   await page.reload();
   await steps.selectOption('5');
-  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  await page.getByTestId('studio-narrative-card').locator(':scope > summary').click();
   await expect(page.getByTestId('studio-motion-enter')).toHaveValue('slide-left');
   await expect(page.getByTestId('studio-motion-exit')).toHaveValue('zoom');
   await expect(page.getByTestId('studio-motion-duration')).toHaveValue('650');
@@ -423,7 +426,7 @@ test('changing an expression crossfades the same character without adding anothe
   test.skip(only(['mobile-390'])(info.project.name),'Expression transition');
   await openBoard(page);
   await page.getByTestId('studio-guide-step').selectOption('0');
-  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  await page.getByTestId('studio-narrative-card').locator(':scope > summary').click();
   const sprite=page.getByTestId('studio-narrative-sprite');
   const portrait=page.locator('.dr-royal-guided-actor.is-rival');
   const img=portrait.locator('img');
@@ -453,7 +456,7 @@ test('editor configures a narrative music mood and one-shot cue without changing
   test.skip(only(['mobile-390'])(info.project.name),'Narrative audio fields');
   await openBoard(page);
   await page.getByTestId('studio-guide-step').selectOption('11');
-  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  await page.getByTestId('studio-narrative-card').locator(':scope > summary').click();
   const music=page.getByTestId('studio-narrative-music');
   const sound=page.getByTestId('studio-narrative-sound');
   await expect(music).toHaveValue('soft');
@@ -464,7 +467,7 @@ test('editor configures a narrative music mood and one-shot cue without changing
   await page.getByTestId('studio-save').click();
   await page.reload();
   await page.getByTestId('studio-guide-step').selectOption('11');
-  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  await page.getByTestId('studio-narrative-card').locator(':scope > summary').click();
   await expect(music).toHaveValue('silent');
   await expect(sound).toHaveValue('IMPACT');
   await page.getByTestId('studio-guide-step').selectOption('12');
@@ -480,7 +483,7 @@ test('Studio uploads and reuses real MP3 in a guided intervention without manual
   test.skip(only(['mobile-390'])(info.project.name),'Music library in Studio');
   await openBoard(page);
   await page.getByTestId('studio-guide-step').selectOption('1');
-  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  await page.getByTestId('studio-narrative-card').locator(':scope > summary').click();
   const chooser=page.getByTestId('studio-narrative-music-track');
   await expect(chooser).toHaveValue('');
   await page.getByTestId('studio-music-upload').setInputFiles({
@@ -493,7 +496,7 @@ test('Studio uploads and reuses real MP3 in a guided intervention without manual
   await page.getByTestId('studio-save').click();
   await page.reload();
   await page.getByTestId('studio-guide-step').selectOption('1');
-  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  await page.getByTestId('studio-narrative-card').locator(':scope > summary').click();
   const saved=await chooser.inputValue();
   expect(saved).toMatch(/^media-/);
   await page.getByTestId('studio-guide-step').selectOption('2');
@@ -501,6 +504,7 @@ test('Studio uploads and reuses real MP3 in a guided intervention without manual
   await chooser.selectOption(saved);
   await expect(chooser).toHaveValue(saved);
   await page.getByTestId('studio-save').click();
+  await page.getByTestId('studio-open-publish').click();
   const downloadPromise=page.waitForEvent('download');
   await page.getByTestId('studio-export-publish').click();
   const download=await downloadPromise;
@@ -513,7 +517,7 @@ test('one action shares narrative music with four following beats without overri
   await openBoard(page);
   const steps=page.getByTestId('studio-guide-step');
   await steps.selectOption('1');
-  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  await page.getByTestId('studio-narrative-card').locator(':scope > summary').click();
   await page.getByTestId('studio-music-upload').setInputFiles({
     name:'Ambiente del prologo.mp3',mimeType:'audio/mpeg',
     buffer:Buffer.from([73,68,51,4,0,0,0,0,0,12,0,0,0,0,0,0,0,0,0,0]),
@@ -533,7 +537,7 @@ test('one action shares narrative music with four following beats without overri
   await page.getByTestId('studio-save').click();
   await page.reload();
   await steps.selectOption('4');
-  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  await page.getByTestId('studio-narrative-card').locator(':scope > summary').click();
   await expect(chooser).toHaveValue(selected);
 });
 
@@ -542,7 +546,7 @@ test('narrative audio timeline is editable, saved and isolated between guided be
   test.skip(only(['mobile-390'])(info.project.name),'Narrative audio timeline');
   await openBoard(page);
   await page.getByTestId('studio-guide-step').selectOption('11');
-  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  await page.getByTestId('studio-narrative-card').locator(':scope > summary').click();
   await page.getByTestId('studio-audio-timeline').locator('summary').click();
   const mode=page.getByTestId('studio-music-cue-mode');
   const musicStart=page.getByTestId('studio-musicStartDelayMs');
@@ -560,7 +564,7 @@ test('narrative audio timeline is editable, saved and isolated between guided be
   await page.getByTestId('studio-save').click();
   await page.reload();
   await page.getByTestId('studio-guide-step').selectOption('11');
-  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  await page.getByTestId('studio-narrative-card').locator(':scope > summary').click();
   await page.getByTestId('studio-audio-timeline').locator('summary').click();
   await expect(mode).toHaveValue('continue');
   await expect(musicStart).toHaveValue('1000');
@@ -616,7 +620,7 @@ test('scene audio audition starts on click and stops when switching guided inter
   test.skip(only(['mobile-390'])(info.project.name),'Manual audiovisual audition');
   await openBoard(page);
   await page.getByTestId('studio-guide-step').selectOption('0');
-  await page.getByTestId('studio-narrative-card').locator('summary').click();
+  await page.getByTestId('studio-narrative-card').locator(':scope > summary').click();
   const audition=page.getByTestId('studio-audio-audition');
   const start=page.getByTestId('studio-audition-start');
   const stop=page.getByTestId('studio-audition-stop');
@@ -637,4 +641,32 @@ test('scene audio audition starts on click and stops when switching guided inter
   await expect(stop).toBeDisabled();
   await expect(page.getByTestId('studio-audition-status')).toContainText('Listo para escuchar');
   await expect(page.getByTestId('campaign-guided-coach')).toContainText('2/32');
+});
+
+
+test('Publicar campaña guides export and GitHub review without storing credentials',async({page},info)=>{
+  test.skip(info.project.name!=='mobile-390','Mobile publication assistant');
+  await openBoard(page);
+  const editedText='Publicación segura: diálogo de prueba desde el editor.';
+  await page.getByTestId('studio-guide-text').fill(editedText);
+  await page.getByTestId('studio-guide-text').press('Tab');
+  await page.getByTestId('studio-open-publish').click();
+  const dialog=page.getByTestId('studio-publish-dialog');
+  await expect(dialog).toBeVisible();
+  await expect(dialog).toContainText('URL HTTPS');
+  await expect(dialog).toContainText('Revisa y aprueba');
+  await expect(page.getByTestId('studio-publish-github')).toHaveAttribute(
+    'href','https://github.com/Afelex/Decreto-Real/actions/workflows/studio-publicar.yml');
+  await expect(page.getByTestId('studio-publish-github')).toHaveAttribute('rel',/noopener/);
+  const [download]=await Promise.all([
+    page.waitForEvent('download'),
+    page.getByTestId('studio-export-publish').click(),
+  ]);
+  expect(download.suggestedFilename()).toBe('decreto-real-studio-publicacion.zip');
+  const bytes=new Uint8Array(await readFile(await download.path()));
+  const project=parseStudioPackage(bytes);
+  expect(project.format).toBe('zip');
+  expect(project.doc.scenes['tutorial/'+GUIDED_STEPS[0].id]?.dialogue?.text).toBe(editedText);
+  await page.getByRole('button',{name:'Cerrar publicación'}).click();
+  await expect(dialog).toHaveCount(0);
 });
