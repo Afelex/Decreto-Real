@@ -14,7 +14,7 @@ const MAX_ROOMS = 1000;
 let waitingRandom = null;
 
 const server = createServer((req, res) => {
-  if (req.url === '/health') {
+  if (new URL(req.url || '/', 'http://localhost').pathname === '/health') {
     res.writeHead(200, { 'content-type': 'application/json', 'cache-control': 'no-store' });
     res.end(JSON.stringify({ ok: true, service: 'decreto-real-pvp' }));
   } else { res.writeHead(404); res.end(); }
