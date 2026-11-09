@@ -37,7 +37,7 @@ test('todos los capítulos tienen un resumen claro y breve', () => {
 test('los ocho generales y el desenlace conservan los hechos canónicos', () => {
   assert.equal(STORY_STAGES.filter(stage => stage.kind === 'boss').length, 8);
   assert.equal(STORY_STAGES.find(stage => stage.id === '22')?.opponent, 'Fantasma de la Selva');
-  assert.match(STORY_STAGES.find(stage => stage.id === '36')!.victoryLine, /Zhinchi.*desaparece/);
+  assert.doesNotMatch(STORY_STAGES.find(stage => stage.id === '36')!.victoryLine, /Zhinchi|místicas|desaparece/); // Revelar el derrumbe solo en la escena posterior
   assert.match(STORY_STAGES.find(stage => stage.id === '38')!.victoryLine, /Sigumán es derrotado y detenido/);
   assert.doesNotMatch(STORY_STAGES.find(stage => stage.id === '38')!.victoryLine, /muere|Zhinchi sigue siendo un misterio/);
   assert.match(STORY_STAGES.find(stage => stage.id === '38')!.victoryLine, /San Jerónimo/);
