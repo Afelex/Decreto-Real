@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 1,
+  "fecha": "2026-11-09",
+  "titulo": "Decreto Real - referentes visuales principales",
+  "estilo": "Anime fantástico del siglo XVII; acabado cel shading con contornos limpios, sombras planas y volumen adulto",
+  "politica": "Las referencias de identidad del usuario prevalecen sobre imágenes generadas libremente. Cambiar técnica visual, no rediseñar personajes.",
+  "estadoImagenes": "pendientes_de_subir",
+  "nota": "Esta versión registra las identidades y rutas previstas. Los archivos PNG están en el paquete descargable externo al repositorio hasta su incorporación; no llamar a estos paths desde el juego aún.",
+  "personajes": [
+    {
+      "id": "xervias",
+      "nombre": "Xervias",
+      "rol": "protagonista",
+      "mision": null,
+      "descripcion": "Soldado joven, cabello castaño oscuro despeinado, ojos marrones, uniforme azul oscuro con decoración dorada, capa roja, corbatín blanco y broche dorado.",
+      "originalChatFile": "163480.png",
+      "sha256Prefix": "7fd80d2fb821229cff55",
+      "archivoPendiente": "art-reference/personajes-oficiales/imagenes/xervias.png",
+      "imagenEnRepositorio": false,
+      "estadoIdentidad": "referencia_original_usuario"
+    },
+    {
+      "id": "zhinchi",
+      "nombre": "Zhinchi",
+      "rol": "mentor",
+      "mision": null,
+      "descripcion": "Joven adulto, cabello rubio en mechones, ojos azules, uniforme azul con oro, capa azul, corbatín blanco y gema azul. Nunca sustituir por un personaje encapuchado o por Vándalo Rojo.",
+      "originalChatFile": "163479.png",
+      "sha256Prefix": "dd89c367c85f176095bf",
+      "archivoPendiente": "art-reference/personajes-oficiales/imagenes/zhinchi.png",
+      "imagenEnRepositorio": false,
+      "estadoIdentidad": "referencia_original_usuario"
+    },
+    {
+      "id": "siguman",
+      "nombre": "Sigumán",
+      "rol": "jefe final",
+      "mision": "38",
+      "descripcion": "Calvo, ojos verdes, cicatriz que atraviesa la zona del ojo, bigote grande curvado, sonrisa amenazante, uniforme púrpura y rojo con oro, piel clara de hombros, corbatín blanco; versión adicional: guantelete de oro místico.",
+      "originalChatFile": "167111.png",
+      "sha256Prefix": "86301f9bd669deaa2763",
+      "archivoPendiente": "art-reference/personajes-oficiales/imagenes/siguman.png",
+      "imagenEnRepositorio": false,
+      "estadoIdentidad": "referencia_original_usuario"
+    },
+    {
+      "id": "aukan-del-condor",
+      "nombre": "Aukan del Cóndor",
+      "rol": "general",
+      "mision": "30",
+      "descripcion": "Cabello oscuro largo en dos trenzas, vincha rojo-dorada y placa frontal, marcas rojas en ambas mejillas, pendientes solares dorados, manto magenta con diseños geométricos andinos.",
+      "originalChatFile": "167110.png",
+      "sha256Prefix": "b1d93fabf62a18f74516",
+      "archivoPendiente": "art-reference/personajes-oficiales/imagenes/aukan-del-condor.png",
+      "imagenEnRepositorio": false,
+      "estadoIdentidad": "referencia_original_usuario"
+    },
+    {
+      "id": "gonzalo-de-montes",
+      "nombre": "Gonzalo de Montes",
+      "rol": "general",
+      "mision": "34",
+      "descripcion": "Cabello rubio ondulado, ojos azules, armadura plateada-blanca con ribetes de oro y escudo de cruz roja, capa blanca y roja.",
+      "originalChatFile": "163488.png",
+      "sha256Prefix": "ad52f79a641eb0cd699f",
+      "archivoPendiente": "art-reference/personajes-oficiales/imagenes/gonzalo-de-montes.png",
+      "imagenEnRepositorio": false,
+      "estadoIdentidad": "referencia_original_usuario"
+    },
+    {
+      "id": "isabela-valdierra",
+      "nombre": "Isabela Valdierra",
+      "rol": "general",
+      "mision": "26",
+      "descripcion": "Cabello castaño largo y rizado, mirada rojiza, tocado de flores blancas y perlas, pendientes dorados, atuendo blanco y oro con banda roja.",
+      "originalChatFile": "163486.png",
+      "sha256Prefix": "9e6f72964d6db122d038",
+      "archivoPendiente": "art-reference/personajes-oficiales/imagenes/isabela-valdierra.png",
+      "imagenEnRepositorio": false,
+      "estadoIdentidad": "referencia_original_usuario"
+    },
+    {
+      "id": "jeronimo-arrellano",
+      "nombre": "Jerónimo Arrellano",
+      "rol": "general",
+      "mision": "18",
+      "descripcion": "Cabello castaño voluminoso, barba y bigote oscuros, cicatriz en la frente, ojos claros, armadura oscura de artillería con emblema de engranaje/rayo, bufanda roja y cañón al hombro. Sin sombrero, plumas ni corbatín blanco inventados.",
+      "originalChatFile": "163485.png",
+      "sha256Prefix": "d9f6a440f102e5354e7d",
+      "archivoPendiente": "art-reference/personajes-oficiales/imagenes/jeronimo-arrellano.png",
+      "imagenEnRepositorio": false,
+      "estadoIdentidad": "referencia_original_usuario"
+    },
+    {
+      "id": "nayisa-de-sombras",
+      "nombre": "Nayisa de Sombras",
+      "rol": "general",
+      "mision": "22",
+      "descripcion": "Cabello oscuro con trenza, ojos claros, marcas rojas en mejillas, capucha/tocado verde con plumas verdes, grandes pendientes dorados, manto verde y oro con textil moteado.",
+      "originalChatFile": "163484.png",
+      "sha256Prefix": "5d7821e18bc05112278d",
+      "archivoPendiente": "art-reference/personajes-oficiales/imagenes/nayisa-de-sombras.png",
+      "imagenEnRepositorio": false,
+      "estadoIdentidad": "referencia_original_usuario"
+    },
+    {
+      "id": "octavio-argento",
+      "nombre": "Octavio Argento",
+      "rol": "general",
+      "mision": "14",
+      "descripcion": "Cabello blanco plateado muy voluminoso, ojos violetas, uniforme púrpura con bordados dorados, joya violeta central y volantes blancos, hombrera de piel clara y armadura plateada grabada.",
+      "originalChatFile": "163483.png",
+      "sha256Prefix": "531bb124d8779caa6732",
+      "archivoPendiente": "art-reference/personajes-oficiales/imagenes/octavio-argento.png",
+      "imagenEnRepositorio": false,
+      "estadoIdentidad": "referencia_original_usuario"
+    },
+    {
+      "id": "leandro-valcazar",
+      "nombre": "Leandro Valcázar",
+      "rol": "general",
+      "mision": "10",
+      "descripcion": "Cabello castaño ondulado, mirada firme, pluma roja, armadura oscura con oro y escudo de caballo, capa roja y piel blanca en hombros.",
+      "originalChatFile": "163482.png",
+      "sha256Prefix": "0bcfe3a9c18aa1062f77",
+      "archivoPendiente": "art-reference/personajes-oficiales/imagenes/leandro-valcazar.png",
+      "imagenEnRepositorio": false,
+      "estadoIdentidad": "referencia_original_usuario"
+    },
+    {
+      "id": "baltasar-de-fierro",
+      "nombre": "Baltasar de Fierro",
+      "rol": "general",
+      "mision": "06",
+      "descripcion": "Adulto mayor, cabello y barba larga blancos, sombrero de almirante azul con ancla dorada y pluma blanca, uniforme naval azul y oro, insignias de ancla y corbatín blanco.",
+      "originalChatFile": "163481.png",
+      "sha256Prefix": "5685b162e7ad3b3d5c5b",
+      "archivoPendiente": "art-reference/personajes-oficiales/imagenes/baltasar-de-fierro.png",
+      "imagenEnRepositorio": false,
+      "estadoIdentidad": "referencia_original_usuario"
+    },
+    {
+      "id": "vandalo-rojo",
+      "nombre": "Vándalo Rojo",
+      "rol": "antagonista secundario",
+      "mision": "36",
+      "descripcion": "Joven sin barba ni bigote, cabello corto rojo oscuro parcialmente cubierto por capucha roja ajustada, antifaz rojo/dorado que oculta los ojos, cordones sujetos bajo barbilla, ropa oscura funcional y capa roja desgastada; criminal de alto rango.",
+      "originalChatFile": "a_highly_stylized_crisp_anime_manga_illustration.png",
+      "sha256Prefix": "1a45234d761712256779",
+      "archivoPendiente": "art-reference/personajes-oficiales/imagenes/vandalo-rojo.png",
+      "imagenEnRepositorio": false,
+      "estadoIdentidad": "propuesta_con_capucha_por_validar"
+    }
+  ],
+  "variantes": [
+    {
+      "personajeId": "siguman",
+      "origen": "167112.png",
+      "archivoPendiente": "art-reference/personajes-oficiales/imagenes/siguman-guantelete.png",
+      "descripcion": "Sigumán con guantelete de oro y energía mística",
+      "imagenEnRepositorio": false
+    }
+  ]
+}
