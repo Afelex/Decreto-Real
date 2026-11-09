@@ -17,7 +17,7 @@ const resolver=(artReady:boolean,v2Ready:boolean,v3Ready:boolean):PrologueArtRes
 /**
  * Oráculo: transcripción literal de la lógica de CampaignOpening ANTES de la
  * fase 2 (índices de posición y números mágicos). La composición declarativa
- * debe producir exactamente lo mismo en las 49 intervenciones.
+ * debe producir exactamente lo mismo en las 53 intervenciones.
  */
 function legacyOracle(isAfter:boolean,beat:number,after:number,r:PrologueArtResolver){
   const portraits=PROLOGUE_PORTRAITS;
