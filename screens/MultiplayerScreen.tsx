@@ -110,6 +110,12 @@ export default function MultiplayerScreen() {
   const activeTurn = Boolean(online && view?.isMyTurn && view.status === 'playing' && view.opponent.connected && !pending);
   const canPlay = (card: Card) => !!view && activeTurn && !view.pendingCombo &&
     (card.type !== 'IMPACT' || (card.rank === view.me.impact + 1 && !view.me.impactThisTurn));
+  const resetSession = () => {
+    sessionRef.current = null; setSession(null); setView(null); setWaiting(false); setError('');
+    pendingRef.current = null; setPending(false);
+    try { sessionStorage.removeItem(SESSION_KEY); } catch { /* private mode */ }
+    socketRef.current?.close(4000, 'Salir de la sala');
+  };
   const copyRoom = () => {
     if (!session) return;
     const link = window.location.origin + window.location.pathname + '?sala=' + session.code + '#/multijugador';
@@ -140,6 +146,7 @@ export default function MultiplayerScreen() {
       <h2>Esperando al rival</h2><p>Comparte este código si creaste una sala privada.</p>
       <div className="dr-pvp-code">{session.code}</div>
       <button type="button" onClick={copyRoom}>Copiar enlace de invitación</button>
+      <button type="button" onClick={resetSession}>Cancelar espera</button>
       <p>La partida comenzará automáticamente cuando entre la segunda persona.</p>
     </section>}
 
@@ -175,6 +182,7 @@ export default function MultiplayerScreen() {
         {view.status === 'playing' && <button type="button" onClick={() => {
           if (window.confirm('¿Rendirte? La partida contará como derrota.')) action({type:'surrender'});
         }} disabled={!online || pending}>Rendirse</button>}
+        {view.status === 'finished' && <button type="button" onClick={resetSession}>Nueva partida</button>}
         {view.status === 'finished' && <button type="button" onClick={() => navigate('/')}>Volver al menú</button>}
       </footer>
     </section>}
