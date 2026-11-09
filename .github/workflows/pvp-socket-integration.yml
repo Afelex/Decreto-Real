@@ -49,3 +49,20 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Test two mobile browser clients
         run: npx playwright test --config=multiplayer/server/playwright.config.mjs
+
+  remote-railway:
+    if: github.event_name == 'push'
+    needs: [multiplayer, browser]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install WebSocket dependency
+        working-directory: multiplayer/server
+        run: npm install --no-audit --no-fund
+      - name: Verify public Railway server using two remote WebSocket connections
+        working-directory: multiplayer/server
+        run: node remote-smoke.mjs
