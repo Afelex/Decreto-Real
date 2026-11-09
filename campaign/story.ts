@@ -507,7 +507,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "subboss",
     "opponent": "Vándalo Rojo",
     "openingLine": "OBJETIVO: Detén a Vándalo Rojo y evita que capture a Xervias.",
-    "victoryLine": "Vándalo es derrotado, pero escapa mientras el edificio se derrumba. Zhinchi salva a Xervias, despierta sus místicas y desaparece tras los escombros. ¿Logró salir?",
+    "victoryLine": "Vándalo cae derrotado, pero un estruendo sacude las columnas de San Jerónimo. La estructura empieza a ceder. ¿Conseguirán salir a tiempo?",
     "defeatLine": "Vándalo escapa y Zhinchi queda expuesto a su emboscada."
   },
   {
