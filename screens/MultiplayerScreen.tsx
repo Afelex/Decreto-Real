@@ -8,7 +8,7 @@ type Player = { name: string; hp: number; impact: number; connected: boolean; de
 type View = { revision: number; ruleset: string; status: 'playing' | 'finished'; isMyTurn: boolean; turnNumber: number;
   pendingCombo: 2 | 3 | null; winner: 'me' | 'opponent' | 'draw' | null; me: Player & { hand: Card[]; impactThisTurn: boolean };
   opponent: Player & { handCount: number }; lastEvent: string };
-type Session = { code: string; token: string; slot: number; name: string };
+type Session = { code: string; token: string; slot: number; name: string; randomQueue?: boolean };
 const SESSION_KEY = 'decreto-real.pvp.session.v1';
 const NAME_KEY = 'decreto-real.pvp.nickname.v1';
 const configuredUrl = import.meta.env.VITE_MULTIPLAYER_WS_URL as string | undefined;
@@ -59,7 +59,7 @@ export default function MultiplayerScreen() {
         let msg: any;
         try { msg = JSON.parse(String(event.data)); } catch { return; }
         if (msg.type === 'session' && typeof msg.token === 'string') {
-          const next: Session = { code: msg.code, token: msg.token, slot: msg.slot, name: msg.name };
+          const next: Session = { code: msg.code, token: msg.token, slot: msg.slot, name: msg.name, randomQueue: Boolean(msg.randomQueue) };
           sessionRef.current = next; setSession(next); storeSession(next);
         } else if (msg.type === 'waiting') {
           setWaiting(true); setView(null);
@@ -143,9 +143,10 @@ export default function MultiplayerScreen() {
     </section>}
 
     {session && waiting && <section className="dr-pvp-lobby">
-      <h2>Esperando al rival</h2><p>Comparte este código si creaste una sala privada.</p>
-      <div className="dr-pvp-code">{session.code}</div>
-      <button type="button" onClick={copyRoom}>Copiar enlace de invitación</button>
+      <h2>{session.randomQueue ? 'Buscando rival…' : 'Esperando al rival'}</h2>
+      {!session.randomQueue && <><p>Comparte este código para invitar a un amigo.</p>
+        <div className="dr-pvp-code">{session.code}</div>
+        <button type="button" onClick={copyRoom}>Copiar enlace de invitación</button></>}
       <button type="button" onClick={resetSession}>Cancelar espera</button>
       <p>La partida comenzará automáticamente cuando entre la segunda persona.</p>
     </section>}
