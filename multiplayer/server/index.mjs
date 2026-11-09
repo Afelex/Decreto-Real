@@ -4,7 +4,7 @@ import { WebSocket, WebSocketServer } from 'ws';
 import { createMatch, act, viewFor } from './engine.mjs';
 
 const port = Number(process.env.PORT || 3001);
-const origins = new Set((process.env.ALLOWED_ORIGINS || 'http://localhost:5173,http://127.0.0.1:5173')
+const origins = new Set((process.env.ALLOWED_ORIGINS || 'http://localhost:5173,http://127.0.0.1:5173,https://afelex.github.io')
   .split(',').map(item => item.trim()).filter(Boolean));
 const rooms = new Map();
 const REJOIN_MS = 120_000;
