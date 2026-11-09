@@ -7,7 +7,7 @@ let base;
 test.beforeAll(async () => {
   const processServer = spawn(process.execPath, ['index.mjs'], {
     cwd: new URL('.', import.meta.url).pathname,
-    env: { ...process.env, PORT: '0', ALLOWED_ORIGINS: 'http://127.0.0.1:5173' },
+    env: { ...process.env, PORT: '3971', ALLOWED_ORIGINS: 'http://127.0.0.1:3971' },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
   server = processServer;
