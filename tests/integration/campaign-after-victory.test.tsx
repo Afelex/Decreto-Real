@@ -32,8 +32,12 @@ test('all 38 victories have an authored post-victory conversation', () => {
     const lines = afterVictoryLines(mission.id);
     expect(lines.length).toBeGreaterThanOrEqual(2);
     expect(lines.every(line => line.text.length > 20)).toBe(true);
-    if (Number(mission.id) <= 35) {
+    if (Number(mission.id) <= 35 && mission.id !== '22') {
       expect(lines.some(line => line.speaker === 'Zhinchi')).toBe(true);
+    }
+    if (mission.id === '22') {
+      expect(lines.some(line => line.speaker === 'Nayisa')).toBe(true);
+      expect(lines.every(line => line.speaker !== 'Zhinchi')).toBe(true);
     }
     if (Number(mission.id) >= 37) {
       expect(lines.some(line => line.speaker === 'Xervias')).toBe(true);
