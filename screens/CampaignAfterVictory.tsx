@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { CAMPAIGN_MISSIONS, bestStars, isMissionUnlocked, loadCampaignProgress } from '../campaign/campaign.ts';
 import { afterVictoryLines } from '../campaign/afterVictory.ts';
 import { hasSeenRegionMoment, REGION_LIBERATIONS_KEY } from '../campaign/regionJourney.ts';
+import { campaignMissionBackground } from '../campaign/regionAssets.ts';
 import { speakerLineIds, victoryScreenKey } from '../campaign/studio/screenKeys.ts';
 import { StudioScreenLayers, StudioScreenPanel, StudioScreenProvider, StudioText, useStudioBackground, useStudioTitle } from './studio/StudioScreenKit';
 import { useStudio } from './studio/StudioContext';
@@ -27,7 +28,8 @@ const CampaignAfterVictoryScreen: React.FC = () => {
   const keyOf = (i: number) => (mission ? victoryScreenKey(mission.id) : 'victoria-x') + '/' + (lineIds[i] ?? 'linea-01');
   const sceneKey = keyOf(index);
   const title = useStudioTitle(sceneKey, mission?.title ?? '');
-  const sceneImage = useStudioBackground(sceneKey, './portada/portada-poster.jpg');
+  const sceneImage = useStudioBackground(sceneKey,
+    campaignMissionBackground(mission?.id ?? '') ?? './portada/portada-poster.jpg');
   /** Siguiente línea visible para la audiencia actual (las «solo desarrollador» se saltan). */
   const nextVisible = (from: number) => {
     let next = from + 1;
@@ -73,6 +75,8 @@ const CampaignAfterVictoryScreen: React.FC = () => {
   </main>;
 
   const isXervias = current.speaker === 'Xervias';
+  const speakerRole = isXervias ? 'SOLDADO' : current.speaker === 'Zhinchi' ? 'CAPITÁN'
+    : current.speaker === 'Crónica' ? 'NARRADOR' : 'PERSONAJE';
   const last = nextVisible(index) >= lines.length;
 
   return <main className="dca-screen" aria-label={`Diálogo después de la misión ${Number(mission.id)}`}>
@@ -86,15 +90,15 @@ const CampaignAfterVictoryScreen: React.FC = () => {
         <img src={sceneImage} alt="" draggable={false} />
         <div className="dca-scene-wash" />
         <div className="dca-scene-mark">✥</div>
-        <div className="dca-victory-note"><strong>Victoria · misión {Number(mission.id)} de 38</strong>
-          <p>{mission.victoryLine}</p></div>
+        {mission.id !== '36' && <div className="dca-victory-note"><strong>Victoria · misión {Number(mission.id)} de 38</strong>
+          <p>{mission.victoryLine}</p></div>}
       </div>
       <section className="dca-conversation" aria-live="polite" aria-atomic="true">
         <div className="dca-speaker">
           {isXervias ? <img src="./retratos/jugador.webp" alt="" draggable={false}/>
             : <span aria-hidden="true" className="dca-mentor-badge">✦</span>}
           <div>
-            <small>{isXervias ? 'PROTAGONISTA' : 'MENTOR · CAPITÁN'}</small>
+            <small>{speakerRole}</small>
             <h2>{current.speaker}</h2>
           </div>
         </div>
@@ -105,6 +109,7 @@ const CampaignAfterVictoryScreen: React.FC = () => {
           {lines.map((_, number) => <span key={number} className={number === index ? 'active' : ''}/>)}
         </div>
         <button type="button" className="dca-secondary" onClick={() => navigate(returnRoute)}>Volver al mapa</button>
+        {last && mission.id === '36' && <button type="button" className="dca-secondary" onClick={() => navigate('/campania/baraja')}>Editar baraja ✦</button>}
         <button type="button" className="dca-primary"
           onClick={last ? continueJourney : () => setIndex(i => nextVisible(i))}>
           {last ? mission.id === '38' ? 'Ver epílogo ›' : 'Continuar historia ›' : 'Siguiente diálogo ›'}

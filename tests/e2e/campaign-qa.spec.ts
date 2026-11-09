@@ -34,7 +34,7 @@ test('QA opens the Sigumán battle and credits directly', async ({ page }) => {
   await expect(page.getByTestId('story-combat-dialogue')).toBeVisible();
   await openQa(page);
   await page.getByLabel('Capítulo o sección').selectOption('Desenlace');
-  await page.getByRole('button', { name: 'Créditos (provisionales)' }).click();
+  await page.getByRole('button', { name: 'Créditos' }).click();
   await expect(page.getByRole('heading', { name: 'Créditos' })).toBeVisible();
   await expect(page.getByText('Gracias por acompañar a Xervias')).toBeVisible();
 });

@@ -11,9 +11,9 @@ import './one-screen-ui.css';
  * chapters, with large touch controls that remain visible on short phones.
  */
 const STORY_TEXTS = [
-  { id: 'p1', label: 'Párrafo 1', original: 'Xervias sirve a la **Orden de la Corona Solar**. Tras su consagración, recibió un anillo que canaliza las cartas en un combate llamado Decreto Real.' },
-  { id: 'p2', label: 'Párrafo 2', original: 'Dos órdenes con el mismo sello se contradicen: una libera familias y otra las arresta. Sigumán, excomandante, dirige la **Revolución Solar**; sus seguidores, los **solarianos**, difunden decretos falsos.' },
-  { id: 'cita', label: 'Cita', original: 'Zhinchi: «Investiga antes de obedecer. ¿Quién alteró el sello?»' },
+  { id: 'p1', label: 'Párrafo 1', original: 'Año 16XX. Los Reinos del Perú. Las leyes mantienen el orden y los Sellos Reales guardan una energía mística que solo algunos pueden percibir. La **Orden de la Corona Solar** forma a sus portadores.' },
+  { id: 'p2', label: 'Párrafo 2', original: 'Ahora circulan decretos contradictorios que parecen llevar sellos auténticos. Corren rumores de una **Revolución Solar** y de los **solarianos**, pero nadie sabe aún quién está alterando las órdenes.' },
+  { id: 'cita', label: 'Cita', original: '«Si las órdenes se contradicen, ¿cuál de los sellos dice la verdad?»' },
 ] as const;
 const STORY_TITLES = ['El reino escucha dos verdades', 'Cuatro destinos, un mismo secreto', 'Ocho generales, ocho decisiones'];
 

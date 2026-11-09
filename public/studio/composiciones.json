@@ -388,8 +388,7 @@
         "boxScale": 0.8,
         "hideNameplate": true,
         "hideProgress": true,
-        "hideTitle": true,
-        "text": "Virreinato del Perú, año 16XX.\n\nEl Sello Real da autoridad a las órdenes de la Corona. Pero han aparecido decretos contradictorios: unos liberan a familias y otros ordenan encarcelarlas. Todos llevan el mismo sello. ¿Quién está cambiando las órdenes?"
+        "hideTitle": true
       }
     },
     "tablero/movil": {

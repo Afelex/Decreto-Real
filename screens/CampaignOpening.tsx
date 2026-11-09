@@ -34,9 +34,14 @@ function checkpoint() {
   try {
     const raw=getCampaignStorage()?.getItem(PROLOGUE_CHECKPOINT_KEY);
     if (!raw) return {beat:0,duel:0,after:0};
-    const p=JSON.parse(raw) as {beat:number;duel:number;after:number};
+    const p=JSON.parse(raw) as {beat:number;duel:number;after:number;scriptVersion?:number};
+    // Antes la apertura tenía una intervención. Las cuatro nuevas se insertaron
+    // sin cambiar los ids originales; los checkpoints anteriores se desplazan
+    // solo una vez, antes de escribir su versión actualizada.
+    const storedBeat=Number.isInteger(p.beat)?p.beat:0;
+    const upgradedBeat=p.scriptVersion===2||storedBeat===0?storedBeat:storedBeat+4;
     return {
-      beat:Number.isInteger(p.beat)?Math.max(0,Math.min(OPENING_BEATS.length+2,p.beat)):0,
+      beat:Math.max(0,Math.min(OPENING_BEATS.length+2,upgradedBeat)),
       duel:Number.isInteger(p.duel)?Math.max(0,Math.min(GUIDED_STEPS.length-1,p.duel)):0,
       after:Number.isInteger(p.after)?Math.max(0,Math.min(AFTER_DUEL_BEATS.length-1,p.after)):0,
     };
@@ -153,7 +158,7 @@ const CampaignOpening:React.FC=()=>{
   },[]);
   React.useEffect(()=>{
     if(studioEnabled||previewStep!==null)return; // Studio preview must not alter the player's progress.
-    try{getCampaignStorage()?.setItem(PROLOGUE_CHECKPOINT_KEY,JSON.stringify({beat,duel,after}));}
+    try{getCampaignStorage()?.setItem(PROLOGUE_CHECKPOINT_KEY,JSON.stringify({beat,duel,after,scriptVersion:2}));}
     catch{/* Private browsing may disable storage. */}
   },[beat,duel,after,studioEnabled,previewStep]);
   const art=(id:PrologueArtId,fallback:string)=>artReady?prologueArtUrl(id):fallback;

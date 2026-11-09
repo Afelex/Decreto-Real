@@ -31,12 +31,17 @@ test('all 38 victories have an authored post-victory conversation', () => {
   for (const mission of CAMPAIGN_MISSIONS) {
     const lines = afterVictoryLines(mission.id);
     expect(lines.length).toBeGreaterThanOrEqual(2);
-    expect(lines.every(line => line.text.length > 20)).toBe(true);
-    if (Number(mission.id) <= 35) {
+    expect(lines.every(line => line.text.trim().length >= 12)).toBe(true); // La escena del derrumbe permite exclamaciones breves.
+    if (Number(mission.id) <= 35 && mission.id !== '22') {
       expect(lines.some(line => line.speaker === 'Zhinchi')).toBe(true);
     }
+    if (mission.id === '22') {
+      expect(lines.some(line => line.speaker === 'Nayisa')).toBe(true);
+      expect(lines.every(line => line.speaker !== 'Zhinchi')).toBe(true);
+    }
     if (Number(mission.id) >= 37) {
-      expect(lines.every(line => line.speaker === 'Xervias')).toBe(true);
+      expect(lines.some(line => line.speaker === 'Xervias')).toBe(true);
+      expect(lines.every(line => line.speaker !== 'Zhinchi')).toBe(true);
     }
   }
 });
@@ -89,7 +94,9 @@ test('after Zhinchi disappears, Xervias speaks alone in mission 37 and the epilo
   expect(screen.queryByRole('heading', { name: 'Zhinchi' })).toBeNull();
   rendered.unmount();
   at('/campania/conversacion/38');
-  fireEvent.click(screen.getByRole('button', { name: 'Siguiente diálogo ›' }));
+  for (let i = 1; i < afterVictoryLines('38').length; i++) {
+    fireEvent.click(screen.getByRole('button', { name: 'Siguiente diálogo ›' }));
+  }
   fireEvent.click(screen.getByRole('button', { name: 'Ver epílogo ›' }));
   expect(screen.getByRole('heading', { name: 'Epílogo de la campaña' })).toBeTruthy();
 });

@@ -243,40 +243,40 @@ const script: Readonly<Record<string, DialogueRow>> = {
     "Gonzalo, todavía puedes cumplir tu promesa. Empieza ayudando a quienes sufrieron por esas órdenes."
   ],
   "35": [
-    "Yo escribí las nuevas órdenes. Cambié partes de los decretos para que cada pueblo apoyara a Sigumán.",
-    "¿Por qué lo hiciste? Aprovechaste problemas reales, como el hambre y los abusos, para enfrentar a la gente.",
-    "Porque Sigumán me pagó y prometió darme poder. Era más fácil manipular su enojo que resolver sus problemas.",
-    "¡No permitiré que encuentres mis documentos originales!",
-    "Todo lo que Sigumán construyó depende de mis textos. Si caigo, se sabrá cómo engañamos al reino.",
-    "Me has vencido. Los originales están ahí: demuestran que Sigumán sabía que las órdenes eran falsas.",
-    "Leocadio, usaste el dolor de la gente para ganar poder. Guardaremos las pruebas para que nadie repita esa mentira."
+    "Yo preparé esos decretos. En San Jerónimo aprendí a conservar la resonancia de un Sello Real y colocarla sobre otras palabras.",
+    "¿Alteraste el texto sin perder toda la energía del sello? Los anillos podían sentirlo, pero las órdenes ya no eran auténticas.",
+    "Sigumán me pagó para provocar confusión. Cuando la gente temiera a sus propios vecinos, aceptaría sus órdenes sin discutirlas.",
+    "¡No dejaré que te lleves los registros de San Jerónimo!",
+    "Sigumán conoce el método y sabe que los decretos eran falsos. Si pierdo, se descubrirá toda la red.",
+    "Me venciste. Los registros están ahí. Demuestran que Sigumán dirigió la falsificación desde el principio.",
+    "Usaste las leyes para perjudicar a quienes debían proteger. Recuperaremos los originales y haremos que se conozca la verdad."
   ],
   "36": [
-    "Voy a entregarte a Sigumán. Él me dará poder sobre los soldados que antes luchaban a nuestro lado.",
-    "¿Por qué haces esto, Vándalo? Fuimos compañeros. ¿Cuándo empezaste a tratar a las personas como una recompensa?",
-    "Cuando vi que obedecer no me daba nada. Sigumán me ofreció un ejército y decidí tomarlo. Tú también podrías unirte.",
-    "¡No perderé contra ti! Sigumán me prometió el mando.",
-    "Éramos iguales, Xervias. La diferencia es que yo aprendí a conseguir lo que quiero sin pedir permiso.",
-    "Me venciste, pero sigo creyendo que el poder vale más que tus promesas.",
-    "Zhinchi me salvó y me entregó su bastón. Con él podré despertar las cartas místicas de los generales. ¿Dónde estás, maestro?"
+    "Sigumán me prometió dirigir un ejército. He venido a detenerte, Xervias. No importa que fuéramos compañeros.",
+    "¿Vándalo, por qué estás haciendo esto? ¡Estás ayudando a quien provocó las desgracias de todo el reino!",
+    "Porque ya me cansé de obedecer sin conseguir nada. Tú también podrías unirte y tener poder.",
+    "¡No perderé! Sigumán me prometió el mando y no voy a renunciar a él.",
+    "Sigues creyendo que puedes salvar a todos. Todavía no sabes lo que cuesta decidir por ti mismo.",
+    "Me has derrotado... ¡Pero estas columnas se están rompiendo! ¡Yo me largo!",
+    "No conseguirás que abandone lo que hemos comenzado. ¡Zhinchi, el techo está cediendo; tenemos que salir!"
   ],
   "37": [
-    "Sigumán me ordenó cerrar esta entrada. Aquí llegaron las últimas noticias sobre Zhinchi.",
-    "¿Dónde está mi maestro? Se quedó atrás para protegerme y ahora está gravemente herido. Necesito encontrarlo.",
-    "No lo sé. Solo me pidieron ocultar los mensajes. Si entras, llegarás hasta la sala donde espera Sigumán.",
-    "¡No pasarás! Me ordenaron destruir esos mensajes.",
-    "",
-    "",
-    "Encontré una última pista de Zhinchi, pero todavía no sé dónde está. Seguiré adelante y después volveré a buscarlo."
+    "Sigumán me ordenó cerrar esta entrada y destruir los registros antiguos de San Jerónimo.",
+    "Estos documentos pueden explicar cómo se alteraron los sellos. ¡Debo recuperarlos antes de enfrentar a Sigumán!",
+    "Son archivos reservados. Si se conoce lo que hicieron con ellos, muchos perderán su autoridad.",
+    "¡No pasarás! ¡Cumpliré la orden hasta el final!",
+    "No importa cuántos documentos recuperes. Sigumán sigue esperando detrás de estas puertas.",
+    "Está bien. Los registros son tuyos, pero nadie sabe qué le ocurrió a tu capitán.",
+    "Los documentos demuestran el engaño. No sé si Zhinchi logró escapar del derrumbe, pero continuaré con lo que me enseñó."
   ],
   "38": [
-    "He usado decretos falsos para conseguir que los generales me obedezcan. Así quería unir un reino que estaba dividido.",
-    "¿Por qué mentiste, Sigumán? La gente tenía problemas reales, pero tú los usaste para conseguir poder.",
-    "Porque pensé que solo una autoridad fuerte podía imponer la paz. Si decía toda la verdad, muchos no me seguirían.",
-    "¡No dejaré que destruyas la Revolución Solar! Sin mí, el reino volverá al caos.",
-    "Veo que estás cerca de vencerme. Pero sigo creyendo que la gente necesita a alguien que decida por ella.",
-    "He perdido. Obligarlos a obedecer no resolvió sus problemas... y ahora todo lo que construí se derrumba.",
-    "Tu error fue creer que la paz se consigue obligando a todos a callar. La gente necesita justicia y poder decidir."
+    "Utilicé decretos alterados para que los generales y los pueblos me obedecieran. Pensé que solo así lograría imponer la paz.",
+    "Provocaste conflictos para que todos te tuvieran miedo. ¡Leocadio confirmó que conocías las falsificaciones!",
+    "Si hubiera dicho la verdad, nadie habría seguido mis órdenes. Necesitaba que confiaran en mi poder.",
+    "¡No dejaré que destruyas la Revolución Solar! ¡El reino volverá al caos sin mí!",
+    "¿Todavía crees que la gente decidirá correctamente sin alguien que les imponga una sola respuesta?",
+    "Me has derrotado... Mis sellos han perdido su poder. Mis soldados ya no obedecen.",
+    "La paz no se obtiene obligando a todos a callar. Responderás por tus actos; los habitantes del reino conocerán la verdad."
   ],
   "01": [
     "Voy a detener a estas familias. Tengo una orden que dice que son culpables.",

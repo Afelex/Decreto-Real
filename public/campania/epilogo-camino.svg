@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="Xervias camina solo por los caminos de los Reinos del Perú al atardecer">
+<defs>
+  <linearGradient id="cielo" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#1b3047"/><stop offset=".38" stop-color="#a16e60"/><stop offset=".72" stop-color="#eab780"/><stop offset="1" stop-color="#e6bf8e"/></linearGradient>
+  <radialGradient id="sol"><stop stop-color="#fff7c4" stop-opacity=".95"/><stop offset=".3" stop-color="#fff3b5" stop-opacity=".65"/><stop offset="1" stop-color="#f0af6b" stop-opacity="0"/></radialGradient>
+  <linearGradient id="camino" x1="0" y1="0" x2=".5" y2="1"><stop stop-color="#a68061"/><stop offset="1" stop-color="#382e35"/></linearGradient>
+  <linearGradient id="capa" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#7d3438"/><stop offset=".5" stop-color="#aa4b48"/><stop offset="1" stop-color="#441e31"/></linearGradient>
+  <linearGradient id="montana" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#668087"/><stop offset="1" stop-color="#39485e"/></linearGradient>
+  <filter id="desenfoque"><feGaussianBlur stdDeviation="15"/></filter>
+  <filter id="luz"><feGaussianBlur stdDeviation="35"/></filter>
+</defs>
+<rect width="1600" height="900" fill="url(#cielo)"/>
+<circle cx="1135" cy="337" r="270" fill="url(#sol)"/>
+<circle cx="1135" cy="337" r="57" fill="#ffefbd" filter="url(#luz)" opacity=".65"/>
+<circle cx="1135" cy="337" r="39" fill="#fff4c3"/>
+<g opacity=".65" fill="#d1a993"><path d="M0 346Q180 309 280 341T620 328Q770 310 860 334T1260 329L1600 309V430H0Z"/></g>
+<path d="M0 496 180 343 343 471 525 296 746 500 902 357 1088 506 1290 330 1530 520 1600 468V900H0Z" fill="#5c7281" opacity=".7"/>
+<path d="M0 567 270 414 450 520 612 386 797 568 1033 421 1248 560 1410 392 1600 550V900H0Z" fill="url(#montana)"/>
+<path d="M0 624 220 531 400 611 575 519 740 639 927 561 1123 638 1410 509 1600 617V900H0Z" fill="#51575a"/>
+<path d="M0 708 230 615 449 660 565 627 680 700 841 647 1013 710 1259 604 1600 676V900H0Z" fill="#343f49"/>
+<path d="M676 648 Q801 603 912 663 Q815 691 774 748 Q727 816 720 900H470Q632 798 676 648Z" fill="url(#camino)" opacity=".85"/>
+<path d="M718 658Q786 650 834 662Q667 785 622 900" fill="none" stroke="#d3a17a" stroke-width="8" opacity=".35"/>
+<path d="M745 661Q790 661 820 666" stroke="#f3ce9c" stroke-width="5" opacity=".3"/>
+<g opacity=".7" fill="#313c3f">
+ <path d="M0 729q139-45 270-22l-70 42-200 17Z"/><path d="M1249 736q125-69 351-51v215h-240Z"/>
+ <path d="M117 741l-22-59 17 32 14-43-7 50 24-30-11 48Z"/><path d="M1454 742l-21-80 13 36 29-50-17 81 24-41-14 56Z"/>
+</g>
+<g transform="translate(767 650) scale(.85)">
+  <ellipse cx="2" cy="120" rx="52" ry="12" fill="#222733" opacity=".3"/>
+  <path d="M-23-10Q-39 32-40 75L-23 100-3 88 20 104 41 85Q31 28 18-9Z" fill="url(#capa)" stroke="#302a36" stroke-width="3"/>
+  <path d="M-15 54l-5 54-10 11q-8 7 0 9h28l8-70M15 50l13 58 8 11q7 7-2 9H7l-11-69" fill="#2c3547" stroke="#232937" stroke-width="3"/>
+  <path d="M-31-14Q-49-8-51 7l15 36 12-4-2-27 12-19M27-15Q45-8 49 10L36 40 26 33l6-25-11-17Z" fill="#a47b5c" stroke="#322c35" stroke-width="3"/>
+  <path d="M-30-20Q0-41 28-21l-6 28H-24Z" fill="#8a3838" stroke="#3d2632" stroke-width="4"/>
+  <path d="M-21-22Q-22-48-6-54H13Q27-40 20-21Z" fill="#394052" stroke="#242936" stroke-width="3"/>
+  <path d="M-22-51q20-23 44-2l-5 13q-18-10-34 3Z" fill="#342b34"/>
+  <path d="M-33-17Q-10-29 0-24Q15-29 32-16" fill="none" stroke="#d5a571" stroke-width="6"/>
+  <path d="M-40 35l-7 65m8-61 8 43" stroke="#393a4a" stroke-width="7"/>
+  <path d="M50 15l-10 100" stroke="#bfa47d" stroke-width="7"/>
+  <path d="M41 38l18 6-15 21-16-5Z" fill="#d0aa60" stroke="#5d4238" stroke-width="3"/>
+</g>
+<path d="M0 0H1600V900H0Z" fill="#151d2a" opacity=".13"/>
+</svg>

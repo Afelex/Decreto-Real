@@ -18,6 +18,8 @@ import { RegionScene } from './RegionScene';
 import { GeneralPortrait } from './GeneralPortrait';
 import BossConfrontation from './BossConfrontation';
 import { campaignMissionBackground, campaignOpponentPortrait } from '../campaign/regionAssets.ts';
+import { StudioScreenLayers, StudioScreenPanel, StudioScreenProvider, StudioText, useStudioBackground, useStudioTitle } from './studio/StudioScreenKit';
+import { useStudio } from './studio/StudioContext';
 import './campaign.css';
 
 type MissionOutcome = {
@@ -28,7 +30,8 @@ type MissionOutcome = {
 const getStorage = getCampaignStorage;
 
 /** Story presentation connects the untouched original combat to existing mission progression. */
-const CampaignMission: React.FC = () => {
+const CampaignMissionScreen: React.FC = () => {
+  const studio = useStudio();
   const navigate = useNavigate();
   const [search] = useSearchParams();
   const qaInitialView = isCampaignQaActive() && search.get('qaEscena') === 'combate' ? 'duel'
@@ -37,7 +40,48 @@ const CampaignMission: React.FC = () => {
   const mission = getCampaignMission(missionId);
   const chapter = chapterForStage(missionId ?? '');
   const enemy = enemyForMission(missionId ?? '');
-  const conversation = mission ? combatConversationForMission(mission.id) : undefined;
+  const originalConversation = mission ? combatConversationForMission(mission.id) : undefined;
+  const briefingKey = 'mision-' + (mission?.id ?? '00');
+  const briefingTitle = useStudioTitle(briefingKey, mission?.title ?? '');
+  const briefingArt = useStudioBackground(briefingKey, '');
+  const briefingObjective = mission?.openingLine.includes(':')
+    ? mission.openingLine.substring(mission.openingLine.indexOf(':') + 1).trim()
+    : mission?.openingLine ?? '';
+  // Cada intervención tiene una clave estable, compartida entre juego y DRStudio.
+  // Las ediciones no afectan el motor de combate, solo lo que dicen los personajes.
+  const speechKey = (phase: string, index: number) =>
+    briefingKey + '/' + phase + '-' + String(index + 1).padStart(2, '0');
+  const visibleSpeech = (key: string, original: string) => {
+    const scene = studio.viewScene(key);
+    return studio.visibleTo(scene?.devOnly) ? scene?.dialogue?.text ?? original : original;
+  };
+  const phases = ['intro', 'midpoint', 'critical', 'victory'] as const;
+  const conversation = originalConversation ? {
+    ...originalConversation,
+    intro: originalConversation.intro.map((line, index) => ({
+      ...line, text: visibleSpeech(speechKey('intro', index), line.text),
+    })),
+    midpoint: originalConversation.midpoint.map((line, index) => ({
+      ...line, text: visibleSpeech(speechKey('midpoint', index), line.text),
+    })),
+    critical: originalConversation.critical.map((line, index) => ({
+      ...line, text: visibleSpeech(speechKey('critical', index), line.text),
+    })),
+    victory: originalConversation.victory.map((line, index) => ({
+      ...line, text: visibleSpeech(speechKey('victory', index), line.text),
+    })),
+  } : undefined;
+  const briefingTexts = [
+    { key: briefingKey + '/descripcion', label: 'Contexto de la misión', original: mission?.description ?? '' },
+    { key: briefingKey + '/objetivo', label: 'Objetivo', original: briefingObjective },
+    ...phases.flatMap(phase => (originalConversation?.[phase] ?? []).map((line, index) => ({
+      key: speechKey(phase, index),
+      label: ({ intro:'Antes del duelo', midpoint:'Mitad del combate', critical:'Rival en peligro', victory:'Después del duelo' })[phase]
+        + ' · ' + (line.speaker === 'opponent' ? originalConversation?.opponentName : line.speaker === 'player' ? 'Xervias' : 'Sistema')
+        + ' ' + (index + 1),
+      original: line.text,
+    }))),
+  ];
   const [attempt, setAttempt] = React.useState(0);
   const [view, setView] = React.useState<'briefing' | 'confrontation' | 'duel'>(qaInitialView);
   const [outcome, setOutcome] = React.useState<MissionOutcome | null>(null);
@@ -95,11 +139,11 @@ const CampaignMission: React.FC = () => {
       warning={!outcome.saved ? 'No se pudo guardar tu progreso en este navegador.' : undefined}
       reward={outcome.won && outcome.saved ? mysticalReward
         ? `Carta mística de ${mysticalReward.owner} añadida a tu colección${legacyAwakened ? '.' : ' (sellada).'}`
-        : mission.id === '36' ? 'El bastón de Zhinchi despierta tus cartas místicas. ¡Editar baraja desbloqueado!' : undefined
+        : mission.id === '36' ? 'El duelo ha terminado, pero el edificio está cediendo. ¡Continúa la historia!' : undefined
         : undefined}
       narrative={outcome.won ? mission.victoryLine : mission.defeatLine}
       actions={[
-        ...(outcome.won && outcome.saved && (mysticalReward || mission.id === '36') ? [{
+        ...(outcome.won && outcome.saved && mysticalReward ? [{
           label: mission.id === '36' || legacyAwakened ? 'Editar baraja mística ✦' : 'Ver mística sellada ✦',
           onClick: () => navigate('/campania/baraja'),
         }] : []),
@@ -119,16 +163,17 @@ const CampaignMission: React.FC = () => {
       <button type="button" onClick={() => navigate(returnToMap)}>‹ Mapa</button>
       <div><small>DECRETO REAL I · HISTORIA</small><h1>{chapter?.title ?? 'Camino de campaña'}</h1></div>
     </header>
-    <section className="dc-story-scene dc-briefing-scene" aria-labelledby="dc-scene-title">
+    <section className="dc-story-scene dc-briefing-scene" aria-labelledby="dc-scene-title"
+      style={briefingArt ? {backgroundImage:'url("'+briefingArt+'")',backgroundSize:'cover',backgroundPosition:'center'} : undefined}>
       <RegionScene chapterId={chapter?.id} missionId={mission.id} formidable={mission.kind === 'boss' || mission.id === '38'}/>
       {mission.kind === 'boss' && <span className="dc-general-banner"><GeneralPortrait chapterId={chapter?.id ?? ''} className="dc-mini-general"/><span>♛ GENERAL DE LA REGIÓN · {mission.title}</span></span>}
       <span className="dc-scene-label">{mission.kind === 'boss' ? 'ENCUENTRO CON GENERAL' : mission.kind === 'subboss' ? 'ENCUENTRO CON SUBJEFE' : mission.kind === 'final' ? 'ENFRENTAMIENTO FINAL' : 'NUEVA MISIÓN'} · {mission.id}/38</span>
-      <h2 id="dc-scene-title">{mission.title}</h2>
+      {briefingTitle !== null && <h2 id="dc-scene-title">{briefingTitle}</h2>}
       <p className="dc-scene-location">⌖ {chapter?.region} · {enemy ? `${enemy.role}: ${enemy.name}` : mission.opponent}</p>
-      <p className="dc-scene-narration">{mission.description}</p>
+      <p className="dc-scene-narration"><StudioText k={briefingKey + '/descripcion'} original={mission.description}/></p>
       <div className="dc-story-conversation">
         <small>{mission.openingLine.includes(':') ? mission.openingLine.split(':', 1)[0] : 'CRÓNICA'}</small>
-        <p>{mission.openingLine.includes(':') ? mission.openingLine.substring(mission.openingLine.indexOf(':') + 1).trim() : mission.openingLine}</p>
+        <p><StudioText k={briefingKey + '/objetivo'} original={briefingObjective}/></p>
       </div>
       <div className="dc-mission-card">
         {missionStarGoals(mission).map(goal =>
@@ -140,6 +185,9 @@ const CampaignMission: React.FC = () => {
         <button className="dc-secondary" onClick={() => navigate(returnToMap)}>Volver al mapa</button>
       </div>
     </section>
+    <StudioScreenLayers sceneKey={briefingKey}/>
+    <StudioScreenPanel label={'Misión ' + mission.id + ' · Guion'} sceneKey={briefingKey}
+      originalTitle={mission.title} texts={briefingTexts}/>
   </main>;
 
   if (view === 'confrontation') return <BossConfrontation key={mission.id}
@@ -160,5 +208,7 @@ const CampaignMission: React.FC = () => {
     onReturn={() => navigate(returnToMap)}
   />;
 };
+
+const CampaignMission: React.FC = () => <StudioScreenProvider><CampaignMissionScreen/></StudioScreenProvider>;
 
 export default CampaignMission;

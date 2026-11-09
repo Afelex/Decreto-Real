@@ -65,15 +65,23 @@ test('the final scene requires the final mission to be completed', () => {
   expect(screen.getByRole('heading', { name: 'El epílogo sigue sellado' })).toBeTruthy();
 });
 
-test('the final mission victory reveals the canonical ending', () => {
+test('after 38 missions Xervias walks alone and Zhinchi is not revealed', () => {
   window.localStorage.setItem(CAMPAIGN_STORAGE_KEY, JSON.stringify({ version: 1, stars: Object.fromEntries(Array.from({ length: 38 }, (_, i) => [String(i + 1).padStart(2, '0'), 1])) }));
   screenAt('/campania/epilogo');
-  expect(screen.getByRole('heading', { name: 'El Sello permanece' })).toBeTruthy();
-  expect(screen.getByText(/Sigumán, que conocía parte del engaño/)).toBeTruthy();
+  expect(screen.getByRole('heading', { name: 'La verdad recuperada' })).toBeTruthy();
+  expect(screen.getByText(/El comandante fue derrotado y quedó bajo custodia/)).toBeTruthy();
   fireEvent.click(screen.getByRole('button', { name: 'Siguiente ›' }));
-  expect(screen.getByText(/Zhinchi desapareció gravemente herido/)).toBeTruthy();
+  expect(screen.getByRole('heading', { name: 'Un camino en silencio' })).toBeTruthy();
+  expect(screen.getByText(/Xervias camina solo/)).toBeTruthy();
+  fireEvent.click(screen.getByRole('button', { name: 'Siguiente ›' }));
+  expect(screen.getByRole('heading', { name: 'Lo que aprendí' })).toBeTruthy();
+  expect(screen.getByText(/No sé qué fue de usted/)).toBeTruthy();
+  fireEvent.click(screen.getByRole('button', { name: 'Siguiente ›' }));
+  expect(screen.getByRole('heading', { name: 'Seguiré adelante' })).toBeTruthy();
+  expect(screen.getByText(/mientras tenga fuerzas para hacerlo/)).toBeTruthy();
   expect(screen.getByText('FIN')).toBeTruthy();
-  expect(screen.queryByText(/continuará|Decreto Real II/i)).toBeNull();
+  expect(screen.getByRole('button', { name: 'Ver créditos ›' })).toBeTruthy();
+  expect(document.body.textContent).not.toMatch(/Zhinchi ha regresado|Sigumán muere|continuará|Decreto Real II/i);
 });
 
 test('a forged final result without preceding victories cannot reveal the epilogue', () => {

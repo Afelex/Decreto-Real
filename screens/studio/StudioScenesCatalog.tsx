@@ -17,7 +17,8 @@ export function studioPathFor(path:string):string {
 
 /**
  * Catálogo de escenas editables con Decreto Real Studio (solo QA): prólogo,
- * conversaciones tras victoria, regiones, crónica, epílogo y créditos. Cada
+ * 38 misiones (contexto y diálogo de combate), conversaciones tras victoria,
+ * regiones, crónica, epílogo y créditos. Cada
  * entrada prepara una partida temporal de QA, sin tocar la partida real.
  */
 export default function StudioScenesCatalog(){
@@ -28,7 +29,7 @@ export default function StudioScenesCatalog(){
     navigate(studioPathFor(path));
   };
   const groups=new Map<string,QaDestination[]>();
-  for(const item of QA_CAMPAIGN_DESTINATIONS.filter(d=>EDITABLE.test(d.path))){
+  for(const item of QA_CAMPAIGN_DESTINATIONS.filter(d=>EDITABLE.test(d.path) || d.id.startsWith('mision-'))){
     const list=groups.get(item.group)??[];list.push(item);groups.set(item.group,list);
   }
   const mapDestination=QA_CAMPAIGN_DESTINATIONS.find(d=>d.id==='prologo-mapa');
@@ -38,7 +39,7 @@ export default function StudioScenesCatalog(){
     <section>
       <h2>Prólogo cinematográfico</h2>
       <ul>
-        <li><button type="button" data-testid="studio-catalog-prologo" onClick={()=>navigate('/studio')}>✦ Prólogo · 49 intervenciones</button></li>
+        <li><button type="button" data-testid="studio-catalog-prologo" onClick={()=>navigate('/studio')}>✦ Prólogo · 53 intervenciones</button></li>
         <li><button type="button" data-testid="studio-catalog-tablero" onClick={()=>navigate('/game?studio=1')}>♜ Tablero de juego · retratos, mazos y botones</button></li>
         {mapDestination&&<li><button type="button" data-testid="studio-catalog-cronica"
           onClick={()=>open(mapDestination,'/campania/historia')}>Crónica · El Sello y la Revolución Solar</button></li>}

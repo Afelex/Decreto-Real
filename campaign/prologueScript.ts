@@ -11,7 +11,11 @@ export type OpeningBeat = {id: string; scene: PrologueSceneId; speaker: string; 
 export type AfterDuelBeat = {id: string; phase: AfterDuelPhase; speaker: string; text: string};
 
 export const OPENING_BEATS: readonly OpeningBeat[] = [
-  {id:'pergamino-01',scene:'pergamino',title:'El misterio del Sello Real',speaker:'Crónica',text:'Virreinato del Perú, siglo XVII. El Sello Real da autoridad a las órdenes de la Corona. Pero han aparecido decretos contradictorios: unos liberan a familias y otros ordenan encarcelarlas. Todos llevan el mismo sello. ¿Quién está cambiando las órdenes?'},
+  {id:'pergamino-01',scene:'pergamino',title:'Los Reinos del Perú',speaker:'Crónica',text:'Año 16XX. Los Reinos del Perú. En estas tierras, la paz y el orden se mantienen gracias a las leyes del reino.'},
+  {id:'pergamino-02',scene:'pergamino',title:'Los Sellos Reales',speaker:'Crónica',text:'Las órdenes más importantes llevan un Sello Real. Pero esos sellos no son simples marcas: en su interior guardan un misterioso poder místico.'},
+  {id:'pergamino-03',scene:'pergamino',title:'Un poder especial',speaker:'Crónica',text:'Todos pueden ver los sellos, pero solo algunas personas son capaces de percibir su energía y comprobar su autenticidad.'},
+  {id:'pergamino-04',scene:'pergamino',title:'El misterio del Sello Real',speaker:'Crónica',text:'Sin embargo, algo extraño está ocurriendo. Han comenzado a aparecer decretos contradictorios: sus sellos parecen verdaderos, pero su energía no corresponde con las órdenes.'},
+  {id:'pergamino-05',scene:'pergamino',title:'El misterio del Sello Real',speaker:'Crónica',text:'Alguien está alterando los sellos del reino. Si nadie puede confiar en las leyes, la paz de los Reinos del Perú estará en peligro.'},
   {id:'arresto-01',scene:'arresto',title:'Una orden inesperada',speaker:'Madre',text:'¡Por favor! ¡No hemos hecho nada! ¡Mis hijos no han cometido ningún crimen!'},
   {id:'arresto-02',scene:'arresto',title:'Una orden inesperada',speaker:'Domingo Quispe',text:'Lo siento, señora. Tenemos órdenes de llevarlos bajo custodia. El documento tiene el Sello Real.'},
   {id:'arresto-03',scene:'arresto',title:'Una orden inesperada',speaker:'Madre',text:'¡Pero ayer nos dijeron que éramos libres! ¿Por qué ahora quieren encarcelarnos?'},
