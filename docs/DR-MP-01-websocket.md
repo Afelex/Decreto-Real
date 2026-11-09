@@ -23,6 +23,28 @@ Esta rama incorpora un **piloto de partidas amistosas** y no modifica el duelo c
 - Rendirse produce derrota. Al terminar 120 turnos o agotarse manos y mazos de ambos, se declara empate.
 - **No se incluyen todavía cartas místicas, editor de barajas ni partidas clasificatorias.** Las reglas de IA de `/game` y `/duelo-v1` no se usan para el PvP.
 
+## Prueba de dos celulares sin fusionar el juego público
+El servidor de Railway ofrece una **pantalla de ensayo independiente** en:
+**https://decreto-real-production.up.railway.app/prueba**
+
+Esta ruta corresponde al mismo servidor de partidas y usa conexiones WebSocket seguras
+`wss://decreto-real-production.up.railway.app`. No modifica la web de GitHub Pages,
+la campaña ni DRStudio. El servidor debe haberse desplegado con el código de esta rama.
+
+1. En el primer celular, abre `/prueba`, escribe un apodo y pulsa **Crear sala privada**.
+2. Pulsa **Copiar enlace de invitación** y envíalo al segundo celular.
+3. En el segundo celular, abre el enlace, escribe otro apodo y pulsa **Unirme a una sala**.
+4. Comprueba turnos, cartas ocultas, robo y combos, luego prueba **Rendirse** para verificar los dos resultados.
+5. Cierra brevemente la pestaña de uno y vuelve antes de 120 segundos para validar reconexión.
+
+Si no se recibe conexión, verifica `/health`, el despliegue activo en Railway,
+el puerto de Public Networking y el origen `https://decreto-real-production.up.railway.app`
+en `ALLOWED_ORIGINS` si se configuró manualmente.
+
+En CI, `PvP Socket Integration` comprueba las reglas y sockets en Node.js 22/24,
+el recorrido de dos navegadores con Playwright y una prueba remota contra Railway.
+Esta última solo corre en pushes de la rama del piloto y espera el despliegue de `/prueba`.
+
 ## Desarrollo local
 1. En una terminal: `cd multiplayer/server && npm install && npm start`. Expone `http://localhost:3001/health` y WebSocket en puerto 3001.
 2. En otra terminal, desde la raíz del proyecto: `npm install && npm run dev`.
