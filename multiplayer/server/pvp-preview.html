@@ -13,7 +13,12 @@ header{display:flex;align-items:center;justify-content:space-between;gap:12px;bo
 header div{display:grid;gap:2px}h1{font-family:Georgia,serif;font-size:25px;margin:0;color:#f7d9a8}h2{font-family:Georgia,serif;margin:0;font-size:21px}
 small{font-size:11px;color:#b9b3ac}p{line-height:1.5;margin:0;font-size:14px}.online{color:#83e1b0}.offline{color:#dfaa8f}
 section{border:1px solid #7f6745;background:#171c28e8;border-radius:15px;padding:16px;display:grid;gap:14px}
-#lobby{margin:auto 0}label{display:grid;gap:6px;font-size:13px;font-weight:600}
+#lobby{margin:auto 0}#identity{padding:10px 12px;border:1px solid #6b624f;border-radius:9px;background:#202536;text-align:left}
+.profile-line{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.profile-line strong{font-size:17px;overflow-wrap:anywhere}.profile-line button{min-height:31px;padding:4px 12px;font-size:12px}
+#showJoin{border:none;background:transparent;text-decoration:underline;color:#d0c1aa;min-height:34px;font-size:13px}
+#joinArea{display:grid;gap:10px}details{margin-top:12px;font-size:12px}summary{cursor:pointer;color:#d8c6a6}
+label{display:grid;gap:6px;font-size:13px;font-weight:600}
 input{font:inherit;width:100%;border:1px solid #7b765f;padding:12px;border-radius:9px;background:#0e1320;color:#fff}
 button{font:inherit;font-weight:600;cursor:pointer;border:1px solid #a89369;color:#f7e9d1;background:#2b2b39;border-radius:9px;min-height:45px;padding:9px 13px}
 button:disabled{opacity:.42;cursor:not-allowed}button:focus-visible,input:focus-visible{outline:3px solid #ffe4a0;outline-offset:3px}
@@ -45,18 +50,22 @@ footer{display:flex;gap:8px}footer button{flex:1}
 <header><div><small>DECRETO REAL · PRUEBA DE RED</small><h1>Duelo multijugador</h1></div><small id="network" class="offline" role="status">Conectando…</small></header>
 <p id="alert" role="alert" hidden></p>
 <section id="lobby">
-<h2>Enfréntate a otro jugador</h2>
-<p>Versión de prueba. No altera tu campaña, no guarda clasificaciones ni usa tu cuenta de Peruanistas.</p>
-<label>Tu apodo<input id="name" placeholder="2 a 24 caracteres" maxlength="24" autocomplete="nickname"></label>
-<button id="create" class="primary" disabled>Crear sala privada</button>
-<label>Código de invitación<input id="code" maxlength="10" placeholder="Código de 10 caracteres" autocapitalize="characters"></label>
-<button id="join" disabled>Unirme a una sala</button>
-<button id="queue" disabled>Buscar rival aleatorio</button>
-<p class="help">Abre esta página en dos celulares. El primero crea una sala y comparte el enlace con el segundo.</p>
+<h2 id="lobbyTitle">¿Cómo quieres jugar?</h2>
+<p id="lobbyHint">Elige una opción y comienza. No necesitas registrar una cuenta para esta prueba.</p>
+<div id="identity" hidden><small>JUEGAS COMO</small><div class="profile-line"><strong id="savedName"></strong><button id="editName" type="button">Cambiar</button></div></div>
+<label id="nameBox">Tu apodo (solo la primera vez)<input id="name" placeholder="Elige tu nombre de jugador" maxlength="24" autocomplete="nickname"></label>
+<button id="queue" class="primary" disabled>⚔ Jugar ahora</button>
+<button id="create" disabled>Invitar a un amigo</button>
+<button id="showJoin" type="button">Tengo un código de invitación</button>
+<div id="joinArea" hidden>
+<label>Código recibido<input id="code" maxlength="10" placeholder="Código de 10 caracteres" autocapitalize="characters"></label>
+<button id="join" disabled>Unirme al duelo</button>
+</div>
+<p class="help">La invitación se comparte mediante un enlace. El código de la sala solo es una alternativa.</p>
 </section>
 <section id="waiting" hidden>
 <h2 id="waitingTitle">Esperando al rival…</h2>
-<div id="invite" hidden><p>Comparte el siguiente código o la invitación:</p><p class="code" id="room"></p><button id="copy">Copiar enlace de invitación</button></div>
+<div id="invite" hidden><p>Invita a un amigo mediante un enlace:</p><button id="copy" class="primary">Compartir invitación</button><details><summary>¿Prefieres copiar el código?</summary><p class="code" id="room"></p></details></div>
 <button id="cancel">Cancelar espera</button>
 <p class="help">La partida comenzará cuando entren las dos personas.</p>
 </section>
@@ -85,7 +94,26 @@ footer{display:flex;gap:8px}footer button{flex:1}
   const labels = {ATTACK:'Ataque',DEFENSE:'Defensa',ORDER:'Orden',IMPACT:'Impacto'};
   try { session = JSON.parse(sessionStorage.getItem(key) || 'null'); } catch {}
   try { $('name').value = localStorage.getItem(nameKey) || ''; } catch {}
-  $('code').value = (new URL(location.href)).searchParams.get('sala') || '';
+  const inviteCode = (new URL(location.href)).searchParams.get('sala') || '';
+  const invited = /^[0-9A-F]{10}$/i.test(inviteCode);
+  let autoJoinAttempted = false;
+  $('code').value = invited ? inviteCode.toUpperCase() : '';
+  $('lobbyTitle').textContent = invited ? 'Te invitaron a un duelo' : '¿Cómo quieres jugar?';
+  $('lobbyHint').textContent = invited ? 'Acepta la invitación y entrarás directamente a la partida.' : 'Elige una opción y comienza. No necesitas registrar una cuenta para esta prueba.';
+  if (invited) {
+    $('queue').hidden = $('create').hidden = $('showJoin').hidden = true;
+    $('joinArea').hidden = false;
+    $('join').textContent = 'Aceptar desafío';
+    $('join').classList.add('primary');
+  }
+  function updateIdentity() {
+    const name = $('name').value.trim();
+    const storedName = (()=>{try{return localStorage.getItem(nameKey) || '';}catch{return '';}})();
+    $('identity').hidden = !storedName;
+    $('nameBox').hidden = !!storedName;
+    $('savedName').textContent = storedName;
+  }
+  updateIdentity();
   const alert = message => { $('alert').hidden = !message; $('alert').textContent = message || ''; };
   function send(data) {
     if(!ws || ws.readyState !== WebSocket.OPEN) { alert('No hay conexión con el servidor.'); return false; }
@@ -102,6 +130,7 @@ footer{display:flex;gap:8px}footer button{flex:1}
     if(name.length < 2 || name.length > 24) return alert('El apodo debe tener entre 2 y 24 caracteres.');
     if(type === 'join' && !/^[0-9A-F]{10}$/.test($('code').value.trim().toUpperCase())) return alert('Introduce un código de sala válido.');
     try { localStorage.setItem(nameKey, name); } catch {}
+    updateIdentity();
     alert('');
     send({type,name,...(type === 'join' ? {code:$('code').value.trim().toUpperCase()} : {})});
   }
@@ -180,6 +209,10 @@ footer{display:flex;gap:8px}footer button{flex:1}
     ws.addEventListener('open',()=>{
       online=true;alert('');
       if(session) send({type:'resume',code:session.code,token:session.token});
+      else if(invited && !autoJoinAttempted && $('name').value.trim().length>=2) {
+        autoJoinAttempted=true;
+        enter('join');
+      }
       render();
     });
     ws.addEventListener('message',event=>{
@@ -187,6 +220,7 @@ footer{display:flex;gap:8px}footer button{flex:1}
       if(data.type==='session') {
         session={code:data.code,token:data.token,randomQueue:!!data.randomQueue};
         try{sessionStorage.setItem(key,JSON.stringify(session));}catch{}
+        if (invited) history.replaceState(null,'',location.pathname);
       } else if(data.type==='waiting') {
         waiting=true;view=null;
       } else if(data.type==='state') {
@@ -210,6 +244,11 @@ footer{display:flex;gap:8px}footer button{flex:1}
   $('create').onclick=()=>enter('create');
   $('join').onclick=()=>enter('join');
   $('queue').onclick=()=>enter('queue');
+  $('showJoin').onclick=()=>{$('joinArea').hidden=!$('joinArea').hidden;};
+  $('editName').onclick=()=>{
+    try { localStorage.removeItem(nameKey); } catch {}
+    updateIdentity();$('name').focus();
+  };
   $('cancel').onclick=reset;
   $('new').onclick=reset;
   $('end').onclick=()=>action({type:'end_turn'});
@@ -218,6 +257,10 @@ footer{display:flex;gap:8px}footer button{flex:1}
   $('heal').onclick=()=>action({type:'combo',choice:'HEAL'});
   $('copy').onclick=async()=>{
     const invite=location.origin+'/prueba?sala='+encodeURIComponent(session.code);
+    if (navigator.share) {
+      try { await navigator.share({ title:'Decreto Real', text:'Te desafío a un duelo en Decreto Real', url:invite }); return; }
+      catch(err) { if(err?.name==='AbortError') return; }
+    }
     try{await navigator.clipboard.writeText(invite);$('copy').textContent='¡Enlace copiado!';}
     catch{prompt('Copia esta dirección',invite);}
   };
