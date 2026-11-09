@@ -96,3 +96,23 @@ test('campaign audiovisual director edits a region dialogue without affecting ot
   await expect(page.getByTestId('studio-campaign-av-tone')).toHaveValue('preocupado');
   await expect(page.getByTestId('studio-campaign-av-direction')).toHaveValue('Dejar libre el retrato de Xervias.');
 });
+
+
+test('mission dialogue edits drive the actual duel and keep the rules unchanged',async({page},info)=>{
+  test.skip(info.project.name!=='mobile-390','Mission authoring smoke test on phone');
+  await catalog(page);
+  await page.locator('[data-testid="studio-catalog-item"][data-path="/campania/mision/03"]').click();
+  await expect(page.getByTestId('dr-studio')).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Niebla sobre el Callao'})).toBeVisible();
+  const select=page.getByTestId('studio-screen-text-select');
+  await select.selectOption({index:0});
+  await page.getByTestId('studio-dialogue-text').fill('Una inspección importante en el Callao.');
+  await page.getByTestId('studio-dialogue-text').press('Tab');
+  await expect(page.locator('.dc-scene-narration')).toContainText('Una inspección importante en el Callao.');
+  await select.selectOption({index:2}); // primera réplica del rival antes del combate
+  await page.getByTestId('studio-dialogue-text').fill('La carga del Callao debe continuar. Nadie puede revisar estas cajas.');
+  await page.getByTestId('studio-dialogue-text').press('Tab');
+  await page.getByTestId('studio-save').click();
+  await page.getByRole('button',{name:/Preparar combate/}).click();
+  await expect(page.getByTestId('story-combat-dialogue')).toContainText('La carga del Callao debe continuar.');
+});
