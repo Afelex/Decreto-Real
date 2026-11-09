@@ -78,7 +78,6 @@ function enter(ws, room, name) {
   if (room.seats.length !== 1 || room.match) return fail(ws, 'La sala ya está completa.');
   if (room.sockets[0]?.readyState !== WebSocket.OPEN) return fail(ws, 'El creador de la sala está desconectado.');
   room.seats.push({ name, token: token() });
-  room.sockets.push(null);
   room.match = createMatch(room.seats.map(seat => seat.name));
   if (waitingRandom === room.code) waitingRandom = null;
   attach(ws, room, 1);
