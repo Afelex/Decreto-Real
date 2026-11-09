@@ -27,9 +27,9 @@ async function waitForPreview() {
   throw new Error('Railway aún no publica /prueba: ' + (lastError?.message ?? 'desconocido'));
 }
 
-function connect() {
+function connect(origin = base) {
   return new Promise((resolve, reject) => {
-    const ws = new WebSocket(socketUrl, { origin: base, handshakeTimeout: timeoutMs });
+    const ws = new WebSocket(socketUrl, { origin, handshakeTimeout: timeoutMs });
     const timer = setTimeout(() => { ws.terminate(); reject(new Error('Timeout WebSocket WSS')); }, timeoutMs);
     ws.once('open', () => { clearTimeout(timer); resolve(ws); });
     ws.once('error', err => { clearTimeout(timer); reject(err); });
@@ -55,7 +55,7 @@ function send(ws, obj) { ws.send(JSON.stringify(obj)); }
 async function testOnlineDuel() {
   let first, second;
   try {
-    first = await connect();
+    first = await connect('https://afelex.github.io');
     second = await connect();
     const sessionOne = waitMessage(first, 'session');
     const waitingOne = waitMessage(first, 'waiting');
@@ -92,7 +92,7 @@ async function testOnlineDuel() {
     const [resultA,resultB] = await Promise.all([finishedA,finishedB]);
     assert.equal(resultA.view.winner, 'opponent');
     assert.equal(resultB.view.winner, 'me');
-    console.log('PASS: prueba remota Railway HTTPS + WSS, sala privada, manos ocultas, turno y resultado');
+    console.log('PASS: Railway WSS acepta GitHub Pages y Railway, sala privada, manos ocultas, turno y resultado');
   } finally {
     first?.close();
     second?.close();
