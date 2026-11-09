@@ -16,7 +16,11 @@ async function waitForPreview() {
       assert.equal(health.status, 200);
       assert.deepEqual(await health.json(), { ok: true, service: 'decreto-real-pvp' });
       assert.equal(preview.status, 200);
-      assert.match(await preview.text(), /Duelo multijugador/);
+      const page = await preview.text();
+      assert.match(page, /Duelo multijugador/);
+      assert.match(page, /¿Cómo quieres jugar\?/);
+      assert.match(page, /Invitar a un amigo/);
+      assert.match(page, /Aceptar desafío/);
       return;
     } catch (err) { lastError = err; await pause(3000); }
   }
