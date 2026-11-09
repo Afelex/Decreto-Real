@@ -1,4 +1,7 @@
 import {test,expect,type Page} from '@playwright/test';
+import {readFile} from 'node:fs/promises';
+import {parseStudioPackage} from '../../campaign/studio/package';
+import {GUIDED_STEPS} from '../../campaign/guidedOpeningDuel';
 
 /** Studio · Tablero: ajustes visuales del duelo por perfil de pantalla, sin tocar el juego. */
 const only=(names:string[])=>(projectName:string)=>!names.includes(projectName);
@@ -644,6 +647,9 @@ test('scene audio audition starts on click and stops when switching guided inter
 test('Publicar campaña guides export and GitHub review without storing credentials',async({page},info)=>{
   test.skip(info.project.name!=='mobile-390','Mobile publication assistant');
   await openBoard(page);
+  const editedText='Publicación segura: diálogo de prueba desde el editor.';
+  await page.getByTestId('studio-guide-text').fill(editedText);
+  await page.getByTestId('studio-guide-text').press('Tab');
   await page.getByTestId('studio-open-publish').click();
   const dialog=page.getByTestId('studio-publish-dialog');
   await expect(dialog).toBeVisible();
@@ -657,6 +663,10 @@ test('Publicar campaña guides export and GitHub review without storing credenti
     page.getByTestId('studio-export-publish').click(),
   ]);
   expect(download.suggestedFilename()).toBe('decreto-real-studio-publicacion.zip');
+  const bytes=new Uint8Array(await readFile(await download.path()));
+  const project=parseStudioPackage(bytes);
+  expect(project.format).toBe('zip');
+  expect(project.doc.scenes['tutorial/'+GUIDED_STEPS[0].id]?.dialogue?.text).toBe(editedText);
   await page.getByRole('button',{name:'Cerrar publicación'}).click();
   await expect(dialog).toHaveCount(0);
 });
