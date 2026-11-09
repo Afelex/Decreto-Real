@@ -46,7 +46,7 @@ test('nameplate, progress and title can be shown only to developers; the block c
 
 test('VS screen: bands, names and the VS mark are editable pieces',async({page},info)=>{
   test.skip(only(['mobile-390','desktop-1280'])(info.project.name),'Versus');
-  await page.goto('/Decreto-Real/?drDev=1#/campania/prologo?studio=1&studioStep=20');
+  await page.goto('/Decreto-Real/?drDev=1#/campania/prologo?studio=1&studioStep=24');
   await expect(page.getByTestId('cinematic-versus')).toBeVisible();
   for(const label of ['VS · Marco completo','VS · Franja de Domingo','VS · Nombre de Domingo','VS · Marca «VS»','VS · Franja de Xervias','VS · Nombre de Xervias'])
     await expect(page.getByTestId('studio-actor-select').locator('option',{hasText:label})).toHaveCount(1);
@@ -79,7 +79,7 @@ test('Enter in the dialogue text creates a visible new line',async({page},info)=
 
 test('copy a position, scale and rotation and paste it on another beat',async({page},info)=>{
   test.skip(only(['mobile-390','desktop-1280'])(info.project.name),'Copy/paste transform');
-  await page.goto('/Decreto-Real/?drDev=1#/campania/prologo?studio=1&studioStep=4');
+  await page.goto('/Decreto-Real/?drDev=1#/campania/prologo?studio=1&studioStep=8');
   await page.getByTestId('studio-actor-select').selectOption('Domingo Quispe');
   for(const [id,value] of [['studio-x','-12'],['studio-scale-number','115'],['studio-rotation','10']]){
     await page.getByTestId(id).fill(value);await page.getByTestId(id).press('Tab');
@@ -101,7 +101,7 @@ test('copy a position, scale and rotation and paste it on another beat',async({p
 
 test('mobile inspector protects accidental edits while scrolling and offers quick undo/save',async({page},info)=>{
   test.skip(only(['mobile-390'])(info.project.name),'Mobile touch editor');
-  await page.goto('/Decreto-Real/?drDev=1#/campania/prologo?studio=1&studioStep=20');
+  await page.goto('/Decreto-Real/?drDev=1#/campania/prologo?studio=1&studioStep=24');
   await expect(page.getByTestId('dr-studio')).toBeVisible();
   const versus=page.getByTestId('cinematic-versus');
   const stage=page.locator('.dcop-stage');
