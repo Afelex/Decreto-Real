@@ -188,4 +188,4 @@ const heartbeat = setInterval(() => {
   }
 }, 30_000);
 server.on('close', () => clearInterval(heartbeat));
-server.listen(port, '0.0.0.0', () => console.log('Decreto Real PvP en puerto ' + port));
+server.listen(port, '0.0.0.0', () => console.log('Decreto Real PvP en puerto ' + server.address().port));
