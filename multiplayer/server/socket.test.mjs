@@ -111,7 +111,7 @@ test('HTTP de salud y página de prueba responden sin alterar la API', async () 
   const preview = await fetch(base + '/prueba?sala=ABC123');
   assert.equal(preview.status, 200);
   assert.match(preview.headers.get('content-type'), /text\/html/);
-  assert.match(await preview.text(), /Duelo multijugador/);
+  assert.match(await preview.text(), /Duelo\s*(?:<em>)?multijugador/);
   assert.match(preview.headers.get('content-security-policy'), /frame-ancestors/);
   const redirect = await fetch(base + '/', { redirect: 'manual' });
   assert.equal(redirect.status, 302);
