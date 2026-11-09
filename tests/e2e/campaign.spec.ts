@@ -283,7 +283,7 @@ test('campaign begins with a cinematic cover and continues to the Sello Real mys
   await expect(page.locator('.dci-story p')).toHaveCount(0);
   await page.getByRole('button', { name: /Comenzar historia/ }).click();
   await expect(page.getByRole('heading', { name: 'El misterio del Sello Real' })).toBeVisible();
-  await expect(page.getByText(/Virreinato del Perú, siglo XVII/)).toBeVisible();
+  await expect(page.getByText(/Año 16XX. Los Reinos del Perú/)).toBeVisible();
   await page.getByRole('button', { name: 'Abrir menú de campaña' }).click();
   await expect(page.getByRole('dialog', { name: 'Menú de campaña' })).toBeVisible();
 });
