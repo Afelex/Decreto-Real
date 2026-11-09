@@ -35,7 +35,7 @@ test('dos navegadores móviles completan un duelo con reconexión y resultado si
     await one.goto(base + '/prueba');
     await expect(one.locator('#network')).toContainText('Conectado');
     await one.locator('#name').fill('Invitado Uno');
-    await one.getByRole('button', { name: 'Crear sala privada' }).click();
+    await one.getByRole('button', { name: 'Invitar a un amigo' }).click();
     await expect(one.locator('#waiting')).toBeVisible();
     const code = (await one.locator('#room').innerText()).trim();
     expect(code).toMatch(/^[A-F0-9]{10}$/);
@@ -43,7 +43,7 @@ test('dos navegadores móviles completan un duelo con reconexión y resultado si
     await two.goto(base + '/prueba?sala=' + code);
     await expect(two.locator('#network')).toContainText('Conectado');
     await two.locator('#name').fill('Invitado Dos');
-    await two.getByRole('button', { name: 'Unirme a una sala' }).click();
+    await two.getByRole('button', { name: 'Aceptar desafío' }).click();
     await expect(one.locator('#duel')).toBeVisible();
     await expect(two.locator('#duel')).toBeVisible();
     await expect(one.locator('#rivalName')).toHaveText('Invitado Dos');
@@ -69,6 +69,31 @@ test('dos navegadores móviles completan un duelo con reconexión y resultado si
     await expect(one.locator('#result')).toHaveText('DERROTA');
     await expect(two.locator('#result')).toHaveText('¡VICTORIA!');
     await expect(one.locator('#new')).toBeVisible();
+  } finally {
+    await a.close();
+    await b.close();
+  }
+});
+
+test('invitación por enlace acepta automáticamente a un jugador recurrente', async ({ browser }) => {
+  const a = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  const b = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  await b.addInitScript(() => { localStorage.setItem('dr-pvp-preview-name', 'Amigo Recurrente'); });
+  const one = await a.newPage(), two = await b.newPage();
+  try {
+    await one.goto(base + '/prueba');
+    await expect(one.locator('#network')).toContainText('Conectado');
+    await one.locator('#name').fill('Primer Invitado');
+    await one.getByRole('button', { name: 'Invitar a un amigo' }).click();
+    await expect(one.locator('#waiting')).toBeVisible();
+    const code = (await one.locator('#room').innerText()).trim();
+
+    await two.goto(base + '/prueba?sala=' + code);
+    await expect(two.locator('#network')).toContainText('Conectado');
+    await expect(two.locator('#duel')).toBeVisible();
+    await expect(one.locator('#rivalName')).toHaveText('Amigo Recurrente');
+    await expect(two.locator('#myName')).toHaveText('Amigo Recurrente');
+    expect(new URL(two.url()).searchParams.has('sala')).toBe(false);
   } finally {
     await a.close();
     await b.close();
