@@ -69,7 +69,7 @@ test('after 38 missions Xervias walks alone and Zhinchi is not revealed', () => 
   window.localStorage.setItem(CAMPAIGN_STORAGE_KEY, JSON.stringify({ version: 1, stars: Object.fromEntries(Array.from({ length: 38 }, (_, i) => [String(i + 1).padStart(2, '0'), 1])) }));
   screenAt('/campania/epilogo');
   expect(screen.getByRole('heading', { name: 'La verdad recuperada' })).toBeTruthy();
-  expect(screen.getByText(/Sigumán fue derrotado y quedó bajo custodia/)).toBeTruthy();
+  expect(screen.getByText(/El comandante fue derrotado y quedó bajo custodia/)).toBeTruthy();
   fireEvent.click(screen.getByRole('button', { name: 'Siguiente ›' }));
   expect(screen.getByRole('heading', { name: 'Un camino en silencio' })).toBeTruthy();
   expect(screen.getByText(/Xervias camina solo/)).toBeTruthy();
