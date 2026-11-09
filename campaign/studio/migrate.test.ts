@@ -31,7 +31,9 @@ test('frozen legacy tables match the beat order published with Studio v2',()=>{
   // nunca las tablas LEGACY_*.
   assert.equal(LEGACY_V2_OPENING_BEAT_IDS.length,21);
   assert.equal(LEGACY_V2_AFTER_BEAT_IDS.length,28);
-  assert.deepEqual([...LEGACY_V2_OPENING_BEAT_IDS],OPENING_BEATS.map(b=>b.id));
+  assert.deepEqual([...LEGACY_V2_OPENING_BEAT_IDS],OPENING_BEATS
+    .filter(b=>b.scene!=='pergamino'||b.id==='pergamino-01').map(b=>b.id));
+  assert.equal(OPENING_BEATS.length,25); // la nueva apertura no altera la migración v2
   assert.deepEqual([...LEGACY_V2_AFTER_BEAT_IDS],AFTER_DUEL_BEATS.map(b=>b.id));
   assert.ok(Object.isFrozen(LEGACY_V2_OPENING_BEAT_IDS));
 });
