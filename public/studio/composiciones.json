@@ -677,6 +677,9 @@
         "motionDurationMs": 450,
         "musicMode": "soft",
         "soundCue": "CLICK"
+      },
+      "dialogue": {
+        "text": "¿Te atreves a invocar el Decreto Real contra mí? ¡Apenas has salido de la academia!\n[PRUEBA DRSTUDIO 001]"
       }
     },
     "tutorial/g01": {
