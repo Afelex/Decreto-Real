@@ -32,6 +32,10 @@ export default function MultiplayerScreen() {
   const navigate = useNavigate();
   const [nickname, setNickname] = React.useState(() => { try { return localStorage.getItem(NAME_KEY) || ''; } catch { return ''; } });
   const [joinCode, setJoinCode] = React.useState(() => new URLSearchParams(window.location.search).get('sala') || '');
+  const [showJoinCode, setShowJoinCode] = React.useState(() => Boolean(new URLSearchParams(window.location.search).get('sala')));
+  const [editingName, setEditingName] = React.useState(() => !nickname.trim());
+  const inviteOnLoad = React.useRef(new URLSearchParams(window.location.search).get('sala') || '');
+  const autoJoinAttempted = React.useRef(false);
   const [session, setSession] = React.useState<Session | null>(() => getStored(SESSION_KEY));
   const sessionRef = React.useRef<Session | null>(session);
   const socketRef = React.useRef<WebSocket | null>(null);
@@ -53,6 +57,10 @@ export default function MultiplayerScreen() {
         if (!active) return;
         setOnline(true); setError('');
         if (sessionRef.current) socket.send(JSON.stringify({ type: 'resume', ...sessionRef.current }));
+        else if (/^[0-9a-f]{10}$/i.test(inviteOnLoad.current) && !autoJoinAttempted.current && nickname.trim().length >= 2) {
+          autoJoinAttempted.current = true;
+          socket.send(JSON.stringify({ type: 'join', name: nickname.trim(), code: inviteOnLoad.current.toUpperCase() }));
+        }
       });
       socket.addEventListener('message', event => {
         if (!active) return;
@@ -61,6 +69,12 @@ export default function MultiplayerScreen() {
         if (msg.type === 'session' && typeof msg.token === 'string') {
           const next: Session = { code: msg.code, token: msg.token, slot: msg.slot, name: msg.name, randomQueue: Boolean(msg.randomQueue) };
           sessionRef.current = next; setSession(next); storeSession(next);
+          if (inviteOnLoad.current) {
+            const url = new URL(window.location.href);
+            url.searchParams.delete('sala');
+            window.history.replaceState(null, '', url.toString());
+            inviteOnLoad.current = '';
+          }
         } else if (msg.type === 'waiting') {
           setWaiting(true); setView(null);
         } else if (msg.type === 'state') {
@@ -97,6 +111,7 @@ export default function MultiplayerScreen() {
     if (session) return;
     if (nickname.trim().length < 2 || nickname.trim().length > 24) { setError('Escribe un apodo de 2 a 24 caracteres.'); return; }
     try { localStorage.setItem(NAME_KEY, nickname.trim()); } catch { /* private mode */ }
+    setEditingName(false);
     setError('');
     send({ type, name: nickname.trim(), ...(type === 'join' ? { code: joinCode.trim().toUpperCase() } : {}) });
   };
@@ -116,10 +131,17 @@ export default function MultiplayerScreen() {
     try { sessionStorage.removeItem(SESSION_KEY); } catch { /* private mode */ }
     socketRef.current?.close(4000, 'Salir de la sala');
   };
-  const copyRoom = () => {
+  const copyRoom = async () => {
     if (!session) return;
     const link = window.location.origin + window.location.pathname + '?sala=' + session.code + '#/multijugador';
-    void navigator.clipboard?.writeText(link).catch(() => setError('Copia el código de sala manualmente.'));
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'Decreto Real', text: 'Te desafío a un duelo en Decreto Real', url: link });
+        return;
+      } catch (err) { if ((err as Error)?.name === 'AbortError') return; }
+    }
+    try { await navigator.clipboard.writeText(link); }
+    catch { setError('No se pudo copiar el enlace. Comparte el código que aparece debajo.'); }
   };
 
   return <main className="dr-pvp">
@@ -131,22 +153,32 @@ export default function MultiplayerScreen() {
     {error && <p className="dr-pvp-alert" role="alert">{error}</p>}
 
     {!session && <section className="dr-pvp-lobby">
-      <h2>Juega contra otra persona</h2>
-      <p>Partidas amistosas en tiempo real, con las mismas cartas e Impactos del duelo clásico.</p>
-      <label>Tu apodo<input value={nickname} maxLength={24} onChange={e => setNickname(e.target.value)} placeholder="Elige tu nombre de jugador" /></label>
-      <button type="button" className="dr-pvp-primary" disabled={!online} onClick={() => enter('queue')}>Buscar rival aleatorio</button>
-      <button type="button" disabled={!online} onClick={() => enter('create')}>Crear sala privada</button>
-      <div className="dr-pvp-join"><label>Código de invitación<input value={joinCode} maxLength={10}
-        onChange={e => setJoinCode(e.target.value.toUpperCase())} placeholder="Ej. 0AF2A1C3B4" /></label>
-        <button type="button" disabled={!online} onClick={() => enter('join')}>Unirme</button></div>
-      <small>Versión de prueba: sin clasificación ni recompensas.</small>
+      <h2>{inviteOnLoad.current ? 'Te invitaron a un duelo' : '¿Cómo quieres jugar?'}</h2>
+      <p>{inviteOnLoad.current ? 'Acepta la invitación y entra directamente a la partida.' : 'Elige una opción y comienza. No necesitas registrarte para esta prueba.'}</p>
+      {editingName
+        ? <label>Tu apodo (solo la primera vez)<input value={nickname} maxLength={24} onChange={e => setNickname(e.target.value)} placeholder="Elige tu nombre de jugador" /></label>
+        : <div className="dr-pvp-identity"><span>Juegas como <strong>{nickname}</strong></span>
+            <button type="button" onClick={() => setEditingName(true)}>Cambiar</button></div>}
+      {!inviteOnLoad.current && <>
+        <button type="button" className="dr-pvp-primary" disabled={!online} onClick={() => enter('queue')}>⚔ Jugar ahora</button>
+        <button type="button" disabled={!online} onClick={() => enter('create')}>Invitar a un amigo</button>
+        <button type="button" className="dr-pvp-minor" onClick={() => setShowJoinCode(current => !current)}>Tengo un código de invitación</button>
+      </>}
+      {showJoinCode && <div className="dr-pvp-code-join">
+        {!inviteOnLoad.current && <label>Código recibido<input value={joinCode} maxLength={10}
+          onChange={e => setJoinCode(e.target.value.toUpperCase())} placeholder="Código de 10 caracteres" /></label>}
+        <button type="button" className={inviteOnLoad.current ? 'dr-pvp-primary' : ''}
+          disabled={!online || !/^[0-9a-f]{10}$/i.test(joinCode.trim())}
+          onClick={() => enter('join')}>{inviteOnLoad.current ? 'Aceptar desafío' : 'Unirme al duelo'}</button>
+      </div>}
+      <small>Prueba amistosa, sin recompensas ni clasificación.</small>
     </section>}
 
     {session && waiting && <section className="dr-pvp-lobby">
       <h2>{session.randomQueue ? 'Buscando rival…' : 'Esperando al rival'}</h2>
-      {!session.randomQueue && <><p>Comparte este código para invitar a un amigo.</p>
-        <div className="dr-pvp-code">{session.code}</div>
-        <button type="button" onClick={copyRoom}>Copiar enlace de invitación</button></>}
+      {!session.randomQueue && <><p>Envía una invitación y tu amigo podrá unirse directamente.</p>
+        <button type="button" className="dr-pvp-primary" onClick={() => { void copyRoom(); }}>Compartir invitación</button>
+        <details><summary>¿Prefieres compartir el código?</summary><div className="dr-pvp-code">{session.code}</div></details></>}
       <button type="button" onClick={resetSession}>Cancelar espera</button>
       <p>La partida comenzará automáticamente cuando entre la segunda persona.</p>
     </section>}
