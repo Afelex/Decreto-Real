@@ -95,11 +95,11 @@ const CampaignMission: React.FC = () => {
       warning={!outcome.saved ? 'No se pudo guardar tu progreso en este navegador.' : undefined}
       reward={outcome.won && outcome.saved ? mysticalReward
         ? `Carta mística de ${mysticalReward.owner} añadida a tu colección${legacyAwakened ? '.' : ' (sellada).'}`
-        : mission.id === '36' ? 'El bastón de Zhinchi despierta tus cartas místicas. ¡Editar baraja desbloqueado!' : undefined
+        : mission.id === '36' ? 'El duelo ha terminado, pero el edificio está cediendo. ¡Continúa la historia!' : undefined
         : undefined}
       narrative={outcome.won ? mission.victoryLine : mission.defeatLine}
       actions={[
-        ...(outcome.won && outcome.saved && (mysticalReward || mission.id === '36') ? [{
+        ...(outcome.won && outcome.saved && mysticalReward ? [{
           label: mission.id === '36' || legacyAwakened ? 'Editar baraja mística ✦' : 'Ver mística sellada ✦',
           onClick: () => navigate('/campania/baraja'),
         }] : []),
