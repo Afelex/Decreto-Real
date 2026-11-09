@@ -87,7 +87,7 @@ const BossConfrontation: React.FC<Props> = ({ mission, alreadyDefeated, legacyAw
     <div className="dcb-shell">
       <header className="dcb-head">
         <small>{isFinal ? 'DESENLACE · SIGUMÁN' : `CAPÍTULO ${mission.chapterId} · CUARTA MISIÓN`}</small>
-        <h1>{isFinal ? 'El Señor de la Falsa Luz' : 'Enfrentamiento con el general'}</h1>
+        <h1>{isFinal ? 'El Señor de la Revolución Solar' : 'Enfrentamiento con el general'}</h1>
       </header>
 
       <section className="dcb-hero" aria-label={mission.title}>
