@@ -17,7 +17,7 @@ async function waitForPreview() {
       assert.deepEqual(await health.json(), { ok: true, service: 'decreto-real-pvp' });
       assert.equal(preview.status, 200);
       const page = await preview.text();
-      assert.match(page, /Duelo multijugador/);
+      assert.match(page, /Duelo\s*(?:<em>)?multijugador/);
       assert.match(page, /¿Cómo quieres jugar\?/);
       assert.match(page, /Invitar a un amigo/);
       assert.match(page, /Aceptar desafío/);
