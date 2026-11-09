@@ -3,7 +3,7 @@
  */
 import { getCampaignMission } from './campaign.ts';
 
-export type AfterVictoryLine = Readonly<{ speaker: 'Xervias' | 'Zhinchi'; text: string }>;
+export type AfterVictoryLine = Readonly<{ speaker: 'Xervias' | 'Zhinchi' | 'Crónica' | 'Nayisa' | 'Vándalo Rojo'; text: string }>;
 export const AFTER_VICTORY: Readonly<Record<string, readonly AfterVictoryLine[]>> = {
  '01': [
   {speaker:'Xervias',text:'Si los dos decretos tienen el mismo sello, ¿cómo sabremos cuál es verdadero?'},
@@ -90,8 +90,12 @@ export const AFTER_VICTORY: Readonly<Record<string, readonly AfterVictoryLine[]>
   {speaker:'Zhinchi',text:'Guárdala. Puede servir para demostrar cómo se organizó la conspiración.'}
  ],
  '22': [
-  {speaker:'Xervias',text:'Nayisa ha comprendido que también la engañaron. Su carta está conmigo.'},
-  {speaker:'Zhinchi',text:'Su pueblo merece protección, no miedo. La mística permanecerá sellada mientras continuamos.'}
+  {speaker:'Nayisa',text:'Mis caminos estaban cerrados porque los soldados atacaron a mi pueblo. No voy a olvidarlo.'},
+  {speaker:'Xervias',text:'No te pido que lo olvides. Mira las dos órdenes: alguien utilizó el mismo sello para enfrentarnos.'},
+  {speaker:'Nayisa',text:'Sus palabras son distintas, pero ambas parecían auténticas... Engañaron a nuestras comunidades.'},
+  {speaker:'Xervias',text:'Podemos reunir las pruebas sin que tengas que abandonar a los tuyos.'},
+  {speaker:'Nayisa',text:'Te ayudaré por decisión propia. Defenderé la verdad de mi pueblo.'},
+  {speaker:'Xervias',text:'Gracias, Nayisa. Contaremos contigo.'}
  ],
  '23': [
   {speaker:'Xervias',text:'La plaza pertenece a todos. Nadie debería ser expulsado por su bandera.'},
@@ -142,20 +146,40 @@ export const AFTER_VICTORY: Readonly<Record<string, readonly AfterVictoryLine[]>
   {speaker:'Zhinchi',text:'Un juramento no obliga a cometer injusticias. Guarda la carta y comprueba si aún quedan generales por liberar.'}
  ],
  '35': [
-  {speaker:'Xervias',text:'Ya sabemos cómo el Escribano cambió los decretos. ¿Qué le queda a Sigumán?'},
-  {speaker:'Zhinchi',text:'Aún tiene aliados. No subestimes a Vándalo Rojo: conoce nuestros pasos y podría intentar detenernos.'}
+  {speaker:'Xervias',text:'Leocadio, ¿por qué las órdenes falsas conservaban la energía de un Sello Real?'},
+  {speaker:'Crónica',text:'El Escribano muestra un antiguo registro de San Jerónimo, donde se custodiaban los modelos originales de los sellos.'},
+  {speaker:'Zhinchi',text:'Copió parte de la resonancia mística del sello y después cambió el texto. Por eso nuestro anillo detectaba algo que no encajaba.'},
+  {speaker:'Xervias',text:'¿Sigumán sabía que los documentos habían sido alterados?'},
+  {speaker:'Zhinchi',text:'Sus instrucciones están firmadas. Provocó conflictos para que el pueblo aceptara su autoridad por miedo.'},
+  {speaker:'Xervias',text:'Con las ocho pruebas y estos registros podremos demostrarlo. Sigamos adelante.'}
  ],
  '36': [
-  {speaker:'Zhinchi',text:'Xervias, toma mi bastón. Despertará las cartas místicas. No abandones a quienes confían en ti.'},
-  {speaker:'Xervias',text:'¡Zhinchi! Te buscaré. No dejaré que tu sacrificio sea en vano.'}
+  {speaker:'Vándalo Rojo',text:'¡No puede ser! ¡El techo está cediendo!'},
+  {speaker:'Crónica',text:'La energía del duelo ha dañado las columnas. Vándalo Rojo huye por un pasadizo lateral mientras las piedras empiezan a caer.'},
+  {speaker:'Zhinchi',text:'¡Xervias, la estructura se viene abajo! ¡Corre!'},
+  {speaker:'Xervias',text:'¡Tenemos que salir juntos, capitán!'},
+  {speaker:'Crónica',text:'Un bloque cae sobre el camino de Xervias. Zhinchi lo desvía con su cetro y libera a su discípulo.'},
+  {speaker:'Zhinchi',text:'Escúchame. Tus cartas místicas siguen selladas. Voy a enseñarte a canalizar su energía. Confío en que sabrás utilizarlas.'},
+  {speaker:'Xervias',text:'¡Eso puede esperar! ¡Salgamos de aquí!'},
+  {speaker:'Crónica',text:'El cetro ilumina el anillo de Xervias. Las cartas místicas despiertan y se desbloquea la edición de barajas: máximo tres místicas por baraja.'},
+  {speaker:'Zhinchi',text:'Ya está. Recuerda lo que aprendimos. ¡Tienes que continuar!'},
+  {speaker:'Xervias',text:'¡Zhinchi! ¡Venga conmigo!'},
+  {speaker:'Crónica',text:'Un nuevo derrumbe los separa. Xervias escapa entre polvo y escombros. La entrada queda bloqueada. No ve qué ocurrió con Zhinchi.'},
+  {speaker:'Xervias',text:'¡Capitán! ¡Responda!'},
+  {speaker:'Xervias',text:'No sé si logró salir... Me salvó para que pudiera continuar. No abandonaré lo que comenzamos.'}
  ],
  '37': [
-  {speaker:'Xervias',text:'He encontrado tu última pista, Zhinchi. Aunque no estés aquí, sé qué debo hacer.'},
-  {speaker:'Xervias',text:'Conservaré tu bastón. Ahora debo enfrentar a Sigumán y proteger al reino.'}
+  {speaker:'Xervias',text:'Este archivo contiene los registros originales de San Jerónimo. Allí se guardaban los modelos con los que se comprobaba la energía de cada sello.'},
+  {speaker:'Crónica',text:'Una anotación de Zhinchi confirma que Leocadio tuvo acceso a los modelos y pudo alterar la relación entre el sello y su documento.'},
+  {speaker:'Xervias',text:'Ahora entiendo cómo engañaron al reino. No bastará con derrotar a Sigumán: tendremos que impedir que vuelvan a utilizar este método.'},
+  {speaker:'Xervias',text:'Capitán... No sé dónde está. Pero sus enseñanzas me acompañarán cuando enfrente a Sigumán.'}
  ],
  '38': [
-  {speaker:'Xervias',text:'Sigumán ha caído, pero la verdad exige algo más que una victoria.'},
-  {speaker:'Xervias',text:'Reconstruiremos lo que su mentira destruyó. Y encontraré a Zhinchi, dondequiera que esté.'}
+  {speaker:'Crónica',text:'La última carta de Sigumán cae al suelo. Su anillo pierde energía. Los soldados lo detienen y se recuperan los documentos que ordenó falsificar.'},
+  {speaker:'Xervias',text:'Ganamos, pero una victoria no reparará por sí sola el daño que causó la Revolución Solar.'},
+  {speaker:'Crónica',text:'Las pruebas reunidas en los ocho territorios permitirán retirar los decretos falsificados y escuchar a las familias afectadas.'},
+  {speaker:'Xervias',text:'No sé qué ocurrió con Zhinchi después del derrumbe. Pensaré en él cada vez que deba elegir qué es lo correcto.'},
+  {speaker:'Xervias',text:'Nuestro trabajo no termina aquí. Todavía hay personas que necesitan ayuda. Seguiré adelante.'}
  ],
 };
 
