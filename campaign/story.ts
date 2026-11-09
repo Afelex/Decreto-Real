@@ -496,7 +496,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "subboss",
     "opponent": "Escribano del Alba",
     "openingLine": "OBJETIVO: Recupera los originales y demuestra cómo se organizó el engaño.",
-    "victoryLine": "Los originales prueban la falsificación y que Sigumán decidió continuar aun sabiéndolo. ¿Qué hará Vándalo Rojo cuando descubran toda la verdad?",
+    "victoryLine": "Los registros de San Jerónimo explican cómo Leocadio alteró la resonancia de los sellos. Sigumán conocía el engaño. ¿Quién intentará detenerlos?",
     "defeatLine": "Leocadio esconde sus matrices y la Revolución Solar conserva su coartada."
   },
   {
@@ -507,17 +507,17 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "subboss",
     "opponent": "Vándalo Rojo",
     "openingLine": "OBJETIVO: Detén a Vándalo Rojo y evita que capture a Xervias.",
-    "victoryLine": "Vándalo es capturado. Zhinchi salva a Xervias y le entrega su bastón para despertar las místicas; queda gravemente herido y desaparece. ¿Dónde está Zhinchi?",
+    "victoryLine": "Vándalo es derrotado, pero escapa mientras el edificio se derrumba. Zhinchi salva a Xervias, despierta sus místicas y desaparece tras los escombros. ¿Logró salir?",
     "defeatLine": "Vándalo escapa y Zhinchi queda expuesto a su emboscada."
   },
   {
     "chapterId": "f",
     "title": "La última promesa de Zhinchi",
-    "description": "Zhinchi desapareció gravemente herido después de salvar a Xervias. La última guardia impide buscar noticias sobre él.",
+    "description": "Zhinchi desapareció entre los escombros al salvar a Xervias. Nadie sabe si pudo escapar. La última guardia protege los archivos de San Jerónimo.",
     "kind": "skirmish",
     "opponent": "Guardia de Sigumán",
     "openingLine": "OBJETIVO: Recupera la última pista de Zhinchi y llega hasta la sala de Sigumán.",
-    "victoryLine": "Xervias recupera el último testimonio de Zhinchi y llega ante Sigumán. Su mentor sigue desaparecido. ¿Qué intentó advertir Zhinchi antes de desaparecer?",
+    "victoryLine": "Xervias descubre cómo se manipularon los modelos originales del sello en San Jerónimo. Su mentor sigue desaparecido. ¿Logrará detener a Sigumán?",
     "defeatLine": "Bruno Serrat cierra el acceso y se pierde el rastro de Zhinchi.",
     "id": "37"
   },
@@ -529,7 +529,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "kind": "final",
     "opponent": "Sigumán",
     "openingLine": "OBJETIVO: Detén a Sigumán y termina con el control de la Revolución Solar.",
-    "victoryLine": "Sigumán muere al derrumbarse la Casa del Sello. La Revolución Solar cae; San Jerónimo y Zhinchi siguen siendo un misterio. ¿Dónde está Zhinchi y qué sucedió en San Jerónimo?",
+    "victoryLine": "Sigumán es derrotado y detenido. Las pruebas de San Jerónimo desmantelan la falsificación; Xervias sigue su camino, sin saber qué fue de Zhinchi. ¿Qué aprenderá ahora?",
     "defeatLine": "Sigumán conserva la Casa del Sello y el reino continúa sometido a su mentira."
   }
 ];
