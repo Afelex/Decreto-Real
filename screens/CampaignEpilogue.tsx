@@ -77,7 +77,7 @@ const CampaignEpilogueScreen: React.FC = () => {
         style={art ? { backgroundImage: 'url("' + art + '")', backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}/>
       <span className="dc-scene-label">{page === 0 ? 'LOS REINOS DEL PERÚ · AÑO 16XX' : 'EL CAMINO DE XERVIAS'}</span>
       {pageTitle !== null && <h2 id="dc-epilogue-title">{pageTitle}</h2>}
-      {texts.map(text => text.id === sceneKey + '-cita'
+      {texts.map(text => text.key === sceneKey + '-cita'
         ? <blockquote key={text.key} className="dc-story-quote"><StudioText k={text.key} original={text.original}/></blockquote>
         : <p key={text.key}><StudioText k={text.key} original={text.original}/></p>)}
       {isLast && <strong className="dc-ending-next">FIN</strong>}
