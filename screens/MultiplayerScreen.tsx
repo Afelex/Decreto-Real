@@ -144,46 +144,66 @@ export default function MultiplayerScreen() {
     catch { setError('No se pudo copiar el enlace. Comparte el código que aparece debajo.'); }
   };
 
-  return <main className="dr-pvp">
-    <header className="dr-pvp-header"><button type="button" onClick={() => navigate('/')}>‹ Menú</button>
-      <div><small>DECRETO REAL</small><h1>Multijugador</h1></div>
-      <span className={online ? 'dr-pvp-online' : 'dr-pvp-offline'}>{online ? 'Conectado' : 'Sin conexión'}</span>
+  return <main className={'dr-pvp' + (view ? ' dr-pvp-playing' : ' dr-pvp-home')}>
+    <img className="dr-pvp-backdrop" alt="" aria-hidden="true"
+      src={import.meta.env.BASE_URL + 'portada/portada-poster.jpg'} draggable={false}/>
+    <div className="dr-pvp-vignette" aria-hidden="true"/>
+    <header className="dr-pvp-header">
+      <button className="dr-pvp-back" type="button" onClick={() => navigate('/')} aria-label="Volver al menú principal">‹</button>
+      <div className="dr-pvp-header-brand"><span className="dr-pvp-crown" aria-hidden="true">♛</span><span>DECRETO REAL <span aria-hidden="true">·</span> MULTIJUGADOR</span></div>
+      <span className={online ? 'dr-pvp-online' : 'dr-pvp-offline'} role="status"><span className="dr-pvp-status-dot" aria-hidden="true"/>{online ? 'Conectado' : 'Sin conexión'}</span>
     </header>
+    {!view && <div className="dr-pvp-hero" aria-hidden="true">
+      <h1>Duelo <em>multijugador</em></h1>
+      <div className="dr-pvp-hero-rule"><span>✦</span></div>
+    </div>}
     {!SOCKET_URL && <p className="dr-pvp-alert" role="alert">El servidor multijugador aún no está configurado. Se necesita VITE_MULTIPLAYER_WS_URL.</p>}
     {error && <p className="dr-pvp-alert" role="alert">{error}</p>}
 
-    {!session && <section className="dr-pvp-lobby">
+    {!session && <section className="dr-pvp-lobby" aria-label="Opciones de juego en línea">
       <h2>{inviteOnLoad.current ? 'Te invitaron a un duelo' : '¿Cómo quieres jugar?'}</h2>
-      <p>{inviteOnLoad.current ? 'Acepta la invitación y entra directamente a la partida.' : 'Elige una opción y comienza. No necesitas registrarte para esta prueba.'}</p>
+      <div className="dr-pvp-ornament" aria-hidden="true"><span>✦</span></div>
       {editingName
-        ? <label>Tu apodo (solo la primera vez)<input value={nickname} maxLength={24} onChange={e => setNickname(e.target.value)} placeholder="Elige tu nombre de jugador" /></label>
-        : <div className="dr-pvp-identity"><span>Juegas como <strong>{nickname}</strong></span>
-            <button type="button" onClick={() => setEditingName(true)}>Cambiar</button></div>}
+        ? <label className="dr-pvp-name-field">Tu apodo (solo la primera vez)<input value={nickname} maxLength={24}
+            onChange={e => setNickname(e.target.value)} placeholder="Elige tu nombre de jugador" /></label>
+        : <div className="dr-pvp-identity">
+            <span className="dr-pvp-identity-symbol" aria-hidden="true">▣</span>
+            <span className="dr-pvp-identity-copy"><small>Juegas como</small><strong>{nickname}</strong></span>
+            <button type="button" onClick={() => setEditingName(true)} aria-label="Cambiar apodo">✎</button>
+          </div>}
       {!inviteOnLoad.current && <>
-        <button type="button" className="dr-pvp-primary" disabled={!online} onClick={() => enter('queue')}>⚔ Jugar ahora</button>
-        <button type="button" disabled={!online} onClick={() => enter('create')}>Invitar a un amigo</button>
-        <button type="button" className="dr-pvp-minor" onClick={() => setShowJoinCode(current => !current)}>Tengo un código de invitación</button>
+        <button type="button" className="dr-pvp-primary dr-pvp-feature-button" disabled={!online}
+          onClick={() => enter('queue')}><span aria-hidden="true">⚔</span>Jugar ahora</button>
+        <button type="button" className="dr-pvp-secondary dr-pvp-feature-button" disabled={!online}
+          onClick={() => enter('create')}><span aria-hidden="true">♟</span>Invitar a un amigo</button>
+        <button type="button" className="dr-pvp-minor" onClick={() => setShowJoinCode(current => !current)}>
+          <span aria-hidden="true">↗</span>Tengo un código de invitación</button>
       </>}
       {showJoinCode && <div className="dr-pvp-code-join">
         {!inviteOnLoad.current && <label>Código recibido<input value={joinCode} maxLength={10}
           onChange={e => setJoinCode(e.target.value.toUpperCase())} placeholder="Código de 10 caracteres" /></label>}
-        <button type="button" className={inviteOnLoad.current ? 'dr-pvp-primary' : ''}
+        <button type="button" className={inviteOnLoad.current ? 'dr-pvp-primary dr-pvp-feature-button' : 'dr-pvp-secondary'}
           disabled={!online || !/^[0-9a-f]{10}$/i.test(joinCode.trim())}
           onClick={() => enter('join')}>{inviteOnLoad.current ? 'Aceptar desafío' : 'Unirme al duelo'}</button>
       </div>}
-      <small>Prueba amistosa, sin recompensas ni clasificación.</small>
-    </section>}
+      <p className="dr-pvp-tip"><span aria-hidden="true">ⓘ</span>
+        Puedes invitar a un amigo compartiendo un enlace de la sala.</p>
+    </section>
 
-    {session && waiting && <section className="dr-pvp-lobby">
+    {session && waiting && <section className="dr-pvp-lobby dr-pvp-waiting">
       <h2>{session.randomQueue ? 'Buscando rival…' : 'Esperando al rival'}</h2>
-      {!session.randomQueue && <><p>Envía una invitación y tu amigo podrá unirse directamente.</p>
-        <button type="button" className="dr-pvp-primary" onClick={() => { void copyRoom(); }}>Compartir invitación</button>
-        <details><summary>¿Prefieres compartir el código?</summary><div className="dr-pvp-code">{session.code}</div></details></>}
-      <button type="button" onClick={resetSession}>Cancelar espera</button>
-      <p>La partida comenzará automáticamente cuando entre la segunda persona.</p>
+      <div className="dr-pvp-ornament" aria-hidden="true"><span>✦</span></div>
+      <p>La partida comenzará cuando estén conectados los dos jugadores.</p>
+      {!session.randomQueue && <>
+        <button type="button" className="dr-pvp-primary dr-pvp-feature-button" onClick={() => { void copyRoom(); }}>
+          <span aria-hidden="true">↗</span>Compartir invitación</button>
+        <details><summary>Compartir código de sala</summary><div className="dr-pvp-code">{session.code}</div></details>
+      </>}
+      <button type="button" className="dr-pvp-secondary" onClick={resetSession}>Cancelar espera</button>
     </section>}
 
-    {session && !waiting && !view && <section className="dr-pvp-lobby"><h2>Restableciendo la partida</h2><p>Reconectando con la sala {session.code}…</p></section>}
+    {session && !waiting && !view && <section className="dr-pvp-lobby"><h2>Restableciendo la partida</h2>
+      <p>Reconectando con la sala {session.code}…</p><div className="dr-pvp-ornament" aria-hidden="true"><span>✦</span></div></section>}
 
     {view && <section className="dr-pvp-duel" aria-label="Tablero de duelo en línea">
       <div className="dr-pvp-rival dr-pvp-player">
