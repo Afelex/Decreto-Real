@@ -45,6 +45,8 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - name: Smoke de publicación de DRStudio
         run: npx playwright test tests/e2e/studio-board.spec.ts --grep 'Publicar campaña' --workers=1 --trace off
+      - name: Smoke de guion editable de las 38 misiones
+        run: npx playwright test tests/e2e/studio-screens.spec.ts --grep 'mission dialogue edits' --project=mobile-390 --workers=1 --trace off
       - name: E2E general
         run: npm run test:e2e -- --workers=4
       - uses: actions/upload-artifact@v4
