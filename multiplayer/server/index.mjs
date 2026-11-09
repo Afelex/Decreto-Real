@@ -51,7 +51,7 @@ function broadcast(room) {
     const ws = room.sockets[slot];
     if (!ws) continue;
     if (!room.match) {
-      send(ws, { type: 'waiting', code: room.code,
+      send(ws, { type: 'waiting', code: room.code, randomQueue: room.randomQueue,
         players: room.seats.map(seat => seat.name) });
     } else {
       send(ws, { type: 'state', code: room.code, view: viewFor(room.match, slot,
@@ -70,7 +70,7 @@ function attach(ws, room, slot) {
   room.sockets[slot] = ws;
   room.lastUsed = Date.now();
   send(ws, { type: 'session', code: room.code, token: room.seats[slot].token,
-    slot, name: room.seats[slot].name });
+    slot, name: room.seats[slot].name, randomQueue: room.randomQueue });
   broadcast(room);
 }
 function enter(ws, room, name) {
