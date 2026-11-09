@@ -30,6 +30,8 @@ jobs:
         run: npm install
 
       - name: Build project
+        env:
+          VITE_MULTIPLAYER_WS_URL: wss://decreto-real-production.up.railway.app
         run: npm run build
 
       - name: Optimize initial battle background (bounded)
