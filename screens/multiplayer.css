@@ -1,0 +1,141 @@
+/* DR-MP-03 — Interfaz visual responsive. Acciones HTML reales; la gráfica no sustituye la lógica del duelo. */
+.dr-pvp{
+  --dr-gold:#e4b76d;--dr-cream:#f8ead2;--dr-night:#0f1423;--dr-red:#932739;
+  position:relative;isolation:isolate;box-sizing:border-box;
+  width:100%;height:100dvh;min-height:100dvh;overflow:hidden;
+  display:flex;align-items:center;flex-direction:column;
+  gap:clamp(7px,1.1dvh,12px);
+  padding:max(10px,env(safe-area-inset-top)) 12px max(10px,env(safe-area-inset-bottom));
+  color:var(--dr-cream);font-family:Georgia,"Times New Roman",serif;
+  background:#101521;
+}
+.dr-pvp *, .dr-pvp *::before,.dr-pvp *::after{box-sizing:border-box}
+.dr-pvp-backdrop{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 35%;z-index:-3;opacity:.6;pointer-events:none}
+.dr-pvp-vignette{position:absolute;inset:0;z-index:-2;pointer-events:none;
+  background:linear-gradient(180deg,rgba(8,13,26,.85) 0%,rgba(16,17,33,.67) 23%,rgba(31,15,35,.92) 66%,rgba(41,14,28,.94) 100%),
+             radial-gradient(ellipse at 50% 50%,rgba(111,37,58,.28),transparent 65%);
+}
+.dr-pvp::after{content:"";position:absolute;z-index:-1;inset:auto 0 0;height:min(15dvh,115px);pointer-events:none;opacity:.38;
+  background:repeating-linear-gradient(130deg,transparent 0 15px,rgba(214,146,83,.12) 15px 18px,transparent 18px 36px),linear-gradient(0deg,#5f1727,transparent)}
+.dr-pvp button,.dr-pvp input{font:inherit}
+.dr-pvp button{cursor:pointer;touch-action:manipulation;color:var(--dr-cream);background:#282a3f;
+  border:1px solid rgba(224,173,103,.75);border-radius:12px;min-height:43px;padding:9px 14px;transition:filter .18s,transform .18s}
+.dr-pvp button:active:not(:disabled){transform:scale(.985)}
+.dr-pvp button:disabled{cursor:not-allowed;opacity:.45;filter:grayscale(.45)}
+.dr-pvp button:focus-visible,.dr-pvp input:focus-visible,.dr-pvp summary:focus-visible{outline:3px solid #ffda8e;outline-offset:3px}
+.dr-pvp .dr-pvp-header{flex:0 0 auto;width:min(100%,600px);min-height:42px;padding:0 2px 8px;
+  display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(231,171,93,.62);font-family:system-ui,sans-serif}
+.dr-pvp-header-brand{flex:1;min-width:0;display:flex;align-items:center;gap:7px;
+  font-family:Georgia,"Times New Roman",serif;font-size:clamp(10px,2.5vw,14px);font-weight:700;
+  letter-spacing:.07em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dr-pvp-crown{font-size:clamp(19px,4.5vw,25px);color:var(--dr-gold);text-shadow:0 2px 9px #984729}
+.dr-pvp .dr-pvp-back{min-width:33px;min-height:35px;padding:0 5px;border:0;background:transparent;border-radius:8px;
+  font-size:33px;line-height:30px;font-family:system-ui,sans-serif}
+.dr-pvp-online,.dr-pvp-offline{display:inline-flex;align-items:center;gap:6px;border:1px solid #4f9c63;
+  background:#10251bda;border-radius:25px;padding:6px 9px;white-space:nowrap;font-size:clamp(10px,2.3vw,12px);font-weight:600}
+.dr-pvp-online{color:#8dec9e}.dr-pvp-offline{border-color:#a46667;background:#371d2a;color:#ffc1ae}
+.dr-pvp-status-dot{width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 7px currentColor}
+.dr-pvp-hero{flex:0 0 auto;width:min(100%,550px);display:flex;align-items:center;flex-direction:column;
+  gap:6px;text-align:center;padding:clamp(4px,1.4dvh,18px) 2px clamp(2px,.8dvh,10px)}
+.dr-pvp-hero h1{margin:0;font-weight:700;font-size:clamp(34px,9vw,61px);line-height:.97;letter-spacing:-.025em;
+  color:#ffe8b6;text-shadow:0 2px 0 #794c30,0 4px 13px #000,0 0 22px #ad4f355e}
+.dr-pvp-hero h1 em{display:block;font-style:normal}
+.dr-pvp-hero-rule,.dr-pvp-ornament{display:flex;align-items:center;justify-content:center;gap:10px;color:var(--dr-gold);width:75%;margin:2px auto 0}
+.dr-pvp-hero-rule::before,.dr-pvp-hero-rule::after,.dr-pvp-ornament::before,.dr-pvp-ornament::after{content:"";width:34%;height:1px;background:linear-gradient(90deg,transparent,#dfab5e)}
+.dr-pvp-hero-rule::after,.dr-pvp-ornament::after{transform:rotate(180deg)}
+.dr-pvp-hero-rule span,.dr-pvp-ornament span{font-size:18px;line-height:18px}
+.dr-pvp-alert{width:min(100%,520px);border:1px solid #cf7e61;color:#ffd6bd;background:#5c253bdc;
+  font:12px/1.45 system-ui,sans-serif;border-radius:10px;padding:8px 11px;margin:0}
+.dr-pvp-lobby{flex:1 1 auto;min-height:0;max-height:100%;width:min(100%,500px);margin:0 auto;
+  overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;
+  display:flex;flex-direction:column;justify-content:center;gap:clamp(9px,1.45dvh,17px);
+  padding:clamp(16px,3.6vw,27px);text-align:center;
+  background:linear-gradient(155deg,#211d35ed 0%,#261a32f5 50%,#2a1525f6 100%);
+  border:2px solid #d7a259;border-radius:25px;
+  box-shadow:inset 0 0 0 3px rgba(244,193,117,.16),inset 0 14px 23px #080e2099,0 15px 38px #070b16b5,0 0 22px #b25c4620}
+.dr-pvp-lobby h2{font-size:clamp(25px,6.3vw,37px);line-height:1.09;letter-spacing:-.02em;
+  text-shadow:0 2px 8px #080b18;margin:0;font-weight:700}
+.dr-pvp-lobby p{font:13px/1.45 system-ui,sans-serif;margin:0}
+.dr-pvp-lobby .dr-pvp-ornament{width:68%;margin:0 auto 2px}
+.dr-pvp-lobby label{display:flex;flex-direction:column;gap:7px;text-align:left;font:600 12px system-ui,sans-serif}
+.dr-pvp-lobby input{min-width:0;width:100%;border:1px solid #9e8264;color:white;border-radius:10px;
+  background:#101627e8;padding:11px 13px;font:16px system-ui,sans-serif}
+.dr-pvp-identity{width:100%;display:flex;align-items:center;gap:10px;min-height:76px;
+  border:1px solid #7d6351;border-radius:18px;background:linear-gradient(135deg,#231d32,#111726);
+  box-shadow:inset 0 1px 4px #b8833839;padding:10px 12px;text-align:left}
+.dr-pvp-identity-symbol{flex:0 0 50px;width:50px;height:52px;display:grid;place-items:center;
+  border-right:1px solid #927144;color:#e4ae62;font-size:37px}
+.dr-pvp-identity-copy{flex:1;min-width:0;display:flex;flex-direction:column;gap:0}
+.dr-pvp-identity-copy small{font-size:12px;color:#cbbfaf;opacity:1}
+.dr-pvp-identity-copy strong{display:block;font-size:clamp(21px,6vw,29px);
+  max-width:100%;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;color:#fff0d1}
+.dr-pvp .dr-pvp-identity button{flex:0 0 44px;width:44px;height:43px;min-height:43px;padding:0;
+  display:grid;place-items:center;font-size:24px;background:linear-gradient(150deg,#3f3b56,#20253d);color:#e3bb72}
+.dr-pvp .dr-pvp-feature-button{width:100%;min-height:clamp(58px,8.5dvh,77px);display:flex;align-items:center;
+  justify-content:center;gap:clamp(12px,3vw,20px);font-size:clamp(19px,5vw,26px);font-weight:700;line-height:1.1;
+  border-width:2px;border-radius:16px;text-shadow:0 2px 3px #0006;box-shadow:0 8px 16px #11071370,inset 0 2px #ffffff35}
+.dr-pvp-feature-button>span{font-family:system-ui,sans-serif;color:#ffd48e;font-size:29px;font-weight:400;line-height:1}
+.dr-pvp .dr-pvp-primary{border-color:#e8b369;background:linear-gradient(170deg,#b33845 0%,#87202f 48%,#631e35 100%);
+  box-shadow:0 8px 16px #220a1980,inset 0 3px #ec8b8a70,inset 0 -4px #430d2b}
+.dr-pvp .dr-pvp-secondary{border-color:#d6b176;background:linear-gradient(160deg,#36364e,#151d34);
+  box-shadow:0 7px 13px #0a101c70,inset 0 2px #b2b5cb26}
+.dr-pvp .dr-pvp-minor{min-height:32px;padding:4px 6px;color:#e3cba8;text-decoration:underline;text-underline-offset:4px;
+  background:transparent;border:0;box-shadow:none;border-radius:4px;font:clamp(12px,3.6vw,15px) system-ui,sans-serif}
+.dr-pvp-minor span{font-size:19px;margin-right:9px;text-decoration:none}
+.dr-pvp-tip{margin-top:auto!important;padding:12px 10px;border:1px solid #604552;border-radius:14px;
+  background:#633c483b;color:#e2d0ba;display:flex;align-items:center;justify-content:center;gap:13px;text-align:left}
+.dr-pvp-tip span{font-size:22px;color:#f0c88a}
+.dr-pvp-code-join{display:flex;flex-direction:column;gap:10px}
+.dr-pvp-lobby details{font:12px system-ui,sans-serif}.dr-pvp-lobby summary{cursor:pointer;color:#f0d399}
+.dr-pvp-code{font-size:clamp(23px,7vw,35px);font-weight:800;letter-spacing:2px;overflow-wrap:anywhere;color:#ffe1a7}
+.dr-pvp-waiting{justify-content:center}.dr-pvp-waiting p{color:#d5c3b4}
+.dr-pvp-duel{flex:1 1 auto;width:min(100%,520px);margin:auto;min-height:0;max-height:100%;
+  display:flex;flex-direction:column;gap:clamp(5px,1dvh,10px);justify-content:space-between;
+  border:1px solid #c39a5fa3;border-radius:16px;background:#111725db;padding:clamp(8px,1.5dvh,13px)}
+.dr-pvp-player{display:flex;justify-content:space-between;gap:10px;align-items:center;
+  border:1px solid #846d4f;background:#1a2433dc;border-radius:10px;padding:9px 12px}
+.dr-pvp-rival{border-color:#526c99}.dr-pvp-player div{display:flex;flex-direction:column}
+.dr-pvp-player strong{font:600 14px system-ui,sans-serif}
+.dr-pvp-player small{font:11px system-ui,sans-serif;opacity:.8}
+.dr-pvp-player b{font-size:24px;white-space:nowrap}
+.dr-pvp-impacts{display:flex;gap:6px;justify-content:center}
+.dr-pvp-impacts span{display:grid;place-items:center;width:43px;height:30px;border:1px solid #675d5b;
+  border-radius:6px;color:#a8a0a1;font:12px system-ui,sans-serif}
+.dr-pvp-impacts span.done{color:#fce8b4;background:#5e382d;border-color:#d1a366}
+.dr-pvp-opponent-hand{text-align:center;font:12px system-ui,sans-serif;opacity:.85}
+.dr-pvp-center{display:flex;flex:1;min-height:48px;flex-direction:column;gap:6px;
+  align-items:center;justify-content:center;text-align:center}
+.dr-pvp-center strong{font-size:clamp(19px,5vw,25px);color:#f7d58e}
+.dr-pvp-center small{font:12px/1.4 system-ui,sans-serif;max-width:320px}
+.dr-pvp-hand{display:flex;gap:7px;overflow-x:auto;min-height:0;max-height:min(26dvh,190px);padding:5px 2px;
+  scrollbar-width:thin;justify-content:safe center}
+.dr-pvp-hand button{flex:0 0 clamp(65px,20vw,96px);padding:3px;position:relative;overflow:hidden;
+  border:1px solid #c39a5f;border-radius:7px;background:#10151f}
+.dr-pvp-hand img{width:100%;height:100%;max-height:140px;display:block;object-fit:cover;border-radius:5px}
+.dr-pvp-hand strong{position:absolute;left:2px;right:2px;bottom:2px;padding:3px 1px;background:#0b142cd9;
+  font:600 10px system-ui,sans-serif;text-shadow:0 1px 2px #000}
+.dr-pvp-controls{display:flex;gap:9px;justify-content:center}
+.dr-pvp-controls button{flex:1;font:600 13px system-ui,sans-serif}
+.dr-pvp-combo{padding:10px;border:1px solid #d1a366;border-radius:10px;text-align:center;background:#332634}
+.dr-pvp-combo h2{font-size:15px;margin:0 0 8px}
+.dr-pvp-combo button{margin:0 5px 3px;padding:7px;font:12px system-ui,sans-serif}
+@media(max-height:750px){
+  .dr-pvp{gap:5px;padding-top:max(6px,env(safe-area-inset-top))}
+  .dr-pvp-header{min-height:34px;padding-bottom:4px}
+  .dr-pvp-hero{padding:1px 0 2px;gap:2px}
+  .dr-pvp-hero h1{font-size:clamp(31px,7vw,44px)}
+  .dr-pvp-hero-rule{display:none}
+  .dr-pvp-lobby{padding:clamp(11px,2.6dvh,19px);gap:clamp(7px,1.2dvh,11px)}
+  .dr-pvp-lobby h2{font-size:clamp(22px,5.2vw,31px)}
+  .dr-pvp-lobby .dr-pvp-ornament{display:none}
+  .dr-pvp-identity{min-height:60px;padding:7px}
+  .dr-pvp-identity-symbol{height:42px}
+  .dr-pvp .dr-pvp-feature-button{min-height:52px}
+  .dr-pvp-tip{padding:8px}
+  .dr-pvp-player{padding:5px 9px}.dr-pvp-impacts span{height:24px}
+  .dr-pvp-hand{max-height:22dvh}.dr-pvp-center{min-height:38px}
+}
+@media(max-width:350px){.dr-pvp-header-brand{font-size:9px}.dr-pvp-status-dot{width:5px;height:5px}
+.dr-pvp-online,.dr-pvp-offline{font-size:9px;padding:5px 6px}.dr-pvp-lobby{padding:12px}
+.dr-pvp-identity-symbol{flex-basis:36px;width:36px}.dr-pvp-identity-copy strong{font-size:19px}}
+@media(prefers-reduced-motion:reduce){.dr-pvp button{transition:none}}
