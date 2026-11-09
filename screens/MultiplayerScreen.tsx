@@ -188,7 +188,7 @@ export default function MultiplayerScreen() {
       </div>}
       <p className="dr-pvp-tip"><span aria-hidden="true">ⓘ</span>
         Puedes invitar a un amigo compartiendo un enlace de la sala.</p>
-    </section>
+    </section>}
 
     {session && waiting && <section className="dr-pvp-lobby dr-pvp-waiting">
       <h2>{session.randomQueue ? 'Buscando rival…' : 'Esperando al rival'}</h2>
