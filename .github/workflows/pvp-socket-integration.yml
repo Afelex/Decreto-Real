@@ -1,0 +1,32 @@
+name: PvP Socket Integration
+
+on:
+  push:
+    branches: [feat/multijugador-websocket-v1-20261109]
+  pull_request:
+    branches: [main]
+    paths:
+      - "multiplayer/**"
+      - ".github/workflows/pvp-socket-integration.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  multiplayer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      matrix:
+        node: [22, 24]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Install WebSocket server dependencies
+        working-directory: multiplayer/server
+        run: npm install --no-audit --no-fund
+      - name: Test two-player WebSocket duel and game rules
+        working-directory: multiplayer/server
+        run: npm test
