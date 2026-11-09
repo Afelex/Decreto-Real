@@ -103,6 +103,21 @@ test('salas privadas, manos ocultas, turnos y rechazo de jugadas ilegales', asyn
   }
 });
 
+test('HTTP de salud y página de prueba responden sin alterar la API', async () => {
+  const base = endpoint.replace(/^ws:/, 'http:');
+  const healthy = await fetch(base + '/health?utm_source=chatgpt.com');
+  assert.equal(healthy.status, 200);
+  assert.deepEqual(await healthy.json(), { ok: true, service: 'decreto-real-pvp' });
+  const preview = await fetch(base + '/prueba?sala=ABC123');
+  assert.equal(preview.status, 200);
+  assert.match(preview.headers.get('content-type'), /text\/html/);
+  assert.match(await preview.text(), /Duelo multijugador/);
+  assert.match(preview.headers.get('content-security-policy'), /frame-ancestors/);
+  const redirect = await fetch(base + '/', { redirect: 'manual' });
+  assert.equal(redirect.status, 302);
+  assert.equal(redirect.headers.get('location'), '/prueba');
+});
+
 test('rechaza el origen WebSocket no autorizado', async () => {
   await assert.rejects(() => new Promise((resolve, reject) => {
     const ws = new WebSocket(endpoint, { origin: 'https://unexpected.example.com' });
