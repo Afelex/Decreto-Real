@@ -1,10 +1,11 @@
 import { createServer } from 'node:http';
 import { randomBytes } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { WebSocket, WebSocketServer } from 'ws';
 import { createMatch, act, viewFor } from './engine.mjs';
 
 const port = Number(process.env.PORT || 3001);
-const origins = new Set((process.env.ALLOWED_ORIGINS || 'http://localhost:5173,http://127.0.0.1:5173,https://afelex.github.io')
+const origins = new Set((process.env.ALLOWED_ORIGINS || 'http://localhost:5173,http://127.0.0.1:5173,https://afelex.github.io,https://decreto-real-production.up.railway.app')
   .split(',').map(item => item.trim()).filter(Boolean));
 const rooms = new Map();
 const REJOIN_MS = 120_000;
@@ -13,10 +14,24 @@ const HISTORY_LIMIT = 100;
 const MAX_ROOMS = 1000;
 let waitingRandom = null;
 
+const previewHtml = readFileSync(new URL('./pvp-preview.html', import.meta.url));
 const server = createServer((req, res) => {
-  if (new URL(req.url || '/', 'http://localhost').pathname === '/health') {
+  const pathname = new URL(req.url || '/', 'http://localhost').pathname;
+  if (pathname === '/health') {
     res.writeHead(200, { 'content-type': 'application/json', 'cache-control': 'no-store' });
     res.end(JSON.stringify({ ok: true, service: 'decreto-real-pvp' }));
+  } else if (pathname === '/prueba' && req.method === 'GET') {
+    res.writeHead(200, {
+      'content-type': 'text/html; charset=utf-8',
+      'cache-control': 'no-store',
+      'x-content-type-options': 'nosniff',
+      'referrer-policy': 'no-referrer',
+      'content-security-policy': "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'self' wss: ws:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
+    });
+    res.end(previewHtml);
+  } else if (pathname === '/' && req.method === 'GET') {
+    res.writeHead(302, { location: '/prueba', 'cache-control': 'no-store' });
+    res.end();
   } else { res.writeHead(404); res.end(); }
 });
 const sockets = new WebSocketServer({ noServer: true, maxPayload: 8192, perMessageDeflate: false });
