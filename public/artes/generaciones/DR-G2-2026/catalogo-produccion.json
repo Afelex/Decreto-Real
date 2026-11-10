@@ -5,7 +5,7 @@
   "planningStatus": "provisional_pendiente_qa_artistico",
   "approved": 11,
   "published": 0,
-  "generatedPendingReview": 0,
+  "generatedPendingReview": 1,
   "planned": 110,
   "policy": {
     "banners": "Solo estandartes de tela lisa roja o blanca sin símbolos, cruces, aspas ni heráldica.",
@@ -237,12 +237,19 @@
       "category": "fondos",
       "title": "Región 5 - jefe",
       "usage": "Región 5 - combate de jefe",
-      "status": "pendiente",
+      "status": "generado_para_revision",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-5-jefe.webp",
       "format": "webp",
       "chapter": "5",
       "variant": "jefe",
-      "notes": "Dos intentos del 10/11/2026 representaron valle con puente/río, chozas y catarata en lugar de la arena del Fantasma de la Selva. Imágenes descartadas y no contabilizadas. Para G2-FON-012: interior de jungla sombría, ruinas de santuario de piedra abrazadas por raíces monumentales y lianas, patio de combate despejado, sombras verdes y neblina, sin valles abiertos ni aldeas, vertical 2:3. No sustituir automáticamente por la imagen base G2-FON-011."
+      "notes": "Nueva propuesta generada 2026-11-10: santuario selvático en ruinas con árbol de raíces monumentales, arco ceremonial, explanada central y cascada lejana; banderas lisas roja y blanca. Formato vertical 1024x1536 comprobado; PNG y WebP guardados como archivos de conversación, sin importación aún a GitHub ni DRStudio. Pendiente de aprobación del usuario.",
+      "generatedFileName": "G2-FON-012_santuario_nayisa.png",
+      "optimizedFileName": "G2-FON-012_santuario_nayisa.webp",
+      "originalFormat": "png",
+      "originalDimensions": {
+        "width": 1024,
+        "height": 1536
+      }
     },
     {
       "id": "G2-FON-013",
