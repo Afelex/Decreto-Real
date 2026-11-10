@@ -203,7 +203,7 @@
       "format": "webp",
       "chapter": "4",
       "variant": "jefe",
-      "notes": "Generación preliminar vertical 1024x1536 de la batería fortificada del Artillero del Trueno: vista de patio amurallado y cañones, perspectiva distinta moderadamente. Requiere corrección artística antes de aprobar/publicar: varios estandartes combinan rojo y blanco en un mismo paño o bandera, pero la norma G2 exige paños lisos monocromos rojos o blancos, sin X/franjas/símbolos. Un intento posterior de edición produjo un valle fluvial, descartado, no usar. Binarios PNG/WebP en conversación, aún no en GitHub/DRStudio. El usuario aprobó avanzar ('genial! ahora continuemos'); sigue pendiente corregir estandartes bicolores antes de integrarlo en DRStudio.",
+      "notes": "Generación preliminar vertical 1024x1536 de la batería fortificada del Artillero del Trueno: vista de patio amurallado y cañones, perspectiva distinta moderadamente. Requiere corrección artística antes de aprobar/publicar: varios estandartes combinan rojo y blanco en un mismo paño o bandera, pero la norma G2 exige paños lisos monocromos rojos o blancos, sin X/franjas/símbolos. Un intento posterior de edición produjo un valle fluvial, descartado, no usar. Binarios PNG/WebP en conversación, aún no en GitHub/DRStudio. El usuario aprobó avanzar ('genial! ahora continuemos'); sigue pendiente corregir estandartes bicolores antes de integrarlo en DRStudio. Corrección visual alternativa generada (fondo de fortaleza, estandartes ahora monocromos rojo/blanco) el 10-11-2026: G2-FON-010_artillero_del_trueno_banderas_corregidas.png y .webp, creada en conversación; revisar/aceptar la alternativa antes de importar. No sustituye automáticamente la imagen previamente aprobada.",
       "generatedFileName": "G2-FON-010_artillero_del_trueno.png",
       "optimizedFileName": "G2-FON-010_artillero_del_trueno.webp",
       "originalFormat": "png",
@@ -218,12 +218,12 @@
       "category": "fondos",
       "title": "Región 5 - base",
       "usage": "Región 5 - combates ordinarios y entrada",
-      "status": "siguiente_en_generacion",
+      "status": "pendiente",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-5-base.webp",
       "format": "webp",
       "chapter": "5",
       "variant": "base",
-      "notes": "Frontera Oriental, región 5, fondo BASE para misiones 19-21. SELVA TROPICAL HÚMEDA, no fortaleza de artillería, no costa, no valle árido. Árboles gigantes tropicales, raíces arqueadas, helechos, lianas, río sinuoso parcialmente oculto por niebla, pequeño puesto de vigilancia de madera y piedra cubierto por enredaderas. Anime cel-shading 2D, sin personajes ni texto, vertical 2:3 de 1024x1536, composición central poco cargada para las cartas. Banderas si aparecen: tela completamente blanca O completamente roja, sin ningún símbolo ni franjas."
+      "notes": "DOS intentos del 10-11-2026 repitieron la fortaleza de artillería en lugar de la selva; NO se contabilizan como G2-FON-011. Próxima generación debe mostrar exclusivamente selva tropical húmeda de Frontera Oriental, árboles gigantes, raíces, lianas, río con niebla y un puesto de vigilancia cubierto de vegetación, vertical 2:3. Sin cañones, murallas de fortaleza, nieve o mar."
     },
     {
       "id": "G2-FON-012",
