@@ -54,3 +54,5 @@
 .dr-art-review textarea{width:100%;margin-top:10px;min-height:92px;resize:vertical;padding:12px;background:#101824;color:#eef4fc;border:1px solid #506176;border-radius:8px}
 @media(max-width:1050px){.dr-art-layout{grid-template-columns:minmax(0,1fr)}.dr-art-inspector{position:static;max-height:none}.dr-art-grid{grid-template-columns:repeat(auto-fill,minmax(145px,1fr))}}
 @media(max-width:560px){.dr-art-root{padding:12px 12px 36px}.dr-art-header h1{font-size:25px}.dr-art-actions{width:100%}.dr-art-actions button,.dr-art-actions a{flex:1;font-size:12px}.dr-art-grid{gap:9px;grid-template-columns:repeat(2,minmax(0,1fr))}.dr-art-thumb{height:136px}.dr-art-toolbar>input{max-width:none}.dr-art-inspector{padding:12px}.dr-art-inspector dl{grid-template-columns:105px 1fr}}
+
+.dr-art-chip.generation{top:auto;bottom:7px;left:7px;background:#27364b;color:#e2ecf8;font-size:10px;letter-spacing:.02em}

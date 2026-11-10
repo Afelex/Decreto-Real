@@ -36,12 +36,14 @@ test('nunca inicia generación sin confirmación SI o clave',async()=>{
   await assert.rejects(ejecutar({modo:'generar',confirmar:'SI',apiKey:''}),/Falta el secreto/);
 });
 
-test('callao obliga a banderas blancas con aspa roja sin escudo ni tricolor',()=>{
+test('Callao obliga a banderas lisas rojas o blancas sin símbolos',()=>{
   const fondo=catalogo().find(item=>item.id==='fondo-1-base');
-  assert.ok(fondo.prompt.includes('MANDATORY CALLAO FLAG'));
-  assert.ok(fondo.prompt.includes('Cross of Burgundy'));
-  assert.ok(fondo.prompt.includes('red-X') || fondo.prompt.includes('red X') || fondo.prompt.includes('JAGGED RED'));
-  assert.ok(fondo.prompt.includes('NO coat of arms') || fondo.prompt.includes('NO coat of arms of Spain'));
+  assert.ok(fondo.prompt.includes('CALLAO FLAG RULE'));
+  assert.ok(fondo.prompt.includes('plain solid white'));
+  assert.ok(fondo.prompt.includes('plain solid red'));
+  assert.ok(!fondo.prompt.includes('Cross of Burgundy'));
+  assert.ok(fondo.prompt.includes('NO diagonal marks'));
+  assert.ok(fondo.prompt.includes('NO X marks'));
   assert.ok(fondo.prompt.includes('NO photorealism') || fondo.prompt.includes('NOT a photograph'));
 });
 test('todas las imágenes enfatizan trazos 2D y evitan el render realista',()=>{
@@ -63,7 +65,7 @@ test('jefe se edita a partir del fondo base en lugar de generar escenario distin
   assert.ok(edit.url.endsWith('/images/edits'));
   assert.equal(edit.payload.images[0].image_url,'data:image/webp;base64,'+base.toString('base64'));
   assert.match(edit.payload.prompt,/provided input|PROVIDED BASE IMAGE/i);
-  assert.match(edit.payload.prompt,/CALLAO FLAG/);
+  assert.match(edit.payload.prompt,/CALLAO FLAG RULE/);
 });
 
 test('Callao: un clic prepara solo el jefe y otro los tres rivales reales',()=>{
@@ -97,7 +99,7 @@ test('jefes deben cambiar de escenario, no solo recolorear el fondo base',()=>{
   const callao=items.find(i=>i.id==='fondo-1-jefe');
   assert.match(callao.promptEdicion,/CALLAO ADMIRAL BOSS ARENA/);
   assert.match(callao.promptEdicion,/coastal cannons|coastal cannons|coastal|naval command/i);
-  assert.match(callao.promptEdicion,/Cross of Burgundy/);
+  assert.match(callao.promptEdicion,/plain white or plain red/i);
 });
 
 test('se conserva la imagen original de Xervias como referencia de estilo',()=>{
@@ -109,7 +111,7 @@ test('se conserva la imagen original de Xervias como referencia de estilo',()=>{
   assert.match(portrait.prompt,/Xervias/i);
   assert.match(portrait.prompt,/DO NOT|NEVER|Do not/);
   assert.match(portrait.prompt,/checkerboard/i);
-  assert.match(portrait.prompt,/Cross of Burgundy/i);
+  assert.match(portrait.prompt,/plain white or plain red/i);
 });
 test('retrato nuevo usa referencia visual sin copiar a Xervias',()=>{
   const rival=catalogo().find(i=>i.id==='rival-03');
@@ -156,5 +158,15 @@ test('los 18 fondos respetan la composición del duelo real: HUD, dos filas y ma
     assert.match(content,/BOTTOM 63–100%/);
     assert.match(content,/1024x1536/);
     assert.match(content,/Do NOT render any UI/);
+  }
+});
+
+test('todos los lotes se etiquetan DR-G2-2026 sin sobreescribir la G1',()=>{
+  for(const item of catalogo()){
+    assert.equal(item.generation,'DR-G2-2026');
+    assert.ok(item.publishPath.startsWith('public/artes/generaciones/DR-G2-2026/'));
+    assert.ok(item.publishPath.endsWith(item.filename));
+    for(const prompt of [item.prompt,item.promptEdicion,item.promptRestilizar].filter(Boolean))
+      assert.ok(!/Cross of Burgundy|aspa de Borgoña/i.test(prompt));
   }
 });
