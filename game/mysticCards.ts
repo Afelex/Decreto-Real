@@ -146,9 +146,10 @@ export function mysticPowerText(power: MysticPower): string {
   return effects.join(' · ');
 }
 
-/** El impacto de Sol Negro mantiene la regla de solo un Impacto por turno. */
+/** Las cartas que colocan Impacto respetan el límite de uno por turno. */
 export function canActivateMystic(id: string | undefined, impactPlayedThisTurn: boolean): boolean {
-  return id !== 'siguman-3' || !impactPlayedThisTurn;
+  if (!id || !(id in MYSTIC_ABILITIES)) return true;
+  return !MYSTIC_ABILITIES[id as MysticId].base.impact || !impactPlayedThisTurn;
 }
 
 export type MysticSnapshot = Readonly<{
