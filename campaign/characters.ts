@@ -7,7 +7,7 @@
 export const MAIN_CHARACTERS = {
   hero: { name: 'Xervias', role: 'Soldado' },
   mentor: { name: 'Zhinchi', role: 'Capitán' },
-  outlaw: { name: 'Vándalo Rojo', role: 'Bandido' },
+  outlaw: { name: 'Vándalo Rojo', role: 'Mercenario' },
   antagonist: { name: 'Sigumán', role: 'Comandante' },
 } as const;
 
@@ -55,10 +55,10 @@ export const ENEMY_ROSTER: readonly EnemyIdentity[] = [
   { missionId: '32', name: 'Lucas de Orduña', alias: 'Teniente de la Guardia', role: 'Teniente', sealPath: 'orden', portraitDirection: 'Teniente severo con coraza de gala' },
   { missionId: '33', name: 'Alonso Bermúdez', alias: 'Capitán del juramento', role: 'Capitán', sealPath: 'orden', portraitDirection: 'Capitán con espada y capa ceremonial' },
   { missionId: '34', name: 'Gonzalo de Montes', alias: 'Caballero del Juramento', role: 'General', sealPath: 'orden', portraitDirection: 'General de bronce y marfil, gesto solemne' },
-  { missionId: '35', name: 'Leocadio del Alba', alias: 'Escribano del Alba', role: 'Escribano', sealPath: 'retirado', portraitDirection: 'Falsificador erudito vestido de negro' },
-  { missionId: '36', name: 'Vándalo Rojo', alias: 'Bandido escarlata', role: 'Bandido', sealPath: 'retirado', portraitDirection: 'Rufián de armadura roja desgastada' },
-  { missionId: '37', name: 'Bruno Serrat', alias: 'Guardia de Sigumán', role: 'Guardia', sealPath: 'custodio', portraitDirection: 'Guardaespaldas con armadura de sombra' },
-  { missionId: '38', name: 'Sigumán', alias: 'Caudillo de los solarianos', role: 'Comandante', sealPath: 'retirado', portraitDirection: 'Antiguo comandante caído, manto oscuro y oro falso' },
+  { missionId: '35', name: 'Vándalo Rojo', alias: 'Prodigio mercenario', role: 'Mercenario', sealPath: 'retirado', portraitDirection: 'Joven de cabello corto, capucha roja ajustada y antifaz discreto; sin bigote' },
+  { missionId: '36', name: 'Gaspar de Armenta', alias: 'Custodio del Edicto', role: 'Custodio', sealPath: 'custodio', portraitDirection: 'Guardián severo de armadura negra con emblema de león de metal y oro' },
+  { missionId: '37', name: 'Sigumán', alias: 'Señor de la Revolución Solar', role: 'Comandante', sealPath: 'retirado', portraitDirection: 'Comandante solemne de capa oscura, sellos dorados y mirada autoritaria' },
+  { missionId: '38', name: 'Sigumán — Decreto Viviente', alias: 'Decreto Viviente', role: 'Entidad mística', sealPath: 'retirado', portraitDirection: 'Forma monstruosa de Sigumán, rodeada por ocho sellos y cadenas luminosas' }
 ] as const;
 
 export function enemyForMission(missionId: string): EnemyIdentity | undefined {
