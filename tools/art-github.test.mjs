@@ -12,13 +12,13 @@ test('existen 18 fondos y 29 retratos canónicos, total 47',()=>{
   assert.equal(new Set(items.map(i=>i.id)).size,47);
   assert.equal(new Set(items.map(i=>i.filename)).size,47);
 });
-test('excluye ocho generales y Sigumán, pero incluye los tres rivales previos finales',()=>{
+test('excluye ocho generales y Sigumán final, incluye Vándalo, Gaspar y Sigumán humano',()=>{
   const items=catalogo();
   for(const id of ['06','10','14','18','22','26','30','34','38']) assert.ok(!items.some(i=>i.id==='rival-'+id));
   for(const id of ['35','36','37','01','02']) assert.ok(items.some(i=>i.id==='rival-'+id));
-  assert.ok(items.some(i=>i.title.startsWith('Leocadio del Alba')));
   assert.ok(items.some(i=>i.title.startsWith('Vándalo Rojo')));
-  assert.ok(items.some(i=>i.title.startsWith('Bruno Serrat')));
+  assert.ok(items.some(i=>i.title.startsWith('Gaspar de Armenta')));
+  assert.ok(items.some(i=>i.title.startsWith('Sigumán')));
 });
 test('cada región produce dos fondos y tres rivales; prólogo tiene dos',()=>{
   for(const id of ['1','2','3','4','5','6','7','8','f']){
