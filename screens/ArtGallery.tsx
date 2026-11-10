@@ -10,6 +10,7 @@ type Dimension={w:number;h:number};
 type Flags=Record<string,'hidden'|'delete'>;
 const CURRENT_GENERATION='DR-G2-2026';
 const LEGACY_GENERATION='DR-G1';
+const LOCAL_GENERATIONS='decreto-real.artes.generaciones-locales.v1';
 const FLAGS='decreto-real.artes.estados.v1';
 const REVIEWS='decreto-real.artes.revision.v2';
 const REPLACEMENTS='decreto-real.artes.reemplazos.v1';
@@ -33,6 +34,7 @@ export default function ArtGallery(){
   const [urls,setUrls]=React.useState<Record<string,string>>({});
   const urlsRef=React.useRef<Record<string,string>>({});
   const [flags,setFlags]=React.useState<Flags>(()=>read(FLAGS,{}));
+  const [localGenerations,setLocalGenerations]=React.useState<Record<string,string>>(()=>read(LOCAL_GENERATIONS,{}));
   const [reviews,setReviews]=React.useState<Record<string,Review>>(()=>read(REVIEWS,{}));
   const [replacements,setReplacements]=React.useState<Record<string,string>>(()=>read(REPLACEMENTS,{}));
   const [dims,setDims]=React.useState<Record<string,Dimension>>(()=>read(DIMENSIONS,{}));
@@ -46,6 +48,10 @@ export default function ArtGallery(){
   const addInput=React.useRef<HTMLInputElement>(null);
   const replaceInput=React.useRef<HTMLInputElement>(null);
   const [replaceTarget,setReplaceTarget]=React.useState<string|null>(null);
+  const markLocalGeneration=(id:string,gen:string)=>setLocalGenerations(prev=>{
+    if(prev[id]===gen)return prev;
+    const next={...prev,[id]:gen};save(LOCAL_GENERATIONS,next);return next;
+  });
   const refresh=React.useCallback(async()=>{
     const items=await listStudioMedia();
     const newUrls=await loadStudioMediaUrls(items.map(i=>i.id));
@@ -64,8 +70,8 @@ export default function ArtGallery(){
   },[refresh]);
   const all=React.useMemo<Art[]>(()=>[
     ...catalog.map(i=>({id:i.path,name:i.name,group:i.group,bytes:i.bytes,url:source(i.path),kind:'repo' as const,path:i.path,ext:i.path.split('.').at(-1)?.toLowerCase()??'',generation:i.generation??LEGACY_GENERATION,state:i.state??'anterior-en-uso'})),
-    ...local.filter(i=>!i.mime.startsWith('audio/')).map(i=>({id:i.id,name:i.name,group:'Subidos desde DRStudio o esta galería',bytes:i.size,url:urls[i.id]??'',kind:'local' as const,path:i.id,ext:i.mime.split('/').at(-1)??'',generation:CURRENT_GENERATION,state:'borrador-local'}))
-  ],[catalog,local,urls]);
+    ...local.filter(i=>!i.mime.startsWith('audio/')).map(i=>({id:i.id,name:i.name,group:'Subidos desde DRStudio o esta galería',bytes:i.size,url:urls[i.id]??'',kind:'local' as const,path:i.id,ext:i.mime.split('/').at(-1)??'',generation:localGenerations[i.id]??LEGACY_GENERATION,state:'borrador-local'}))
+  ],[catalog,local,urls,localGenerations]);
   const groups=['Todos',...new Set(all.map(i=>i.group))];
   const shown=all.filter(i=>(group==='Todos'||i.group===group)&&
     (generation==='Todas'||i.generation===generation)&&
@@ -97,6 +103,8 @@ export default function ArtGallery(){
           if(wasVideo!==file.type.startsWith('video/'))throw new Error('El reemplazo debe conservar el tipo general (imagen o video).');
         }
         const stored=await addStudioMedia(file);
+        // Un contenido ya existente conserva su generación; no se reetiqueta por copiarlo.
+        if(!stored.reused)markLocalGeneration(stored.id,CURRENT_GENERATION);
         if(target){
           const next={...replacements,[target]:stored.id};
           setReplacements(next);save(REPLACEMENTS,next);
@@ -119,6 +127,7 @@ export default function ArtGallery(){
       const blob=await response.blob();
       const filename=item.path.split('/').at(-1)??'imagen.webp';
       const result=await addStudioMedia(new File([blob],filename,{type:blob.type}));
+      if(!result.reused||!localGenerations[result.id])markLocalGeneration(result.id,item.generation);
       await refresh();
       setMessage('“'+item.name+'” está disponible en DRStudio'+(result.reused?' (ya existía).':'.')+' Abre la Biblioteca 🖼 para usarlo.');
     }catch(e){setMessage(e instanceof Error?e.message:'No se pudo incorporar el recurso.');}
@@ -132,6 +141,7 @@ export default function ArtGallery(){
       if(used)throw new Error('Este recurso aparece en un borrador o respaldo de DRStudio. Retíralo de las escenas y elimínalo desde la biblioteca de DRStudio.');
       if(!window.confirm('¿Eliminar definitivamente “'+item.name+'” de este navegador? Esta operación no tiene deshacer.'))return;
       await deleteStudioMedia([item.id]);
+      setLocalGenerations(prev=>{const next={...prev};delete next[item.id];save(LOCAL_GENERATIONS,next);return next;});
       const next={...replacements};for(const [k,v] of Object.entries(next))if(v===item.id)delete next[k];
       setReplacements(next);save(REPLACEMENTS,next);
       changeFlag(item.id,null);setSelected(null);await refresh();
@@ -194,7 +204,7 @@ export default function ArtGallery(){
           {replacements[chosen.id]&&<><dt>Dimensiones del original</dt><dd>{aspect(dims[chosen.id])}</dd></>}
           <dt>Archivo original</dt><dd className="dr-art-path">{chosen.path}</dd>
           <dt>Categoría</dt><dd>{chosen.group}</dd>
-          <dt>Generación</dt><dd>{chosen.generation} · {chosen.state==='borrador-local'?'Solo en este navegador':chosen.state==='nueva-generacion'?'Nueva generación publicada':'Arte anterior (en transición)'}</dd>
+          <dt>Generación</dt><dd>{chosen.generation} · {chosen.state==='borrador-local'?'Borrador local en este navegador':chosen.state==='nueva-generacion'?'Nueva generación publicada':'Arte anterior (en transición)'}</dd>
           <dt>Formato y tamaño</dt><dd>{showExt(chosen)} · {human(chosen.bytes)}</dd>
           <dt>Uso / reemplazo</dt><dd>Usa el mismo ancho, alto y proporción para evitar recortes en el juego. Los archivos nuevos no reemplazan automáticamente un recurso publicado.</dd>
         </dl>
