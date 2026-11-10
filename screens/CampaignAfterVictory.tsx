@@ -21,7 +21,7 @@ const CampaignAfterVictoryScreen: React.FC = () => {
   const mission = CAMPAIGN_MISSIONS.find(item => item.id === missionId);
   const [progress] = React.useState(() => loadCampaignProgress(safeStorage()));
   const [index, setIndex] = React.useState(0);
-  const lines = mission ? afterVictoryLines(mission.id) : [];
+  const lines = mission ? afterVictoryLines(mission.id, progress) : [];
   const current = lines[index];
   const studio = useStudio();
   const lineIds = speakerLineIds(lines.map(line => line.speaker));
@@ -90,7 +90,7 @@ const CampaignAfterVictoryScreen: React.FC = () => {
         <img src={sceneImage} alt="" draggable={false} />
         <div className="dca-scene-wash" />
         <div className="dca-scene-mark">✥</div>
-        {mission.id !== '36' && <div className="dca-victory-note"><strong>Victoria · misión {Number(mission.id)} de 38</strong>
+        {<div className="dca-victory-note"><strong>Victoria · misión {Number(mission.id)} de 38</strong>
           <p>{mission.victoryLine}</p></div>}
       </div>
       <section className="dca-conversation" aria-live="polite" aria-atomic="true">
