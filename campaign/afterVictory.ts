@@ -198,6 +198,8 @@ const SIGUMAN_REVELATIONS: Readonly<Record<number, readonly AfterVictoryLine[]>>
   ],
   8: [
     {speaker:'Crónica',text:'Con las ocho regiones libres, las pistas señalan una sola fortaleza: la Casa del Sello, en San Jerónimo.'},
+    {speaker:'Xervias',text:'Los documentos mencionan a Leocadio del Alba. ¿Quién es ese Escribano?'},
+    {speaker:'Zhinchi',text:'Leocadio conservó la resonancia mística de los sellos y falsificó sus textos por orden de Sigumán. Tenemos pruebas para desenmascararlo.'},
     {speaker:'Zhinchi',text:'Antes de entrar quiero decirte algo, Xervias. Mi antiguo compañero podría estar allí. Nunca subestimes al Vándalo Rojo.'},
     {speaker:'Xervias',text:'Estaremos juntos, capitán. Hemos llegado hasta aquí porque usted me enseñó a pensar antes de obedecer.'},
     {speaker:'Zhinchi',text:'Y si algún día debes avanzar sin mí, recuerda eso. Tu valor no depende de mis órdenes.'},
