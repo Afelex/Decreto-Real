@@ -391,12 +391,12 @@
       "category": "fondos",
       "title": "Región final - Cámara del Decreto Viviente (Casa del Sello)",
       "usage": "Combate final contra Sigumán (misión 38), interior de la Casa del Sello; después del santuario exterior G2-FON-019",
-      "status": "siguiente_en_generacion",
+      "status": "pendiente",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-f-jefe.webp",
       "format": "webp",
       "chapter": "f",
       "variant": "jefe",
-      "notes": "Arte G2 a generar: interior monumental BARROCO-INCAICO cerrado de la Casa del Sello, cámara ritual austera de piedra oscura y columnas, altos arcos, gran techo abovedado y ocho pedestales de sellos místicos con luz dorada discreta, puerta monumental cerrada al fondo, leve energía ámbar y violeta en la atmósfera; suelo central muy amplio y vacío para HUD del duelo final, sin personajes ni cartas, sin texto ni interface, sin cielo exterior, sin paisaje de Cusco ni trono real opulento de G2-FON-018. Cinemático amenazante pero legible; anime 2D cel shading, vertical 2:3 (1024x1536). Estandartes si aparecen solo completamente blancos o completamente rojos, absolutamente sin cruces, rayas o símbolos."
+      "notes": "Arte G2 a generar: interior monumental BARROCO-INCAICO cerrado de la Casa del Sello, cámara ritual austera de piedra oscura y columnas, altos arcos, gran techo abovedado y ocho pedestales de sellos místicos con luz dorada discreta, puerta monumental cerrada al fondo, leve energía ámbar y violeta en la atmósfera; suelo central muy amplio y vacío para HUD del duelo final, sin personajes ni cartas, sin texto ni interface, sin cielo exterior, sin paisaje de Cusco ni trono real opulento de G2-FON-018. Cinemático amenazante pero legible; anime 2D cel shading, vertical 2:3 (1024x1536). Estandartes si aparecen solo completamente blancos o completamente rojos, absolutamente sin cruces, rayas o símbolos. QA artístico 10-11-2026: dos intentos de G2-FON-020 produjeron otro salón del trono barroco, demasiado parecido a G2-FON-018, con paños combinados y ornamentos; descartados para este ID, no contabilizar ni publicar. El recurso debe ser cámara ritual final distinta, en interior cerrado y oscuro de piedra, ocho pedestales de sellos místicos, sin trono, con espacio central despejado. Cambiar estrategia/prompt al generar para evitar duplicación del salón."
     },
     {
       "id": "G2-RET-01",
