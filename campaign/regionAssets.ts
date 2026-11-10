@@ -30,7 +30,7 @@ export function campaignLandscape(chapterId: string | undefined): string {
 export function campaignMissionBackground(missionId: string): string | undefined {
   const stage = STORY_STAGES.find(item => item.id === missionId);
   if (!stage || stage.chapterId === 'p') return undefined;
-  const variant = stage.kind === 'boss' || stage.id === '38' ? 'jefe' : 'base';
+  const variant = stage.kind === 'boss' || stage.kind === 'final' ? 'jefe' : 'base';
   return `${import.meta.env.BASE_URL}campania/arte/fondos/region-${stage.chapterId}-${variant}.webp`;
 }
 
@@ -40,7 +40,7 @@ const rivalSlug = (name: string): string => name.toLowerCase().normalize('NFD')
 /** No portrait was generated for the eight generals or Sigumán; preserve their existing presentation. */
 export function campaignOpponentPortrait(missionId: string): string | undefined {
   const stage = STORY_STAGES.find(item => item.id === missionId);
-  if (!stage || stage.kind === 'boss' || missionId === '38') return undefined;
+  if (!stage || stage.kind === 'boss' || stage.chapterId === 'f') return undefined;
   const enemy = ENEMY_ROSTER.find(item => item.missionId === missionId);
   if (!enemy) return undefined;
   return `${import.meta.env.BASE_URL}campania/arte/retratos/rival-${enemy.missionId}-${rivalSlug(enemy.name)}.webp`;
