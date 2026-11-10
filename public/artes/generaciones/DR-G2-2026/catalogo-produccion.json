@@ -103,12 +103,12 @@
       "category": "fondos",
       "title": "Región 2 - base",
       "usage": "Región 2 - combates ordinarios y entrada",
-      "status": "siguiente_en_generacion",
+      "status": "pendiente",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-2-base.webp",
       "format": "webp",
       "chapter": "2",
       "variant": "base",
-      "notes": "Región Caminos del Reino, fondo base vertical 2:3; posta de piedra, camino seco y praderas ocres, espacio central despejado para HUD. Banderas lisas rojas o blancas, sin símbolos."
+      "notes": "Pendiente de generar imagen correcta de la región 2, Caminos del Reino (interior, posta, caminos secos y praderas ocres). Dos intentos generaron nuevamente la batería costera del Callao; se descartaron y NO cuentan como arte G2-FON-005. Para nuevos intentos: PROHIBIDO mar, barcos, costa, murallas costeras y cañones. Vertical 2:3, fondo de combate, centro despejado, estandartes lisos blancos/rojos."
     },
     {
       "id": "G2-FON-006",
