@@ -5,7 +5,7 @@
   "planningStatus": "provisional_pendiente_qa_artistico",
   "approved": 7,
   "published": 0,
-  "generatedPendingReview": 0,
+  "generatedPendingReview": 1,
   "planned": 110,
   "policy": {
     "banners": "Solo estandartes de tela lisa roja o blanca sin símbolos, cruces, aspas ni heráldica.",
@@ -160,12 +160,18 @@
       "category": "fondos",
       "title": "Región 3 - jefe",
       "usage": "Región 3 - combate de jefe",
-      "status": "pendiente",
+      "status": "generado_para_revision",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-3-jefe.webp",
       "format": "webp",
       "chapter": "3",
       "variant": "jefe",
-      "notes": "El 10-11-2026, tres intentos de generación repitieron un valle con río y puente; se descartan como G2-FON-008. Este ID exige instalación minera real: bocaminas, vagonetas, vigas, edificio de contabilidad, mineral y balanza, sin río ni puente protagonista. No aprobar ni publicar paisaje fluvial bajo este ID. Formato 2:3 vertical; fondo de combate, centro despejado."
+      "notes": "Primera generación G2-FON-008 que representa una explotación minera: galería apuntalada, raíles, vagoneta con mineral de plata, grúa, balanza y edificio virreinal, fondo vertical 2:3. Pendiente de aprobación del usuario e incorporación binaria a GitHub/DRStudio. Revisar rigor histórico de rieles modernos antes de publicación final.",
+      "generatedFileName": "a_highly_detailed_vivid_anime_style_landscape_of.png",
+      "originalFormat": "png",
+      "originalDimensions": {
+        "width": 1024,
+        "height": 1536
+      }
     },
     {
       "id": "G2-FON-009",
