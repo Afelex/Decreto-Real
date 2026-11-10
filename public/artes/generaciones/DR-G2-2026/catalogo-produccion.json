@@ -3,7 +3,7 @@
   "generation": "DR-G2-2026",
   "createdOn": "2026-11-10",
   "planningStatus": "provisional_pendiente_qa_artistico",
-  "approved": 3,
+  "approved": 4,
   "published": 0,
   "generatedPendingReview": 0,
   "planned": 110,
@@ -84,12 +84,18 @@
       "category": "fondos",
       "title": "Región 1 - jefe",
       "usage": "Región 1 - combate de jefe",
-      "status": "pendiente",
+      "status": "aprobado_pendiente_importacion",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-1-jefe.webp",
       "format": "webp",
       "chapter": "1",
       "variant": "jefe",
-      "notes": "Batería costera elevada de Baltasar de Fierro con cañones de bronce y parapetos, océano de fondo. Formato vertical 2:3 sin personajes y espacio para HUD. Los intentos de muelle horizontal fueron descartados."
+      "notes": "Aprobada por usuario con 'genial! ok continúa' el 10 de noviembre de 2026. Arena vertical del Almirante de Hierro con cañones, murallas costeras y estandartes lisos rojos y blancos. PNG original generado en esta conversación; no publicado aún en GitHub ni DRStudio.",
+      "generatedFileName": "batería_costera_de_el_callao.png",
+      "originalFormat": "png",
+      "originalDimensions": {
+        "width": 1024,
+        "height": 1536
+      }
     },
     {
       "id": "G2-FON-005",
@@ -97,11 +103,12 @@
       "category": "fondos",
       "title": "Región 2 - base",
       "usage": "Región 2 - combates ordinarios y entrada",
-      "status": "pendiente",
+      "status": "siguiente_en_generacion",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-2-base.webp",
       "format": "webp",
       "chapter": "2",
-      "variant": "base"
+      "variant": "base",
+      "notes": "Región Caminos del Reino, fondo base vertical 2:3; posta de piedra, camino seco y praderas ocres, espacio central despejado para HUD. Banderas lisas rojas o blancas, sin símbolos."
     },
     {
       "id": "G2-FON-006",
