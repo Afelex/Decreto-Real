@@ -3,7 +3,7 @@
   "generation": "DR-G2-2026",
   "createdOn": "2026-11-10",
   "planningStatus": "provisional_pendiente_qa_artistico",
-  "approved": 17,
+  "approved": 19,
   "published": 0,
   "generatedPendingReview": 0,
   "planned": 110,
@@ -353,12 +353,18 @@
       "category": "fondos",
       "title": "Región 8 - Salón de los Juramentos, Gonzalo de Montes",
       "usage": "Misión 34: arena del Caballero del Juramento, en el interior del palacio real barroco-incaico del Cusco",
-      "status": "pendiente",
+      "status": "aprobado_pendiente_importacion",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-8-jefe.webp",
       "format": "webp",
       "chapter": "8",
       "variant": "jefe",
-      "notes": "ARTE A GENERAR: enorme sala interior palaciega donde se celebra el juramento, piedra inca de grandes bloques en la base, arcadas barrocas y balcones de madera tallada, techo artesonado de madera, gran trono al fondo y asiento secundario de consejo, lámparas y soportes con pergaminos sellados, suelo ceremonial central amplio vacío para UI del duelo; luz cálida y dramática que entra desde ventanas altas. Vertical 2:3 1024×1536, anime 2D cel shading coherente con G2-FON-017; NO patio exterior, NO paisaje Colca, NO cóndores ni río, NO personajes, sin texto ni UI; banderas si aparecen deben ser paños lisos exclusivamente blancos o rojos, nunca bicolores ni heráldicos. Revisión 10/11/2026: tres generaciones de prueba dieron PATIOS EXTERIORES semejantes a G2-FON-017 y NO el interior solicitado. Una versión incluyó estandartes con emblemas, prohibidos. Descartadas todas, sin código de aprobación. Mantener destino salón INTERIOR cerrado del Caballero del Juramento (Gonzalo de Montes, misión 34); exigir validación de techo cerrado, paredes sin cielo abierto, trono y espacio central libre ANTES de aprobar. No integrar ninguna de las tres."
+      "notes": "ARTE A GENERAR: enorme sala interior palaciega donde se celebra el juramento, piedra inca de grandes bloques en la base, arcadas barrocas y balcones de madera tallada, techo artesonado de madera, gran trono al fondo y asiento secundario de consejo, lámparas y soportes con pergaminos sellados, suelo ceremonial central amplio vacío para UI del duelo; luz cálida y dramática que entra desde ventanas altas. Vertical 2:3 1024×1536, anime 2D cel shading coherente con G2-FON-017; NO patio exterior, NO paisaje Colca, NO cóndores ni río, NO personajes, sin texto ni UI; banderas si aparecen deben ser paños lisos exclusivamente blancos o rojos, nunca bicolores ni heráldicos. Revisión 10/11/2026: tres generaciones de prueba dieron PATIOS EXTERIORES semejantes a G2-FON-017 y NO el interior solicitado. Una versión incluyó estandartes con emblemas, prohibidos. Descartadas todas, sin código de aprobación. Mantener destino salón INTERIOR cerrado del Caballero del Juramento (Gonzalo de Montes, misión 34); exigir validación de techo cerrado, paredes sin cielo abierto, trono y espacio central libre ANTES de aprobar. No integrar ninguna de las tres. Salón interior de trono barroco-incaico del Cusco, techo cerrado y suelo despejado. Aprobado con «excelente, oki continua». Archivo generado en esta conversación, aún no importado ni publicado por GitHub/DRStudio.",
+      "generatedFileName": "salón_dorado_del_trono_andino.png",
+      "originalFormat": "png",
+      "originalDimensions": {
+        "width": 1024,
+        "height": 1536
+      }
     },
     {
       "id": "G2-FON-019",
@@ -366,23 +372,31 @@
       "category": "fondos",
       "title": "Región f - base",
       "usage": "Casa del Sello - combates ordinarios y entrada",
-      "status": "pendiente",
+      "status": "aprobado_pendiente_importacion",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-f-base.webp",
       "format": "webp",
       "chapter": "f",
-      "variant": "base"
+      "variant": "base",
+      "generatedFileName": "santuario_andino_al_crepúsculo.png",
+      "originalFormat": "png",
+      "originalDimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "notes": " Exterior de la Casa del Sello al crepúsculo, arco, plaza vacía, montañas y estandartes monocromos. Aprobado con «ok continua». Archivo generado en esta conversación, aún no importado ni publicado por GitHub/DRStudio."
     },
     {
       "id": "G2-FON-020",
       "generation": "DR-G2-2026",
       "category": "fondos",
-      "title": "Región f - jefe",
-      "usage": "Casa del Sello - combate de jefe",
-      "status": "pendiente",
+      "title": "Región final - Cámara del Decreto Viviente (Casa del Sello)",
+      "usage": "Combate final contra Sigumán (misión 38), interior de la Casa del Sello; después del santuario exterior G2-FON-019",
+      "status": "siguiente_en_generacion",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-f-jefe.webp",
       "format": "webp",
       "chapter": "f",
-      "variant": "jefe"
+      "variant": "jefe",
+      "notes": "Arte G2 a generar: interior monumental BARROCO-INCAICO cerrado de la Casa del Sello, cámara ritual austera de piedra oscura y columnas, altos arcos, gran techo abovedado y ocho pedestales de sellos místicos con luz dorada discreta, puerta monumental cerrada al fondo, leve energía ámbar y violeta en la atmósfera; suelo central muy amplio y vacío para HUD del duelo final, sin personajes ni cartas, sin texto ni interface, sin cielo exterior, sin paisaje de Cusco ni trono real opulento de G2-FON-018. Cinemático amenazante pero legible; anime 2D cel shading, vertical 2:3 (1024x1536). Estandartes si aparecen solo completamente blancos o completamente rojos, absolutamente sin cruces, rayas o símbolos."
     },
     {
       "id": "G2-RET-01",
