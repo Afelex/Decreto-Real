@@ -237,12 +237,12 @@
       "category": "fondos",
       "title": "Región 5 - jefe",
       "usage": "Región 5 - combate de jefe",
-      "status": "siguiente_en_generacion",
+      "status": "pendiente",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-5-jefe.webp",
       "format": "webp",
       "chapter": "5",
       "variant": "jefe",
-      "notes": "REGIÓN 5 BOSS Nayisa de Sombras, Fantasma de la Selva, misión 22. Interior de selva húmeda muy densa con ruinas de santuario de piedra antigua tragadas por raíces, enormes árboles de copa alta, lianas, helechos, vapor y tenue luz solar esmeralda. Cámara DE FRENTE a un patio ceremonial vacío y amplio con piedras y musgo despejado al centro/lower third para interfaz de combate; sin humanos ni personajes, no fortalezas ni cañones, no arquitectura virreinal, no nieve ni desierto. Estandartes opcionales solo rojo liso o blanco liso, evitar iconografía. 2:3 vertical 1024x1536 anime cel shaded."
+      "notes": "Dos intentos del 10/11/2026 representaron valle con puente/río, chozas y catarata en lugar de la arena del Fantasma de la Selva. Imágenes descartadas y no contabilizadas. Para G2-FON-012: interior de jungla sombría, ruinas de santuario de piedra abrazadas por raíces monumentales y lianas, patio de combate despejado, sombras verdes y neblina, sin valles abiertos ni aldeas, vertical 2:3. No sustituir automáticamente por la imagen base G2-FON-011."
     },
     {
       "id": "G2-FON-013",
