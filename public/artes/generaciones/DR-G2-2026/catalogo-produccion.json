@@ -3,7 +3,7 @@
   "generation": "DR-G2-2026",
   "createdOn": "2026-11-10",
   "planningStatus": "provisional_pendiente_qa_artistico",
-  "approved": 6,
+  "approved": 7,
   "published": 0,
   "generatedPendingReview": 0,
   "planned": 110,
@@ -139,14 +139,20 @@
       "id": "G2-FON-007",
       "generation": "DR-G2-2026",
       "category": "fondos",
-      "title": "Región 3 - base",
-      "usage": "Región 3 - combates ordinarios y entrada",
-      "status": "pendiente",
+      "title": "Región 3 - acceso a las Minas de la Sierra: valle y río",
+      "usage": "Región 3 - entrada y recorrido hacia las minas; vista de valles andinos y río, sin explotación minera en primer plano",
+      "status": "aprobado_pendiente_importacion",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-3-base.webp",
       "format": "webp",
       "chapter": "3",
       "variant": "base",
-      "notes": "Intentos de generación de 10/11/2026 mostraron solo un valle desértico sin bocaminas, vagonetas ni casa de contabilidad. Descartados (no cuentan para G2-FON-007). Debe representar las Minas de la Sierra: dos bocaminas oscuras, andamios, mineral y edificio minero, vertical 2:3."
+      "notes": "Aprobado por el usuario el 10 de noviembre de 2026: 'excelente, continúa'. Paisaje con río y puente, propuesto para la aproximación a la zona minera. No fingir que muestra bocaminas; no publicarlo hasta importación y validación en DRStudio.",
+      "generatedFileName": "valle_andino_con_puente_y_río.png",
+      "originalFormat": "png",
+      "originalDimensions": {
+        "width": 1024,
+        "height": 1536
+      }
     },
     {
       "id": "G2-FON-008",
@@ -154,11 +160,12 @@
       "category": "fondos",
       "title": "Región 3 - jefe",
       "usage": "Región 3 - combate de jefe",
-      "status": "pendiente",
+      "status": "siguiente_en_generacion",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-3-jefe.webp",
       "format": "webp",
       "chapter": "3",
-      "variant": "jefe"
+      "variant": "jefe",
+      "notes": "Arena del jefe Octavio Argento, Señor de la Plata, dentro del complejo de las Minas de la Sierra: dos bocaminas excavadas y apuntaladas, vagonetas y rieles de madera, balanzas, cofres de plata, casa de contabilidad virreinal, paleta fría de plata y pizarra, cielo serrano. Pantalla vertical 2:3 despejada en el centro para HUD. Nada de río o valle vacío, nada de barcos ni cañones; banderas lisas blancas o rojas."
     },
     {
       "id": "G2-FON-009",
