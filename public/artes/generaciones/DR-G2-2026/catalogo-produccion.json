@@ -65,12 +65,12 @@
       "category": "fondos",
       "title": "Región 1 - base",
       "usage": "Región 1 - combates ordinarios y entrada",
-      "status": "siguiente_en_generacion",
+      "status": "pendiente",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-1-base.webp",
       "format": "webp",
       "chapter": "1",
       "variant": "base",
-      "notes": "Puerto del Callao, fondo regional base; sin emblemas y con banderas lisas rojas/blancas."
+      "notes": "Tres pruebas visuales resultaron variantes de plaza, no el Puerto del Callao. Se descartaron para este ID y no se cuentan entre los 110 recursos aprobados. Generar un puerto costero real con bastiones, muelles, galeras y mar; únicamente banderas lisas rojas y blancas, sin texto incrustado."
     },
     {
       "id": "G2-FON-004",
