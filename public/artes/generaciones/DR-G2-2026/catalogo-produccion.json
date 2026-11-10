@@ -3,9 +3,9 @@
   "generation": "DR-G2-2026",
   "createdOn": "2026-11-10",
   "planningStatus": "provisional_pendiente_qa_artistico",
-  "approved": 8,
+  "approved": 9,
   "published": 0,
-  "generatedPendingReview": 1,
+  "generatedPendingReview": 0,
   "planned": 110,
   "policy": {
     "banners": "Solo estandartes de tela lisa roja o blanca sin símbolos, cruces, aspas ni heráldica.",
@@ -179,12 +179,12 @@
       "category": "fondos",
       "title": "Región 4 - base",
       "usage": "Región 4 - combates ordinarios y entrada",
-      "status": "generado_para_revision",
+      "status": "aprobado_pendiente_importacion",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-4-base.webp",
       "format": "webp",
       "chapter": "4",
       "variant": "base",
-      "notes": "Fortaleza de Artillería, región 4 base; patio de piedra y cañones, torres y portón de la fortaleza, en vertical 1024×1536. Generada el 10/11/2026, pendiente de aprobación. QA artístico: comprobar estandartes; algunas telas muestran rojo y blanco juntos, corregir si deben ser de un solo color. No incorporada a GitHub/DRStudio.",
+      "notes": "Fortaleza de Artillería, región 4 base; patio de piedra y cañones, torres y portón de la fortaleza, en vertical 1024×1536. Generada el 10/11/2026, pendiente de aprobación. QA artístico: comprobar estandartes; algunas telas muestran rojo y blanco juntos, corregir si deben ser de un solo color. No incorporada a GitHub/DRStudio. Aprobado explícitamente por el usuario: 'genial! oki'. El recurso está aún pendiente de integrar al juego y a DRStudio.",
       "generatedFileName": "a_detailed_vibrant_anime_style_illustration_of_a.png",
       "originalFormat": "png",
       "originalDimensions": {
@@ -198,11 +198,12 @@
       "category": "fondos",
       "title": "Región 4 - jefe",
       "usage": "Región 4 - combate de jefe",
-      "status": "pendiente",
+      "status": "siguiente_en_generacion",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-4-jefe.webp",
       "format": "webp",
       "chapter": "4",
-      "variant": "jefe"
+      "variant": "jefe",
+      "notes": "Región 4, arena del jefe Jerónimo Arrellano (Artillero del Trueno). Vista elevada y distinta del patio base G2-FON-009: batería militar sobre murallas, cañones de bronce enormes a los lados, depósitos y barriles de pólvora, torres de la misma fortaleza al fondo, valle serrano, cielo dramático. Obligatorio vertical 2:3 1024x1536, sin personas, sin texto ni UI, centro relativamente silencioso para HUD. Sin costa ni mar. Banderas o estandartes exclusivamente paños lisos de un solo color rojo o blanco sin cruz, aspa ni franja bicolor."
     },
     {
       "id": "G2-FON-011",
