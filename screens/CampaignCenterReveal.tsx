@@ -9,7 +9,7 @@ const LINES = [
   { speaker: 'Xervias', text: 'Los ocho generales han sido derrotados. Pero los decretos falsos siguen apuntando hacia un mismo lugar.' },
   { speaker: 'Zhinchi', text: 'Mira el centro de nuestro mapa. Es la Casa del Sello, el origen de las órdenes que han dividido el reino.' },
   { speaker: 'Xervias', text: 'Entonces Sigumán nos espera allí. ¿Cómo podemos llegar hasta él?' },
-  { speaker: 'Zhinchi', text: 'Selecciona el símbolo del centro del mapa. Se abrirá el último escenario: cuatro misiones antes de enfrentar a Sigumán.' },
+  { speaker: 'Zhinchi', text: 'Selecciona el centro del mapa. Nos esperan cuatro combates: el Vándalo Rojo, el custodio de Sigumán y las dos fases de su poder.' },
 ] as const;
 
 /** Special one-time reveal after any eighth general, regardless of order. */
