@@ -5,7 +5,7 @@
   "planningStatus": "provisional_pendiente_qa_artistico",
   "approved": 13,
   "published": 0,
-  "generatedPendingReview": 0,
+  "generatedPendingReview": 1,
   "planned": 110,
   "policy": {
     "banners": "Solo estandartes de tela lisa roja o blanca sin símbolos, cruces, aspas ni heráldica.",
@@ -276,12 +276,19 @@
       "category": "fondos",
       "title": "Región 6 - Arena de Isabela Valdierra",
       "usage": "Región 6, misión 26 - arena ceremonial de la Dama del Estandarte, distinta del campo agrícola de la región",
-      "status": "siguiente_en_generacion",
+      "status": "generado_para_revision",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-6-jefe.webp",
       "format": "webp",
       "chapter": "6",
       "variant": "jefe",
-      "notes": "Patio ceremonial urbano de piedra blanca de sillar arequipeño, arquerías barrocas, balcones de madera y galería de mando, piso geométrico plano y centro libre para HUD. Estilo anime cel-shading, vertical 2:3 1024x1536, sin personas, textos, cartas ni interfaz, paleta cálida; volcanes y ciudad al fondo. Todos los estandartes individualmente monocromos, enteramente blancos O enteramente rojos, SIN insignias, escudos, cruces, símbolos, bordes bicolores ni franjas. Evitar finca rural, río, selva, costa o minas."
+      "notes": "Propuesta generada el 10/11/2026: patio de sillar con arcos, galería, fuente y volcán al fondo para la batalla de Isabela; paños de color entero rojo o blanco. Imagen vertical 1024×1536 comprobada; PNG y WebP entregados en conversación. Pendiente de aprobación del usuario e importación de binarios a GitHub/DRStudio.",
+      "generatedFileName": "G2-FON-014_arena_isabela_valdierra.png",
+      "optimizedFileName": "G2-FON-014_arena_isabela_valdierra.webp",
+      "originalFormat": "png",
+      "originalDimensions": {
+        "width": 1024,
+        "height": 1536
+      }
     },
     {
       "id": "G2-FON-015",
