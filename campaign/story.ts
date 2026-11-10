@@ -1,7 +1,7 @@
 /** DR-C02 · Lore and 38 missions of Decreto Real I: El Sello y la Revolución Solar.
  * Xervias, Zhinchi, Vándalo Rojo and Sigumán are the definitive protagonists and antagonists. The 38 encounters form a continuous narrative: manipulated decrees, real grievances,
  * eight moral conflicts and a final confrontation. Narration is concise for one-screen mobile layouts.
- * The eight general names, regions, special cards, canonical subbosses, original 2+32+4 layout and overarching conclusion
+ * The eight general names, regions, special cards, original 2+32+4 layout and overarching conclusion
  * preserve the agreed narrative. No combat cards or abilities are added here.
  */
 export type StoryChapter = {
@@ -129,11 +129,11 @@ export const STORY_STAGES: readonly StoryStage[] = [
     "id": "02",
     "chapterId": "p",
     "title": "La orden sin sello",
-    "description": "Un mensajero consagrado para tareas civiles lleva una carta secreta al Callao. Xervias cree que revelará quién falsificó los decretos.",
+    "description": "Xervias intercepta a Mateo Salcedo, mensajero de decretos sospechosos. Al terminar el enfrentamiento aparece un mercenario enmascarado.",
     "kind": "skirmish",
     "opponent": "Mensajero encapuchado",
     "openingLine": "OBJETIVO: Detén al mensajero y descubre de dónde viene la orden falsa.",
-    "victoryLine": "En la cera del sobre aparece una marca de embarque. El rastro conduce al Callao. ¿Qué ocultan los barcos del Callao?",
+    "victoryLine": "Mateo deja una pista hacia el Callao, pero el Vándalo Rojo interrumpe el encuentro. Zhinchi protege a Xervias. ¿Quién es ese antiguo compañero?",
     "defeatLine": "El mensajero desaparece con la única copia que podía delatar su ruta."
   },
   {
@@ -491,46 +491,46 @@ export const STORY_STAGES: readonly StoryStage[] = [
   {
     "id": "35",
     "chapterId": "f",
-    "title": "El Escribano del Alba",
-    "description": "Leocadio, antiguo consagrado y Escribano del Alba, cambió decretos para que Sigumán ganara seguidores enfrentando a los pueblos.",
+    "title": "El legado del capitán",
+    "description": "Zhinchi enfrenta a su antiguo compañero, el Vándalo Rojo. Un derrumbe los separa; Xervias recibe el Sello de Mando y debe vencer al mercenario.",
     "kind": "subboss",
-    "opponent": "Escribano del Alba",
-    "openingLine": "OBJETIVO: Recupera los originales y demuestra cómo se organizó el engaño.",
-    "victoryLine": "Los registros de San Jerónimo explican cómo Leocadio alteró la resonancia de los sellos. Sigumán conocía el engaño. ¿Quién intentará detenerlos?",
-    "defeatLine": "Leocadio esconde sus matrices y la Revolución Solar conserva su coartada."
+    "opponent": "Vándalo Rojo",
+    "openingLine": "OBJETIVO: Supera al Vándalo Rojo y utiliza por primera vez el poder que Zhinchi te confió.",
+    "victoryLine": "El Vándalo Rojo ha sido derrotado. Xervias busca a Zhinchi entre los escombros sin encontrarlo. ¿Qué hará ahora sin su capitán?",
+    "defeatLine": "El Vándalo Rojo impide a Xervias continuar y la fortaleza permanece bajo el control de Sigumán."
   },
   {
     "id": "36",
     "chapterId": "f",
-    "title": "La emboscada de Vándalo Rojo",
-    "description": "Vándalo Rojo fue compañero de Xervias. Ahora ayuda a Sigumán porque quiere dirigir un ejército, aunque deba traicionar a sus antiguos amigos.",
+    "title": "El León del Edicto",
+    "description": "Xervias llega solo a los calabozos. Gaspar de Armenta, fanático de Sigumán, encierra a inocentes y convoca un león místico que persiste en el campo.",
     "kind": "subboss",
-    "opponent": "Vándalo Rojo",
-    "openingLine": "OBJETIVO: Detén a Vándalo Rojo y evita que capture a Xervias.",
-    "victoryLine": "Vándalo cae derrotado, pero un estruendo sacude las columnas de San Jerónimo. La estructura empieza a ceder. ¿Conseguirán salir a tiempo?",
-    "defeatLine": "Vándalo escapa y Zhinchi queda expuesto a su emboscada."
+    "opponent": "Gaspar de Armenta",
+    "openingLine": "OBJETIVO: Derrota al custodio, enfrenta al León del Edicto y libera a los prisioneros.",
+    "victoryLine": "Gaspar cae derrotado y los cautivos son liberados. Xervias demuestra que sabe decidir sin su maestro. ¿Qué le espera en el trono?",
+    "defeatLine": "El León del Edicto sigue defendiendo la prisión y los inocentes permanecen cautivos."
   },
   {
     "chapterId": "f",
-    "title": "La última promesa de Zhinchi",
-    "description": "Zhinchi desapareció entre los escombros al salvar a Xervias. Nadie sabe si pudo escapar. La última guardia protege los archivos de San Jerónimo.",
-    "kind": "skirmish",
-    "opponent": "Guardia de Sigumán",
-    "openingLine": "OBJETIVO: Recupera la última pista de Zhinchi y llega hasta la sala de Sigumán.",
-    "victoryLine": "Xervias descubre cómo se manipularon los modelos originales del sello en San Jerónimo. Su mentor sigue desaparecido. ¿Logrará detener a Sigumán?",
-    "defeatLine": "Bruno Serrat cierra el acceso y se pierde el rastro de Zhinchi.",
+    "title": "El trono de Sigumán",
+    "description": "Xervias encara a Sigumán, antiguo comandante de la Orden de la Corona Solar, y rechaza su plan de imponer la paz mediante la obediencia absoluta.",
+    "kind": "final",
+    "opponent": "Sigumán",
+    "openingLine": "OBJETIVO: Enfrenta a Sigumán y derrota su primera forma para detener la Revolución Solar.",
+    "victoryLine": "Sigumán cae y parece vencido, pero los ocho sellos comienzan a resonar a su alrededor. ¿Qué está despertando?",
+    "defeatLine": "Sigumán mantiene su trono y utiliza los sellos para someter a los Reinos del Perú.",
     "id": "37"
   },
   {
     "id": "38",
     "chapterId": "f",
-    "title": "La Casa del Sello",
-    "description": "Sigumán, antiguo comandante de la Orden de la Corona Solar, usó decretos falsos para someter al reino. Xervias debe detenerlo.",
+    "title": "El Decreto Viviente",
+    "description": "Al verse vencido, Sigumán une a su cuerpo la energía de los ocho sellos y toma una forma monstruosa. Xervias afronta su última prueba.",
     "kind": "final",
-    "opponent": "Sigumán",
-    "openingLine": "OBJETIVO: Detén a Sigumán y termina con el control de la Revolución Solar.",
-    "victoryLine": "Sigumán es derrotado y detenido. Las pruebas de San Jerónimo desmantelan la falsificación; Xervias sigue su camino, sin saber qué fue de Zhinchi. ¿Qué aprenderá ahora?",
-    "defeatLine": "Sigumán conserva la Casa del Sello y el reino continúa sometido a su mentira."
+    "opponent": "Sigumán — Decreto Viviente",
+    "openingLine": "OBJETIVO: Destruye las invocaciones del Decreto Viviente y derrota definitivamente a Sigumán.",
+    "victoryLine": "El Decreto Viviente es vencido. Las pruebas de San Jerónimo liberan al reino de los decretos falsos. ¿Cómo continuará Xervias sin Zhinchi?",
+    "defeatLine": "Sigumán consume la energía de los sellos y el reino queda sometido a su voluntad."
   }
 ];
 

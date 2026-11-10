@@ -6,10 +6,10 @@ import {
 
 /** Se obtiene una carta por cada general: repetir su misión no concede copias adicionales. */
 export const DECK_STORAGE_KEY = 'decreto-real.campania.mazo-mistico.v1';
-export const LEGACY_UNLOCK_MISSION = '36';
+export const LEGACY_UNLOCK_MISSION = '35';
 
 export function hasZhinchiLegacy(progress: CampaignProgress): boolean {
-  return CAMPAIGN_MISSIONS.slice(0, 36).every(mission => bestStars(progress, mission.id) > 0);
+  return CAMPAIGN_MISSIONS.slice(0, 35).every(mission => bestStars(progress, mission.id) > 0);
 }
 
 export function collectedMystics(progress: CampaignProgress): MysticId[] {

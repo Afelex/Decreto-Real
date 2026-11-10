@@ -26,13 +26,13 @@ test('ocho generales conceden una sola carta; repetir combate no la duplica', ()
   assert.deepEqual(collectedMystics(repeated), rewards);
 });
 
-test('el legado solo despierta al completar sin saltos las primeras 36 misiones', () => {
+test('el legado solo despierta al completar sin saltos las primeras 35 misiones', () => {
   assert.equal(hasZhinchiLegacy(emptyCampaignProgress()), false);
-  assert.equal(hasZhinchiLegacy(completeThrough(35)), false);
-  assert.equal(hasZhinchiLegacy(completeThrough(36)), true);
+  assert.equal(hasZhinchiLegacy(completeThrough(34)), false);
+  assert.equal(hasZhinchiLegacy(completeThrough(35)), true);
   assert.equal(hasZhinchiLegacy(completeThrough(38)), true);
   assert.equal(CAMPAIGN_MISSIONS.length, 38);
-  assert.deepEqual(collectedMystics(completeThrough(36)).slice(-1), ['legado-zhinchi']);
+  assert.deepEqual(collectedMystics(completeThrough(35)).slice(-1), ['legado-zhinchi']);
   const forged = completeThrough(36);
   delete forged.stars['15'];
   assert.equal(hasZhinchiLegacy(forged), false);

@@ -1,17 +1,24 @@
 /** Consecuencias breves, claras y específicas de las 38 victorias.
  * Progresión no lineal: un diálogo nunca presupone que otra región se superó.
  */
-import { getCampaignMission } from './campaign.ts';
+import { getCampaignMission, bestStars, type CampaignProgress } from './campaign.ts';
 
-export type AfterVictoryLine = Readonly<{ speaker: 'Xervias' | 'Zhinchi' | 'Crónica' | 'Nayisa' | 'Vándalo Rojo'; text: string }>;
+export type AfterVictoryLine = Readonly<{ speaker: 'Xervias' | 'Zhinchi' | 'Crónica' | 'Nayisa' | 'Vándalo Rojo' | 'Gaspar de Armenta' | 'Sigumán'; text: string }>;
 export const AFTER_VICTORY: Readonly<Record<string, readonly AfterVictoryLine[]>> = {
  '01': [
   {speaker:'Xervias',text:'Si los dos decretos tienen el mismo sello, ¿cómo sabremos cuál es verdadero?'},
   {speaker:'Zhinchi',text:'Busca a quien los escribió y a quien los entregó. Un sello auténtico también puede usarse para mentir.'}
  ],
  '02': [
-  {speaker:'Xervias',text:'La pista del mensajero llega hasta el Callao. ¿Nos dirigimos allí?'},
-  {speaker:'Zhinchi',text:'Es una opción, pero hay otros siete generales moviendo los hilos. Puedes investigar sus regiones en el orden que prefieras.'}
+  {speaker:"Xervias",text:"Mateo ha dejado una pista hacia el Callao. Tenemos que seguirla antes de que desaparezcan los decretos."},
+  {speaker:"Crónica",text:"Una figura con capucha roja y antifaz interrumpe el camino. El Vándalo Rojo muestra una carta mística y su energía derriba a Xervias."},
+  {speaker:"Vándalo Rojo",text:"¿Esto es lo mejor que puede ofrecer la Orden? Un soldado recién graduado no puede detenerme."},
+  {speaker:"Zhinchi",text:"¡Aléjate de él! No permitiré que lastimes a mi discípulo."},
+  {speaker:"Vándalo Rojo",text:"Vaya, Zhinchi. Sigues protegiendo a los débiles. ¿Todavía crees que la academia tenía algo que enseñarme?"},
+  {speaker:"Zhinchi",text:"Te enseñaron a proteger. Fuiste tú quien decidió vender sus principios."},
+  {speaker:"Crónica",text:"Los dos antiguos compañeros se reconocen. El mercenario sonríe, se retira y promete volver a encontrarlos."},
+  {speaker:"Xervias",text:"Capitán, ¿quién era ese hombre? Jamás había visto una carta tan poderosa."},
+  {speaker:"Zhinchi",text:"Fuimos compañeros de promoción. Algún día te contaré por qué abandonó la academia; ahora debemos seguir las pruebas."}
  ],
  '03': [
   {speaker:'Xervias',text:'¿Por qué ocultaban pólvora en cajas de alimentos?'},
@@ -146,44 +153,64 @@ export const AFTER_VICTORY: Readonly<Record<string, readonly AfterVictoryLine[]>
   {speaker:'Zhinchi',text:'Un juramento no obliga a cometer injusticias. Guarda la carta y comprueba si aún quedan generales por liberar.'}
  ],
  '35': [
-  {speaker:'Xervias',text:'Leocadio, ¿por qué las órdenes falsas conservaban la energía de un Sello Real?'},
-  {speaker:'Crónica',text:'El Escribano muestra un antiguo registro de San Jerónimo, donde se custodiaban los modelos originales de los sellos.'},
-  {speaker:'Zhinchi',text:'Copió parte de la resonancia mística del sello y después cambió el texto. Por eso nuestro anillo detectaba algo que no encajaba.'},
-  {speaker:'Xervias',text:'¿Sigumán sabía que los documentos habían sido alterados?'},
-  {speaker:'Zhinchi',text:'Sus instrucciones están firmadas. Provocó conflictos para que el pueblo aceptara su autoridad por miedo.'},
-  {speaker:'Xervias',text:'Con las ocho pruebas y estos registros podremos demostrarlo. Sigamos adelante.'}
+  {speaker:'Crónica',text:'El Vándalo Rojo cae derrotado. El Decreto del Legado ha respondido a Xervias durante su primera gran prueba.'},
+  {speaker:'Vándalo Rojo',text:'¡No puede ser! Zhinchi nunca consiguió superarme... y tú has utilizado su sello mejor de lo que esperaba.'},
+  {speaker:'Xervias',text:'La academia no lo hizo débil. Le enseñó aquello que tú abandonaste: defender a otros antes que a ti mismo.'},
+  {speaker:'Crónica',text:'Xervias regresa al lugar del derrumbe. Busca a Zhinchi entre las piedras, pero no encuentra su cuerpo ni señales de su paradero.'},
+  {speaker:'Xervias',text:'Capitán... no sé dónde está. Seguiré adelante, como me pidió. No desperdiciaré su legado.'}
  ],
  '36': [
-  {speaker:'Vándalo Rojo',text:'¡No puede ser! ¡El techo está cediendo!'},
-  {speaker:'Crónica',text:'La energía del duelo ha dañado las columnas. Vándalo Rojo huye por un pasadizo lateral mientras las piedras empiezan a caer.'},
-  {speaker:'Zhinchi',text:'¡Xervias, la estructura se viene abajo! ¡Corre!'},
-  {speaker:'Xervias',text:'¡Tenemos que salir juntos, capitán!'},
-  {speaker:'Crónica',text:'Un bloque cae sobre el camino de Xervias. Zhinchi lo desvía con su cetro y libera a su discípulo.'},
-  {speaker:'Zhinchi',text:'Escúchame. Tus cartas místicas siguen selladas. Voy a enseñarte a canalizar su energía. Confío en que sabrás utilizarlas.'},
-  {speaker:'Xervias',text:'¡Eso puede esperar! ¡Salgamos de aquí!'},
-  {speaker:'Crónica',text:'El cetro ilumina el anillo de Xervias. Las cartas místicas despiertan y se desbloquea la edición de barajas: máximo tres místicas por baraja.'},
-  {speaker:'Zhinchi',text:'Ya está. Recuerda lo que aprendimos. ¡Tienes que continuar!'},
-  {speaker:'Xervias',text:'¡Zhinchi! ¡Venga conmigo!'},
-  {speaker:'Crónica',text:'Un nuevo derrumbe los separa. Xervias escapa entre polvo y escombros. La entrada queda bloqueada. No ve qué ocurrió con Zhinchi.'},
-  {speaker:'Xervias',text:'¡Capitán! ¡Responda!'},
-  {speaker:'Xervias',text:'No sé si logró salir... Me salvó para que pudiera continuar. No abandonaré lo que comenzamos.'}
+  {speaker:"Crónica",text:"El León del Edicto se desvanece al perder sus cuatro puntos de vida. Los sellos que cerraban las celdas dejan de brillar."},
+  {speaker:"Gaspar de Armenta",text:"¿Por qué me perdonas? Solo obedecí las instrucciones de Sigumán."},
+  {speaker:"Xervias",text:"No necesito destruirte para demostrar que estás equivocado. Abre las celdas y ayuda a esas personas."},
+  {speaker:"Crónica",text:"Gaspar cede. Los prisioneros recuperan su libertad y Xervias avanza hacia el trono sin las órdenes de su maestro."}
  ],
  '37': [
-  {speaker:'Xervias',text:'Este archivo contiene los registros originales de San Jerónimo. Allí se guardaban los modelos con los que se comprobaba la energía de cada sello.'},
-  {speaker:'Crónica',text:'Una anotación de Zhinchi confirma que Leocadio tuvo acceso a los modelos y pudo alterar la relación entre el sello y su documento.'},
-  {speaker:'Xervias',text:'Ahora entiendo cómo engañaron al reino. No bastará con derrotar a Sigumán: tendremos que impedir que vuelvan a utilizar este método.'},
-  {speaker:'Xervias',text:'Capitán... No sé dónde está. Pero sus enseñanzas me acompañarán cuando enfrente a Sigumán.'}
+  {speaker:"Sigumán",text:"Mi cuerpo ha sido vencido, pero los ocho sellos todavía responden a mi voluntad."},
+  {speaker:"Crónica",text:"Las inscripciones de toda la sala comienzan a flotar. La corona de Sigumán se fractura y una figura enorme se levanta en el trono."},
+  {speaker:"Xervias",text:"Esos sellos fueron creados para proteger al reino. ¡No dejaré que los utilices para someterlo!"},
+  {speaker:"Crónica",text:"La voz de Sigumán retumba desde la nueva figura: ahora se hace llamar el Decreto Viviente. Comienza el enfrentamiento definitivo."}
  ],
  '38': [
-  {speaker:'Crónica',text:'La última carta de Sigumán cae al suelo. Su anillo pierde energía. Los soldados lo detienen y se recuperan los documentos que ordenó falsificar.'},
-  {speaker:'Xervias',text:'Ganamos, pero una victoria no reparará por sí sola el daño que causó la Revolución Solar.'},
-  {speaker:'Crónica',text:'Las pruebas reunidas en los ocho territorios permitirán retirar los decretos falsificados y escuchar a las familias afectadas.'},
-  {speaker:'Xervias',text:'No sé qué ocurrió con Zhinchi después del derrumbe. Pensaré en él cada vez que deba elegir qué es lo correcto.'},
-  {speaker:'Xervias',text:'Nuestro trabajo no termina aquí. Todavía hay personas que necesitan ayuda. Seguiré adelante.'}
+  {speaker:"Crónica",text:"Los ocho sellos se separan del cuerpo de Sigumán. Su transformación se deshace y la Casa del Sello queda en silencio."},
+  {speaker:"Xervias",text:"Ninguna ley puede justificar lo que hiciste. Los pueblos conocerán la verdad y podrán reparar lo que se ha destruido."},
+  {speaker:"Crónica",text:"Las pruebas reunidas en los ocho territorios permiten anular los decretos falsos. Sigumán queda derrotado y bajo custodia."},
+  {speaker:"Xervias",text:"No sé qué fue de Zhinchi. Pero sé lo que debo hacer: seguir protegiendo a quienes todavía necesitan ayuda."}
  ],
 };
 
-export function afterVictoryLines(id: string): readonly AfterVictoryLine[] {
-  if (!getCampaignMission(id)) return [];
-  return AFTER_VICTORY[id] ?? [];
+/**
+ * Revelaciones después de 2, 4, 6 y 8 generales: funcionan con cualquier
+ * orden de regiones. Se muestran únicamente al alcanzar el hito exacto.
+ */
+const SIGUMAN_REVELATIONS: Readonly<Record<number, readonly AfterVictoryLine[]>> = {
+  2: [
+    {speaker:'Xervias',text:'En dos regiones diferentes han mencionado al mismo hombre. ¿Quién es Sigumán?'},
+    {speaker:'Zhinchi',text:'Fue un comandante de la Orden. Prometía restaurar la paz, pero abandonó sus juramentos para dirigir la Revolución Solar.'},
+  ],
+  4: [
+    {speaker:'Crónica',text:'Los informes revelan una idea común: Sigumán pretende imponer una única voluntad sobre todas las leyes del reino.'},
+    {speaker:'Zhinchi',text:'Dice buscar la paz, pero confunde la justicia con la obediencia. Ninguna orden debe estar por encima de las personas.'},
+  ],
+  6: [
+    {speaker:'Crónica',text:'Una inscripción recuperada muestra que Sigumán puede canalizar la energía de varios sellos místicos simultáneamente.'},
+    {speaker:'Xervias',text:'Entonces no planea simplemente tomar el mando. Está reuniendo algo mucho mayor para la Casa del Sello.'},
+  ],
+  8: [
+    {speaker:'Crónica',text:'Con las ocho regiones libres, las pistas señalan una sola fortaleza: la Casa del Sello, en San Jerónimo.'},
+    {speaker:'Xervias',text:'Los documentos mencionan a Leocadio del Alba. ¿Quién es ese Escribano?'},
+    {speaker:'Zhinchi',text:'Leocadio conservó la resonancia mística de los sellos y falsificó sus textos por orden de Sigumán. Tenemos pruebas para desenmascararlo.'},
+    {speaker:'Zhinchi',text:'Antes de entrar quiero decirte algo, Xervias. Mi antiguo compañero podría estar allí. Nunca subestimes al Vándalo Rojo.'},
+    {speaker:'Xervias',text:'Estaremos juntos, capitán. Hemos llegado hasta aquí porque usted me enseñó a pensar antes de obedecer.'},
+    {speaker:'Zhinchi',text:'Y si algún día debes avanzar sin mí, recuerda eso. Tu valor no depende de mis órdenes.'},
+  ],
+};
+const GENERAL_MISSION_IDS = ['06', '10', '14', '18', '22', '26', '30', '34'] as const;
+export function afterVictoryLines(id: string, progress?: CampaignProgress): readonly AfterVictoryLine[] {
+  const mission = getCampaignMission(id);
+  if (!mission) return [];
+  const base = AFTER_VICTORY[id] ?? [];
+  if (!progress || mission.kind !== 'boss' || bestStars(progress, id) <= 0) return base;
+  const defeated = GENERAL_MISSION_IDS.filter(generalId => bestStars(progress, generalId) > 0).length;
+  return [...base, ...(SIGUMAN_REVELATIONS[defeated] ?? [])];
 }

@@ -51,7 +51,7 @@ const CampaignStoryScreen: React.FC = () => {
         <div className="dc-full-cast">
           <div><span>⚔</span><strong>Xervias</strong><small>{MAIN_CHARACTERS.hero.role}. Busca quién cambió las órdenes y protege a las familias.</small></div>
           <div><span>✦</span><strong>Zhinchi</strong><small>{MAIN_CHARACTERS.mentor.role}. Enseña a Xervias a pensar antes de obedecer, pero guarda un secreto.</small></div>
-          <div><span>♜</span><strong>Vándalo Rojo</strong><small>{MAIN_CHARACTERS.outlaw.role}. Fue amigo de Xervias, pero ahora ayuda a Sigumán para conseguir poder.</small></div>
+          <div><span>♜</span><strong>Vándalo Rojo</strong><small>{MAIN_CHARACTERS.outlaw.role}. Fue compañero de Zhinchi en la academia; abandonó su formación y vende su talento al mejor postor.</small></div>
           <div><span>♛</span><strong>Sigumán</strong><small>{MAIN_CHARACTERS.antagonist.role}. Ordena falsificar decretos porque cree que solo él puede imponer la paz.</small></div>
         </div>
       </>}

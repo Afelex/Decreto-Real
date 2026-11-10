@@ -105,7 +105,7 @@ destinations.push(
   { id: 'epilogo', group: 'Desenlace', label: 'Epílogo · primera página', path: '/campania/epilogo', won: after('f', finalMissions.length) },
   { id: 'epilogo-final', group: 'Desenlace', label: 'Epílogo · última página', path: '/campania/epilogo?qaPagina=4', won: after('f', finalMissions.length) },
   { id: 'creditos', group: 'Desenlace', label: 'Créditos', path: '/campania/creditos', won: after('f', finalMissions.length) },
-  { id: 'baraja-desbloqueada', group: 'Desenlace', label: 'Editor de baraja desbloqueado', path: '/campania/baraja', won: after('f', 2) },
+  { id: 'baraja-desbloqueada', group: 'Desenlace', label: 'Editor de baraja desbloqueado', path: '/campania/baraja', won: after('f', 1) },
 );
 
 export const QA_CAMPAIGN_DESTINATIONS: readonly QaDestination[] = destinations;

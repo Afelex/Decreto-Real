@@ -38,7 +38,10 @@ test('los ocho generales y el desenlace conservan los hechos canónicos', () => 
   assert.equal(STORY_STAGES.filter(stage => stage.kind === 'boss').length, 8);
   assert.equal(STORY_STAGES.find(stage => stage.id === '22')?.opponent, 'Fantasma de la Selva');
   assert.doesNotMatch(STORY_STAGES.find(stage => stage.id === '36')!.victoryLine, /Zhinchi|místicas|desaparece/); // Revelar el derrumbe solo en la escena posterior
-  assert.match(STORY_STAGES.find(stage => stage.id === '38')!.victoryLine, /Sigumán es derrotado y detenido/);
+  assert.match(STORY_STAGES.find(stage => stage.id === '38')!.victoryLine, /Decreto Viviente es vencido/);
+  assert.equal(STORY_STAGES.find(stage => stage.id === '35')?.opponent, 'Vándalo Rojo');
+  assert.equal(STORY_STAGES.find(stage => stage.id === '36')?.opponent, 'Gaspar de Armenta');
+  assert.equal(STORY_STAGES.find(stage => stage.id === '37')?.opponent, 'Sigumán');
   assert.doesNotMatch(STORY_STAGES.find(stage => stage.id === '38')!.victoryLine, /muere|Zhinchi sigue siendo un misterio/);
   assert.match(STORY_STAGES.find(stage => stage.id === '38')!.victoryLine, /San Jerónimo/);
   const prose = JSON.stringify([STORY_STAGES, STORY_CHAPTERS]);

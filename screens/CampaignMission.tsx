@@ -11,7 +11,7 @@ import { chapterForStage } from '../campaign/story.ts';
 import { combatConversationForMission } from '../campaign/combatDialogues.ts';
 import { enemyForMission } from '../campaign/characters.ts';
 import { loadMysticSlots, hasZhinchiLegacy } from '../campaign/mysticDeck.ts';
-import { bossMysticSlots, GENERAL_MYSTICS } from '../game/mysticCards.ts';
+import { bossMysticSlots, GENERAL_MYSTICS, mysticDisplayName, mysticPower, mysticPowerText } from '../game/mysticCards.ts';
 import { missionStarGoals } from '../campaign/progressView.ts';
 import BattleResultScreen from './BattleResultScreen';
 import { RegionScene } from './RegionScene';
@@ -124,7 +124,7 @@ const CampaignMissionScreen: React.FC = () => {
   if (outcome) {
     const heading = outcome.won
       ? mission.kind === 'boss' ? '¡General derrotado!'
-        : mission.kind === 'final' ? '¡La Revolución Solar cae!' : '¡Misión superada!'
+        : mission.kind === 'final' ? mission.id === '37' ? '¡Sigumán ha caído...!' : '¡El Decreto Viviente cae!' : '¡Misión superada!'
       : 'Misión fallida';
 
     return <BattleResultScreen
@@ -139,12 +139,17 @@ const CampaignMissionScreen: React.FC = () => {
       warning={!outcome.saved ? 'No se pudo guardar tu progreso en este navegador.' : undefined}
       reward={outcome.won && outcome.saved ? mysticalReward
         ? `Carta mística de ${mysticalReward.owner} añadida a tu colección${legacyAwakened ? '.' : ' (sellada).'}`
-        : mission.id === '36' ? 'El duelo ha terminado, pero el edificio está cediendo. ¡Continúa la historia!' : undefined
+        : mission.id === '35' ? 'El Sello de Mando ha despertado. ¡Ahora puedes utilizar cartas místicas!' : undefined
         : undefined}
+      rewardShowcase={outcome.won && mysticalReward ? {
+        cardName: mysticDisplayName(mysticalReward.id),
+        effect: mysticPowerText(mysticPower(mysticalReward.id, 1)),
+        locked: !legacyAwakened,
+      } : undefined}
       narrative={outcome.won ? mission.victoryLine : mission.defeatLine}
       actions={[
         ...(outcome.won && outcome.saved && mysticalReward ? [{
-          label: mission.id === '36' || legacyAwakened ? 'Editar baraja mística ✦' : 'Ver mística sellada ✦',
+          label: mission.id === '35' || legacyAwakened ? 'Editar baraja mística ✦' : 'Ver mística sellada ✦',
           onClick: () => navigate('/campania/baraja'),
         }] : []),
         ...(outcome.won && outcome.saved ? [{
@@ -181,7 +186,7 @@ const CampaignMissionScreen: React.FC = () => {
       </div>
       <p className="dc-note dc-briefing-note">Combate original: 20 de vida, 10 ataques, 10 defensas, 4 Impactos y 4 Órdenes. Los combos x2 y x3 permiten causar daño o curar vida.{mission.kind === 'boss' ? ' Este general tiene 3 místicas.' : mission.kind === 'final' ? ' Sigumán porta 3 místicas distintas.' : ''}</p>
       <div className="dc-briefing-actions">
-        <button className="dc-primary" onClick={() => setView(mission.kind === 'boss' || mission.kind === 'final' ? 'confrontation' : 'duel')}>Preparar combate ⚔</button>
+        <button className="dc-primary" onClick={() => setView(mission.kind === 'boss' || mission.chapterId === 'f' ? 'confrontation' : 'duel')}>Preparar combate ⚔</button>
         <button className="dc-secondary" onClick={() => navigate(returnToMap)}>Volver al mapa</button>
       </div>
     </section>
@@ -202,7 +207,13 @@ const CampaignMissionScreen: React.FC = () => {
     key={`${mission.id}-${attempt}`}
     onOutcome={onClassicOutcome}
     storyConversation={conversation}
-    playerMysticSlots={legacyAwakened ? loadMysticSlots(storage, progress) : []}
+    playerMysticSlots={mission.id === '35'
+      ? [{ mysticId: 'legado-zhinchi', replace: 'ATTACK' }]
+      : legacyAwakened ? loadMysticSlots(storage, progress) : []}
+    guaranteedOpeningMysticId={mission.id === '35' ? 'legado-zhinchi' : undefined}
+    initialOpponentSummon={mission.id === '36'
+      ? { name: 'León del Edicto', hp: 4, attack: 2 }
+      : mission.id === '38' ? { name: 'Guardián del Sol Negro', hp: 6, attack: 2 } : undefined}
     opponentMysticSlots={mission ? bossMysticSlots(mission.id) : []}
     presentation={{ background: campaignMissionBackground(mission.id) ?? '/Decreto-Real/escenarios/plaza-virreinal-v2.svg', opponentPortrait: campaignOpponentPortrait(mission.id) }}
     onReturn={() => navigate(returnToMap)}

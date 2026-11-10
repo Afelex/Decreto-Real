@@ -243,40 +243,40 @@ const script: Readonly<Record<string, DialogueRow>> = {
     "Gonzalo, todavía puedes cumplir tu promesa. Empieza ayudando a quienes sufrieron por esas órdenes."
   ],
   "35": [
-    "Yo preparé esos decretos. En San Jerónimo aprendí a conservar la resonancia de un Sello Real y colocarla sobre otras palabras.",
-    "¿Alteraste el texto sin perder toda la energía del sello? Los anillos podían sentirlo, pero las órdenes ya no eran auténticas.",
-    "Sigumán me pagó para provocar confusión. Cuando la gente temiera a sus propios vecinos, aceptaría sus órdenes sin discutirlas.",
-    "¡No dejaré que te lleves los registros de San Jerónimo!",
-    "Sigumán conoce el método y sabe que los decretos eran falsos. Si pierdo, se descubrirá toda la red.",
-    "Me venciste. Los registros están ahí. Demuestran que Sigumán dirigió la falsificación desde el principio.",
-    "Usaste las leyes para perjudicar a quienes debían proteger. Recuperaremos los originales y haremos que se conozca la verdad."
+    "Creí que Zhinchi había terminado contigo. Ahora su sello está en tu mano, pero sigues siendo un simple soldado.",
+    "Mi capitán me salvó del derrumbe. No permitiré que su sacrificio sea en vano ni que sigas dañando al reino.",
+    "Fuimos compañeros de academia. Yo era el mejor; Zhinchi terminó el tercer año porque jamás tuvo mi talento.",
+    "¡Ese sello no puede darte la fuerza que a Zhinchi le faltó para vencerme!",
+    "Abandoné la academia porque nadie tenía ya nada que enseñarme. ¡No puede ser que tú me hagas retroceder!",
+    "Derrotado... ¿por alguien que todavía cree en las palabras de Zhinchi? ¡Esto es imposible!",
+    "El capitán me enseñó que el poder sirve para proteger. Te he vencido, y ahora iré a buscarlo."
   ],
   "36": [
-    "Sigumán me prometió dirigir un ejército. He venido a detenerte, Xervias. No importa que fuéramos compañeros.",
-    "¿Vándalo, por qué estás haciendo esto? ¡Estás ayudando a quien provocó las desgracias de todo el reino!",
-    "Porque ya me cansé de obedecer sin conseguir nada. Tú también podrías unirte y tener poder.",
-    "¡No perderé! Sigumán me prometió el mando y no voy a renunciar a él.",
-    "Sigues creyendo que puedes salvar a todos. Todavía no sabes lo que cuesta decidir por ti mismo.",
-    "Me has derrotado... ¡Pero estas columnas se están rompiendo! ¡Yo me largo!",
-    "No conseguirás que abandone lo que hemos comenzado. ¡Zhinchi, el techo está cediendo; tenemos que salir!"
+    "Nadie llega a Sigumán sin autorización. Estos prisioneros seguirán encerrados por orden del comandante.",
+    "¿Los condenaste sin escucharlos? Mi capitán me enseñó que una orden injusta también puede cuestionarse.",
+    "Soy Gaspar de Armenta, custodio del Edicto. Mi León del Edicto castigará a quienes desafíen la voluntad de Sigumán.",
+    "¡León del Edicto, defiende las celdas! ¡No permitas que ese soldado avance!",
+    "Mi invocación continuará atacándote mientras siga con vida. ¡La obediencia es la única garantía de paz!",
+    "Me venciste... ¿Por qué no terminas conmigo? Solo cumplía aquello que me ordenaron.",
+    "No necesito destruirte para demostrar que estás equivocado. Abre las celdas y deja que esas personas salgan."
   ],
   "37": [
-    "Sigumán me ordenó cerrar esta entrada y destruir los registros antiguos de San Jerónimo.",
-    "Estos documentos pueden explicar cómo se alteraron los sellos. ¡Debo recuperarlos antes de enfrentar a Sigumán!",
-    "Son archivos reservados. Si se conoce lo que hicieron con ellos, muchos perderán su autoridad.",
-    "¡No pasarás! ¡Cumpliré la orden hasta el final!",
-    "No importa cuántos documentos recuperes. Sigumán sigue esperando detrás de estas puertas.",
-    "Está bien. Los registros son tuyos, pero nadie sabe qué le ocurrió a tu capitán.",
-    "Los documentos demuestran el engaño. No sé si Zhinchi logró escapar del derrumbe, pero continuaré con lo que me enseñó."
+    "Soy Sigumán. Alteré los decretos porque el reino jamás encontraría la paz mientras todos pudieran desobedecer.",
+    "Sembraste miedo y enfrentaste a pueblos enteros. El poder de la Corona debe proteger, no controlar sus vidas.",
+    "Mi antiguo cargo no me permitió cambiar el reino. Ahora los ocho sellos obedecen una sola voluntad: la mía.",
+    "¡No permitiré que la libertad de unos pocos destruya el orden que he levantado!",
+    "Tu maestro podía haber servido a mi causa. Eligió salvarte, en vez de aceptar el futuro que ofrecía.",
+    "Mis cartas... han caído. Pero la fuerza del reino no termina en este cuerpo...",
+    "Zhinchi no desperdició su poder. Lo utilizó para salvar una vida. Y yo defenderé a quienes todavía confían en nosotros."
   ],
   "38": [
-    "Utilicé decretos alterados para que los generales y los pueblos me obedecieran. Pensé que solo así lograría imponer la paz.",
-    "Provocaste conflictos para que todos te tuvieran miedo. ¡Leocadio confirmó que conocías las falsificaciones!",
-    "Si hubiera dicho la verdad, nadie habría seguido mis órdenes. Necesitaba que confiaran en mi poder.",
-    "¡No dejaré que destruyas la Revolución Solar! ¡El reino volverá al caos sin mí!",
-    "¿Todavía crees que la gente decidirá correctamente sin alguien que les imponga una sola respuesta?",
-    "Me has derrotado... Mis sellos han perdido su poder. Mis soldados ya no obedecen.",
-    "La paz no se obtiene obligando a todos a callar. Responderás por tus actos; los habitantes del reino conocerán la verdad."
+    "¡Mira mi verdadera forma, Xervias! Los ocho sellos me han convertido en el Decreto Viviente.",
+    "Has convertido las leyes en cadenas. Aunque invoques todo ese poder, nunca podrás obligarnos a renunciar a decidir.",
+    "Ya no necesito ejércitos ni mensajeros. Cada sello de este reino será parte de mi cuerpo y de mi voluntad.",
+    "¡Mis invocaciones volverán a levantarse! ¡Nadie puede destruir la ley misma!",
+    "¿Por qué sigues luchando? Con una sola orden podría acabar para siempre con toda desobediencia.",
+    "Los sellos... se separan de mí. ¡No! ¡El orden absoluto era mi destino!",
+    "Las leyes existen para servir a las personas. Tu control termina aquí, Sigumán. Los Reinos del Perú volverán a decidir."
   ],
   "01": [
     "Voy a detener a estas familias. Tengo una orden que dice que son culpables.",

@@ -29,5 +29,6 @@ test('eight named generals and four central names', () => {
   assert.equal(MAIN_CHARACTERS.mentor.name, 'Zhinchi');
   assert.equal(MAIN_CHARACTERS.outlaw.name, 'Vándalo Rojo');
   assert.equal(MAIN_CHARACTERS.antagonist.name, 'Sigumán');
-  assert.equal(enemyForMission('38')?.alias, 'Caudillo de los solarianos');
+  assert.equal(enemyForMission('37')?.name, 'Sigumán');
+  assert.equal(enemyForMission('38')?.alias, 'Decreto Viviente');
 });

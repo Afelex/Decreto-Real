@@ -18,13 +18,13 @@ function standardDeck(): CardData[] {
 }
 const count = (cards:CardData[],kind:CardData['type']) => cards.filter(c=>c.type===kind).length;
 
-test('nueve cartas obtenibles más tres exclusivas de Sigumán, con ids estables',()=>{
+test('nueve cartas obtenibles más tres exclusivas de Sigumán más místicas de Vándalo y Gaspar, con ids estables',()=>{
   assert.equal(GENERAL_MYSTICS.length,8);
   assert.equal(SIGUMAN_MYSTICS.length,3);
   assert.equal(mysticDisplayName('general-5'),'Velo de la Selva');
-  assert.equal(mysticDisplayName('legado-zhinchi'),'Último Juramento');
+  assert.equal(mysticDisplayName('legado-zhinchi'),'Decreto del Legado');
   assert.equal(MAX_MYSTIC_SLOTS,3);
-  assert.equal(Object.keys(MYSTIC_ABILITIES).length,12);
+  assert.equal(Object.keys(MYSTIC_ABILITIES).length,14);
   assert.equal(mysticDisplayName('siguman-2'),'Juicio del Eclipse');
 });
 
@@ -36,6 +36,11 @@ test('cada jefe equipa tres copias y Sigumán tres místicas distintas',()=>{
   }
   assert.deepEqual(bossMysticSlots('38').map(x=>x.mysticId),['siguman-1','siguman-2','siguman-3']);
   assert.deepEqual(bossMysticSlots('01'),[]);
+  assert.deepEqual(bossMysticSlots('35').map(x=>x.mysticId),['vandalo-carmesi','vandalo-carmesi','vandalo-carmesi']);
+  assert.deepEqual(bossMysticSlots('36').map(x=>x.mysticId),['gaspar-leon','gaspar-leon','gaspar-leon']);
+  assert.deepEqual(bossMysticSlots('37').map(x=>x.mysticId),['siguman-1','siguman-2','siguman-1']);
+  assert.deepEqual(mysticPower('gaspar-leon',1), {summon:{hp:4,attack:2}});
+  assert.deepEqual(mysticPower('legado-zhinchi',1), {attackBoost:2,defenseBoost:2});
 });
 
 test('editar conserva 28 y los 4 impactos, sin alterar el mazo original',()=>{
@@ -62,9 +67,9 @@ test('ni cuatro místicas ni sustitución de Impactos',()=>{
   assert.equal(mysticCard('general-1','p1-one').type,'MYSTIC');
 });
 
-test('los ocho generales, Zhinchi y Sigumán tienen doce habilidades y combos distintos', () => {
+test('los ocho generales, Zhinchi y Sigumán tienen catorce habilidades y combos distintos', () => {
   const names = new Set(Object.values(MYSTIC_ABILITIES).map(a=>a.name));
-  assert.equal(names.size, 12);
+  assert.equal(names.size, 14);
   for(const ability of Object.values(MYSTIC_ABILITIES)) {
     assert.ok(ability.theme.trim().length>5);
     assert.ok(mysticPowerText(ability.base).length>4);
@@ -75,21 +80,20 @@ test('los ocho generales, Zhinchi y Sigumán tienen doce habilidades y combos di
   assert.deepEqual(mysticPower('general-4',2), {damage:4});
   assert.deepEqual(mysticPower('general-4',3), {damage:5,selfDamage:2});
   assert.equal(mysticCard('general-2','p1-g2').name,'Carga Sangrante');
-  assert.match(mysticCard('siguman-3','ai-s3').description,/Impacto/);
+  assert.match(mysticCard('siguman-3','ai-s3').description,/Invoca guardián/);
 });
 
-test('heal full, half HP and Sol Negro +5 son poderes distintos del jefe final',()=>{
+test('curación total, media vida e invocación del Sol Negro son poderes distintos',()=>{
  const start={selfHp:3,enemyHp:19,selfSeals:2,impactPlayedThisTurn:false};
  const rebirth=resolveMysticPower(mysticPower('siguman-1',1),start);
  assert.equal(rebirth.selfHp,20); assert.equal(rebirth.enemyHp,19);
  const eclipse=resolveMysticPower(mysticPower('siguman-2',1),start);
  assert.equal(eclipse.enemyHp,9);
  const sol=resolveMysticPower(mysticPower('siguman-3',1),start);
- assert.equal(sol.enemyHp,14);assert.equal(sol.selfSeals,3);
- assert.equal(sol.impactPlayedThisTurn,true);
- assert.equal(canActivateMystic('siguman-3',true),false);
+ assert.equal(sol.enemyHp,19);assert.equal(sol.selfSeals,2);
+ assert.deepEqual(mysticPower('siguman-3',1).summon,{hp:6,attack:2});
+ assert.equal(canActivateMystic('siguman-3',true),true);
  assert.equal(canActivateMystic('siguman-3',false),true);
- assert.equal(resolveMysticPower(mysticPower('siguman-3',1), {...start,impactPlayedThisTurn:true}).accepted,false);
 });
 
 test('curación limitada a 20, coste de vida nunca deja a 0 y combos tienen efectos',()=>{
@@ -108,5 +112,6 @@ test('curación limitada a 20, coste de vida nunca deja a 0 y combos tienen efec
  const last=resolveMysticPower(mysticPower('legado-zhinchi',1),{
    selfHp:10,enemyHp:20,selfSeals:1,impactPlayedThisTurn:false,
  });
- assert.equal(last.selfHp,10);assert.equal(last.enemyHp,15);
+ assert.equal(last.selfHp,10);assert.equal(last.enemyHp,20);
+ assert.deepEqual(mysticPower('legado-zhinchi',1),{attackBoost:2,defenseBoost:2});
 });

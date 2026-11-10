@@ -13,8 +13,11 @@ export const GENERAL_MYSTICS = [
 ] as const;
 
 export const ZHINCHI_MYSTIC = {
-  id: 'legado-zhinchi', missionId: '36', owner: 'Zhinchi',
+  id: 'legado-zhinchi', missionId: '35', owner: 'Zhinchi',
 } as const;
+
+export const VANDALO_MYSTIC = { id: 'vandalo-carmesi', owner: 'Vándalo Rojo', missionId: '35' } as const;
+export const GASPAR_MYSTIC = { id: 'gaspar-leon', owner: 'Gaspar de Armenta', missionId: '36' } as const;
 
 export const SIGUMAN_MYSTICS = [
   { id: 'siguman-1', owner: 'Sigumán', missionId: '38' },
@@ -22,7 +25,7 @@ export const SIGUMAN_MYSTICS = [
   { id: 'siguman-3', owner: 'Sigumán', missionId: '38' },
 ] as const;
 
-export const MYSTIC_CATALOG = [...GENERAL_MYSTICS, ZHINCHI_MYSTIC, ...SIGUMAN_MYSTICS] as const;
+export const MYSTIC_CATALOG = [...GENERAL_MYSTICS, ZHINCHI_MYSTIC, VANDALO_MYSTIC, GASPAR_MYSTIC, ...SIGUMAN_MYSTICS] as const;
 export type MysticId = typeof MYSTIC_CATALOG[number]['id'];
 export type ReplaceableKind = 'ATTACK' | 'DEFENSE' | 'ORDER';
 export type MysticSlot = Readonly<{ mysticId: MysticId; replace: ReplaceableKind }>;
@@ -37,6 +40,10 @@ export type MysticPower = Readonly<{
   damage?: number; heal?: number; selfDamage?: number;
   healEnemy?: number; draw?: number; steal?: number;
   fullHeal?: boolean; halveEnemy?: boolean; impact?: boolean;
+  /** Durante el turno de la activación, bonifica cada Ataque/Defensa posterior. */
+  attackBoost?: number; defenseBoost?: number;
+  /** Invocación que permanece en el campo con PV y ataque propios. */
+  summon?: Readonly<{ hp: number; attack: number }>;
 }>;
 
 export type MysticAbility = Readonly<{
@@ -82,9 +89,17 @@ export const MYSTIC_ABILITIES: Readonly<Record<MysticId, MysticAbility>> = {
     base: { damage: 2, heal: 2 }, combo2: { heal: 2, draw: 1 }, combo3: { damage: 3, heal: 3 },
   },
   'legado-zhinchi': {
-    name: 'Último Juramento', theme: 'El legado de un maestro',
-    base: { damage: 5, heal: 2, selfDamage: 2 },
-    combo2: { damage: 3, draw: 1 }, combo3: { damage: 5, heal: 3 },
+    name: 'Decreto del Legado', theme: 'El legado de un maestro',
+    base: { attackBoost: 2, defenseBoost: 2 },
+    combo2: { damage: 2 }, combo3: { damage: 3, heal: 2 },
+  },
+  'vandalo-carmesi': {
+    name: 'Mandato Carmesí', theme: 'Poder sin principios',
+    base: { damage: 2, steal: 1 }, combo2: { damage: 2 }, combo3: { damage: 3, steal: 1 },
+  },
+  'gaspar-leon': {
+    name: 'León del Edicto', theme: 'Invocación persistente',
+    base: { summon: { hp: 4, attack: 2 } }, combo2: { damage: 2 }, combo3: { heal: 2 },
   },
   'siguman-1': {
     name: 'Renacimiento Solar', theme: 'Regeneración absoluta',
@@ -96,7 +111,7 @@ export const MYSTIC_ABILITIES: Readonly<Record<MysticId, MysticAbility>> = {
   },
   'siguman-3': {
     name: 'Decreto del Sol Negro', theme: 'Impacto y ofensiva solar',
-    base: { impact: true, damage: 5 }, combo2: { damage: 3, draw: 1 },
+    base: { summon: { hp: 6, attack: 2 } }, combo2: { damage: 3, draw: 1 },
     combo3: { damage: 5, selfDamage: 2 },
   },
 };
@@ -123,14 +138,18 @@ export function mysticPowerText(power: MysticPower): string {
   if (power.healEnemy) effects.push(`+${power.healEnemy} vida rival`);
   if (power.selfDamage) effects.push(`−${power.selfDamage} vida propia`);
   if (power.impact) effects.push('Sella 1 Impacto');
+  if (power.attackBoost) effects.push(`+${power.attackBoost} a cada Ataque este turno`);
+  if (power.defenseBoost) effects.push(`+${power.defenseBoost} a cada Defensa este turno`);
+  if (power.summon) effects.push(`Invoca guardián: ${power.summon.hp} PV y ${power.summon.attack} de ataque por turno`);
   if (power.draw) effects.push(`Roba ${power.draw} ${power.draw === 1 ? 'carta' : 'cartas'}`);
   if (power.steal) effects.push(`Arrebata ${power.steal} ${power.steal === 1 ? 'carta' : 'cartas'} de la mano rival`);
   return effects.join(' · ');
 }
 
-/** El impacto de Sol Negro mantiene la regla de solo un Impacto por turno. */
+/** Las cartas que colocan Impacto respetan el límite de uno por turno. */
 export function canActivateMystic(id: string | undefined, impactPlayedThisTurn: boolean): boolean {
-  return id !== 'siguman-3' || !impactPlayedThisTurn;
+  if (!id || !(id in MYSTIC_ABILITIES)) return true;
+  return !MYSTIC_ABILITIES[id as MysticId].base.impact || !impactPlayedThisTurn;
 }
 
 export type MysticSnapshot = Readonly<{
@@ -184,6 +203,9 @@ export function insertMystics(deck: readonly CardData[], slots: readonly MysticS
 }
 
 export function bossMysticSlots(missionId: string): MysticSlot[] {
+  if (missionId === '35') return Array.from({ length: 3 }, () => ({ mysticId: VANDALO_MYSTIC.id, replace: 'ATTACK' as const }));
+  if (missionId === '36') return Array.from({ length: 3 }, () => ({ mysticId: GASPAR_MYSTIC.id, replace: 'ATTACK' as const }));
+  if (missionId === '37') return [SIGUMAN_MYSTICS[0], SIGUMAN_MYSTICS[1], SIGUMAN_MYSTICS[0]].map(card => ({ mysticId: card.id, replace: 'ATTACK' as const }));
   if (missionId === '38') return SIGUMAN_MYSTICS.map(card => ({ mysticId: card.id, replace: 'ATTACK' as const }));
   const general = GENERAL_MYSTICS.find(card => card.missionId === missionId);
   return general ? Array.from({ length: 3 }, () => ({ mysticId: general.id, replace: 'ATTACK' as const })) : [];

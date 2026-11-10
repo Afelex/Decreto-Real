@@ -32,7 +32,7 @@ test('all 38 victories have an authored post-victory conversation', () => {
     const lines = afterVictoryLines(mission.id);
     expect(lines.length).toBeGreaterThanOrEqual(2);
     expect(lines.every(line => line.text.trim().length >= 12)).toBe(true); // La escena del derrumbe permite exclamaciones breves.
-    if (Number(mission.id) <= 35 && mission.id !== '22') {
+    if (Number(mission.id) <= 34 && mission.id !== '22') {
       expect(lines.some(line => line.speaker === 'Zhinchi')).toBe(true);
     }
     if (mission.id === '22') {
@@ -59,7 +59,9 @@ test('prologue victory opens character exchange, then the next mission', () => {
 test('mission two conversation leads to free general selection', () => {
   saveThrough(2);
   at('/campania/conversacion/02');
-  fireEvent.click(screen.getByRole('button', { name: 'Siguiente diálogo ›' }));
+  for (let i = 1; i < afterVictoryLines('02').length; i++) {
+    fireEvent.click(screen.getByRole('button', { name: 'Siguiente diálogo ›' }));
+  }
   fireEvent.click(screen.getByRole('button', { name: 'Continuar historia ›' }));
   expect(screen.getByRole('heading', { name: 'Mapa de los ocho generales' })).toBeTruthy();
 });
@@ -90,6 +92,9 @@ test('the center revelation does not open with only seven generals', () => {
 test('after Zhinchi disappears, Xervias speaks alone in mission 37 and the epilogue follows 38', () => {
   saveThrough(38);
   const rendered = at('/campania/conversacion/37');
+  expect(screen.getByRole('heading', { name: 'Sigumán' })).toBeTruthy();
+  fireEvent.click(screen.getByRole('button', { name: 'Siguiente diálogo ›' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Siguiente diálogo ›' }));
   expect(screen.getByRole('heading', { name: 'Xervias' })).toBeTruthy();
   expect(screen.queryByRole('heading', { name: 'Zhinchi' })).toBeNull();
   rendered.unmount();
