@@ -334,12 +334,12 @@
       "category": "fondos",
       "title": "Región 8 - Casa del Juramento (exterior)",
       "usage": "Región 8 La palabra empeñada — aproximación a la Casa del Juramento, misiones 31–33",
-      "status": "siguiente_en_generacion",
+      "status": "pendiente",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-8-base.webp",
       "format": "webp",
       "chapter": "8",
       "variant": "base",
-      "notes": "Fondo G2 vertical 2:3 (1024x1536) inspirado en la Casa del Juramento: recinto en los Andes con gran patio de piedra frente a una solemne construcción colonial de consejo/archivo de decretos, escalinatas, galerías de sillar, arcos, columnas, portón central, faroles, algunos pergaminos o mesas laterales, luz de tarde, valle de altura al fondo. Sin personajes, sin textos legibles, sin cruces heráldicas, sin mar, sin selva; centro despejado para combate. Estandartes monocromos rojo o blanco; nunca telas bicolores."
+      "notes": "Fondo G2 vertical 2:3 (1024x1536) inspirado en la Casa del Juramento: recinto en los Andes con gran patio de piedra frente a una solemne construcción colonial de consejo/archivo de decretos, escalinatas, galerías de sillar, arcos, columnas, portón central, faroles, algunos pergaminos o mesas laterales, luz de tarde, valle de altura al fondo. Sin personajes, sin textos legibles, sin cruces heráldicas, sin mar, sin selva; centro despejado para combate. Estandartes monocromos rojo o blanco; nunca telas bicolores. QA 10-11-2026: tres intentos de generar la Casa del Juramento repitieron el cañón del Colca de la región 7. Todos descartados; NO están aprobados ni cuentan en el inventario. El objetivo sigue siendo edificio de consejo/archivo virreinal, patio con arcos, portón de madera y documentos sellados, NO cañón, cóndores o cabañas incas. Replantear método de generación antes de continuar."
     },
     {
       "id": "G2-FON-018",
