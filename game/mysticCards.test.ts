@@ -69,7 +69,7 @@ test('ni cuatro místicas ni sustitución de Impactos',()=>{
 
 test('los ocho generales, Zhinchi y Sigumán tienen catorce habilidades y combos distintos', () => {
   const names = new Set(Object.values(MYSTIC_ABILITIES).map(a=>a.name));
-  assert.equal(names.size, 12);
+  assert.equal(names.size, 14);
   for(const ability of Object.values(MYSTIC_ABILITIES)) {
     assert.ok(ability.theme.trim().length>5);
     assert.ok(mysticPowerText(ability.base).length>4);
@@ -83,18 +83,17 @@ test('los ocho generales, Zhinchi y Sigumán tienen catorce habilidades y combos
   assert.match(mysticCard('siguman-3','ai-s3').description,/Invoca guardián/);
 });
 
-test('heal full, half HP and Sol Negro +5 son poderes distintos del jefe final',()=>{
+test('curación total, media vida e invocación del Sol Negro son poderes distintos',()=>{
  const start={selfHp:3,enemyHp:19,selfSeals:2,impactPlayedThisTurn:false};
  const rebirth=resolveMysticPower(mysticPower('siguman-1',1),start);
  assert.equal(rebirth.selfHp,20); assert.equal(rebirth.enemyHp,19);
  const eclipse=resolveMysticPower(mysticPower('siguman-2',1),start);
  assert.equal(eclipse.enemyHp,9);
  const sol=resolveMysticPower(mysticPower('siguman-3',1),start);
- assert.equal(sol.enemyHp,14);assert.equal(sol.selfSeals,3);
- assert.equal(sol.impactPlayedThisTurn,true);
- assert.equal(canActivateMystic('siguman-3',true),false);
+ assert.equal(sol.enemyHp,19);assert.equal(sol.selfSeals,2);
+ assert.deepEqual(mysticPower('siguman-3',1).summon,{hp:6,attack:2});
+ assert.equal(canActivateMystic('siguman-3',true),true);
  assert.equal(canActivateMystic('siguman-3',false),true);
- assert.equal(resolveMysticPower(mysticPower('siguman-3',1), {...start,impactPlayedThisTurn:true}).accepted,false);
 });
 
 test('curación limitada a 20, coste de vida nunca deja a 0 y combos tienen efectos',()=>{
