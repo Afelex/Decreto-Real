@@ -3,7 +3,7 @@
   "generation": "DR-G2-2026",
   "createdOn": "2026-11-10",
   "planningStatus": "provisional_pendiente_qa_artistico",
-  "approved": 4,
+  "approved": 5,
   "published": 0,
   "generatedPendingReview": 0,
   "planned": 110,
@@ -103,12 +103,18 @@
       "category": "fondos",
       "title": "Región 2 - base",
       "usage": "Región 2 - combates ordinarios y entrada",
-      "status": "pendiente",
+      "status": "aprobado_pendiente_importacion",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-2-base.webp",
       "format": "webp",
       "chapter": "2",
       "variant": "base",
-      "notes": "Pendiente de generar imagen correcta de la región 2, Caminos del Reino (interior, posta, caminos secos y praderas ocres). Dos intentos generaron nuevamente la batería costera del Callao; se descartaron y NO cuentan como arte G2-FON-005. Para nuevos intentos: PROHIBIDO mar, barcos, costa, murallas costeras y cañones. Vertical 2:3, fondo de combate, centro despejado, estandartes lisos blancos/rojos."
+      "notes": "Aprobado por el usuario el 10 de noviembre de 2026 ('excelente. continua'); valle desértico vertical, posta virreinal de arcos, tierra ocre y estandartes lisos blanco/rojo. Binario generado en conversación, pendiente de incorporar al repositorio y a DRStudio.",
+      "generatedFileName": "camino_real_en_valle_andino.png",
+      "originalFormat": "png",
+      "originalDimensions": {
+        "width": 1024,
+        "height": 1536
+      }
     },
     {
       "id": "G2-FON-006",
@@ -116,11 +122,12 @@
       "category": "fondos",
       "title": "Región 2 - jefe",
       "usage": "Región 2 - combate de jefe",
-      "status": "pendiente",
+      "status": "siguiente_en_generacion",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-2-jefe.webp",
       "format": "webp",
       "chapter": "2",
-      "variant": "jefe"
+      "variant": "jefe",
+      "notes": "Región 2 jefe Leandro Valcázar: patio abierto de posta virreinal del mismo valle seco, arquerías, abrevaderos de piedra, suelo con huellas de herraduras, estandartes blancos/rojos lisos. Fondo VERTICAL 2:3, centro sin obstáculos para HUD, no mar, no cañones, no personajes."
     },
     {
       "id": "G2-FON-007",
