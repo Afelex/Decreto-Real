@@ -90,8 +90,8 @@ const CampaignAfterVictoryScreen: React.FC = () => {
         <img src={sceneImage} alt="" draggable={false} />
         <div className="dca-scene-wash" />
         <div className="dca-scene-mark">✥</div>
-        {<div className="dca-victory-note"><strong>Victoria · misión {Number(mission.id)} de 38</strong>
-          <p>{mission.victoryLine}</p></div>}
+        <div className="dca-victory-note"><strong>Victoria · misión {Number(mission.id)} de 38</strong>
+          <p>{mission.victoryLine}</p></div>
       </div>
       <section className="dca-conversation" aria-live="polite" aria-atomic="true">
         <div className="dca-speaker">
@@ -109,7 +109,7 @@ const CampaignAfterVictoryScreen: React.FC = () => {
           {lines.map((_, number) => <span key={number} className={number === index ? 'active' : ''}/>)}
         </div>
         <button type="button" className="dca-secondary" onClick={() => navigate(returnRoute)}>Volver al mapa</button>
-        {last && mission.id === '36' && <button type="button" className="dca-secondary" onClick={() => navigate('/campania/baraja')}>Editar baraja ✦</button>}
+        {last && mission.id === '35' && <button type="button" className="dca-secondary" onClick={() => navigate('/campania/baraja')}>Editar baraja ✦</button>}
         <button type="button" className="dca-primary"
           onClick={last ? continueJourney : () => setIndex(i => nextVisible(i))}>
           {last ? mission.id === '38' ? 'Ver epílogo ›' : 'Continuar historia ›' : 'Siguiente diálogo ›'}
