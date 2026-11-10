@@ -5,7 +5,7 @@
   "planningStatus": "provisional_pendiente_qa_artistico",
   "approved": 8,
   "published": 0,
-  "generatedPendingReview": 0,
+  "generatedPendingReview": 1,
   "planned": 110,
   "policy": {
     "banners": "Solo estandartes de tela lisa roja o blanca sin símbolos, cruces, aspas ni heráldica.",
@@ -179,12 +179,18 @@
       "category": "fondos",
       "title": "Región 4 - base",
       "usage": "Región 4 - combates ordinarios y entrada",
-      "status": "siguiente_en_generacion",
+      "status": "generado_para_revision",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-4-base.webp",
       "format": "webp",
       "chapter": "4",
       "variant": "base",
-      "notes": "Fortaleza de Artillería (región 4) BASE para misiones 15 a 17: patio interior de piedra, dos torres defensivas, cañones de bronce colocados al borde del patio, depósitos de pólvora, muros y valles serranos secos. NO océano, NO barcos, NO puerto, NO personajes, sin UI ni texto; centro despejado para HUD. Banderas de tela lisa exclusivamente roja o blanca; encuadre VERTICAL 2:3."
+      "notes": "Fortaleza de Artillería, región 4 base; patio de piedra y cañones, torres y portón de la fortaleza, en vertical 1024×1536. Generada el 10/11/2026, pendiente de aprobación. QA artístico: comprobar estandartes; algunas telas muestran rojo y blanco juntos, corregir si deben ser de un solo color. No incorporada a GitHub/DRStudio.",
+      "generatedFileName": "a_detailed_vibrant_anime_style_illustration_of_a.png",
+      "originalFormat": "png",
+      "originalDimensions": {
+        "width": 1024,
+        "height": 1536
+      }
     },
     {
       "id": "G2-FON-010",
