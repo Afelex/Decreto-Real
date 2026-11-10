@@ -27,14 +27,14 @@ La campaña debe cerrar esta historia por sí sola, sin anunciar segunda parte n
 
 Cada región tiene cuatro misiones y puede completarse en cualquier orden. Al derrotar a su general, se obtiene una carta mística **sellada**, mostrada en una pantalla de recompensa donde aparece Xervias, el nombre y efecto de la carta; el arte específico definitivo será reemplazable.
 
-- **Almirante de Hierro** (Puerto del Callao) — **Marea de Hierro**.
-- **Jinete Escarlata** (Caminos del Reino) — **Carga Sangrante**.
-- **Señor de la Plata** (Minas de la Sierra) — **Pacto de Azogue**.
-- **Artillero del Trueno** (Fortaleza de Artillería) — **Descarga del Trueno**.
-- **Fantasma de la Selva** (Frontera Oriental) — **Velo de la Selva**.
-- **Dama del Estandarte** (Ciudad de los Estandartes) — **Estandarte Sagrado**.
-- **Cóndor de los Andes** (Fortaleza de las Cumbres) — **Picado Celestial**.
-- **Caballero del Juramento** (Casa del Juramento) — **Juramento Eterno**.
+- **Baltasar de Fierro — Almirante de Hierro** (Puerto del Callao) — **Marea de Hierro**.
+- **Leandro Valcázar — Jinete Escarlata** (Caminos del Reino) — **Carga Sangrante**.
+- **Octavio Argento — Señor de la Plata** (Minas de la Sierra) — **Pacto de Azogue**.
+- **Jerónimo Arrellano — Artillero del Trueno** (Fortaleza de Artillería) — **Descarga del Trueno**.
+- **Nayisa de Sombras — Fantasma de la Selva** (Frontera Oriental) — **Velo de la Selva**.
+- **Isabela Valdierra — Dama del Estandarte** (Ciudad de los Estandartes) — **Estandarte Sagrado**.
+- **Aukan del Cóndor — Cóndor de los Andes** (Fortaleza de las Cumbres) — **Picado Celestial**.
+- **Gonzalo de Montes — Caballero del Juramento** (Casa del Juramento) — **Juramento Eterno**.
 
 Sigumán adquiere presencia mediante revelaciones que se activan al haber vencido a **2, 4, 6 y 8 generales**, independientemente de su orden. El último hito introduce la Casa del Sello, las pruebas contra Leocadio y una conversación entre Xervias y Zhinchi antes de entrar.
 
