@@ -3,7 +3,7 @@
   "generation": "DR-G2-2026",
   "createdOn": "2026-11-10",
   "planningStatus": "provisional_pendiente_qa_artistico",
-  "approved": 16,
+  "approved": 17,
   "published": 0,
   "generatedPendingReview": 0,
   "planned": 110,
@@ -332,26 +332,33 @@
       "id": "G2-FON-017",
       "generation": "DR-G2-2026",
       "category": "fondos",
-      "title": "Región 8 - Casa del Juramento (exterior)",
+      "title": "Región 8 - Palacio real barroco-incaico del Cusco",
       "usage": "Región 8 La palabra empeñada — aproximación a la Casa del Juramento, misiones 31–33",
-      "status": "pendiente",
+      "status": "aprobado_pendiente_importacion",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-8-base.webp",
       "format": "webp",
       "chapter": "8",
       "variant": "base",
-      "notes": "Fondo G2 vertical 2:3 (1024x1536) inspirado en la Casa del Juramento: recinto en los Andes con gran patio de piedra frente a una solemne construcción colonial de consejo/archivo de decretos, escalinatas, galerías de sillar, arcos, columnas, portón central, faroles, algunos pergaminos o mesas laterales, luz de tarde, valle de altura al fondo. Sin personajes, sin textos legibles, sin cruces heráldicas, sin mar, sin selva; centro despejado para combate. Estandartes monocromos rojo o blanco; nunca telas bicolores. QA 10-11-2026: tres intentos de generar la Casa del Juramento repitieron el cañón del Colca de la región 7. Todos descartados; NO están aprobados ni cuentan en el inventario. El objetivo sigue siendo edificio de consejo/archivo virreinal, patio con arcos, portón de madera y documentos sellados, NO cañón, cóndores o cabañas incas. Replantear método de generación antes de continuar."
+      "notes": "Fondo G2 vertical 2:3 (1024x1536) inspirado en la Casa del Juramento: recinto en los Andes con gran patio de piedra frente a una solemne construcción colonial de consejo/archivo de decretos, escalinatas, galerías de sillar, arcos, columnas, portón central, faroles, algunos pergaminos o mesas laterales, luz de tarde, valle de altura al fondo. Sin personajes, sin textos legibles, sin cruces heráldicas, sin mar, sin selva; centro despejado para combate. Estandartes monocromos rojo o blanco; nunca telas bicolores. QA 10-11-2026: tres intentos de generar la Casa del Juramento repitieron el cañón del Colca de la región 7. Todos descartados; NO están aprobados ni cuentan en el inventario. El objetivo sigue siendo edificio de consejo/archivo virreinal, patio con arcos, portón de madera y documentos sellados, NO cañón, cóndores o cabañas incas. Replantear método de generación antes de continuar. El usuario pidió cambiar el cuartel de nobleza inca por palacio real barroco-incaico y aprobó con 'excelente, continúa, oki'. La última imagen del palacio de Cusco es la versión G2-FON-017 aprobada; aún no publicada en GitHub/DRStudio.",
+      "generatedFileName": "patio_real_de_cusco_inca_barroco.png",
+      "originalFormat": "png",
+      "originalDimensions": {
+        "width": 1024,
+        "height": 1536
+      }
     },
     {
       "id": "G2-FON-018",
       "generation": "DR-G2-2026",
       "category": "fondos",
-      "title": "Región 8 - jefe",
-      "usage": "Región 8 - combate de jefe",
-      "status": "pendiente",
+      "title": "Región 8 - Salón de los Juramentos, Gonzalo de Montes",
+      "usage": "Misión 34: arena del Caballero del Juramento, en el interior del palacio real barroco-incaico del Cusco",
+      "status": "siguiente_en_generacion",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-8-jefe.webp",
       "format": "webp",
       "chapter": "8",
-      "variant": "jefe"
+      "variant": "jefe",
+      "notes": "ARTE A GENERAR: enorme sala interior palaciega donde se celebra el juramento, piedra inca de grandes bloques en la base, arcadas barrocas y balcones de madera tallada, techo artesonado de madera, gran trono al fondo y asiento secundario de consejo, lámparas y soportes con pergaminos sellados, suelo ceremonial central amplio vacío para UI del duelo; luz cálida y dramática que entra desde ventanas altas. Vertical 2:3 1024×1536, anime 2D cel shading coherente con G2-FON-017; NO patio exterior, NO paisaje Colca, NO cóndores ni río, NO personajes, sin texto ni UI; banderas si aparecen deben ser paños lisos exclusivamente blancos o rojos, nunca bicolores ni heráldicos."
     },
     {
       "id": "G2-FON-019",
