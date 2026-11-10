@@ -3,7 +3,7 @@
   "generation": "DR-G2-2026",
   "createdOn": "2026-11-10",
   "planningStatus": "provisional_pendiente_qa_artistico",
-  "approved": 5,
+  "approved": 6,
   "published": 0,
   "generatedPendingReview": 0,
   "planned": 110,
@@ -122,12 +122,18 @@
       "category": "fondos",
       "title": "Región 2 - jefe",
       "usage": "Región 2 - combate de jefe",
-      "status": "siguiente_en_generacion",
+      "status": "aprobado_pendiente_importacion",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-2-jefe.webp",
       "format": "webp",
       "chapter": "2",
       "variant": "jefe",
-      "notes": "Región 2 jefe Leandro Valcázar: patio abierto de posta virreinal del mismo valle seco, arquerías, abrevaderos de piedra, suelo con huellas de herraduras, estandartes blancos/rojos lisos. Fondo VERTICAL 2:3, centro sin obstáculos para HUD, no mar, no cañones, no personajes."
+      "notes": "Aprobado explícitamente por el usuario el 10 de noviembre de 2026 ('excelente, continua'). Patio exterior y posta del Jinete Escarlata en valle desértico, formato vertical 2:3; PNG generado en conversación pendiente de importación en GitHub y DRStudio.",
+      "generatedFileName": "a_detailed_anime_style_landscape_background_scene.png",
+      "originalFormat": "png",
+      "originalDimensions": {
+        "width": 1024,
+        "height": 1536
+      }
     },
     {
       "id": "G2-FON-007",
@@ -135,11 +141,12 @@
       "category": "fondos",
       "title": "Región 3 - base",
       "usage": "Región 3 - combates ordinarios y entrada",
-      "status": "pendiente",
+      "status": "siguiente_en_generacion",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-3-base.webp",
       "format": "webp",
       "chapter": "3",
-      "variant": "base"
+      "variant": "base",
+      "notes": "Minas de la Sierra, escenario BASE (misiones 11-13), un valle de alta montaña seco y rocoso con DOS bocaminas visibles, andamios de madera, vagonetas, mineral argentífero, casa de contabilidad colonial, luz fría; 2:3 vertical; libre centro para HUD. Sin mar, sin caminos de posta, sin cañones, banderas solo lisas rojas/blancas."
     },
     {
       "id": "G2-FON-008",
