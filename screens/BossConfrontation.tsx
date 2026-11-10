@@ -1,4 +1,5 @@
 import React from 'react';
+import { FINAL_PRELUDES } from '../campaign/finalArc.ts';
 import type { CampaignMission } from '../campaign/campaign.ts';
 import { chapterForStage } from '../campaign/story.ts';
 import { regionVisual } from '../campaign/regionVisuals.ts';
@@ -68,26 +69,27 @@ const BossConfrontation: React.FC<Props> = ({ mission, alreadyDefeated, legacyAw
   const chapter = chapterForStage(mission.id);
   const region = regionVisual(mission.chapterId);
   const isFinal = mission.kind === 'final';
+  const isEndgame = mission.chapterId === 'f';
   const script = BOSS_LINES[mission.id];
   const mystic = GENERAL_MYSTICS.find(card => card.missionId === mission.id);
   const mysticName = mystic ? mysticDisplayName(mystic.id) : null;
   const effect = mystic ? mysticPowerText(mysticPower(mystic.id, 1)) : null;
-  const lines = script
+  const lines = FINAL_PRELUDES[mission.id] ?? (script
     ? [ { name: mission.kind === 'final' ? 'Sigumán' : mission.title, text: script.enemy },
-        { name: 'Xervias', text: script.xervias } ] : [];
+        { name: 'Xervias', text: script.xervias } ] : []);
   const current = lines[lineIndex];
   const last = lineIndex === lines.length - 1;
   const advance = () => last ? onBeginBattle() : setLineIndex(index => index + 1);
 
-  if (!script || !current || !chapter) return null;
+  if (!current || !chapter) return null;
 
   return <main className={`dcb-screen ${isFinal ? 'dcb-final' : ''}`}
     aria-label={isFinal ? 'Encuentro final con Sigumán' : `Encuentro con ${mission.title}`}
     style={{ '--dcb-accent': chapter.color, '--dcb-horizon': region.horizon } as React.CSSProperties}>
     <div className="dcb-shell">
       <header className="dcb-head">
-        <small>{isFinal ? 'DESENLACE · SIGUMÁN' : `CAPÍTULO ${mission.chapterId} · CUARTA MISIÓN`}</small>
-        <h1>{isFinal ? 'El Señor de la Revolución Solar' : 'Enfrentamiento con el general'}</h1>
+        <small>{isFinal ? 'DESENLACE · SIGUMÁN' : isEndgame ? `CASA DEL SELLO · MISIÓN ${mission.id}` : `CAPÍTULO ${mission.chapterId} · CUARTA MISIÓN`}</small>
+        <h1>{isEndgame ? mission.title : 'Enfrentamiento con el general'}</h1>
       </header>
 
       <section className="dcb-hero" aria-label={mission.title}>
@@ -99,8 +101,8 @@ const BossConfrontation: React.FC<Props> = ({ mission, alreadyDefeated, legacyAw
             <GeneralPortrait chapterId={mission.chapterId} />}
         </div>
         <div className="dcb-hero-caption">
-          <small>{isFinal ? 'JEFE FINAL' : 'GENERAL · RETO DECISIVO'}</small>
-          <h2>{isFinal ? 'Sigumán' : mission.title}</h2>
+          <small>{isFinal ? 'JEFE FINAL' : isEndgame ? 'ÚLTIMO ARCO' : 'GENERAL · RETO DECISIVO'}</small>
+          <h2>{isFinal ? mission.title : mission.title}</h2>
           <p>{mission.description}</p>
         </div>
       </section>
@@ -110,9 +112,15 @@ const BossConfrontation: React.FC<Props> = ({ mission, alreadyDefeated, legacyAw
         {isFinal
           ? <div className="dcb-power-copy">
               <small>TRES CARTAS MÍSTICAS DEL ENEMIGO</small>
-              <strong>El poder de la Falsa Luz</strong>
+              <strong>El poder de la Revolución Solar</strong>
               <p>{SIGUMAN_MYSTICS.map(card => mysticDisplayName(card.id)).join(' · ')}</p>
               <em>Será tu enfrentamiento más difícil.</em>
+            </div>
+          : isEndgame ? <div className="dcb-power-copy">
+              <small>{mission.id === '35' ? 'LEGADO DEL CAPITÁN' : 'INVOCACIÓN MÍSTICA'}</small>
+              <strong>{mission.id === '35' ? 'Decreto del Legado' : 'León del Edicto'}</strong>
+              <p>{mission.id === '35' ? 'El Sello de Mando despierta las místicas de Xervias.' : 'Invocación persistente: 4 PV y 2 puntos de ataque por turno.'}</p>
+              <em>{mission.id === '35' ? 'El legado despierta antes del enfrentamiento.' : 'Derrota al León para liberar a los prisioneros.'}</em>
             </div>
           : <div className="dcb-power-copy">
               <small>CARTA MÍSTICA DEL GENERAL</small>
