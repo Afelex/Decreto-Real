@@ -3,7 +3,7 @@
   "generation": "DR-G2-2026",
   "createdOn": "2026-11-10",
   "planningStatus": "provisional_pendiente_qa_artistico",
-  "approved": 10,
+  "approved": 11,
   "published": 0,
   "generatedPendingReview": 0,
   "planned": 110,
@@ -216,14 +216,20 @@
       "id": "G2-FON-011",
       "generation": "DR-G2-2026",
       "category": "fondos",
-      "title": "Región 5 - base",
-      "usage": "Región 5 - combates ordinarios y entrada",
-      "status": "pendiente",
+      "title": "Frontera Oriental - Valle verde de ceja de selva",
+      "usage": "Región 5, Frontera Oriental - acceso y combates de misiones 19 a 21",
+      "status": "aprobado_pendiente_importacion",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-5-base.webp",
       "format": "webp",
       "chapter": "5",
       "variant": "base",
-      "notes": "DOS intentos del 10-11-2026 repitieron la fortaleza de artillería en lugar de la selva; NO se contabilizan como G2-FON-011. Próxima generación debe mostrar exclusivamente selva tropical húmeda de Frontera Oriental, árboles gigantes, raíces, lianas, río con niebla y un puesto de vigilancia cubierto de vegetación, vertical 2:3. Sin cañones, murallas de fortaleza, nieve o mar."
+      "notes": "Imagen aprobada por el usuario el 10 de noviembre de 2026 con 'genial! continua'. Valle verde de ceja de selva con río, cordilleras boscosas y nubes bajas; incluye atalaya y solo paños lisos blancos y rojos. El recurso fue generado en conversación, pero aún está pendiente de importar/publicar en GitHub y DRStudio.",
+      "generatedFileName": "valle_andino_de_niebla_y_ríos.png",
+      "originalFormat": "png",
+      "originalDimensions": {
+        "width": 1024,
+        "height": 1536
+      }
     },
     {
       "id": "G2-FON-012",
@@ -231,11 +237,12 @@
       "category": "fondos",
       "title": "Región 5 - jefe",
       "usage": "Región 5 - combate de jefe",
-      "status": "pendiente",
+      "status": "siguiente_en_generacion",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-5-jefe.webp",
       "format": "webp",
       "chapter": "5",
-      "variant": "jefe"
+      "variant": "jefe",
+      "notes": "REGIÓN 5 BOSS Nayisa de Sombras, Fantasma de la Selva, misión 22. Interior de selva húmeda muy densa con ruinas de santuario de piedra antigua tragadas por raíces, enormes árboles de copa alta, lianas, helechos, vapor y tenue luz solar esmeralda. Cámara DE FRENTE a un patio ceremonial vacío y amplio con piedras y musgo despejado al centro/lower third para interfaz de combate; sin humanos ni personajes, no fortalezas ni cañones, no arquitectura virreinal, no nieve ni desierto. Estandartes opcionales solo rojo liso o blanco liso, evitar iconografía. 2:3 vertical 1024x1536 anime cel shaded."
     },
     {
       "id": "G2-FON-013",
