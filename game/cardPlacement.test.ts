@@ -47,9 +47,9 @@ test('regular cards may be released on a stone tile, while Impact must hit its e
   assert.equal(checkCardPlacement(impact(2), resolveVisualDropZone(impact(2),'impact-2'), 1, false).valid,true);
 });
 
-test('Sol Negro cannot chain a second Impact in the same turn',()=>{
+test('Sol Negro now summons guardian without consuming an Impact',()=>{
   const sol={type:'MYSTIC' as const,name:'Decreto del Sol Negro',mysticId:'siguman-3'};
   assert.equal(checkCardPlacement(sol,'field',2,false).valid,true);
-  assert.equal(checkCardPlacement(sol,'field',2,true).valid,false);
+  assert.equal(checkCardPlacement(sol,'field',2,true).valid,true);
   assert.match(cardPlacementPrompt(sol,2),/Sol Negro/);
 });
