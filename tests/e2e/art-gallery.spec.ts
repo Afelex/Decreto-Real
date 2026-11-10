@@ -12,6 +12,11 @@ test('La galería muestra el catálogo, dimensiones y el arte que se sube desde 
   await page.getByRole('searchbox',{name:'Buscar artes'}).fill('prueba-galeria');
   await page.getByRole('button',{name:/prueba-galeria/i}).click();
   await expect(page.getByRole('complementary',{name:'Detalles del arte'})).toContainText('1 × 1 px');
+  await expect(page.getByRole('complementary',{name:'Detalles del arte'})).toContainText('DR-G2-2026');
+  await page.getByRole('combobox',{name:'Filtrar por generación'}).selectOption('DR-G1');
+  await expect(page.getByRole('button',{name:/prueba-galeria/i})).toHaveCount(0);
+  await page.getByRole('combobox',{name:'Filtrar por generación'}).selectOption('DR-G2-2026');
+  await expect(page.getByRole('button',{name:/prueba-galeria/i})).toBeVisible();
   await page.getByRole('button',{name:'Ocultar arte'}).click();
   await expect(page.getByRole('button',{name:/prueba-galeria/i})).toHaveCount(0);
   await page.getByRole('checkbox',{name:'Mostrar ocultos y descartados'}).check();
