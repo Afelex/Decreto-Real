@@ -18,13 +18,13 @@ function standardDeck(): CardData[] {
 }
 const count = (cards:CardData[],kind:CardData['type']) => cards.filter(c=>c.type===kind).length;
 
-test('nueve cartas obtenibles más tres exclusivas de Sigumán, con ids estables',()=>{
+test('nueve cartas obtenibles más tres exclusivas de Sigumán más místicas de Vándalo y Gaspar, con ids estables',()=>{
   assert.equal(GENERAL_MYSTICS.length,8);
   assert.equal(SIGUMAN_MYSTICS.length,3);
   assert.equal(mysticDisplayName('general-5'),'Velo de la Selva');
-  assert.equal(mysticDisplayName('legado-zhinchi'),'Último Juramento');
+  assert.equal(mysticDisplayName('legado-zhinchi'),'Decreto del Legado');
   assert.equal(MAX_MYSTIC_SLOTS,3);
-  assert.equal(Object.keys(MYSTIC_ABILITIES).length,12);
+  assert.equal(Object.keys(MYSTIC_ABILITIES).length,14);
   assert.equal(mysticDisplayName('siguman-2'),'Juicio del Eclipse');
 });
 
@@ -36,6 +36,11 @@ test('cada jefe equipa tres copias y Sigumán tres místicas distintas',()=>{
   }
   assert.deepEqual(bossMysticSlots('38').map(x=>x.mysticId),['siguman-1','siguman-2','siguman-3']);
   assert.deepEqual(bossMysticSlots('01'),[]);
+  assert.deepEqual(bossMysticSlots('35').map(x=>x.mysticId),['vandalo-carmesi','vandalo-carmesi','vandalo-carmesi']);
+  assert.deepEqual(bossMysticSlots('36').map(x=>x.mysticId),['gaspar-leon','gaspar-leon','gaspar-leon']);
+  assert.deepEqual(bossMysticSlots('37').map(x=>x.mysticId),['siguman-1','siguman-2','siguman-1']);
+  assert.deepEqual(mysticPower('gaspar-leon',1), {summon:{hp:4,attack:2}});
+  assert.deepEqual(mysticPower('legado-zhinchi',1), {attackBoost:2,defenseBoost:2});
 });
 
 test('editar conserva 28 y los 4 impactos, sin alterar el mazo original',()=>{
@@ -62,7 +67,7 @@ test('ni cuatro místicas ni sustitución de Impactos',()=>{
   assert.equal(mysticCard('general-1','p1-one').type,'MYSTIC');
 });
 
-test('los ocho generales, Zhinchi y Sigumán tienen doce habilidades y combos distintos', () => {
+test('los ocho generales, Zhinchi y Sigumán tienen catorce habilidades y combos distintos', () => {
   const names = new Set(Object.values(MYSTIC_ABILITIES).map(a=>a.name));
   assert.equal(names.size, 12);
   for(const ability of Object.values(MYSTIC_ABILITIES)) {
@@ -75,7 +80,7 @@ test('los ocho generales, Zhinchi y Sigumán tienen doce habilidades y combos di
   assert.deepEqual(mysticPower('general-4',2), {damage:4});
   assert.deepEqual(mysticPower('general-4',3), {damage:5,selfDamage:2});
   assert.equal(mysticCard('general-2','p1-g2').name,'Carga Sangrante');
-  assert.match(mysticCard('siguman-3','ai-s3').description,/Impacto/);
+  assert.match(mysticCard('siguman-3','ai-s3').description,/Invoca guardián/);
 });
 
 test('heal full, half HP and Sol Negro +5 son poderes distintos del jefe final',()=>{
