@@ -513,7 +513,7 @@ export const STORY_STAGES: readonly StoryStage[] = [
   {
     "chapterId": "f",
     "title": "El trono de Sigumán",
-    "description": "Xervias encara a Sigumán y rechaza su idea de imponer la paz mediante la obediencia absoluta. El comandante revela el alcance de su conspiración.",
+    "description": "Xervias encara a Sigumán, antiguo comandante de la Orden de la Corona Solar, y rechaza su plan de imponer la paz mediante la obediencia absoluta.",
     "kind": "final",
     "opponent": "Sigumán",
     "openingLine": "OBJETIVO: Enfrenta a Sigumán y derrota su primera forma para detener la Revolución Solar.",
