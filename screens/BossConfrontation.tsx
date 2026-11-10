@@ -8,6 +8,7 @@ import {
   mysticPowerText,
 } from '../game/mysticCards.ts';
 import { GeneralPortrait } from './GeneralPortrait';
+import { generalForChapter } from '../campaign/characters.ts';
 import { campaignLandscape, campaignMissionBackground } from '../campaign/regionAssets.ts';
 import './boss-confrontation.css';
 
@@ -71,6 +72,7 @@ const BossConfrontation: React.FC<Props> = ({ mission, alreadyDefeated, legacyAw
   const isFinal = mission.kind === 'final';
   const isEndgame = mission.chapterId === 'f';
   const script = BOSS_LINES[mission.id];
+  const general = !isEndgame ? generalForChapter(mission.chapterId) : undefined;
   const mystic = GENERAL_MYSTICS.find(card => card.missionId === mission.id);
   const mysticName = mystic ? mysticDisplayName(mystic.id) : null;
   const effect = mystic ? mysticPowerText(mysticPower(mystic.id, 1)) : null;
@@ -102,7 +104,7 @@ const BossConfrontation: React.FC<Props> = ({ mission, alreadyDefeated, legacyAw
         </div>
         <div className="dcb-hero-caption">
           <small>{isFinal ? 'JEFE FINAL' : isEndgame ? 'ÚLTIMO ARCO' : 'GENERAL · RETO DECISIVO'}</small>
-          <h2>{isFinal ? mission.title : mission.title}</h2>
+          <h2>{general ? `${general.name} — ${mission.title}` : mission.title}</h2>
           <p>{mission.description}</p>
         </div>
       </section>
