@@ -3,7 +3,7 @@
   "generation": "DR-G2-2026",
   "createdOn": "2026-11-10",
   "planningStatus": "provisional_pendiente_qa_artistico",
-  "approved": 2,
+  "approved": 3,
   "published": 0,
   "generatedPendingReview": 0,
   "planned": 110,
@@ -65,12 +65,18 @@
       "category": "fondos",
       "title": "Región 1 - base",
       "usage": "Región 1 - combates ordinarios y entrada",
-      "status": "pendiente",
+      "status": "aprobado_pendiente_importacion",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-1-base.webp",
       "format": "webp",
       "chapter": "1",
       "variant": "base",
-      "notes": "Tres pruebas visuales resultaron variantes de plaza, no el Puerto del Callao. Se descartaron para este ID y no se cuentan entre los 110 recursos aprobados. Generar un puerto costero real con bastiones, muelles, galeras y mar; únicamente banderas lisas rojas y blancas, sin texto incrustado."
+      "notes": "Aprobado con 'oki' el 10/11/2026. Puerto del Callao, costa del Pacífico. El PNG maestro y WebP optimizado están en el paquete ZIP de esta conversación. Todavía no publicado en GitHub ni DRStudio.",
+      "generatedFileName": "puerto_colonial_bajo_el_sol.png",
+      "originalFormat": "png",
+      "originalDimensions": {
+        "width": 1024,
+        "height": 1536
+      }
     },
     {
       "id": "G2-FON-004",
@@ -82,7 +88,8 @@
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-1-jefe.webp",
       "format": "webp",
       "chapter": "1",
-      "variant": "jefe"
+      "variant": "jefe",
+      "notes": "Batería costera elevada de Baltasar de Fierro con cañones de bronce y parapetos, océano de fondo. Formato vertical 2:3 sin personajes y espacio para HUD. Los intentos de muelle horizontal fueron descartados."
     },
     {
       "id": "G2-FON-005",
