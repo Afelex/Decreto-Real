@@ -153,15 +153,11 @@ export const AFTER_VICTORY: Readonly<Record<string, readonly AfterVictoryLine[]>
   {speaker:'Zhinchi',text:'Un juramento no obliga a cometer injusticias. Guarda la carta y comprueba si aún quedan generales por liberar.'}
  ],
  '35': [
-  {speaker:"Crónica",text:"Antes del combate, Zhinchi se enfrenta a su antiguo compañero. El Vándalo, fortalecido por Sigumán, provoca un derrumbe que pone en peligro a Xervias."},
-  {speaker:"Zhinchi",text:"¡Xervias! Toma mi Sello de Mando. Lo que aprendiste importa más que cualquier rango. ¡Continúa!"},
-  {speaker:"Crónica",text:"El cetro ilumina el anillo de Xervias. Despierta el Decreto del Legado y las cartas místicas responden por primera vez."},
-  {speaker:"Zhinchi",text:"El tercer año de nuestra academia me enseñó que el poder sirve para proteger. Ahora te toca demostrarlo."},
-  {speaker:"Crónica",text:"Zhinchi contiene las piedras para abrirle un camino. Desaparece detrás del polvo; su muerte no está confirmada."},
-  {speaker:"Vándalo Rojo",text:"¡Ni siquiera tu capitán pudo detenerme! ¿De verdad crees que su viejo sello te salvará?"},
-  {speaker:"Xervias",text:"Mi capitán me enseñó a utilizar el poder por una razón. Te he derrotado y no volverás a hacer daño aquí."},
-  {speaker:"Crónica",text:"Xervias vuelve a buscar a Zhinchi entre los escombros. No encuentra su cuerpo ni una pista que indique dónde está."},
-  {speaker:"Xervias",text:"Capitán... dondequiera que esté, seguiré adelante. No desperdiciaré lo que me ha confiado."}
+  {speaker:'Crónica',text:'El Vándalo Rojo cae derrotado. El Decreto del Legado ha respondido a Xervias durante su primera gran prueba.'},
+  {speaker:'Vándalo Rojo',text:'¡No puede ser! Zhinchi nunca consiguió superarme... y tú has utilizado su sello mejor de lo que esperaba.'},
+  {speaker:'Xervias',text:'La academia no lo hizo débil. Le enseñó aquello que tú abandonaste: defender a otros antes que a ti mismo.'},
+  {speaker:'Crónica',text:'Xervias regresa al lugar del derrumbe. Busca a Zhinchi entre las piedras, pero no encuentra su cuerpo ni señales de su paradero.'},
+  {speaker:'Xervias',text:'Capitán... no sé dónde está. Seguiré adelante, como me pidió. No desperdiciaré su legado.'}
  ],
  '36': [
   {speaker:"Crónica",text:"El León del Edicto se desvanece al perder sus cuatro puntos de vida. Los sellos que cerraban las celdas dejan de brillar."},
