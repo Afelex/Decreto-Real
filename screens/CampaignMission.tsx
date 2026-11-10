@@ -181,7 +181,7 @@ const CampaignMissionScreen: React.FC = () => {
       </div>
       <p className="dc-note dc-briefing-note">Combate original: 20 de vida, 10 ataques, 10 defensas, 4 Impactos y 4 Órdenes. Los combos x2 y x3 permiten causar daño o curar vida.{mission.kind === 'boss' ? ' Este general tiene 3 místicas.' : mission.kind === 'final' ? ' Sigumán porta 3 místicas distintas.' : ''}</p>
       <div className="dc-briefing-actions">
-        <button className="dc-primary" onClick={() => setView(mission.kind === 'boss' || mission.kind === 'final' ? 'confrontation' : 'duel')}>Preparar combate ⚔</button>
+        <button className="dc-primary" onClick={() => setView(mission.kind === 'boss' || mission.chapterId === 'f' ? 'confrontation' : 'duel')}>Preparar combate ⚔</button>
         <button className="dc-secondary" onClick={() => navigate(returnToMap)}>Volver al mapa</button>
       </div>
     </section>
