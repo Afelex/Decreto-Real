@@ -28,7 +28,7 @@
       "title": "Prólogo - Camino Real de los Reinos del Perú",
       "usage": "Prólogo - exterior de caminos y transición tras la misión 02",
       "status": "aprobado_pendiente_importacion",
-      "path": "public/artes/generaciones/DR-G2-2026/fondos/prologo-camino-real-de-los-reinos-del-peru.png",
+      "path": "public/artes/generaciones/DR-G2-2026/fondos/prologo-camino-real-de-los-reinos-del-peru.webp",
       "format": "png",
       "fileLocation": "imagen generada en esta conversación; aún no incorporada a GitHub ni a DRStudio",
       "width": 1024,
@@ -40,7 +40,7 @@
         "height": 1536
       },
       "generatedFileName": "camino_real_del_virreinato_andino.png",
-      "notes": "Aprobado por usuario en conversación; el archivo binario todavía no está versionado en GitHub."
+      "notes": "Aprobado por usuario en conversación; el archivo binario todavía no está versionado en GitHub. Publicación prevista como WebP optimizado; conservar PNG maestro fuera de la carpeta pública."
     },
     {
       "id": "G2-FON-002",
@@ -141,12 +141,12 @@
       "category": "fondos",
       "title": "Región 3 - base",
       "usage": "Región 3 - combates ordinarios y entrada",
-      "status": "siguiente_en_generacion",
+      "status": "pendiente",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-3-base.webp",
       "format": "webp",
       "chapter": "3",
       "variant": "base",
-      "notes": "Minas de la Sierra, escenario BASE (misiones 11-13), un valle de alta montaña seco y rocoso con DOS bocaminas visibles, andamios de madera, vagonetas, mineral argentífero, casa de contabilidad colonial, luz fría; 2:3 vertical; libre centro para HUD. Sin mar, sin caminos de posta, sin cañones, banderas solo lisas rojas/blancas."
+      "notes": "Intentos de generación de 10/11/2026 mostraron solo un valle desértico sin bocaminas, vagonetas ni casa de contabilidad. Descartados (no cuentan para G2-FON-007). Debe representar las Minas de la Sierra: dos bocaminas oscuras, andamios, mineral y edificio minero, vertical 2:3."
     },
     {
       "id": "G2-FON-008",
