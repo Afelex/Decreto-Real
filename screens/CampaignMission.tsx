@@ -124,7 +124,7 @@ const CampaignMissionScreen: React.FC = () => {
   if (outcome) {
     const heading = outcome.won
       ? mission.kind === 'boss' ? '¡General derrotado!'
-        : mission.kind === 'final' ? '¡La Revolución Solar cae!' : '¡Misión superada!'
+        : mission.kind === 'final' ? mission.id === '37' ? '¡Sigumán ha caído...!' : '¡El Decreto Viviente cae!' : '¡Misión superada!'
       : 'Misión fallida';
 
     return <BattleResultScreen
@@ -139,12 +139,12 @@ const CampaignMissionScreen: React.FC = () => {
       warning={!outcome.saved ? 'No se pudo guardar tu progreso en este navegador.' : undefined}
       reward={outcome.won && outcome.saved ? mysticalReward
         ? `Carta mística de ${mysticalReward.owner} añadida a tu colección${legacyAwakened ? '.' : ' (sellada).'}`
-        : mission.id === '36' ? 'El duelo ha terminado, pero el edificio está cediendo. ¡Continúa la historia!' : undefined
+        : mission.id === '35' ? 'El Sello de Mando ha despertado. ¡Ahora puedes utilizar cartas místicas!' : undefined
         : undefined}
       narrative={outcome.won ? mission.victoryLine : mission.defeatLine}
       actions={[
         ...(outcome.won && outcome.saved && mysticalReward ? [{
-          label: mission.id === '36' || legacyAwakened ? 'Editar baraja mística ✦' : 'Ver mística sellada ✦',
+          label: mission.id === '35' || legacyAwakened ? 'Editar baraja mística ✦' : 'Ver mística sellada ✦',
           onClick: () => navigate('/campania/baraja'),
         }] : []),
         ...(outcome.won && outcome.saved ? [{
