@@ -98,6 +98,8 @@ const shuffleArray = <T,>(array: T[]): T[] => {
   return array;
 };
 
+type MysticSummon = { name: string; hp: number; attack: number };
+
 type EffectType = 'ATTACK' | 'DEFENSE' | 'IMPACT' | 'SPECIAL_ATTACK' | 'SPECIAL_HEAL' | null;
 type EffectTarget = 'PLAYER' | 'OPPONENT' | 'GLOBAL' | null;
 
@@ -128,6 +130,10 @@ type GameBoardProps = {
   storyConversation?: CombatConversation;
   playerMysticSlots?: readonly MysticSlot[];
   opponentMysticSlots?: readonly MysticSlot[];
+  /** La carta del legado se reparte en la mano inicial de la misión 35. */
+  guaranteedOpeningMysticId?: MysticId;
+  /** Guardián presente en el escenario al comenzar la misión. */
+  initialOpponentSummon?: MysticSummon;
   onOutcome?: (result: OriginalBattleOutcome) => void;
   onReturn?: () => void;
   presentation?: BattlePresentation;
@@ -135,7 +141,7 @@ type GameBoardProps = {
   /** Overlay illustrations for narrated moments; do not replace the fixed HUD portraits. */
   guidedNarrativeSprites?: {player:string;opponent:string};
 };
-const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation, storyConversation, playerMysticSlots, opponentMysticSlots, guidedOpening = false, guidedNarrativeSprites }) => {
+const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presentation, storyConversation, playerMysticSlots, opponentMysticSlots, guidedOpening = false, guidedNarrativeSprites, guaranteedOpeningMysticId, initialOpponentSummon }) => {
   const scenery = resolveBattleScenery(presentation);
   const playerPortrait = presentation?.playerPortrait ?? PLAYER_IMG;
   const rivalPortrait = presentation?.opponentPortrait ?? OPPONENT_IMG;
@@ -253,6 +259,13 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const [opponentImpactPlayedThisTurn, setOpponentImpactPlayedThisTurn] = useState(false);
   const [opponentGauge, setOpponentGauge] = useState(0);
   const [opponentLastType, setOpponentLastType] = useState<CardType | null>(null);
+  const [playerSummon, setPlayerSummon] = useState<MysticSummon | null>(null);
+  const [opponentSummon, setOpponentSummon] = useState<MysticSummon | null>(initialOpponentSummon ?? null);
+  const playerSummonRef = useRef<MysticSummon | null>(null);
+  const opponentSummonRef = useRef<MysticSummon | null>(initialOpponentSummon ?? null);
+  const playerLegacyRef = useRef<{ attack: number; defense: number }>({ attack: 0, defense: 0 });
+  const opponentLegacyRef = useRef<{ attack: number; defense: number }>({ attack: 0, defense: 0 });
+  const [legacyActive, setLegacyActive] = useState(false);
 
   const [coinSide, setCoinSide] = useState<'CARA' | 'SELLO' | null>(null);
   const [isCoinFlipping, setIsCoinFlipping] = useState(false);
@@ -297,7 +310,11 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   useEffect(() => {
     const playerPool = generateDeck('p1', playerMysticSlots);
     const rivalPool = generateDeck('ai', opponentMysticSlots);
-    const playerCards = guidedOpening ? arrangeGuidedDeck(playerPool, 'player') : playerPool;
+    const playerCards = guidedOpening ? arrangeGuidedDeck(playerPool, 'player') : [...playerPool];
+    if (guaranteedOpeningMysticId && !guidedOpening) {
+      const index = playerCards.findIndex(card => card.mysticId === guaranteedOpeningMysticId);
+      if (index >= 0) [playerCards[0], playerCards[index]] = [playerCards[index], playerCards[0]];
+    }
     const rivalCards = guidedOpening ? arrangeGuidedDeck(rivalPool, 'rival') : rivalPool;
     playerDeckRef.current = playerCards;
     opponentDeckRef.current = rivalCards;
@@ -344,6 +361,9 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
 
   const startPlayerTurn = () => {
     if (gameOverRef.current) return;
+    playerLegacyRef.current = { attack: 0, defense: 0 };
+    setLegacyActive(false);
+    if (playerSummonRef.current) setOpponentHP(hp => Math.max(0, hp - playerSummonRef.current!.attack));
     drawCards('PLAYER', 1);
     setPlayerImpactPlayedThisTurn(false);
     setPhase('PLAYER_TURN');
@@ -351,6 +371,8 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
 
   const startOpponentTurn = () => {
     if (gameOverRef.current) return;
+    opponentLegacyRef.current = { attack: 0, defense: 0 };
+    if (opponentSummonRef.current) setPlayerHP(hp => Math.max(0, hp - opponentSummonRef.current!.attack));
     drawCards('OPPONENT', 1);
     setOpponentImpactPlayedThisTurn(false);
     setPhase('OPPONENT_TURN');
@@ -446,7 +468,18 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
     }
   };
 
-  const activateMysticPower = (isPlayer: boolean, power: MysticPower) => {
+  /** Las invocaciones retienen sus PV hasta recibir suficientes ataques. */
+  const damagePersistentSummon = (attackerIsPlayer: boolean, damage: number): boolean => {
+    const ref = attackerIsPlayer ? opponentSummonRef : playerSummonRef;
+    if (!ref.current) return false;
+    const updated = { ...ref.current, hp: Math.max(0, ref.current.hp - damage) };
+    ref.current = updated.hp > 0 ? updated : null;
+    if (attackerIsPlayer) setOpponentSummon(ref.current);
+    else setPlayerSummon(ref.current);
+    return true;
+  };
+
+  const activateMysticPower = (isPlayer: boolean, power: MysticPower, mysticName = 'Guardián místico') => {
     const own = isPlayer ? latestPlayer.current : latestOpponent.current;
     const enemy = isPlayer ? latestOpponent.current : latestPlayer.current;
     const result = resolveMysticPower(power, {
@@ -454,6 +487,16 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
       impactPlayedThisTurn: own.impactPlayedThisTurn,
     });
     if (!result.accepted) return;
+    if (power.attackBoost || power.defenseBoost) {
+      const boost = { attack: power.attackBoost ?? 0, defense: power.defenseBoost ?? 0 };
+      if (isPlayer) { playerLegacyRef.current = boost; setLegacyActive(true); }
+      else opponentLegacyRef.current = boost;
+    }
+    if (power.summon) {
+      const guardian = { name: mysticName, hp: power.summon.hp, attack: power.summon.attack };
+      if (isPlayer) { playerSummonRef.current = guardian; setPlayerSummon(guardian); }
+      else { opponentSummonRef.current = guardian; setOpponentSummon(guardian); }
+    }
     if (isPlayer) {
       setPlayerHP(result.selfHp); setOpponentHP(result.enemyHp);
       if (power.impact) { setPlayerImpactLevel(result.selfSeals); setPlayerImpactPlayedThisTurn(true); }
@@ -479,7 +522,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
     const active = await announcementClock.current.wait(950);
     setMysticComboAnnouncement(null);
     if (active && !gameOverRef.current) {
-      activateMysticPower(isPlayer, power);
+      activateMysticPower(isPlayer, power, mysticDisplayName(id));
       if (level === 3) {
         if (isPlayer) { setPlayerGauge(0); setPlayerLastType(null); }
         else { setOpponentGauge(0); setOpponentLastType(null); }
@@ -510,11 +553,17 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
     if (gameOverRef.current) return;
 
     if (card.type === 'ATTACK') {
-      if (isPlayer) setOpponentHP(p => Math.max(0, p - ATTACK_DAMAGE)); else setPlayerHP(p => Math.max(0, p - ATTACK_DAMAGE));
+      const bonus = isPlayer ? playerLegacyRef.current.attack : opponentLegacyRef.current.attack;
+      const damage = ATTACK_DAMAGE + bonus;
+      if (!damagePersistentSummon(isPlayer, damage)) {
+        if (isPlayer) setOpponentHP(p => Math.max(0, p - damage));
+        else setPlayerHP(p => Math.max(0, p - damage));
+      }
     } else if (card.type === 'MYSTIC' && card.mysticId) {
-      activateMysticPower(isPlayer, mysticPower(card.mysticId as MysticId, 1));
+      activateMysticPower(isPlayer, mysticPower(card.mysticId as MysticId, 1), mysticDisplayName(card.mysticId as MysticId));
     } else if (card.type === 'DEFENSE') {
-      if (isPlayer) setPlayerHP(p => Math.min(MAX_HP, p + 1)); else setOpponentHP(p => Math.min(MAX_HP, p + 1));
+      if (isPlayer) setPlayerHP(p => Math.min(MAX_HP, p + 1 + playerLegacyRef.current.defense));
+      else setOpponentHP(p => Math.min(MAX_HP, p + 1 + opponentLegacyRef.current.defense));
     } else if (card.type === 'ORDER') {
       drawCards(isPlayer ? 'PLAYER' : 'OPPONENT', 1);
     } else if (card.type === 'IMPACT') {
@@ -967,6 +1016,11 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
               </div>;
             })}
           </div>
+          {(opponentSummon || playerSummon) && <div role="status" aria-live="polite" style={{ position:'absolute',zIndex:15,top:'17%',left:'5%',right:'5%',padding:'6px 8px',borderRadius:8,border:'1px solid rgba(225,185,99,.7)',background:'rgba(10,13,24,.91)',fontSize:11,textAlign:'center',color:'#fff' }}>
+            {opponentSummon ? `${opponentSummon.name} · ${opponentSummon.hp} PV · ATQ ${opponentSummon.attack} · tus ataques deben destruirlo` : ''}
+            {playerSummon ? ` · Tu guardián: ${playerSummon.name} (${playerSummon.hp} PV)` : ''}
+          </div>}
+          {legacyActive && <div role="status" style={{ position:'absolute',bottom:'12%',left:'5%',right:'5%',fontSize:11,textAlign:'center',color:'#f8d989',zIndex:15 }}>✦ Decreto del Legado activo: +2 Ataque / +2 Defensa</div>}
           <button type="button" className="dr-royal-activation-target" onClick={() => placeSelected('field')}
             disabled={!selectedCard || !canHandleCards || selectedCard.type === 'IMPACT'}
             aria-label="Campo para activar Ataque, Defensa, Orden o Mística">
