@@ -11,7 +11,7 @@ import { chapterForStage } from '../campaign/story.ts';
 import { combatConversationForMission } from '../campaign/combatDialogues.ts';
 import { enemyForMission } from '../campaign/characters.ts';
 import { loadMysticSlots, hasZhinchiLegacy } from '../campaign/mysticDeck.ts';
-import { bossMysticSlots, GENERAL_MYSTICS } from '../game/mysticCards.ts';
+import { bossMysticSlots, GENERAL_MYSTICS, mysticDisplayName, mysticPower, mysticPowerText } from '../game/mysticCards.ts';
 import { missionStarGoals } from '../campaign/progressView.ts';
 import BattleResultScreen from './BattleResultScreen';
 import { RegionScene } from './RegionScene';
@@ -141,6 +141,11 @@ const CampaignMissionScreen: React.FC = () => {
         ? `Carta mística de ${mysticalReward.owner} añadida a tu colección${legacyAwakened ? '.' : ' (sellada).'}`
         : mission.id === '35' ? 'El Sello de Mando ha despertado. ¡Ahora puedes utilizar cartas místicas!' : undefined
         : undefined}
+      rewardShowcase={outcome.won && mysticalReward ? {
+        cardName: mysticDisplayName(mysticalReward.id),
+        effect: mysticPowerText(mysticPower(mysticalReward.id, 1)),
+        locked: !legacyAwakened,
+      } : undefined}
       narrative={outcome.won ? mission.victoryLine : mission.defeatLine}
       actions={[
         ...(outcome.won && outcome.saved && mysticalReward ? [{
