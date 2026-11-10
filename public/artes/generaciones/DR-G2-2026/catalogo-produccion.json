@@ -3,9 +3,9 @@
   "generation": "DR-G2-2026",
   "createdOn": "2026-11-10",
   "planningStatus": "provisional_pendiente_qa_artistico",
-  "approved": 0,
+  "approved": 2,
   "published": 0,
-  "generatedPendingReview": 1,
+  "generatedPendingReview": 0,
   "planned": 110,
   "policy": {
     "banners": "Solo estandartes de tela lisa roja o blanca sin símbolos, cruces, aspas ni heráldica.",
@@ -27,13 +27,20 @@
       "category": "fondos",
       "title": "Prólogo - Camino Real de los Reinos del Perú",
       "usage": "Prólogo - exterior de caminos y transición tras la misión 02",
-      "status": "generado_para_revision",
+      "status": "aprobado_pendiente_importacion",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/prologo-camino-real-de-los-reinos-del-peru.png",
       "format": "png",
       "fileLocation": "imagen generada en esta conversación; aún no incorporada a GitHub ni a DRStudio",
       "width": 1024,
       "height": 1536,
-      "flags": "rojo o blanco liso, sin símbolos"
+      "flags": "rojo o blanco liso, sin símbolos",
+      "originalFormat": "png",
+      "originalDimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "generatedFileName": "camino_real_del_virreinato_andino.png",
+      "notes": "Aprobado por usuario en conversación; el archivo binario todavía no está versionado en GitHub."
     },
     {
       "id": "G2-FON-002",
@@ -41,9 +48,16 @@
       "category": "fondos",
       "title": "Prólogo - Plaza del pregón",
       "usage": "Misión 01 - escena de decretos contradictorios y encuentro con Domingo Quispe",
-      "status": "pendiente",
+      "status": "aprobado_pendiente_importacion",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/prologo-plaza-del-pregon.webp",
-      "format": "webp"
+      "format": "webp",
+      "originalFormat": "png",
+      "originalDimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "generatedFileName": "plaza_andina_del_pregón.png",
+      "notes": "Aprobado por usuario en conversación; el archivo binario todavía no está versionado en GitHub."
     },
     {
       "id": "G2-FON-003",
@@ -51,11 +65,12 @@
       "category": "fondos",
       "title": "Región 1 - base",
       "usage": "Región 1 - combates ordinarios y entrada",
-      "status": "pendiente",
+      "status": "siguiente_en_generacion",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-1-base.webp",
       "format": "webp",
       "chapter": "1",
-      "variant": "base"
+      "variant": "base",
+      "notes": "Puerto del Callao, fondo regional base; sin emblemas y con banderas lisas rojas/blancas."
     },
     {
       "id": "G2-FON-004",
@@ -1271,5 +1286,6 @@
       "path": "public/artes/generaciones/DR-G2-2026/mapas/marco-grafico-de-recompensa.webp",
       "format": "webp"
     }
-  ]
+  ],
+  "lastReview": "2026-11-10"
 }
