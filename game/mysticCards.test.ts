@@ -112,5 +112,6 @@ test('curación limitada a 20, coste de vida nunca deja a 0 y combos tienen efec
  const last=resolveMysticPower(mysticPower('legado-zhinchi',1),{
    selfHp:10,enemyHp:20,selfSeals:1,impactPlayedThisTurn:false,
  });
- assert.equal(last.selfHp,10);assert.equal(last.enemyHp,15);
+ assert.equal(last.selfHp,10);assert.equal(last.enemyHp,20);
+ assert.deepEqual(mysticPower('legado-zhinchi',1),{attackBoost:2,defenseBoost:2});
 });
