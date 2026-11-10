@@ -5,7 +5,7 @@
   "planningStatus": "provisional_pendiente_qa_artistico",
   "approved": 12,
   "published": 0,
-  "generatedPendingReview": 0,
+  "generatedPendingReview": 1,
   "planned": 110,
   "policy": {
     "banners": "Solo estandartes de tela lisa roja o blanca sin símbolos, cruces, aspas ni heráldica.",
@@ -257,12 +257,18 @@
       "category": "fondos",
       "title": "Región 6 - Fincas altoandinas de Arequipa",
       "usage": "Región 6, Ciudad de los Estandartes - entorno rural, haciendas y caminos de aproximación hacia la ciudad de Isabela Valdierra",
-      "status": "siguiente_en_generacion",
+      "status": "generado_para_revision",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-6-base.webp",
       "format": "webp",
       "chapter": "6",
       "variant": "base",
-      "notes": "Nueva dirección del usuario: 'unas fincas en la sierra central de arquipa' (= Arequipa, Perú). Mostrar valle agrario altoandino con cultivos verdes sobre campos ocres, terrazas de piedra, canales de riego, casona de hacienda y fincas blancas con techos de teja, volcanes arequipeños al fondo; anime cel-shading, fondo vertical 2:3, centro libre, sin personajes ni texto, estandartes únicamente lisos rojos o lisos blancos."
+      "notes": "Primer arte propuesto 10/11/2026 según solicitud del usuario: fincas agrícolas de la sierra de Arequipa con una casa-hacienda de arcadas de piedra, campos aterrazados, carro agrícola, flora y volcán nevado al fondo; estandartes separados rojo liso y blanco liso. Generación local PNG 1024x1536; pendiente aprobación del usuario e importación a GitHub/DRStudio.",
+      "generatedFileName": "a_vibrant_detailed_anime_style_illustration_of_a.png",
+      "originalFormat": "png",
+      "originalDimensions": {
+        "width": 1024,
+        "height": 1536
+      }
     },
     {
       "id": "G2-FON-014",
