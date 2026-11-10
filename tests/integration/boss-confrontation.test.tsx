@@ -54,7 +54,7 @@ test('the card is already collected on a replay and the legacy changes its avail
 
 test('the Sigumán finale unveils his three named cards without claiming they are collectible', () => {
   const callbacks = mount('38', { awakened: true });
-  expect(screen.getByRole('heading', { name: 'El Decreto Viviente' })).toBeTruthy();
+  expect(screen.getByRole('heading', { name: 'El Decreto Viviente', level: 1 })).toBeTruthy();
   expect(screen.getByText(/Renacimiento Solar/)).toBeTruthy();
   expect(screen.getByText(/Juicio del Eclipse/)).toBeTruthy();
   expect(screen.getByText(/Decreto del Sol Negro/)).toBeTruthy();
