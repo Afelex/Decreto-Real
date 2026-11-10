@@ -202,7 +202,13 @@ const CampaignMissionScreen: React.FC = () => {
     key={`${mission.id}-${attempt}`}
     onOutcome={onClassicOutcome}
     storyConversation={conversation}
-    playerMysticSlots={legacyAwakened ? loadMysticSlots(storage, progress) : []}
+    playerMysticSlots={mission.id === '35'
+      ? [{ mysticId: 'legado-zhinchi', replace: 'ATTACK' }]
+      : legacyAwakened ? loadMysticSlots(storage, progress) : []}
+    guaranteedOpeningMysticId={mission.id === '35' ? 'legado-zhinchi' : undefined}
+    initialOpponentSummon={mission.id === '36'
+      ? { name: 'León del Edicto', hp: 4, attack: 2 }
+      : mission.id === '38' ? { name: 'Guardián del Sol Negro', hp: 6, attack: 2 } : undefined}
     opponentMysticSlots={mission ? bossMysticSlots(mission.id) : []}
     presentation={{ background: campaignMissionBackground(mission.id) ?? '/Decreto-Real/escenarios/plaza-virreinal-v2.svg', opponentPortrait: campaignOpponentPortrait(mission.id) }}
     onReturn={() => navigate(returnToMap)}
