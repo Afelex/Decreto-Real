@@ -3,9 +3,9 @@
   "generation": "DR-G2-2026",
   "createdOn": "2026-11-10",
   "planningStatus": "provisional_pendiente_qa_artistico",
-  "approved": 7,
+  "approved": 8,
   "published": 0,
-  "generatedPendingReview": 1,
+  "generatedPendingReview": 0,
   "planned": 110,
   "policy": {
     "banners": "Solo estandartes de tela lisa roja o blanca sin símbolos, cruces, aspas ni heráldica.",
@@ -160,12 +160,12 @@
       "category": "fondos",
       "title": "Región 3 - jefe",
       "usage": "Región 3 - combate de jefe",
-      "status": "generado_para_revision",
+      "status": "aprobado_pendiente_importacion",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-3-jefe.webp",
       "format": "webp",
       "chapter": "3",
       "variant": "jefe",
-      "notes": "Primera generación G2-FON-008 que representa una explotación minera: galería apuntalada, raíles, vagoneta con mineral de plata, grúa, balanza y edificio virreinal, fondo vertical 2:3. Pendiente de aprobación del usuario e incorporación binaria a GitHub/DRStudio. Revisar rigor histórico de rieles modernos antes de publicación final.",
+      "notes": "Primera generación G2-FON-008 que representa una explotación minera: galería apuntalada, raíles, vagoneta con mineral de plata, grúa, balanza y edificio virreinal, fondo vertical 2:3. Pendiente de aprobación del usuario e incorporación binaria a GitHub/DRStudio. Revisar rigor histórico de rieles modernos antes de publicación final. Aprobado por el usuario con 'oki' el 10-11-2026; pendiente de integrar archivos PNG/WebP en GitHub y DRStudio.",
       "generatedFileName": "a_highly_detailed_vivid_anime_style_landscape_of.png",
       "originalFormat": "png",
       "originalDimensions": {
@@ -179,11 +179,12 @@
       "category": "fondos",
       "title": "Región 4 - base",
       "usage": "Región 4 - combates ordinarios y entrada",
-      "status": "pendiente",
+      "status": "siguiente_en_generacion",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-4-base.webp",
       "format": "webp",
       "chapter": "4",
-      "variant": "base"
+      "variant": "base",
+      "notes": "Fortaleza de Artillería (región 4) BASE para misiones 15 a 17: patio interior de piedra, dos torres defensivas, cañones de bronce colocados al borde del patio, depósitos de pólvora, muros y valles serranos secos. NO océano, NO barcos, NO puerto, NO personajes, sin UI ni texto; centro despejado para HUD. Banderas de tela lisa exclusivamente roja o blanca; encuadre VERTICAL 2:3."
     },
     {
       "id": "G2-FON-010",
