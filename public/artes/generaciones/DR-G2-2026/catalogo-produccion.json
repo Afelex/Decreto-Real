@@ -160,12 +160,12 @@
       "category": "fondos",
       "title": "Región 3 - jefe",
       "usage": "Región 3 - combate de jefe",
-      "status": "siguiente_en_generacion",
+      "status": "pendiente",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-3-jefe.webp",
       "format": "webp",
       "chapter": "3",
       "variant": "jefe",
-      "notes": "Arena del jefe Octavio Argento, Señor de la Plata, dentro del complejo de las Minas de la Sierra: dos bocaminas excavadas y apuntaladas, vagonetas y rieles de madera, balanzas, cofres de plata, casa de contabilidad virreinal, paleta fría de plata y pizarra, cielo serrano. Pantalla vertical 2:3 despejada en el centro para HUD. Nada de río o valle vacío, nada de barcos ni cañones; banderas lisas blancas o rojas."
+      "notes": "El 10-11-2026, tres intentos de generación repitieron un valle con río y puente; se descartan como G2-FON-008. Este ID exige instalación minera real: bocaminas, vagonetas, vigas, edificio de contabilidad, mineral y balanza, sin río ni puente protagonista. No aprobar ni publicar paisaje fluvial bajo este ID. Formato 2:3 vertical; fondo de combate, centro despejado."
     },
     {
       "id": "G2-FON-009",
