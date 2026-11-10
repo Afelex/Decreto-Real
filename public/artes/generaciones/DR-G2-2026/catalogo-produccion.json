@@ -3,7 +3,7 @@
   "generation": "DR-G2-2026",
   "createdOn": "2026-11-10",
   "planningStatus": "provisional_pendiente_qa_artistico",
-  "approved": 19,
+  "approved": 20,
   "published": 0,
   "generatedPendingReview": 0,
   "planned": 110,
@@ -391,12 +391,18 @@
       "category": "fondos",
       "title": "Región final - Cámara del Decreto Viviente (Casa del Sello)",
       "usage": "Combate final contra Sigumán (misión 38), interior de la Casa del Sello; después del santuario exterior G2-FON-019",
-      "status": "pendiente",
+      "status": "aprobado_pendiente_importacion",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-f-jefe.webp",
       "format": "webp",
       "chapter": "f",
       "variant": "jefe",
-      "notes": "Arte G2 a generar: interior monumental BARROCO-INCAICO cerrado de la Casa del Sello, cámara ritual austera de piedra oscura y columnas, altos arcos, gran techo abovedado y ocho pedestales de sellos místicos con luz dorada discreta, puerta monumental cerrada al fondo, leve energía ámbar y violeta en la atmósfera; suelo central muy amplio y vacío para HUD del duelo final, sin personajes ni cartas, sin texto ni interface, sin cielo exterior, sin paisaje de Cusco ni trono real opulento de G2-FON-018. Cinemático amenazante pero legible; anime 2D cel shading, vertical 2:3 (1024x1536). Estandartes si aparecen solo completamente blancos o completamente rojos, absolutamente sin cruces, rayas o símbolos. QA artístico 10-11-2026: dos intentos de G2-FON-020 produjeron otro salón del trono barroco, demasiado parecido a G2-FON-018, con paños combinados y ornamentos; descartados para este ID, no contabilizar ni publicar. El recurso debe ser cámara ritual final distinta, en interior cerrado y oscuro de piedra, ocho pedestales de sellos místicos, sin trono, con espacio central despejado. Cambiar estrategia/prompt al generar para evitar duplicación del salón."
+      "notes": "Arte G2 a generar: interior monumental BARROCO-INCAICO cerrado de la Casa del Sello, cámara ritual austera de piedra oscura y columnas, altos arcos, gran techo abovedado y ocho pedestales de sellos místicos con luz dorada discreta, puerta monumental cerrada al fondo, leve energía ámbar y violeta en la atmósfera; suelo central muy amplio y vacío para HUD del duelo final, sin personajes ni cartas, sin texto ni interface, sin cielo exterior, sin paisaje de Cusco ni trono real opulento de G2-FON-018. Cinemático amenazante pero legible; anime 2D cel shading, vertical 2:3 (1024x1536). Estandartes si aparecen solo completamente blancos o completamente rojos, absolutamente sin cruces, rayas o símbolos. QA artístico 10-11-2026: dos intentos de G2-FON-020 produjeron otro salón del trono barroco, demasiado parecido a G2-FON-018, con paños combinados y ornamentos; descartados para este ID, no contabilizar ni publicar. El recurso debe ser cámara ritual final distinta, en interior cerrado y oscuro de piedra, ocho pedestales de sellos místicos, sin trono, con espacio central despejado. Cambiar estrategia/prompt al generar para evitar duplicación del salón. La versión final de la cámara ruinosa al atardecer con telas y estandartes lisos rojos/blancos fue aprobada el 10/11/2026 con 'ok, excelente'. Archivo PNG de conversación pendiente de incorporación a GitHub/DRStudio; no utilizar las variantes anteriores de salón del trono.",
+      "generatedFileName": "salón_ceremonial_en_ruinas_con_estandartes_rojos_y.png",
+      "originalFormat": "png",
+      "originalDimensions": {
+        "width": 1024,
+        "height": 1536
+      }
     },
     {
       "id": "G2-RET-01",
@@ -404,10 +410,11 @@
       "category": "retratos",
       "title": "Domingo Quispe",
       "usage": "Retrato del oponente de la misión 01",
-      "status": "pendiente",
+      "status": "siguiente_en_generacion",
       "path": "public/artes/generaciones/DR-G2-2026/retratos/domingo-quispe.webp",
       "format": "webp",
-      "mission": "01"
+      "mission": "01",
+      "notes": "Retrato G2 para Domingo Quispe, Guardia del pregón y rival de misión 01. Guardia joven siglo XVII con pliego lacrado, expresión seria y legible, mismo anime cel-shading que los protagonistas, encuadre busto/medio cuerpo vertical 2:3, sin texto ni iconografía de cruces de Borgoña. Retrato propuesto, distinto de los PNG maestros de Xervias/Zhinchi. Revisar contra cualquier referencia oficial de Domingo antes de su aceptación como identidad final."
     },
     {
       "id": "G2-RET-02",
