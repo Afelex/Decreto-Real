@@ -81,7 +81,7 @@ export default function ArtGallery(){
     (showHidden||!flags[i.id])&&
     (!query||[i.name,i.group,i.path].join(' ').toLocaleLowerCase('es').includes(query.toLocaleLowerCase('es'))));
   const chosen=all.find(i=>i.id===selected)??null;
-  const g2Review=Boolean(chosen&&chosen.generation===CURRENT_GENERATION&&IMAGES.test(chosen.path));
+  const g2Review=Boolean(chosen&&chosen.generation===CURRENT_GENERATION&&chosen.state!=='referencia-maestra'&&IMAGES.test(chosen.path));
   const realUrl=(item:Art)=>replacements[item.id]?urls[replacements[item.id]]??item.url:item.url;
   const showExt=(item:Art)=>replacements[item.id]?'Reemplazo local':item.ext.toUpperCase();
   const changeFlag=(id:string,status:'hidden'|'delete'|null)=>{
@@ -203,7 +203,7 @@ export default function ArtGallery(){
               <img src={display} loading="lazy" alt="" onLoad={e=>measure(changed?replacements[item.id]:item.id,e.currentTarget.naturalWidth,e.currentTarget.naturalHeight)}/>}
               {flags[item.id]&&<span className="dr-art-chip">{flags[item.id]==='hidden'?'OCULTO':'ELIMINACIÓN PENDIENTE'}</span>}
               {changed&&<span className="dr-art-chip right">REEMPLAZADO</span>}
-              <span className="dr-art-chip generation">{item.generation===CURRENT_GENERATION?'G2 · '+(item.kind==='local'?'BORRADOR':'NUEVA'):'G1 · ANTERIOR'}</span></div>
+              <span className="dr-art-chip generation">{item.state==='referencia-maestra'?'G2 · MAESTRO':item.generation===CURRENT_GENERATION?'G2 · '+(item.kind==='local'?'BORRADOR':'NUEVA'):'G1 · ANTERIOR'}</span></div>
             <div className="dr-art-card-info"><strong>{item.name}</strong><small>{aspect(dims[changed?replacements[item.id]:item.id])}</small><small>{showExt(item)} · {human(item.bytes)}</small></div>
           </button>;
         })}
@@ -241,8 +241,10 @@ export default function ArtGallery(){
           <dt>Uso / reemplazo</dt><dd>Usa el mismo ancho, alto y proporción para evitar recortes en el juego. Los archivos nuevos no reemplazan automáticamente un recurso publicado.</dd>
         </dl>
         <div className="dr-art-detail-actions">
-          <button type="button" disabled={busy} onClick={()=>void importForStudio(chosen)}>↗ Usar en DRStudio</button>
-          <button type="button" disabled={busy} onClick={()=>{setReplaceTarget(chosen.id);replaceInput.current?.click();}}>⇄ Subir reemplazo</button>
+          {chosen.state==='referencia-maestra'?<small>Original de control. Las expresiones se producirán y aprobarán antes de usarse como sprites en DRStudio.</small>:<React.Fragment>
+            <button type="button" disabled={busy} onClick={()=>void importForStudio(chosen)}>↗ Usar en DRStudio</button>
+            <button type="button" disabled={busy} onClick={()=>{setReplaceTarget(chosen.id);replaceInput.current?.click();}}>⇄ Subir reemplazo</button>
+          </React.Fragment>}
           <button type="button" onClick={()=>changeFlag(chosen.id,flags[chosen.id]==='hidden'?null:'hidden')}>{flags[chosen.id]==='hidden'?'Mostrar arte':'Ocultar arte'}</button>
           {flags[chosen.id]&&<button type="button" onClick={()=>changeFlag(chosen.id,null)}>Restaurar visibilidad</button>}
           <button type="button" className="danger" disabled={busy} onClick={()=>void removeLocal(chosen)}>{chosen.kind==='local'?'Eliminar archivo local':'Marcar para eliminar'}</button>
