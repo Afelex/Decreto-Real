@@ -91,3 +91,11 @@ Se han generado seis PNG de prueba (una expresión de acción por cada general).
 Se ha preparado `DR-G2-LOTE-02-SEIS-EXPRESIONES-CANDIDATAS.zip` (SHA-256 `8396309193aba69cd42bf0c0dbf7a86007dd3f4534d9b1e0563db9d84760da99`) y está en Drive, carpeta `Decreto Real/personajes/G2-Bloque-02-Candidatos`. Importador: `tools/importar-g2-expresiones-control.mjs` y workflow `.github/workflows/g2-personajes-bloque02-candidates.yml`.
 
 El importador publica **únicamente los binarios de referencia en `art-reference/`**, no la ruta `public/campania/`; Galería y DRStudio permitirán compararlos en modo de solo lectura. No se genera ni aprueba automáticamente el resto de 30 expresiones. La aprobación y activación se tratarán en otro cambio.
+
+## 9. Actualización definitiva de transferencia binaria — sin intervención del creador
+
+Los seis candidatos de control se cargaron directamente desde los archivos privados de Drive al repositorio GitHub como **seis blobs SHA-256 verificables**, en la rama `feat/g2-bloque02-importar-seis-expresiones-control`, dentro de `art-reference/personajes-oficiales/candidatos/`. No se utilizó ni se requiere volver a cargar `incoming/DR-G2-LOTE-02-SEIS-EXPRESIONES-CANDIDATAS.zip`. El ZIP y la lámina comparativa siguen en Drive como respaldos externos.
+
+`G2-EXPRESIONES-BLOQUE-02.json` registra seis variantes `candidate_generated_not_approved` (una por general), 30 variantes aún `planned_not_generated`; el índice `public/artes/catalogo.json` clasifica seis imágenes como `candidato-sin-aprobar`. El archivo `candidatos/manifest.json` mantiene los vínculos con las seis imágenes maestras por SHA-256. Ninguno de estos cambios publica los candidatos en las escenas activas ni sustituye los sprites G1.
+
+**Estado de implementación:** el código está en PR #123, que requiere fusión y despliegue antes de que el catálogo sea visible en la web. Tras fusionar PR #122 (maestros) y PR #123 (candidatos), verificar en navegador móvil los seis originales y seis variantes candidatas; solo después considerar la aprobación artística individual.
