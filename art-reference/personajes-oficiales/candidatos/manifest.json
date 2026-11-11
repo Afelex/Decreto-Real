@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "batch": "DR-G2-PER-LOTE-02-CONTROL",
+  "assetCount": 6,
+  "approved": false,
+  "publishedToGame": false,
+  "source": "Direct original Git blob upload from owner Google Drive, SHA-256 verified against ZIP manifest.",
+  "items": [
+    {
+      "id": "leandro-valcazar",
+      "expression": "orden de carga",
+      "variantId": "G2-PER-LEANDRO-VALCAZAR-02",
+      "path": "art-reference/personajes-oficiales/candidatos/leandro-valcazar/orden-de-carga.png",
+      "sha256": "f2e1d54a2803a03a46525c951c4465b97f1783d762456236d7f32b75354a8477",
+      "masterSha256": "0bcfe3a9c18aa1062f77fb0f9040d788686482077939de82d7b6f9d3694de25f",
+      "width": 1024,
+      "height": 1536,
+      "alphaCoverage": 0.1554,
+      "status": "candidate_not_approved"
+    },
+    {
+      "id": "octavio-argento",
+      "expression": "propuesta de pacto",
+      "variantId": "G2-PER-OCTAVIO-ARGENTO-02",
+      "path": "art-reference/personajes-oficiales/candidatos/octavio-argento/propuesta-de-pacto.png",
+      "sha256": "dfce1c9ac857971277608f6d7f8094752142a6dff390e79fda4b528489ac0d9b",
+      "masterSha256": "531bb124d8779caa67323336c9e03b3ee561a6118a150bfd3cf463f9e831bb1d",
+      "width": 1024,
+      "height": 1536,
+      "alphaCoverage": 0.1951,
+      "status": "candidate_not_approved"
+    },
+    {
+      "id": "jeronimo-arrellano",
+      "expression": "orden de fuego",
+      "variantId": "G2-PER-JERONIMO-ARRELLANO-02",
+      "path": "art-reference/personajes-oficiales/candidatos/jeronimo-arrellano/orden-de-fuego.png",
+      "sha256": "832941fd569bebf17aefe29be1a0b018ae983878ba31a5b1169fb42be1870775",
+      "masterSha256": "d9f6a440f102e5354e7dbcac4a0bf21bb6019c91898224ceb5e483da4d14c821",
+      "width": 1024,
+      "height": 1536,
+      "alphaCoverage": 0.1662,
+      "status": "candidate_not_approved"
+    },
+    {
+      "id": "isabela-valdierra",
+      "expression": "sentenciando",
+      "variantId": "G2-PER-ISABELA-VALDIERRA-02",
+      "path": "art-reference/personajes-oficiales/candidatos/isabela-valdierra/sentenciando.png",
+      "sha256": "1a7b67be0575c38b68c7f6c7036209965fdf582018652547c24f65f1bd7cb14e",
+      "masterSha256": "9e6f72964d6db122d038dda3446ade3792c2d3fbcbd5910af74f8e2c60652d0a",
+      "width": 1024,
+      "height": 1536,
+      "alphaCoverage": 0.1982,
+      "status": "candidate_not_approved"
+    },
+    {
+      "id": "aukan-del-condor",
+      "expression": "orden de avance",
+      "variantId": "G2-PER-AUKAN-DEL-CONDOR-02",
+      "path": "art-reference/personajes-oficiales/candidatos/aukan-del-condor/orden-de-avance.png",
+      "sha256": "c61c8af7c8429a4a22178a9c5347fa05f678d2967a6f2eb1637687f008b81ae5",
+      "masterSha256": "b1d93fabf62a18f7451697cc170d8f210ed8995538968b40a971cf730a814c7e",
+      "width": 1024,
+      "height": 1536,
+      "alphaCoverage": 0.1672,
+      "status": "candidate_not_approved"
+    },
+    {
+      "id": "gonzalo-de-montes",
+      "expression": "dando orden",
+      "variantId": "G2-PER-GONZALO-DE-MONTES-02",
+      "path": "art-reference/personajes-oficiales/candidatos/gonzalo-de-montes/dando-orden.png",
+      "sha256": "f2489c98488701a592f729437fe44f177be3886db0640d1d355c457140f93704",
+      "masterSha256": "ad52f79a641eb0cd699f984ac118c90f47ae47c5ed8b7e78804da80a0982fced",
+      "width": 1024,
+      "height": 1536,
+      "alphaCoverage": 0.2088,
+      "status": "candidate_not_approved"
+    }
+  ]
+}

@@ -4,6 +4,102 @@
   "description": "G2 es la nueva generación; G1 continúa disponible hasta su sustitución.",
   "items": [
     {
+      "path": "art-reference/personajes-oficiales/candidatos/aukan-del-condor/orden-de-avance.png",
+      "group": "Personajes · Candidatos G2",
+      "name": "Aukan del Cóndor · orden de avance",
+      "bytes": 3017855,
+      "generation": "DR-G2-2026",
+      "state": "candidato-sin-aprobar"
+    },
+    {
+      "path": "art-reference/personajes-oficiales/candidatos/gonzalo-de-montes/dando-orden.png",
+      "group": "Personajes · Candidatos G2",
+      "name": "Gonzalo de Montes · dando orden",
+      "bytes": 2742458,
+      "generation": "DR-G2-2026",
+      "state": "candidato-sin-aprobar"
+    },
+    {
+      "path": "art-reference/personajes-oficiales/candidatos/isabela-valdierra/sentenciando.png",
+      "group": "Personajes · Candidatos G2",
+      "name": "Isabela Valdierra · sentenciando",
+      "bytes": 3024473,
+      "generation": "DR-G2-2026",
+      "state": "candidato-sin-aprobar"
+    },
+    {
+      "path": "art-reference/personajes-oficiales/candidatos/jeronimo-arrellano/orden-de-fuego.png",
+      "group": "Personajes · Candidatos G2",
+      "name": "Jerónimo Arrellano · orden de fuego",
+      "bytes": 2846415,
+      "generation": "DR-G2-2026",
+      "state": "candidato-sin-aprobar"
+    },
+    {
+      "path": "art-reference/personajes-oficiales/candidatos/leandro-valcazar/orden-de-carga.png",
+      "group": "Personajes · Candidatos G2",
+      "name": "Leandro Valcázar · orden de carga",
+      "bytes": 2710280,
+      "generation": "DR-G2-2026",
+      "state": "candidato-sin-aprobar"
+    },
+    {
+      "path": "art-reference/personajes-oficiales/candidatos/octavio-argento/propuesta-de-pacto.png",
+      "group": "Personajes · Candidatos G2",
+      "name": "Octavio Argento · propuesta de pacto",
+      "bytes": 2712845,
+      "generation": "DR-G2-2026",
+      "state": "candidato-sin-aprobar"
+    },
+    {
+      "path": "art-reference/personajes-oficiales/imagenes/aukan-del-condor.jpg",
+      "group": "Personajes · Referencias G2",
+      "name": "Aukan del Cóndor",
+      "bytes": 462757,
+      "generation": "DR-G2-2026",
+      "state": "referencia-maestra"
+    },
+    {
+      "path": "art-reference/personajes-oficiales/imagenes/gonzalo-de-montes.jpg",
+      "group": "Personajes · Referencias G2",
+      "name": "Gonzalo de Montes",
+      "bytes": 436040,
+      "generation": "DR-G2-2026",
+      "state": "referencia-maestra"
+    },
+    {
+      "path": "art-reference/personajes-oficiales/imagenes/isabela-valdierra.png",
+      "group": "Personajes · Referencias G2",
+      "name": "Isabela Valdierra",
+      "bytes": 2734491,
+      "generation": "DR-G2-2026",
+      "state": "referencia-maestra"
+    },
+    {
+      "path": "art-reference/personajes-oficiales/imagenes/jeronimo-arrellano.png",
+      "group": "Personajes · Referencias G2",
+      "name": "Jerónimo Arrellano",
+      "bytes": 2543659,
+      "generation": "DR-G2-2026",
+      "state": "referencia-maestra"
+    },
+    {
+      "path": "art-reference/personajes-oficiales/imagenes/leandro-valcazar.jpg",
+      "group": "Personajes · Referencias G2",
+      "name": "Leandro Valcázar",
+      "bytes": 431399,
+      "generation": "DR-G2-2026",
+      "state": "referencia-maestra"
+    },
+    {
+      "path": "art-reference/personajes-oficiales/imagenes/octavio-argento.png",
+      "group": "Personajes · Referencias G2",
+      "name": "Octavio Argento",
+      "bytes": 2522755,
+      "generation": "DR-G2-2026",
+      "state": "referencia-maestra"
+    },
+    {
       "path": "art-reference/xervias-estilo.webp",
       "group": "Otros",
       "name": "Xervias Estilo",

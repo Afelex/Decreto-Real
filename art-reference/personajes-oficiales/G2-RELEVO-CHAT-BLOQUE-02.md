@@ -77,3 +77,25 @@ Se ha añadido `tools/importar-personajes-g2-bloque02.mjs` con pruebas de seguri
 - Destino de los originales: `art-reference/personajes-oficiales/imagenes/`, con extensión real `.jpg` para JPEG, `.png` para PNG y bytes **sin modificar**.
 - Estado tras el importador: `imagenEnRepositorio=true` solo al terminar la verificación y el commit; ningún cambio en retratos G1 ni en la campaña activa.
 - Expresiones G2 y visibilidad en DRStudio siguen pendientes de producción, revisión y publicación por separado.
+
+## Actualización posterior: importación completada y visibilidad de maestros
+
+El creador subió el ZIP a `incoming/` y el workflow incorporó los seis originales exactos en el commit `e1d85098c3ce4e501e6cde53a6b243198db5adc5`, después de validar su contenido. El ZIP temporal fue retirado. Los seis registros correspondientes tienen ahora `imagenEnRepositorio=true`. No se tocaron recursos G1 ni retratos activos.
+
+El siguiente cambio de catálogo habilita las **seis referencias como consultas de solo lectura** en Galería y Biblioteca de DRStudio. **No convierte los maestros en sprites jugables**: tres imágenes JPEG son opacas, y faltan expresiones. El plan completo de 36 variantes se registra en `G2-EXPRESIONES-BLOQUE-02.json`, todas con estado `planned_not_generated` y ruta de salida separada. Antes de publicarlas debe hacerse comparación facial y de accesorios con el original y comprobar PNG RGBA con alfa real.
+
+## 8. Primer lote de seis expresiones — solo candidatos
+
+Se han generado seis PNG de prueba (una expresión de acción por cada general). Los originales maestros siguen intactos. Los candidatos fueron contrastados visualmente en una lámina 6×2 y se validó que todos son PNG RGBA de 1024×1536 px, con al menos 10% de superficie casi transparente; **no implica aprobación estética ni publicación jugable**.
+
+Se ha preparado `DR-G2-LOTE-02-SEIS-EXPRESIONES-CANDIDATAS.zip` (SHA-256 `8396309193aba69cd42bf0c0dbf7a86007dd3f4534d9b1e0563db9d84760da99`) y está en Drive, carpeta `Decreto Real/personajes/G2-Bloque-02-Candidatos`. Importador: `tools/importar-g2-expresiones-control.mjs` y workflow `.github/workflows/g2-personajes-bloque02-candidates.yml`.
+
+El importador publica **únicamente los binarios de referencia en `art-reference/`**, no la ruta `public/campania/`; Galería y DRStudio permitirán compararlos en modo de solo lectura. No se genera ni aprueba automáticamente el resto de 30 expresiones. La aprobación y activación se tratarán en otro cambio.
+
+## 9. Actualización definitiva de transferencia binaria — sin intervención del creador
+
+Los seis candidatos de control se cargaron directamente desde los archivos privados de Drive al repositorio GitHub como **seis blobs SHA-256 verificables**, en la rama `feat/g2-bloque02-importar-seis-expresiones-control`, dentro de `art-reference/personajes-oficiales/candidatos/`. No se utilizó ni se requiere volver a cargar `incoming/DR-G2-LOTE-02-SEIS-EXPRESIONES-CANDIDATAS.zip`. El ZIP y la lámina comparativa siguen en Drive como respaldos externos.
+
+`G2-EXPRESIONES-BLOQUE-02.json` registra seis variantes `candidate_generated_not_approved` (una por general), 30 variantes aún `planned_not_generated`; el índice `public/artes/catalogo.json` clasifica seis imágenes como `candidato-sin-aprobar`. El archivo `candidatos/manifest.json` mantiene los vínculos con las seis imágenes maestras por SHA-256. Ninguno de estos cambios publica los candidatos en las escenas activas ni sustituye los sprites G1.
+
+**Estado de implementación:** el código está en PR #123, que requiere fusión y despliegue antes de que el catálogo sea visible en la web. Tras fusionar PR #122 (maestros) y PR #123 (candidatos), verificar en navegador móvil los seis originales y seis variantes candidatas; solo después considerar la aprobación artística individual.
