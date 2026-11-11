@@ -18,12 +18,12 @@ SHA-256 esperado del ZIP: `6a448921391caaa7a2e1c27ae8fe4c0d8fe0579f85e800ce0835f
 
 **No publica expresiones nuevas ni modifica los recursos G1, el juego o DRStudio**. Los derivados G2 se generarán, verificarán e integrarán en una fase posterior.
 
-## Seis expresiones candidatas G2 · lote 02
+## Seis expresiones candidatas G2 · lote 02 — CARGADAS DIRECTAMENTE
 
-**Esta ruta estará disponible tras integrar la PR de importación de expresiones.** El paquete está preservado en la carpeta de Drive `Decreto Real/personajes/G2-Bloque-02-Candidatos`.
+**No hace falta subir ningún ZIP.** Las seis imágenes ya se incorporaron directamente a la rama de la PR #123, mediante objetos Git de contenido binario intacto. Cada hash SHA-256 coincide con el paquete conservado en Google Drive, `Decreto Real/personajes/G2-Bloque-02-Candidatos`.
 
-- Archivo a subir sin descomprimir: `DR-G2-LOTE-02-SEIS-EXPRESIONES-CANDIDATAS.zip`.
-- SHA-256 del ZIP aprobado para control: `8396309193aba69cd42bf0c0dbf7a86007dd3f4534d9b1e0563db9d84760da99`.
-- Contiene seis PNG RGBA de 1024×1536 px, una variante de control por general, y un manifiesto de sus hashes vinculados a los seis maestros originales.
-- Subir a `incoming/` de `main` en GitHub con «Add file → Upload files» y «Commit changes». El workflow `.github/workflows/g2-personajes-bloque02-candidates.yml` valida el ZIP y extrae las imágenes a `art-reference/personajes-oficiales/candidatos/`.
-- La Galería y DRStudio distinguirán **candidatos sin aprobar** de **maestros**. No aparecerán en escenas activas ni sustituirán G1. Solo se aprobarán y publicarán como sprites tras revisión y pruebas por separado.
+- Destino: `art-reference/personajes-oficiales/candidatos/<personaje>/<expresion>.png`.
+- Formato: seis PNG RGBA 1024 × 1536 px, con transparencia real.
+- Estado: `candidato-sin-aprobar`. Los originales G2 y sprites G1 permanecen intactos.
+- La Galería y DRStudio muestran por separado candidatos y maestros; ningún retrato nuevo sustituye automáticamente un sprite activo.
+- El importador de ZIP y workflow `g2-personajes-bloque02-candidates.yml` se conservan únicamente como respaldo de recuperación. **No ejecutar ni subir el ZIP otra vez** salvo necesidad de restauración.
