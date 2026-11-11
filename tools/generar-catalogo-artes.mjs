@@ -42,9 +42,13 @@ function collect(folder,output=[]){
   return output;
 }
 export function buildCatalog(){
+  const canonical=JSON.parse(readFileSync(join(project,'art-reference/personajes-oficiales/catalogo.json'),'utf8'));
+  const officialNames=new Map(canonical.personajes.filter(p=>p.imagenEnRepositorio)
+    .map(p=>[p.archivoPendiente,p.nombre]));
   const items=[...collect(join(project,'art-reference')),...collect(join(project,'public'))]
     .filter(i=>!i.path.startsWith('public/archivo-historico/'))
-    .map(i=>({...i,generation:artGeneration(i.path),state:artState(i.path)}))
+    .map(i=>({...i,name:officialNames.get(i.path)??i.name,
+      generation:artGeneration(i.path),state:artState(i.path)}))
     .sort((a,b)=>a.path.localeCompare(b.path,'en'));
   if(!items.length)throw new Error('No se encontró arte en el proyecto.');
   return {version:2,activeGeneration:ACTIVE_GENERATION,description:'G2 es la nueva generación; G1 continúa disponible hasta su sustitución.',items};
