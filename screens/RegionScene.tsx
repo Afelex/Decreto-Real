@@ -11,13 +11,16 @@ export const RegionScene: React.FC<{ chapterId?: string; formidable?: boolean; m
   const visual = regionVisual(chapterId);
   const id = chapterId ?? 'p';
   const illustration = backgroundOverride || (missionId ? campaignMissionBackground(missionId) : undefined);
+  // La franja de presentación es mucho más ancha que un fondo 2:3.
+  // Solo el arte G2 publicado usa un foco elevado; G1 conserva su encuadre.
+  const hasPublishedG2 = Boolean(illustration?.includes('artes/generaciones/DR-G2-2026/'));
   const style = {
     '--rv-sky': visual.sky,
     '--rv-earth': visual.earth,
     '--rv-horizon': visual.horizon,
   } as React.CSSProperties;
 
-  return <div className={`dc-story-art dc-region-scene${formidable ? ' dc-region-formidable' : ''}${illustration ? ' dc-region-has-illustration' : ''}`}
+  return <div className={`dc-story-art dc-region-scene${formidable ? ' dc-region-formidable' : ''}${illustration ? ' dc-region-has-illustration' : ''}${hasPublishedG2 ? ' dc-region-g2' : ''}`}
       data-region={id} style={style} aria-hidden="true">
     {illustration && <img src={illustration} className="dc-region-illustration" alt="" draggable={false} />}
     <span className="dc-region-sun" />
