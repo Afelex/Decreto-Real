@@ -13,7 +13,8 @@
     "test": "node --experimental-strip-types --test multiplayer/server/engine.test.mjs game/*.test.ts campaign/*.test.ts campaign/studio/*.test.ts tools/studio-publish.test.mjs tools/studio-publish-review.test.mjs tools/art-github.test.mjs tools/art-bundle.test.mjs tools/generate-prologue-art.test.mjs tools/generate-prologue-v2.test.mjs tools/generate-prologue-v3.test.mjs tools/generar-catalogo-artes.test.mjs",
     "test:ui": "vitest run",
     "test:e2e": "playwright test",
-    "prebuild": "node tools/generar-catalogo-artes.mjs"
+    "prebuild": "node tools/generar-catalogo-artes.mjs",
+    "g2:import": "node tools/importar-g2.mjs"
   },
   "dependencies": {
     "react": "^19.2.3",

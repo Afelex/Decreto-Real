@@ -1,864 +1,1359 @@
 {
-  "version": 1,
-  "description": "Catálogo de recursos gráficos versionados. Los medios nuevos de Studio aparecen desde IndexedDB.",
+  "version": 2,
+  "activeGeneration": "DR-G2-2026",
+  "description": "G2 es la nueva generación; G1 continúa disponible hasta su sustitución.",
   "items": [
     {
       "path": "art-reference/xervias-estilo.webp",
       "group": "Otros",
       "name": "Xervias Estilo",
-      "bytes": 3220
+      "bytes": 3220,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/animaciones/banner-jugador-rojo.webm",
       "group": "Animaciones",
       "name": "Banner Jugador Rojo",
-      "bytes": 1006814
+      "bytes": 1006814,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/animaciones/banner-rival-azul.webm",
       "group": "Animaciones",
       "name": "Banner Rival Azul",
-      "bytes": 1165357
+      "bytes": 1165357,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/animaciones/decreto-orden.webm",
       "group": "Animaciones",
       "name": "Decreto Orden",
-      "bytes": 22779
+      "bytes": 22779,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
+    },
+    {
+      "path": "public/artes/generaciones/DR-G2-2026/fondos-especiales/G2-M35-A.webp",
+      "group": "Nueva generación",
+      "name": "G2 M35 A",
+      "bytes": 348762,
+      "generation": "DR-G2-2026",
+      "state": "nueva-generacion"
+    },
+    {
+      "path": "public/artes/generaciones/DR-G2-2026/fondos-especiales/G2-M35-B.webp",
+      "group": "Nueva generación",
+      "name": "G2 M35 B",
+      "bytes": 312640,
+      "generation": "DR-G2-2026",
+      "state": "nueva-generacion"
+    },
+    {
+      "path": "public/artes/generaciones/DR-G2-2026/fondos-especiales/G2-M35-C.webp",
+      "group": "Nueva generación",
+      "name": "G2 M35 C",
+      "bytes": 331532,
+      "generation": "DR-G2-2026",
+      "state": "nueva-generacion"
+    },
+    {
+      "path": "public/artes/generaciones/DR-G2-2026/fondos-especiales/G2-M36-A.webp",
+      "group": "Nueva generación",
+      "name": "G2 M36 A",
+      "bytes": 361486,
+      "generation": "DR-G2-2026",
+      "state": "nueva-generacion"
+    },
+    {
+      "path": "public/artes/generaciones/DR-G2-2026/fondos-especiales/G2-M36-B.webp",
+      "group": "Nueva generación",
+      "name": "G2 M36 B",
+      "bytes": 400698,
+      "generation": "DR-G2-2026",
+      "state": "nueva-generacion"
+    },
+    {
+      "path": "public/artes/generaciones/DR-G2-2026/fondos/prologo-camino-real-de-los-reinos-del-peru.webp",
+      "group": "Fondos de campaña",
+      "name": "Prologo Camino Real De Los Reinos Del Peru",
+      "bytes": 325698,
+      "generation": "DR-G2-2026",
+      "state": "nueva-generacion"
+    },
+    {
+      "path": "public/artes/generaciones/DR-G2-2026/fondos/prologo-plaza-del-pregon.webp",
+      "group": "Fondos de campaña",
+      "name": "Prologo Plaza Del Pregon",
+      "bytes": 360742,
+      "generation": "DR-G2-2026",
+      "state": "nueva-generacion"
+    },
+    {
+      "path": "public/artes/generaciones/DR-G2-2026/fondos/region-1-base.webp",
+      "group": "Fondos de campaña",
+      "name": "Region 1 Base",
+      "bytes": 390296,
+      "generation": "DR-G2-2026",
+      "state": "nueva-generacion"
+    },
+    {
+      "path": "public/artes/generaciones/DR-G2-2026/fondos/region-1-jefe.webp",
+      "group": "Fondos de campaña",
+      "name": "Region 1 Jefe",
+      "bytes": 303602,
+      "generation": "DR-G2-2026",
+      "state": "nueva-generacion"
+    },
+    {
+      "path": "public/artes/generaciones/DR-G2-2026/fondos/region-2-base.webp",
+      "group": "Fondos de campaña",
+      "name": "Region 2 Base",
+      "bytes": 345432,
+      "generation": "DR-G2-2026",
+      "state": "nueva-generacion"
+    },
+    {
+      "path": "public/artes/generaciones/DR-G2-2026/fondos/region-2-jefe.webp",
+      "group": "Fondos de campaña",
+      "name": "Region 2 Jefe",
+      "bytes": 349490,
+      "generation": "DR-G2-2026",
+      "state": "nueva-generacion"
+    },
+    {
+      "path": "public/artes/generaciones/DR-G2-2026/fondos/region-3-base.webp",
+      "group": "Fondos de campaña",
+      "name": "Region 3 Base",
+      "bytes": 423374,
+      "generation": "DR-G2-2026",
+      "state": "nueva-generacion"
+    },
+    {
+      "path": "public/artes/generaciones/DR-G2-2026/fondos/region-3-jefe.webp",
+      "group": "Fondos de campaña",
+      "name": "Region 3 Jefe",
+      "bytes": 419020,
+      "generation": "DR-G2-2026",
+      "state": "nueva-generacion"
+    },
+    {
+      "path": "public/artes/generaciones/DR-G2-2026/fondos/region-4-base.webp",
+      "group": "Fondos de campaña",
+      "name": "Region 4 Base",
+      "bytes": 385202,
+      "generation": "DR-G2-2026",
+      "state": "nueva-generacion"
+    },
+    {
+      "path": "public/artes/generaciones/DR-G2-2026/fondos/region-4-jefe.webp",
+      "group": "Fondos de campaña",
+      "name": "Region 4 Jefe",
+      "bytes": 492248,
+      "generation": "DR-G2-2026",
+      "state": "nueva-generacion"
+    },
+    {
+      "path": "public/artes/generaciones/DR-G2-2026/fondos/region-5-base.webp",
+      "group": "Fondos de campaña",
+      "name": "Region 5 Base",
+      "bytes": 543614,
+      "generation": "DR-G2-2026",
+      "state": "nueva-generacion"
+    },
+    {
+      "path": "public/artes/generaciones/DR-G2-2026/fondos/region-5-jefe.webp",
+      "group": "Fondos de campaña",
+      "name": "Region 5 Jefe",
+      "bytes": 513734,
+      "generation": "DR-G2-2026",
+      "state": "nueva-generacion"
+    },
+    {
+      "path": "public/artes/generaciones/DR-G2-2026/fondos/region-6-base.webp",
+      "group": "Fondos de campaña",
+      "name": "Region 6 Base",
+      "bytes": 479224,
+      "generation": "DR-G2-2026",
+      "state": "nueva-generacion"
+    },
+    {
+      "path": "public/artes/generaciones/DR-G2-2026/fondos/region-6-jefe.webp",
+      "group": "Fondos de campaña",
+      "name": "Region 6 Jefe",
+      "bytes": 473030,
+      "generation": "DR-G2-2026",
+      "state": "nueva-generacion"
+    },
+    {
+      "path": "public/artes/generaciones/DR-G2-2026/fondos/region-7-base.webp",
+      "group": "Fondos de campaña",
+      "name": "Region 7 Base",
+      "bytes": 496840,
+      "generation": "DR-G2-2026",
+      "state": "nueva-generacion"
+    },
+    {
+      "path": "public/artes/generaciones/DR-G2-2026/fondos/region-7-jefe.webp",
+      "group": "Fondos de campaña",
+      "name": "Region 7 Jefe",
+      "bytes": 461862,
+      "generation": "DR-G2-2026",
+      "state": "nueva-generacion"
+    },
+    {
+      "path": "public/artes/generaciones/DR-G2-2026/fondos/region-8-base.webp",
+      "group": "Fondos de campaña",
+      "name": "Region 8 Base",
+      "bytes": 445200,
+      "generation": "DR-G2-2026",
+      "state": "nueva-generacion"
+    },
+    {
+      "path": "public/artes/generaciones/DR-G2-2026/fondos/region-8-jefe.webp",
+      "group": "Fondos de campaña",
+      "name": "Region 8 Jefe",
+      "bytes": 327552,
+      "generation": "DR-G2-2026",
+      "state": "nueva-generacion"
+    },
+    {
+      "path": "public/artes/generaciones/DR-G2-2026/fondos/region-f-base.webp",
+      "group": "Fondos de campaña",
+      "name": "Region F Base",
+      "bytes": 330248,
+      "generation": "DR-G2-2026",
+      "state": "nueva-generacion"
+    },
+    {
+      "path": "public/artes/generaciones/DR-G2-2026/fondos/region-f-jefe.webp",
+      "group": "Fondos de campaña",
+      "name": "Region F Jefe",
+      "bytes": 255988,
+      "generation": "DR-G2-2026",
+      "state": "nueva-generacion"
     },
     {
       "path": "public/campania/arte/fondos/region-1-base.webp",
       "group": "Fondos de campaña",
       "name": "Region 1 Base",
-      "bytes": 215790
+      "bytes": 215790,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/fondos/region-1-jefe.webp",
       "group": "Fondos de campaña",
       "name": "Region 1 Jefe",
-      "bytes": 206810
+      "bytes": 206810,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/fondos/region-2-base.webp",
       "group": "Fondos de campaña",
       "name": "Region 2 Base",
-      "bytes": 204266
+      "bytes": 204266,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/fondos/region-2-jefe.webp",
       "group": "Fondos de campaña",
       "name": "Region 2 Jefe",
-      "bytes": 225634
+      "bytes": 225634,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/fondos/region-3-base.webp",
       "group": "Fondos de campaña",
       "name": "Region 3 Base",
-      "bytes": 282296
+      "bytes": 282296,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/fondos/region-3-jefe.webp",
       "group": "Fondos de campaña",
       "name": "Region 3 Jefe",
-      "bytes": 277386
+      "bytes": 277386,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/fondos/region-4-base.webp",
       "group": "Fondos de campaña",
       "name": "Region 4 Base",
-      "bytes": 169558
+      "bytes": 169558,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/fondos/region-4-jefe.webp",
       "group": "Fondos de campaña",
       "name": "Region 4 Jefe",
-      "bytes": 179364
+      "bytes": 179364,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/fondos/region-5-base.webp",
       "group": "Fondos de campaña",
       "name": "Region 5 Base",
-      "bytes": 182422
+      "bytes": 182422,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/fondos/region-5-jefe.webp",
       "group": "Fondos de campaña",
       "name": "Region 5 Jefe",
-      "bytes": 255494
+      "bytes": 255494,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/fondos/region-6-base.webp",
       "group": "Fondos de campaña",
       "name": "Region 6 Base",
-      "bytes": 181450
+      "bytes": 181450,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/fondos/region-6-jefe.webp",
       "group": "Fondos de campaña",
       "name": "Region 6 Jefe",
-      "bytes": 209620
+      "bytes": 209620,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/fondos/region-7-base.webp",
       "group": "Fondos de campaña",
       "name": "Region 7 Base",
-      "bytes": 248288
+      "bytes": 248288,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/fondos/region-7-jefe.webp",
       "group": "Fondos de campaña",
       "name": "Region 7 Jefe",
-      "bytes": 250540
+      "bytes": 250540,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/fondos/region-8-base.webp",
       "group": "Fondos de campaña",
       "name": "Region 8 Base",
-      "bytes": 161650
+      "bytes": 161650,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/fondos/region-8-jefe.webp",
       "group": "Fondos de campaña",
       "name": "Region 8 Jefe",
-      "bytes": 179054
+      "bytes": 179054,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/fondos/region-f-base.webp",
       "group": "Fondos de campaña",
       "name": "Region F Base",
-      "bytes": 170458
+      "bytes": 170458,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/fondos/region-f-jefe.webp",
       "group": "Fondos de campaña",
       "name": "Region F Jefe",
-      "bytes": 160348
+      "bytes": 160348,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/retratos/rival-01-domingo-quispe.webp",
       "group": "Rivales de campaña",
       "name": "Rival 01 Domingo Quispe",
-      "bytes": 170502
+      "bytes": 170502,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/retratos/rival-02-mateo-salcedo.webp",
       "group": "Rivales de campaña",
       "name": "Rival 02 Mateo Salcedo",
-      "bytes": 137134
+      "bytes": 137134,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/retratos/rival-03-elias-renteria.webp",
       "group": "Rivales de campaña",
       "name": "Rival 03 Elias Renteria",
-      "bytes": 155366
+      "bytes": 155366,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/retratos/rival-04-bartolome-de-aviles.webp",
       "group": "Rivales de campaña",
       "name": "Rival 04 Bartolome De Aviles",
-      "bytes": 136956
+      "bytes": 136956,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/retratos/rival-05-tomas-arciniega.webp",
       "group": "Rivales de campaña",
       "name": "Rival 05 Tomas Arciniega",
-      "bytes": 162962
+      "bytes": 162962,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/retratos/rival-07-alonso-tarazona.webp",
       "group": "Rivales de campaña",
       "name": "Rival 07 Alonso Tarazona",
-      "bytes": 164604
+      "bytes": 164604,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/retratos/rival-08-gaspar-montoro.webp",
       "group": "Rivales de campaña",
       "name": "Rival 08 Gaspar Montoro",
-      "bytes": 172330
+      "bytes": 172330,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/retratos/rival-09-nicanor-valcarcel.webp",
       "group": "Rivales de campaña",
       "name": "Rival 09 Nicanor Valcarcel",
-      "bytes": 195394
+      "bytes": 195394,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/retratos/rival-11-melchor-quispe.webp",
       "group": "Rivales de campaña",
       "name": "Rival 11 Melchor Quispe",
-      "bytes": 177448
+      "bytes": 177448,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/retratos/rival-12-esteban-salvatierra.webp",
       "group": "Rivales de campaña",
       "name": "Rival 12 Esteban Salvatierra",
-      "bytes": 161772
+      "bytes": 161772,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/retratos/rival-13-blas-cordova.webp",
       "group": "Rivales de campaña",
       "name": "Rival 13 Blas Cordova",
-      "bytes": 190162
+      "bytes": 190162,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/retratos/rival-15-diego-hernan.webp",
       "group": "Rivales de campaña",
       "name": "Rival 15 Diego Hernan",
-      "bytes": 190526
+      "bytes": 190526,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/retratos/rival-16-mauro-de-la-pena.webp",
       "group": "Rivales de campaña",
       "name": "Rival 16 Mauro De La Pena",
-      "bytes": 163444
+      "bytes": 163444,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/retratos/rival-17-hernando-arce.webp",
       "group": "Rivales de campaña",
       "name": "Rival 17 Hernando Arce",
-      "bytes": 160618
+      "bytes": 160618,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/retratos/rival-19-uriel-huaman.webp",
       "group": "Rivales de campaña",
       "name": "Rival 19 Uriel Huaman",
-      "bytes": 155920
+      "bytes": 155920,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/retratos/rival-20-amaru-llaguno.webp",
       "group": "Rivales de campaña",
       "name": "Rival 20 Amaru Llaguno",
-      "bytes": 134198
+      "bytes": 134198,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/retratos/rival-21-ivo-maldonado.webp",
       "group": "Rivales de campaña",
       "name": "Rival 21 Ivo Maldonado",
-      "bytes": 164646
+      "bytes": 164646,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/retratos/rival-23-cristobal-lujan.webp",
       "group": "Rivales de campaña",
       "name": "Rival 23 Cristobal Lujan",
-      "bytes": 183264
+      "bytes": 183264,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/retratos/rival-24-pedro-elari.webp",
       "group": "Rivales de campaña",
       "name": "Rival 24 Pedro Elari",
-      "bytes": 182432
+      "bytes": 182432,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/retratos/rival-25-rafael-de-trejo.webp",
       "group": "Rivales de campaña",
       "name": "Rival 25 Rafael De Trejo",
-      "bytes": 228410
+      "bytes": 228410,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/retratos/rival-27-julian-chambi.webp",
       "group": "Rivales de campaña",
       "name": "Rival 27 Julian Chambi",
-      "bytes": 161838
+      "bytes": 161838,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/retratos/rival-28-martin-ancajima.webp",
       "group": "Rivales de campaña",
       "name": "Rival 28 Martin Ancajima",
-      "bytes": 181592
+      "bytes": 181592,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/retratos/rival-29-sebastian-vilca.webp",
       "group": "Rivales de campaña",
       "name": "Rival 29 Sebastian Vilca",
-      "bytes": 159064
+      "bytes": 159064,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/retratos/rival-31-rodrigo-esquivel.webp",
       "group": "Rivales de campaña",
       "name": "Rival 31 Rodrigo Esquivel",
-      "bytes": 205222
+      "bytes": 205222,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/retratos/rival-32-lucas-de-orduna.webp",
       "group": "Rivales de campaña",
       "name": "Rival 32 Lucas De Orduna",
-      "bytes": 178836
+      "bytes": 178836,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/retratos/rival-33-alonso-bermudez.webp",
       "group": "Rivales de campaña",
       "name": "Rival 33 Alonso Bermudez",
-      "bytes": 198260
+      "bytes": 198260,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/retratos/rival-35-leocadio-del-alba.webp",
       "group": "Rivales de campaña",
       "name": "Rival 35 Leocadio Del Alba",
-      "bytes": 162292
+      "bytes": 162292,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/retratos/rival-36-vandalo-rojo.webp",
       "group": "Rivales de campaña",
       "name": "Rival 36 Vandalo Rojo",
-      "bytes": 179820
+      "bytes": 179820,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/arte/retratos/rival-37-bruno-serrat.webp",
       "group": "Rivales de campaña",
       "name": "Rival 37 Bruno Serrat",
-      "bytes": 151516
+      "bytes": 151516,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
+    },
+    {
+      "path": "public/campania/epilogo-camino.svg",
+      "group": "Mapas y capítulos",
+      "name": "Epilogo Camino",
+      "bytes": 3772,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/escenas/familia-suplicando.svg",
       "group": "Mapas y capítulos",
       "name": "Familia Suplicando",
-      "bytes": 4476
+      "bytes": 4476,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo-ruta.svg",
       "group": "Prólogo",
       "name": "Prologo Ruta",
-      "bytes": 7408
+      "bytes": 7408,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo-v2/fondos/despacho_vacio.webp",
       "group": "Prólogo",
       "name": "Despacho Vacio",
-      "bytes": 238750
+      "bytes": 238750,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo-v2/fondos/plaza_vacia.webp",
       "group": "Prólogo",
       "name": "Plaza Vacia",
-      "bytes": 383848
+      "bytes": 383848,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo-v2/retratos/domingo_perfil_duelo.webp",
       "group": "Prólogo",
       "name": "Domingo Perfil Duelo",
-      "bytes": 116750
+      "bytes": 116750,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo-v2/sprites/domingo_01_serio.webp",
       "group": "Prólogo",
       "name": "Domingo 01 Serio",
-      "bytes": 149212
+      "bytes": 149212,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo-v2/sprites/domingo_02_molesto.webp",
       "group": "Prólogo",
       "name": "Domingo 02 Molesto",
-      "bytes": 143062
+      "bytes": 143062,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo-v2/sprites/domingo_03_burlon.webp",
       "group": "Prólogo",
       "name": "Domingo 03 Burlon",
-      "bytes": 148924
+      "bytes": 148924,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo-v2/sprites/domingo_04_derrotado.webp",
       "group": "Prólogo",
       "name": "Domingo 04 Derrotado",
-      "bytes": 151602
+      "bytes": 151602,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo-v3/props/carta_dorada_invocacion.png",
       "group": "Prólogo",
       "name": "Carta Dorada Invocacion",
-      "bytes": 2753140
+      "bytes": 2753140,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo-v3/sprites/domingo_07_enojado.png",
       "group": "Prólogo",
       "name": "Domingo 07 Enojado",
-      "bytes": 1844828
+      "bytes": 1844828,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo-v3/sprites/domingo_08_invocacion_combate.png",
       "group": "Prólogo",
       "name": "Domingo 08 Invocacion Combate",
-      "bytes": 2143962
+      "bytes": 2143962,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo-v3/sprites/nino_03_asustado.png",
       "group": "Prólogo",
       "name": "Nino 03 Asustado",
-      "bytes": 1559042
+      "bytes": 1559042,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo-v3/sprites/nino_04_aliviado.png",
       "group": "Prólogo",
       "name": "Nino 04 Aliviado",
-      "bytes": 1547429
+      "bytes": 1547429,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo-v3/sprites/xervias_05_anillo_energia.png",
       "group": "Prólogo",
       "name": "Xervias 05 Anillo Energia",
-      "bytes": 2493157
+      "bytes": 2493157,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo/fondos/fondo_01_mesa.webp",
       "group": "Prólogo",
       "name": "Fondo 01 Mesa",
-      "bytes": 253222
+      "bytes": 253222,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo/fondos/fondo_02_plaza.webp",
       "group": "Prólogo",
       "name": "Fondo 02 Plaza",
-      "bytes": 407330
+      "bytes": 407330,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo/planos/plano_01_pergamino.webp",
       "group": "Prólogo",
       "name": "Plano 01 Pergamino",
-      "bytes": 292548
+      "bytes": 292548,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo/planos/plano_02_anillo.webp",
       "group": "Prólogo",
       "name": "Plano 02 Anillo",
-      "bytes": 261464
+      "bytes": 261464,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo/planos/plano_03_cetro.webp",
       "group": "Prólogo",
       "name": "Plano 03 Cetro",
-      "bytes": 257444
+      "bytes": 257444,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo/props/carta-invocacion-real.svg",
       "group": "Prólogo",
       "name": "Carta Invocacion Real",
-      "bytes": 2598
+      "bytes": 2598,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo/sprites/domingo_01_neutro.webp",
       "group": "Prólogo",
       "name": "Domingo 01 Neutro",
-      "bytes": 191332
+      "bytes": 191332,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo/sprites/domingo_02_arrogante.webp",
       "group": "Prólogo",
       "name": "Domingo 02 Arrogante",
-      "bytes": 184926
+      "bytes": 184926,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo/sprites/domingo_03_furioso.webp",
       "group": "Prólogo",
       "name": "Domingo 03 Furioso",
-      "bytes": 219332
+      "bytes": 219332,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo/sprites/domingo_04_derrotado.webp",
       "group": "Prólogo",
       "name": "Domingo 04 Derrotado",
-      "bytes": 186270
+      "bytes": 186270,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo/sprites/madre_01_protectora.webp",
       "group": "Prólogo",
       "name": "Madre 01 Protectora",
-      "bytes": 199718
+      "bytes": 199718,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo/sprites/madre_02_suplicante.webp",
       "group": "Prólogo",
       "name": "Madre 02 Suplicante",
-      "bytes": 201152
+      "bytes": 201152,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo/sprites/madre_03_asustada.webp",
       "group": "Prólogo",
       "name": "Madre 03 Asustada",
-      "bytes": 195834
+      "bytes": 195834,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo/sprites/madre_04_aliviada.webp",
       "group": "Prólogo",
       "name": "Madre 04 Aliviada",
-      "bytes": 193046
+      "bytes": 193046,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo/sprites/nino_01_asustado.webp",
       "group": "Prólogo",
       "name": "Nino 01 Asustado",
-      "bytes": 165078
+      "bytes": 165078,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo/sprites/nino_02_aliviado.webp",
       "group": "Prólogo",
       "name": "Nino 02 Aliviado",
-      "bytes": 159072
+      "bytes": 159072,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo/sprites/xervias_01_objecion.webp",
       "group": "Prólogo",
       "name": "Xervias 01 Objecion",
-      "bytes": 294290
+      "bytes": 294290,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo/sprites/xervias_02_invoca.webp",
       "group": "Prólogo",
       "name": "Xervias 02 Invoca",
-      "bytes": 368276
+      "bytes": 368276,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo/sprites/xervias_03_tutorial.webp",
       "group": "Prólogo",
       "name": "Xervias 03 Tutorial",
-      "bytes": 300632
+      "bytes": 300632,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo/sprites/xervias_04_reflexion.webp",
       "group": "Prólogo",
       "name": "Xervias 04 Reflexion",
-      "bytes": 262078
+      "bytes": 262078,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo/sprites/zhinchi_01_entrada.webp",
       "group": "Prólogo",
       "name": "Zhinchi 01 Entrada",
-      "bytes": 282670
+      "bytes": 282670,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo/sprites/zhinchi_02_investiga.webp",
       "group": "Prólogo",
       "name": "Zhinchi 02 Investiga",
-      "bytes": 308912
+      "bytes": 308912,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo/sprites/zhinchi_03_cetro.webp",
       "group": "Prólogo",
       "name": "Zhinchi 03 Cetro",
-      "bytes": 335420
+      "bytes": 335420,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/prologo/sprites/zhinchi_04_ordena.webp",
       "group": "Prólogo",
       "name": "Zhinchi 04 Ordena",
-      "bytes": 270052
+      "bytes": 270052,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/regiones/region-1.svg",
       "group": "Mapas y capítulos",
       "name": "Region 1",
-      "bytes": 3761
+      "bytes": 3761,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/regiones/region-2.svg",
       "group": "Mapas y capítulos",
       "name": "Region 2",
-      "bytes": 3739
+      "bytes": 3739,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/regiones/region-3.svg",
       "group": "Mapas y capítulos",
       "name": "Region 3",
-      "bytes": 1876
+      "bytes": 1876,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/regiones/region-4.svg",
       "group": "Mapas y capítulos",
       "name": "Region 4",
-      "bytes": 1904
+      "bytes": 1904,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/regiones/region-5.svg",
       "group": "Mapas y capítulos",
       "name": "Region 5",
-      "bytes": 1946
+      "bytes": 1946,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/regiones/region-6.svg",
       "group": "Mapas y capítulos",
       "name": "Region 6",
-      "bytes": 2023
+      "bytes": 2023,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/regiones/region-7.svg",
       "group": "Mapas y capítulos",
       "name": "Region 7",
-      "bytes": 2045
+      "bytes": 2045,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/regiones/region-8.svg",
       "group": "Mapas y capítulos",
       "name": "Region 8",
-      "bytes": 1922
+      "bytes": 1922,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/regiones/region-f.svg",
       "group": "Mapas y capítulos",
       "name": "Region F",
-      "bytes": 1843
+      "bytes": 1843,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/salon-generales.webp",
       "group": "Mapas y capítulos",
       "name": "Salon Generales",
-      "bytes": 559014
+      "bytes": 559014,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/seleccion-1.webp",
       "group": "Mapas y capítulos",
       "name": "Seleccion 1",
-      "bytes": 9954
+      "bytes": 9954,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/seleccion-2.webp",
       "group": "Mapas y capítulos",
       "name": "Seleccion 2",
-      "bytes": 9730
+      "bytes": 9730,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/seleccion-3.webp",
       "group": "Mapas y capítulos",
       "name": "Seleccion 3",
-      "bytes": 8966
+      "bytes": 8966,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/seleccion-4.webp",
       "group": "Mapas y capítulos",
       "name": "Seleccion 4",
-      "bytes": 9820
+      "bytes": 9820,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/seleccion-5.webp",
       "group": "Mapas y capítulos",
       "name": "Seleccion 5",
-      "bytes": 9450
+      "bytes": 9450,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/seleccion-6.webp",
       "group": "Mapas y capítulos",
       "name": "Seleccion 6",
-      "bytes": 9922
+      "bytes": 9922,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/seleccion-7.webp",
       "group": "Mapas y capítulos",
       "name": "Seleccion 7",
-      "bytes": 9938
+      "bytes": 9938,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/campania/seleccion-8.webp",
       "group": "Mapas y capítulos",
       "name": "Seleccion 8",
-      "bytes": 9192
+      "bytes": 9192,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/cartas/arcilla-atlas.avif",
       "group": "Cartas",
       "name": "Arcilla Atlas",
-      "bytes": 7725
+      "bytes": 7725,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/cartas/decreto-ataque.webp",
       "group": "Cartas",
       "name": "Decreto Ataque",
-      "bytes": 14718
+      "bytes": 14718,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/cartas/decreto-defensa.webp",
       "group": "Cartas",
       "name": "Decreto Defensa",
-      "bytes": 15810
+      "bytes": 15810,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/cartas/decreto-impacto.webp",
       "group": "Cartas",
       "name": "Decreto Impacto",
-      "bytes": 26094
+      "bytes": 26094,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/cartas/decreto-orden.webp",
       "group": "Cartas",
       "name": "Decreto Orden",
-      "bytes": 31440
+      "bytes": 31440,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/efectos/ataque.webm",
       "group": "Animaciones",
       "name": "Ataque",
-      "bytes": 42979
+      "bytes": 42979,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/efectos/combo-ataque-x2.webm",
       "group": "Animaciones",
       "name": "Combo Ataque X2",
-      "bytes": 177259
+      "bytes": 177259,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/efectos/combo-ataque-x3.webm",
       "group": "Animaciones",
       "name": "Combo Ataque X3",
-      "bytes": 108279
+      "bytes": 108279,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/efectos/combo-defensa-x2.webm",
       "group": "Animaciones",
       "name": "Combo Defensa X2",
-      "bytes": 74478
+      "bytes": 74478,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/efectos/combo-defensa-x3.webm",
       "group": "Animaciones",
       "name": "Combo Defensa X3",
-      "bytes": 237892
+      "bytes": 237892,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/efectos/defensa.webm",
       "group": "Animaciones",
       "name": "Defensa",
-      "bytes": 95769
+      "bytes": 95769,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/efectos/orden.webm",
       "group": "Animaciones",
       "name": "Orden",
-      "bytes": 55104
+      "bytes": 55104,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/escenarios/gemini_generated_video_b8059a5c.mp4",
       "group": "Animaciones",
       "name": "Gemini Generated Video B8059a5c",
-      "bytes": 4643374
+      "bytes": 4643374,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/escenarios/plaza-arcilla-estandar.webp",
       "group": "Otros",
       "name": "Plaza Arcilla Estandar",
-      "bytes": 160418
+      "bytes": 160418,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/escenarios/plaza-virreinal-v2.svg",
       "group": "Otros",
       "name": "Plaza Virreinal V2",
-      "bytes": 11351
+      "bytes": 11351,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/escenarios/plaza-virreinal.svg",
       "group": "Otros",
       "name": "Plaza Virreinal",
-      "bytes": 6542
+      "bytes": 6542,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/final/derrota.webp",
       "group": "Interfaz",
       "name": "Derrota",
-      "bytes": 62198
+      "bytes": 62198,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/final/victoria.webp",
       "group": "Interfaz",
       "name": "Victoria",
-      "bytes": 69902
+      "bytes": 69902,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/interfaz/banner-tu-turno.webp",
       "group": "Interfaz",
       "name": "Banner Tu Turno",
-      "bytes": 19640
+      "bytes": 19640,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/interfaz/banner-turno-rival.webp",
       "group": "Interfaz",
       "name": "Banner Turno Rival",
-      "bytes": 24692
+      "bytes": 24692,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/interfaz/cinta-turno-jugador.svg",
       "group": "Interfaz",
       "name": "Cinta Turno Jugador",
-      "bytes": 2856
+      "bytes": 2856,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/interfaz/cinta-turno-rival.svg",
       "group": "Interfaz",
       "name": "Cinta Turno Rival",
-      "bytes": 2813
+      "bytes": 2813,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/interfaz/combo-estandartes-nuevo.webp",
       "group": "Interfaz",
       "name": "Combo Estandartes Nuevo",
-      "bytes": 84934
+      "bytes": 84934,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/interfaz/combo-estandartes-transparente.webp",
       "group": "Interfaz",
       "name": "Combo Estandartes Transparente",
-      "bytes": 299026
+      "bytes": 299026,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/interfaz/combo-estandartes.webp",
       "group": "Interfaz",
       "name": "Combo Estandartes",
-      "bytes": 6218
+      "bytes": 6218,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/interfaz/combo-sin-fondo.webp",
       "group": "Interfaz",
       "name": "Combo Sin Fondo",
-      "bytes": 14766
+      "bytes": 14766,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/interfaz/retratos-fin-turno.avif",
       "group": "Interfaz",
       "name": "Retratos Fin Turno",
-      "bytes": 7911
+      "bytes": 7911,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/moneda/cruz.webp",
       "group": "Otros",
       "name": "Cruz",
-      "bytes": 3714
+      "bytes": 3714,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/moneda/sol.webp",
       "group": "Otros",
       "name": "Sol",
-      "bytes": 4106
+      "bytes": 4106,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/portada/decreto-real-logo.png",
       "group": "Portada",
       "name": "Decreto Real Logo",
-      "bytes": 175615
+      "bytes": 175615,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/portada/portada-loop.mp4",
       "group": "Animaciones",
       "name": "Portada Loop",
-      "bytes": 925995
+      "bytes": 925995,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/portada/portada-poster.jpg",
       "group": "Portada",
       "name": "Portada Poster",
-      "bytes": 118441
+      "bytes": 118441,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/retratos/jugador.webp",
       "group": "Interfaz",
       "name": "Jugador",
-      "bytes": 26390
+      "bytes": 26390,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/retratos/rival.webp",
       "group": "Interfaz",
       "name": "Rival",
-      "bytes": 28792
+      "bytes": 28792,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     },
     {
       "path": "public/virreinato-map.svg",
       "group": "Otros",
       "name": "Virreinato Map",
-      "bytes": 6589
+      "bytes": 6589,
+      "generation": "DR-G1",
+      "state": "anterior-en-uso"
     }
   ]
 }

@@ -1,0 +1,60 @@
+name: G2 - QA gráfica en navegador
+
+on:
+  push:
+    branches:
+      - feat/arte-g2-2026-catalogo-y-archivo
+    paths:
+      - .github/workflows/g2-validation.yml
+      - campaign/g2Artwork.ts
+      - campaign/g2Published.ts
+      - campaign/regionAssets.ts
+      - campaign/studio/g2PackageImport.ts
+      - campaign/studio/g2SceneAssignments.ts
+      - screens/ArtGallery.tsx
+      - screens/CampaignMission.tsx
+      - screens/BossConfrontation.tsx
+      - tests/e2e/g2-graphics.spec.ts
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: decreto-real-g2-qa-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  qa-g2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Descargar rama G2
+        uses: actions/checkout@v4
+      - name: Instalar Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Instalar dependencias
+        run: npm ci
+      - name: Tests de motor
+        run: npm test
+      - name: Tests de interfaz
+        run: npm run test:ui
+      - name: Validación de tipos
+        run: npx tsc --noEmit
+      - name: Compilación
+        run: npm run build
+      - name: Instalar Chromium
+        run: npx playwright install --with-deps chromium
+      - name: QA navegador G2 - catálogo, galería, M01 y finales M35-M36
+        run: npx playwright test tests/e2e/g2-graphics.spec.ts --project=mobile-390 --workers=1 --reporter=line
+      - name: Capturas y trazas si falla
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: g2-qa-browser-results
+          path: test-results/
+          retention-days: 7
+          if-no-files-found: ignore

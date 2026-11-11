@@ -1,13 +1,17 @@
 import React from 'react';
+import { importApprovedG2Package } from '../campaign/studio/g2PackageImport.ts';
 import { addStudioMedia, deleteStudioMedia, listStudioMedia, loadStudioMediaUrls, revokeStudioMediaUrls, type StudioMediaInfo } from '../campaign/studioMedia';
 import './art-gallery.css';
 
-type CatalogEntry={path:string;group:string;name:string;bytes:number};
-type Catalog={version:number;items:CatalogEntry[]};
-type Art={id:string;name:string;group:string;bytes:number;url:string;kind:'repo'|'local';path:string;ext:string};
+type CatalogEntry={path:string;group:string;name:string;bytes:number;generation?:string;state?:string};
+type Catalog={version:number;activeGeneration?:string;items:CatalogEntry[]};
+type Art={id:string;name:string;group:string;bytes:number;url:string;kind:'repo'|'local';path:string;ext:string;generation:string;state:string};
 type Review={decision?:'aprobada'|'corregir';note?:string};
 type Dimension={w:number;h:number};
 type Flags=Record<string,'hidden'|'delete'>;
+const CURRENT_GENERATION='DR-G2-2026';
+const LEGACY_GENERATION='DR-G1';
+const LOCAL_GENERATIONS='decreto-real.artes.generaciones-locales.v1';
 const FLAGS='decreto-real.artes.estados.v1';
 const REVIEWS='decreto-real.artes.revision.v2';
 const REPLACEMENTS='decreto-real.artes.reemplazos.v1';
@@ -31,18 +35,25 @@ export default function ArtGallery(){
   const [urls,setUrls]=React.useState<Record<string,string>>({});
   const urlsRef=React.useRef<Record<string,string>>({});
   const [flags,setFlags]=React.useState<Flags>(()=>read(FLAGS,{}));
+  const [localGenerations,setLocalGenerations]=React.useState<Record<string,string>>(()=>read(LOCAL_GENERATIONS,{}));
   const [reviews,setReviews]=React.useState<Record<string,Review>>(()=>read(REVIEWS,{}));
   const [replacements,setReplacements]=React.useState<Record<string,string>>(()=>read(REPLACEMENTS,{}));
   const [dims,setDims]=React.useState<Record<string,Dimension>>(()=>read(DIMENSIONS,{}));
   const [group,setGroup]=React.useState('Todos');
+  const [generation,setGeneration]=React.useState('Todas');
   const [query,setQuery]=React.useState('');
   const [showHidden,setShowHidden]=React.useState(false);
   const [selected,setSelected]=React.useState<string|null>(null);
   const [message,setMessage]=React.useState('');
   const [busy,setBusy]=React.useState(false);
   const addInput=React.useRef<HTMLInputElement>(null);
+  const g2Input=React.useRef<HTMLInputElement>(null);
   const replaceInput=React.useRef<HTMLInputElement>(null);
   const [replaceTarget,setReplaceTarget]=React.useState<string|null>(null);
+  const markLocalGeneration=(id:string,gen:string)=>setLocalGenerations(prev=>{
+    if(prev[id]===gen)return prev;
+    const next={...prev,[id]:gen};save(LOCAL_GENERATIONS,next);return next;
+  });
   const refresh=React.useCallback(async()=>{
     const items=await listStudioMedia();
     const newUrls=await loadStudioMediaUrls(items.map(i=>i.id));
@@ -52,7 +63,7 @@ export default function ArtGallery(){
     let alive=true;
     fetch(import.meta.env.BASE_URL+'artes/catalogo.json',{cache:'no-store'})
       .then(r=>{if(!r.ok)throw new Error('No se pudo abrir el catálogo publicado.');return r.json() as Promise<Catalog>;})
-      .then(d=>{if(alive&&d.version===1&&Array.isArray(d.items))setCatalog(d.items);})
+      .then(d=>{if(alive&&(d.version===1||d.version===2)&&Array.isArray(d.items))setCatalog(d.items);})
       .catch(e=>{if(alive)setMessage(String(e));});
     void refresh().catch(e=>{if(alive)setMessage('No se pudo leer la biblioteca local: '+String(e));});
     const focus=()=>{void refresh().catch(()=>{});};
@@ -60,11 +71,12 @@ export default function ArtGallery(){
     return ()=>{alive=false;window.removeEventListener('focus',focus);revokeStudioMediaUrls(urlsRef.current);urlsRef.current={};};
   },[refresh]);
   const all=React.useMemo<Art[]>(()=>[
-    ...catalog.map(i=>({id:i.path,name:i.name,group:i.group,bytes:i.bytes,url:source(i.path),kind:'repo' as const,path:i.path,ext:i.path.split('.').at(-1)?.toLowerCase()??''})),
-    ...local.filter(i=>!i.mime.startsWith('audio/')).map(i=>({id:i.id,name:i.name,group:'Subidos desde DRStudio o esta galería',bytes:i.size,url:urls[i.id]??'',kind:'local' as const,path:i.id,ext:i.mime.split('/').at(-1)??''}))
-  ],[catalog,local,urls]);
+    ...catalog.map(i=>({id:i.path,name:i.name,group:i.group,bytes:i.bytes,url:source(i.path),kind:'repo' as const,path:i.path,ext:i.path.split('.').at(-1)?.toLowerCase()??'',generation:i.generation??LEGACY_GENERATION,state:i.state??'anterior-en-uso'})),
+    ...local.filter(i=>!i.mime.startsWith('audio/')).map(i=>({id:i.id,name:i.name,group:i.name.startsWith('DR-G2-2026_')?'G2 · Aprobados en DRStudio':'Subidos desde DRStudio o esta galería',bytes:i.size,url:urls[i.id]??'',kind:'local' as const,path:i.id,ext:i.mime.split('/').at(-1)??'',generation:localGenerations[i.id]??LEGACY_GENERATION,state:'borrador-local'}))
+  ],[catalog,local,urls,localGenerations]);
   const groups=['Todos',...new Set(all.map(i=>i.group))];
   const shown=all.filter(i=>(group==='Todos'||i.group===group)&&
+    (generation==='Todas'||i.generation===generation)&&
     (showHidden||!flags[i.id])&&
     (!query||[i.name,i.group,i.path].join(' ').toLocaleLowerCase('es').includes(query.toLocaleLowerCase('es'))));
   const chosen=all.find(i=>i.id===selected)??null;
@@ -93,6 +105,8 @@ export default function ArtGallery(){
           if(wasVideo!==file.type.startsWith('video/'))throw new Error('El reemplazo debe conservar el tipo general (imagen o video).');
         }
         const stored=await addStudioMedia(file);
+        // Un contenido ya existente conserva su generación; no se reetiqueta por copiarlo.
+        if(!stored.reused)markLocalGeneration(stored.id,CURRENT_GENERATION);
         if(target){
           const next={...replacements,[target]:stored.id};
           setReplacements(next);save(REPLACEMENTS,next);
@@ -105,6 +119,16 @@ export default function ArtGallery(){
     }catch(e){setMessage(e instanceof Error?e.message:String(e));}
     finally{setBusy(false);}
   };
+  const installG2=async(file:File)=>{
+    setBusy(true);setMessage('');
+    try{
+      const report=await importApprovedG2Package(file,window.localStorage);
+      await refresh();
+      setMessage('G2 importada: '+report.count+' fondos disponibles en DRStudio; '+report.scenes+' escenas vinculadas. '+report.preserved+' fondos personalizados conservados. Abre de nuevo una escena de Studio para ver el cambio.');
+      setGroup('Todos');
+    }catch(e){setMessage(e instanceof Error?e.message:'No se pudo importar el lote G2.');}
+    finally{setBusy(false);}
+  };
   const importForStudio=async(item:Art)=>{
     if(item.kind==='local'||replacements[item.id]){setMessage('Este recurso ya está disponible en la Biblioteca de DRStudio.');return;}
     if(!IMPORTABLE.test(item.path)){setMessage('DRStudio no admite '+item.ext.toUpperCase()+' directamente. Convierte el recurso a PNG, JPG, WebP o GIF y súbelo.');return;}
@@ -115,6 +139,7 @@ export default function ArtGallery(){
       const blob=await response.blob();
       const filename=item.path.split('/').at(-1)??'imagen.webp';
       const result=await addStudioMedia(new File([blob],filename,{type:blob.type}));
+      if(!result.reused||!localGenerations[result.id])markLocalGeneration(result.id,item.generation);
       await refresh();
       setMessage('“'+item.name+'” está disponible en DRStudio'+(result.reused?' (ya existía).':'.')+' Abre la Biblioteca 🖼 para usarlo.');
     }catch(e){setMessage(e instanceof Error?e.message:'No se pudo incorporar el recurso.');}
@@ -128,6 +153,7 @@ export default function ArtGallery(){
       if(used)throw new Error('Este recurso aparece en un borrador o respaldo de DRStudio. Retíralo de las escenas y elimínalo desde la biblioteca de DRStudio.');
       if(!window.confirm('¿Eliminar definitivamente “'+item.name+'” de este navegador? Esta operación no tiene deshacer.'))return;
       await deleteStudioMedia([item.id]);
+      setLocalGenerations(prev=>{const next={...prev};delete next[item.id];save(LOCAL_GENERATIONS,next);return next;});
       const next={...replacements};for(const [k,v] of Object.entries(next))if(v===item.id)delete next[k];
       setReplacements(next);save(REPLACEMENTS,next);
       changeFlag(item.id,null);setSelected(null);await refresh();
@@ -135,7 +161,7 @@ export default function ArtGallery(){
     }catch(e){setMessage(e instanceof Error?e.message:String(e));}
   };
   const exportPlan=()=>{
-    const rows=all.map(item=>({archivo:item.path,nombre:item.name,origen:item.kind,formato:item.ext,
+    const rows=all.map(item=>({archivo:item.path,nombre:item.name,origen:item.kind,formato:item.ext,generacion:item.generation,estado_generacion:item.state,
       ancho_px:dims[item.id]?.w??'',alto_px:dims[item.id]?.h??'',peso_bytes:item.bytes,
       estado:flags[item.id]??'visible',revision:reviews[item.id]?.decision??'pendiente',
       comentario:reviews[item.id]?.note??'',reemplazo_local:replacements[item.id]??''}));
@@ -147,18 +173,21 @@ export default function ArtGallery(){
         <p>Revisa originales, registra cambios y reutiliza imágenes en DRStudio.</p></div>
       <div className="dr-art-actions">
         <button type="button" onClick={()=>addInput.current?.click()} disabled={busy}>＋ Subir imágenes o videos</button>
+        <button type="button" data-testid="g2-package-import" onClick={()=>g2Input.current?.click()} disabled={busy}>▧ Importar lote G2 (25 fondos)</button>
         <button type="button" onClick={exportPlan}>↓ Exportar decisiones</button>
         <a href={import.meta.env.BASE_URL+'?drDev=1#/studio'}>Abrir DRStudio ↗</a>
       </div>
     </header>
+    <input ref={g2Input} type="file" accept=".zip,application/zip" hidden aria-label="Paquete G2 de fondos aprobados" onChange={e=>{const file=e.currentTarget.files?.[0];e.currentTarget.value='';if(file)void installG2(file);}}/>
     <input ref={addInput} type="file" accept=".png,.jpg,.jpeg,.webp,.gif,.mp4,.webm" multiple hidden onChange={e=>{const f:File[]=e.currentTarget.files?Array.from(e.currentTarget.files):[];e.currentTarget.value='';void putFiles(f,null);}}/>
     <input ref={replaceInput} type="file" accept=".png,.jpg,.jpeg,.webp,.gif,.mp4,.webm" hidden onChange={e=>{const f:File[]=e.currentTarget.files?Array.from(e.currentTarget.files):[];e.currentTarget.value='';void putFiles(f,replaceTarget);}}/>
-    <div className="dr-art-notice"><strong>{catalog.length} artes del repositorio</strong> · {local.length} archivos subidos · {Object.values(flags).filter(x=>x==='hidden').length} ocultos · {Object.values(flags).filter(x=>x==='delete').length} por eliminar.
-      <p>Las cargas y decisiones se guardan en este navegador; DRStudio comparte los archivos subidos en el mismo dispositivo y origen web. Ocultar o marcar para eliminar no modifica el juego publicado. Para sincronizar otros dispositivos y actualizar el juego se requiere una publicación revisada en GitHub.</p></div>
+    <div className="dr-art-notice"><strong>{catalog.length} artes del repositorio</strong> · {all.filter(i=>i.generation===CURRENT_GENERATION).length} G2 nuevos/locales · {all.filter(i=>i.generation===LEGACY_GENERATION).length} G1 anteriores · {local.length} archivos subidos · {Object.values(flags).filter(x=>x==='hidden').length} ocultos · {Object.values(flags).filter(x=>x==='delete').length} por eliminar.
+      <p>Generación actual: <strong>DR-G2-2026</strong>. Los G1 siguen en uso hasta sustituir todas sus referencias, y después se archivarán fuera de public para no descargarse. Los G2 locales son borradores hasta publicarse en GitHub. Ocultar aquí no modifica el juego publicado.</p></div>
     {message&&<p className="dr-art-feedback" role="status">{message} <button type="button" onClick={()=>setMessage('')}>×</button></p>}
     <div className="dr-art-toolbar">
       <input type="search" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Buscar personaje, nombre o carpeta…" aria-label="Buscar artes"/>
       <select value={group} onChange={e=>setGroup(e.target.value)} aria-label="Filtrar por sección">{groups.map(g=><option value={g} key={g}>{g}</option>)}</select>
+      <select value={generation} onChange={e=>setGeneration(e.target.value)} aria-label="Filtrar por generación"><option value="Todas">Todas las generaciones</option><option value={CURRENT_GENERATION}>G2 · Nueva generación</option><option value={LEGACY_GENERATION}>G1 · Arte anterior</option></select>
       <label><input type="checkbox" checked={showHidden} onChange={e=>setShowHidden(e.target.checked)}/> Mostrar ocultos y descartados</label>
       <span>{shown.length} elementos</span>
     </div>
@@ -171,7 +200,8 @@ export default function ArtGallery(){
             <div className="dr-art-thumb">{video?<video src={display} muted playsInline preload="metadata" onLoadedMetadata={e=>measure(changed?replacements[item.id]:item.id,e.currentTarget.videoWidth,e.currentTarget.videoHeight)}/>:
               <img src={display} loading="lazy" alt="" onLoad={e=>measure(changed?replacements[item.id]:item.id,e.currentTarget.naturalWidth,e.currentTarget.naturalHeight)}/>}
               {flags[item.id]&&<span className="dr-art-chip">{flags[item.id]==='hidden'?'OCULTO':'ELIMINACIÓN PENDIENTE'}</span>}
-              {changed&&<span className="dr-art-chip right">REEMPLAZADO</span>}</div>
+              {changed&&<span className="dr-art-chip right">REEMPLAZADO</span>}
+              <span className="dr-art-chip generation">{item.generation===CURRENT_GENERATION?'G2 · '+(item.kind==='local'?'BORRADOR':'NUEVA'):'G1 · ANTERIOR'}</span></div>
             <div className="dr-art-card-info"><strong>{item.name}</strong><small>{aspect(dims[changed?replacements[item.id]:item.id])}</small><small>{showExt(item)} · {human(item.bytes)}</small></div>
           </button>;
         })}
@@ -188,6 +218,7 @@ export default function ArtGallery(){
           {replacements[chosen.id]&&<><dt>Dimensiones del original</dt><dd>{aspect(dims[chosen.id])}</dd></>}
           <dt>Archivo original</dt><dd className="dr-art-path">{chosen.path}</dd>
           <dt>Categoría</dt><dd>{chosen.group}</dd>
+          <dt>Generación</dt><dd>{chosen.generation} · {chosen.state==='borrador-local'?'Borrador local en este navegador':chosen.state==='nueva-generacion'?'Nueva generación publicada':'Arte anterior (en transición)'}</dd>
           <dt>Formato y tamaño</dt><dd>{showExt(chosen)} · {human(chosen.bytes)}</dd>
           <dt>Uso / reemplazo</dt><dd>Usa el mismo ancho, alto y proporción para evitar recortes en el juego. Los archivos nuevos no reemplazan automáticamente un recurso publicado.</dd>
         </dl>

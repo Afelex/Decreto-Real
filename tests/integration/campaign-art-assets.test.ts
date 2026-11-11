@@ -1,5 +1,6 @@
 import { expect, test } from 'vitest';
 import { STORY_STAGES } from '../../campaign/story.ts';
+import { g2AssetIsPublished, G2_REGION_BASE, G2_REGION_BOSS, G2_FINAL_SCENES } from '../../campaign/g2Artwork.ts';
 import { ENEMY_ROSTER } from '../../campaign/characters.ts';
 import {
   CAMPAIGN_LANDSCAPE_FILES, campaignLandscape, campaignMissionBackground,
@@ -10,7 +11,8 @@ test('each of the nine campaign regions displays its base illustration on the mi
   const chapters = ['1', '2', '3', '4', '5', '6', '7', '8', 'f'] as const;
   for (const id of chapters) {
     expect(CAMPAIGN_LANDSCAPE_FILES[id]).toBe(`arte/fondos/region-${id}-base.webp`);
-    expect(campaignLandscape(id)).toContain(`campania/arte/fondos/region-${id}-base.webp`);
+    const g2=(G2_REGION_BASE as Record<string, keyof typeof import('../../campaign/g2Artwork.ts').G2_ASSET_PATHS>)[id];
+    expect(campaignLandscape(id)).toContain(g2AssetIsPublished(g2) ? 'DR-G2-2026/' : `campania/arte/fondos/region-${id}-base.webp`);
   }
   expect(campaignLandscape('p')).toContain('campania/prologo-ruta.svg');
 });
@@ -21,12 +23,17 @@ test('only the eight generals and Sigumán receive the distinct boss background'
   expect(active).toHaveLength(36);
   for (const stage of active) {
     const expected = bosses.has(stage.id) ? 'jefe' : 'base';
-    expect(campaignMissionBackground(stage.id)).toContain(
-      `region-${stage.chapterId}-${expected}.webp`
-    );
+    const specials=G2_FINAL_SCENES as Record<string,{duel:keyof typeof import('../../campaign/g2Artwork.ts').G2_ASSET_PATHS}>;
+    const id=specials[stage.id]?.duel ??
+      (expected==='jefe' ? G2_REGION_BOSS : G2_REGION_BASE)[stage.chapterId as keyof typeof G2_REGION_BASE];
+    expect(campaignMissionBackground(stage.id)).toContain(g2AssetIsPublished(id) ? 'DR-G2-2026/' : `region-${stage.chapterId}-${expected}.webp`);
   }
-  expect(campaignMissionBackground('01')).toBeUndefined();
-  expect(campaignMissionBackground('02')).toBeUndefined();
+  if (g2AssetIsPublished('G2-FON-002')) {
+    expect(campaignMissionBackground('01')).toContain('/fondos/prologo-plaza-del-pregon.webp');
+  } else expect(campaignMissionBackground('01')).toBeUndefined();
+  if (g2AssetIsPublished('G2-FON-001')) {
+    expect(campaignMissionBackground('02')).toContain('/fondos/prologo-camino-real-de-los-reinos-del-peru.webp');
+  } else expect(campaignMissionBackground('02')).toBeUndefined();
 });
 
 test('every non-general opponent uses exactly the image file generated for their mission', () => {

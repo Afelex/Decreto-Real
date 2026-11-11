@@ -6,11 +6,18 @@
 import { readdirSync, readFileSync, mkdirSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {ACTIVE_GENERATION,artGeneration,artState} from './arte-generaciones.mjs';
 
 const project=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const supported=/\.(png|jpe?g|webp|gif|avif|svg|mp4|webm)$/i;
 
 export function category(path){
+  if(path.startsWith('public/artes/generaciones/')){
+    if(path.includes('/fondos/'))return 'Fondos de campaña';
+    if(path.includes('/retratos/')||path.includes('/personajes/'))return 'Personajes';
+    return 'Nueva generación';
+  }
+  if(path.includes('/artes/generaciones/DR-G2-2026/'))return 'G2 · Fondos de campaña';
   if(path.includes('/studio/media/'))return 'Arte publicado desde DRStudio';
   if(path.includes('/campania/arte/fondos/'))return 'Fondos de campaña';
   if(path.includes('/campania/arte/retratos/'))return 'Rivales de campaña';
@@ -35,9 +42,11 @@ function collect(folder,output=[]){
 }
 export function buildCatalog(){
   const items=[...collect(join(project,'art-reference')),...collect(join(project,'public'))]
+    .filter(i=>!i.path.startsWith('public/archivo-historico/'))
+    .map(i=>({...i,generation:artGeneration(i.path),state:artState(i.path)}))
     .sort((a,b)=>a.path.localeCompare(b.path,'en'));
   if(!items.length)throw new Error('No se encontró arte en el proyecto.');
-  return {version:1,description:'Catálogo regenerado durante la compilación. Los medios nuevos de DRStudio aparecen además desde IndexedDB.',items};
+  return {version:2,activeGeneration:ACTIVE_GENERATION,description:'G2 es la nueva generación; G1 continúa disponible hasta su sustitución.',items};
 }
 export function generateCatalog(){
   const output=join(project,'public','artes','catalogo.json');

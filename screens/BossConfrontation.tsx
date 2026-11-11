@@ -9,7 +9,9 @@ import {
 } from '../game/mysticCards.ts';
 import { GeneralPortrait } from './GeneralPortrait';
 import { generalForChapter } from '../campaign/characters.ts';
-import { campaignLandscape, campaignMissionBackground } from '../campaign/regionAssets.ts';
+import { campaignLandscape, campaignMissionPreludeBackground } from '../campaign/regionAssets.ts';
+import { StudioScreenLayers, StudioScreenPanel, StudioText, useStudioBackground } from './studio/StudioScreenKit';
+import { useStudio } from './studio/StudioContext';
 import './boss-confrontation.css';
 
 type Props = Readonly<{
@@ -67,6 +69,7 @@ export const CONFRONTATION_MISSIONS = Object.freeze(Object.keys(BOSS_LINES));
 /** Presentation only: the original game still handles every duel, mystic effect and victory. */
 const BossConfrontation: React.FC<Props> = ({ mission, alreadyDefeated, legacyAwakened, onBeginBattle, onBack }) => {
   const [lineIndex, setLineIndex] = React.useState(0);
+  const studio = useStudio();
   const chapter = chapterForStage(mission.id);
   const region = regionVisual(mission.chapterId);
   const isFinal = mission.kind === 'final';
@@ -81,6 +84,8 @@ const BossConfrontation: React.FC<Props> = ({ mission, alreadyDefeated, legacyAw
         { name: 'Xervias', text: script.xervias } ] : []);
   const current = lines[lineIndex];
   const last = lineIndex === lines.length - 1;
+  const sceneKey = 'mision-' + mission.id + '/preludio-' + String(lineIndex + 1).padStart(2,'0');
+  const background = useStudioBackground(sceneKey, campaignMissionPreludeBackground(mission.id,lineIndex) ?? campaignLandscape(mission.chapterId));
   const advance = () => last ? onBeginBattle() : setLineIndex(index => index + 1);
 
   if (!current || !chapter) return null;
@@ -95,7 +100,7 @@ const BossConfrontation: React.FC<Props> = ({ mission, alreadyDefeated, legacyAw
       </header>
 
       <section className="dcb-hero" aria-label={mission.title}>
-        <img src={campaignMissionBackground(mission.id) ?? campaignLandscape(mission.chapterId)}
+        <img src={background}
           alt={`Escenario de ${chapter.region}`} draggable={false} className="dcb-scenery" />
         <div className="dcb-atmosphere" aria-hidden="true" />
         <div className="dcb-portrait">
@@ -139,7 +144,7 @@ const BossConfrontation: React.FC<Props> = ({ mission, alreadyDefeated, legacyAw
           <strong>{current.name}</strong>
           <span>{lineIndex + 1} / {lines.length}</span>
         </div>
-        <p>{current.text}</p>
+        <p><StudioText k={sceneKey+'/dialogo'} original={current.text}/></p>
       </section>
 
       <footer className="dcb-actions">
@@ -152,6 +157,9 @@ const BossConfrontation: React.FC<Props> = ({ mission, alreadyDefeated, legacyAw
         </button>}
       </footer>
     </div>
+    <StudioScreenLayers sceneKey={sceneKey}/>
+    {studio.editing && <StudioScreenPanel label={'Preludio · misión '+mission.id+' · '+(lineIndex+1)+'/'+lines.length}
+      sceneKey={sceneKey} texts={[{key:sceneKey+'/dialogo',label:current.name,original:current.text}]}/>}
   </main>;
 };
 

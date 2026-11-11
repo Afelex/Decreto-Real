@@ -1,4 +1,5 @@
 import React from 'react';
+import { g2AssetIsPublished, g2AssetPath, G2_REGION_BASE } from '../../campaign/g2Artwork.ts';
 import { afterEach, beforeEach, expect, test } from 'vitest';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
@@ -179,7 +180,9 @@ test('every independent chapter renders its own landscape artwork and four touch
     </MemoryRouter>);
     const map = document.querySelector('.dcm-region-map');
     expect(map?.getAttribute('data-region-art')).toBe(String(chapterId));
-    expect(map?.querySelector('.dcm-map-art')?.getAttribute('src')).toContain(`arte/fondos/region-${chapterId}-base.webp`);
+    const g2Id = G2_REGION_BASE[String(chapterId) as keyof typeof G2_REGION_BASE];
+    const expectedPath = g2AssetIsPublished(g2Id) ? g2AssetPath(g2Id) : `campania/arte/fondos/region-${chapterId}-base.webp`;
+    expect(map?.querySelector('.dcm-map-art')?.getAttribute('src')).toContain(expectedPath);
     expect(map?.querySelectorAll('.dcm-marker')).toHaveLength(4);
     expect(map?.querySelector('.dcm-map-art')?.getAttribute('alt')?.length).toBeGreaterThan(25);
     view.unmount();
@@ -198,7 +201,9 @@ test('the final chapter has its own Casa del Sello map and is sealed until eight
     <Routes><Route path="/campania/region/:chapterId" element={<CampaignMap />} /></Routes>
   </MemoryRouter>);
   expect(document.querySelector('.dcm-region-map')?.getAttribute('data-region-art')).toBe('f');
-  expect(document.querySelector('.dcm-map-art')?.getAttribute('src')).toContain('arte/fondos/region-f-base.webp');
+  const finalG2 = G2_REGION_BASE.f;
+  const expectedPath = g2AssetIsPublished(finalG2) ? g2AssetPath(finalG2) : 'campania/arte/fondos/region-f-base.webp';
+  expect(document.querySelector('.dcm-map-art')?.getAttribute('src')).toContain(expectedPath);
   expect(document.querySelectorAll('.dcm-marker')).toHaveLength(4);
   unlocked.unmount();
 });

@@ -5,12 +5,12 @@ import { GeneralPortrait, GENERAL_PORTRAIT_IDS } from './GeneralPortrait';
 
 /** Small original vector landscape reused by the campaign briefings.
  * All paths are decorative. Opponent stats still come from the combat engine. */
-export const RegionScene: React.FC<{ chapterId?: string; formidable?: boolean; missionId?: string }> = ({
-  chapterId, formidable = false, missionId,
+export const RegionScene: React.FC<{ chapterId?: string; formidable?: boolean; missionId?: string; backgroundOverride?: string }> = ({
+  chapterId, formidable = false, missionId, backgroundOverride,
 }) => {
   const visual = regionVisual(chapterId);
   const id = chapterId ?? 'p';
-  const illustration = missionId ? campaignMissionBackground(missionId) : undefined;
+  const illustration = backgroundOverride || (missionId ? campaignMissionBackground(missionId) : undefined);
   const style = {
     '--rv-sky': visual.sky,
     '--rv-earth': visual.earth,
