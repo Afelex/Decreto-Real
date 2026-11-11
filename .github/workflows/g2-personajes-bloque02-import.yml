@@ -1,0 +1,60 @@
+name: G2 - Conservar seis generales originales
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - incoming/DR-G2-BLOQUE-02-ORIGINALES-VERIFICADOS.zip
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: decreto-real-g2-originales-bloque02
+  cancel-in-progress: false
+
+jobs:
+  conservar-originales:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Comprobar ZIP exacto antes de extraer nada
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f incoming/DR-G2-BLOQUE-02-ORIGINALES-VERIFICADOS.zip
+          echo '6a448921391caaa7a2e1c27ae8fe4c0d8fe0579f85e800ce0835f1967d383cd2  incoming/DR-G2-BLOQUE-02-ORIGINALES-VERIFICADOS.zip' | sha256sum --check
+          unzip -t incoming/DR-G2-BLOQUE-02-ORIGINALES-VERIFICADOS.zip | tail -2
+      - name: Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Probar validaciones de binarios y entradas ZIP
+        run: node --test tools/importar-personajes-g2-bloque02.test.mjs
+      - name: Importar los seis maestros sin alterar retratos jugables
+        run: node tools/importar-personajes-g2-bloque02.mjs incoming/DR-G2-BLOQUE-02-ORIGINALES-VERIFICADOS.zip
+      - name: Comprobar que no haya cambios en arte activo ni G1
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --name-only | grep -E '^(public/|campaign/|screens/|game/)'; then
+            echo 'ERROR: no debe modificarse código de juego ni arte activo en esta operación' >&2
+            exit 1
+          fi
+      - name: Registrar fuentes originales y retirar ZIP temporal
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add art-reference/personajes-oficiales/catalogo.json art-reference/personajes-oficiales/imagenes
+          git rm -- incoming/DR-G2-BLOQUE-02-ORIGINALES-VERIFICADOS.zip
+          if ! git diff --cached --quiet; then
+            git commit -m 'assets(g2): conservar seis maestros de generales verificados sin cambiar G1'
+            git push origin HEAD:main
+          fi

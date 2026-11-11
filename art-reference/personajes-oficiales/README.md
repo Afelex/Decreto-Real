@@ -45,3 +45,7 @@ La segunda pose de Sigumán, con el guantelete místico, se registra como `image
 ## Subjefes y secundarios
 
 Los siguientes diseños deben derivarse de esta guía, conservando cada identidad principal, sin sobrescribir las imágenes existentes de `public/campania/arte/retratos/`.
+
+## Segundo bloque de generales G2
+
+La recuperación exacta de seis originales con hashes verificados, rasgos invariables y proceso de incorporación por un ZIP se documenta en [G2-RELEVO-CHAT-BLOQUE-02.md](G2-RELEVO-CHAT-BLOQUE-02.md). En el corte previo a subir el ZIP, sus `imagenEnRepositorio` siguen en `false`; no se sustituyen sprites de producción.
