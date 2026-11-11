@@ -5,7 +5,7 @@
   "estilo": "Anime fantástico del siglo XVII; acabado cel shading con contornos limpios, sombras planas y volumen adulto",
   "politica": "Las referencias de identidad del usuario prevalecen sobre imágenes generadas libremente. Cambiar técnica visual, no rediseñar personajes.",
   "estadoImagenes": "pendientes_de_subir",
-  "nota": "Esta versión registra las identidades y rutas previstas. Los archivos PNG están en el paquete descargable externo al repositorio hasta su incorporación; no llamar a estos paths desde el juego aún.",
+  "nota": "Originales de los seis generales del bloque 02 publicados; otras referencias y expresiones G2 pendientes.",
   "personajes": [
     {
       "id": "xervias",
@@ -80,8 +80,8 @@
       "descripcion": "Cabello oscuro largo en dos trenzas, vincha rojo-dorada y placa frontal, marcas rojas en ambas mejillas, pendientes solares dorados, manto magenta con diseños geométricos andinos.",
       "originalChatFile": "167110.png",
       "sha256Prefix": "b1d93fabf62a18f74516",
-      "archivoPendiente": "art-reference/personajes-oficiales/imagenes/aukan-del-condor.png",
-      "imagenEnRepositorio": false,
+      "archivoPendiente": "art-reference/personajes-oficiales/imagenes/aukan-del-condor.jpg",
+      "imagenEnRepositorio": true,
       "estadoIdentidad": "referencia_original_usuario",
       "perfilVisualCanon": "General adulto de expresión firme, ojos marrones, pelo negro muy largo separado en dos grandes trenzas delanteras con anillas de oro. Vincha roja con motivos geométricos claros y gran placa trapezoidal dorada con dibujo escalonado frontal. Pintura facial roja angular en abanicos diagonales sobre ambas mejillas. Pendientes grandes solares de oro, collar de cilindros y múltiples medallones dorados. Manto magenta rojizo con figuras geométricas andinas doradas y azules, motivos figurativos originales conservados. Sin tocado de plumas; mantener peinado de dos trenzas, forma de marcas faciales y placa frontal.",
       "expresionesG2Previstas": [
@@ -103,9 +103,9 @@
         "canalAlfa": false,
         "bytes": 462757,
         "sha256CoincideConCatalogo": true,
-        "archivoEnRepositorio": false
+        "archivoEnRepositorio": true
       },
-      "estadoG2": "original_recuperado_y_verificado; pendiente de ratificacion visual del bloque 02, generación de expresiones y publicación binaria"
+      "estadoG2": "original_maestro_publicado; expresiones y aprobacion de variantes pendientes"
     },
     {
       "id": "gonzalo-de-montes",
@@ -115,8 +115,8 @@
       "descripcion": "Cabello rubio ondulado, ojos azules, armadura plateada-blanca con ribetes de oro y escudo de cruz roja, capa blanca y roja.",
       "originalChatFile": "163488.png",
       "sha256Prefix": "ad52f79a641eb0cd699f",
-      "archivoPendiente": "art-reference/personajes-oficiales/imagenes/gonzalo-de-montes.png",
-      "imagenEnRepositorio": false,
+      "archivoPendiente": "art-reference/personajes-oficiales/imagenes/gonzalo-de-montes.jpg",
+      "imagenEnRepositorio": true,
       "estadoIdentidad": "referencia_original_usuario",
       "perfilVisualCanon": "General joven-adulto de rostro alargado y expresión seria, ojos azules, cabello rubio dorado ondulado con volumen y mechones hacia fuera. Pendiente pequeño brillante en la oreja a la izquierda del observador. Coraza de plata clara y oro con relieves vegetales, cuello alto, grandes hombreras y escudo blanco de cruz roja recta en la hombrera del lado derecho del observador. Capa blanca amplia con paño rojo cruzado, reunida al pecho por broche floral circular dorado. Conservar el escudo y cruz roja recta originales de la armadura: no sustituir por aspa de Borgoña ni trasladar a banderas.",
       "expresionesG2Previstas": [
@@ -138,9 +138,9 @@
         "canalAlfa": false,
         "bytes": 436040,
         "sha256CoincideConCatalogo": true,
-        "archivoEnRepositorio": false
+        "archivoEnRepositorio": true
       },
-      "estadoG2": "original_recuperado_y_verificado; pendiente de ratificacion visual del bloque 02, generación de expresiones y publicación binaria"
+      "estadoG2": "original_maestro_publicado; expresiones y aprobacion de variantes pendientes"
     },
     {
       "id": "isabela-valdierra",
@@ -151,7 +151,7 @@
       "originalChatFile": "163486.png",
       "sha256Prefix": "9e6f72964d6db122d038",
       "archivoPendiente": "art-reference/personajes-oficiales/imagenes/isabela-valdierra.png",
-      "imagenEnRepositorio": false,
+      "imagenEnRepositorio": true,
       "estadoIdentidad": "referencia_original_usuario",
       "perfilVisualCanon": "General de mirada frontal serena e intensa, ojos rojos/cobrizos, cabello castaño largo y muy rizado en mechones grandes. Corona o diadema fina dorada con flores blancas abiertas y perlas agrupadas en el lado superior izquierdo del observador. Pendientes colgantes de oro con medallones florales simétricos, cuello alto blanco plisado y broche pequeño rectangular dorado. Manto ceremonial blanco y oro con motivos florales y una banda roja central, sujeto por medallón dorado circular floral de gran tamaño en el pecho. Mantener exactamente el tocado floral y perlas, la abundancia de rizos y el broche circular.",
       "expresionesG2Previstas": [
@@ -173,9 +173,9 @@
         "canalAlfa": true,
         "bytes": 2734491,
         "sha256CoincideConCatalogo": true,
-        "archivoEnRepositorio": false
+        "archivoEnRepositorio": true
       },
-      "estadoG2": "original_recuperado_y_verificado; pendiente de ratificacion visual del bloque 02, generación de expresiones y publicación binaria"
+      "estadoG2": "original_maestro_publicado; expresiones y aprobacion de variantes pendientes"
     },
     {
       "id": "jeronimo-arrellano",
@@ -186,7 +186,7 @@
       "originalChatFile": "163485.png",
       "sha256Prefix": "d9f6a440f102e5354e7d",
       "archivoPendiente": "art-reference/personajes-oficiales/imagenes/jeronimo-arrellano.png",
-      "imagenEnRepositorio": false,
+      "imagenEnRepositorio": true,
       "estadoIdentidad": "referencia_original_usuario",
       "perfilVisualCanon": "General adulto robusto, ojos gris azulados claros, cejas oscuras gruesas, cabello castaño largo y muy revuelto. Cicatriz corta en la parte superior de la frente a la izquierda del observador. Barba espesa oscura y bigote abundante. Armadura oscura de artillería con remaches, bordes de oro y un gran emblema dorado de engranaje y rayo en la hombrera a la izquierda del observador. Pañuelo rojo voluminoso al cuello, correa transversal con hebilla metálica plateada; boca de gran cañón visible detrás de su hombro al lado derecho de la imagen. Sin sombrero ni plumas, sin corbatín blanco. Mantener cañón y escudo de engranaje-rayo.",
       "expresionesG2Previstas": [
@@ -208,9 +208,9 @@
         "canalAlfa": true,
         "bytes": 2543659,
         "sha256CoincideConCatalogo": true,
-        "archivoEnRepositorio": false
+        "archivoEnRepositorio": true
       },
-      "estadoG2": "original_recuperado_y_verificado; pendiente de ratificacion visual del bloque 02, generación de expresiones y publicación binaria"
+      "estadoG2": "original_maestro_publicado; expresiones y aprobacion de variantes pendientes"
     },
     {
       "id": "nayisa-de-sombras",
@@ -256,7 +256,7 @@
       "originalChatFile": "163483.png",
       "sha256Prefix": "531bb124d8779caa6732",
       "archivoPendiente": "art-reference/personajes-oficiales/imagenes/octavio-argento.png",
-      "imagenEnRepositorio": false,
+      "imagenEnRepositorio": true,
       "estadoIdentidad": "referencia_original_usuario",
       "perfilVisualCanon": "General de mirada violeta, labios en pequeña sonrisa, pelo blanco-plata muy abundante con bucles ondulados hacia los lados. Pendiente largo de gema en forma de diamante visible a la izquierda del observador. Uniforme púrpura de alto cuello y amplios bordados vegetales dorados, jabot blanco voluminoso sujeto por gran broche violeta ovalado con marco floral claro. Hombrera izquierda del observador de plata cincelada con volutas; derecha cubierta con gran capa de pelo blanco. Mantener color lavanda de ojos, asimetría de hombros, joya central y rizos voluminosos.",
       "expresionesG2Previstas": [
@@ -278,9 +278,9 @@
         "canalAlfa": true,
         "bytes": 2522755,
         "sha256CoincideConCatalogo": true,
-        "archivoEnRepositorio": false
+        "archivoEnRepositorio": true
       },
-      "estadoG2": "original_recuperado_y_verificado; pendiente de ratificacion visual del bloque 02, generación de expresiones y publicación binaria"
+      "estadoG2": "original_maestro_publicado; expresiones y aprobacion de variantes pendientes"
     },
     {
       "id": "leandro-valcazar",
@@ -290,8 +290,8 @@
       "descripcion": "Cabello castaño ondulado, mirada firme, pluma roja, armadura oscura con oro y escudo de caballo, capa roja y piel blanca en hombros.",
       "originalChatFile": "163482.png",
       "sha256Prefix": "0bcfe3a9c18aa1062f77",
-      "archivoPendiente": "art-reference/personajes-oficiales/imagenes/leandro-valcazar.png",
-      "imagenEnRepositorio": false,
+      "archivoPendiente": "art-reference/personajes-oficiales/imagenes/leandro-valcazar.jpg",
+      "imagenEnRepositorio": true,
       "estadoIdentidad": "referencia_original_usuario",
       "perfilVisualCanon": "General joven-adulto de rostro anguloso, cejas fuertes, ojos marrones y ligera sonrisa de confianza. Cabello castaño cobrizo abundante, ondulado y levantado en mechones. En la parte superior izquierda de la imagen destaca una pluma grande roja de múltiples fibras. Casaca o armadura azul negro con ribetes y filigranas dorados, cuello alto con flor de lis de oro, grandes hombreras con flecos dorados. Emblema pectoral de caballo dorado enmarcado por hojas, capa o banda carmesí cruzada sobre pecho y abundante piel blanca sobre hombros. No transformar la pluma en casco, ni reemplazar el caballo por otro emblema.",
       "expresionesG2Previstas": [
@@ -313,9 +313,9 @@
         "canalAlfa": false,
         "bytes": 431399,
         "sha256CoincideConCatalogo": true,
-        "archivoEnRepositorio": false
+        "archivoEnRepositorio": true
       },
-      "estadoG2": "original_recuperado_y_verificado; pendiente de ratificacion visual del bloque 02, generación de expresiones y publicación binaria"
+      "estadoG2": "original_maestro_publicado; expresiones y aprobacion de variantes pendientes"
     },
     {
       "id": "baltasar-de-fierro",
@@ -420,7 +420,7 @@
       ],
       "coincidenciasSHA256": 6,
       "perfilesConfirmadosPorCreadorEnEsteBloque": 0,
-      "binariosSubidosAGitHub": 0,
+      "binariosSubidosAGitHub": 6,
       "nota": "Seis copias exactas de originales recuperadas de la Biblioteca de ChatGPT; no confundir verificación de archivo con aprobación estética de nuevas variantes."
     }
   }
