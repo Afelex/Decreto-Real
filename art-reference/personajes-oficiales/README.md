@@ -15,7 +15,9 @@
 3. Al crear retratos, gestos, poses y sprites, conservar **rostro, peinado, ojos, edad aparente, uniforme, paleta, insignias y accesorios**. No agregar sombreros, cicatrices ni emblemas inventados.
 4. Todas las expresiones y poses derivadas deben referenciar el ID del personaje y su retrato maestro.
 5. Un fondo negro o de cuadrícula **no equivale** a transparencia real; comprobar alfa antes de usar en escenas de DRStudio.
-6. Para Vándalo Rojo se guarda la **propuesta más reciente con capucha y cordones bajo la barbilla**; mantener visible su carácter joven, sin bigote, y vestuario de criminal de alto rango. Su aprobación definitiva sigue abierta.
+6. **Vándalo Rojo confirmado:** seguir la referencia maestra recibida como `168753.png`, con capucha amplia carmesí, máscara angular rojo oscuro/oro que oculta los ojos, cordones bajo la barbilla, sin bigote ni barba, y capa con medallón dorado. La aprobación está cerrada para esta referencia; las variantes expresivas siguen pendientes. El archivo mostrado tenía firma JPEG pese a la extensión .png y fondo negro sin transparencia; comprobarlo antes de generar sprites.
+
+**Avance de validación visual G2:** 4/12 referencias confirmadas por el creador: Xervias, Zhinchi, Sigumán y Vándalo Rojo. Sus binarios maestros aún no están publicados en el repositorio.
 
 ## Índice de personajes
 
