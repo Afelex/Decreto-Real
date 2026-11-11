@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "generation": "DR-G2-2026",
+  "status": "aprobados_pendientes_importacion",
+  "approvedOn": "2026-11-10",
+  "baseProductionPlan": 110,
+  "additionalResources": 5,
+  "description": "Expansión del bloque de fondos de las misiones 35 y 36 aprobada por el usuario; imágenes almacenadas como archivos de esta conversación, no como binarios en GitHub. No reemplazar accidentalmente G2-FON-019/020.",
+  "assets": [
+    {
+      "id": "G2-M35-A",
+      "title": "Casona virreinal intacta, atardecer",
+      "usage": "misión 35 / presentación",
+      "sourceFilename": "patio_virreinal_al_atardecer.png",
+      "format": "webp",
+      "masterFormat": "png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "targetPath": "public/artes/generaciones/DR-G2-2026/fondos-especiales/G2-M35-A.webp",
+      "status": "aprobado_pendiente_importacion"
+    },
+    {
+      "id": "G2-M35-B",
+      "title": "Casona derrumbándose, mismo encuadre",
+      "usage": "misión 35 / cinemática",
+      "sourceFilename": "colapso_místico_en_la_casona_virreinal.png",
+      "format": "webp",
+      "masterFormat": "png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "targetPath": "public/artes/generaciones/DR-G2-2026/fondos-especiales/G2-M35-B.webp",
+      "status": "aprobado_pendiente_importacion"
+    },
+    {
+      "id": "G2-M35-C",
+      "title": "Casona derrumbada, arena del Vándalo Rojo",
+      "usage": "misión 35 / combate",
+      "sourceFilename": "patio_virreinal_en_ruinas_al_atardecer.png",
+      "format": "webp",
+      "masterFormat": "png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "targetPath": "public/artes/generaciones/DR-G2-2026/fondos-especiales/G2-M35-C.webp",
+      "status": "aprobado_pendiente_importacion"
+    },
+    {
+      "id": "G2-M36-A",
+      "title": "Acceso a las prisiones, atardecer avanzado",
+      "usage": "misión 36 / llegada",
+      "sourceFilename": "a_highly_detailed_anime_style_illustration_of_a_dr.png",
+      "format": "webp",
+      "masterFormat": "png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "targetPath": "public/artes/generaciones/DR-G2-2026/fondos-especiales/G2-M36-A.webp",
+      "status": "aprobado_pendiente_importacion"
+    },
+    {
+      "id": "G2-M36-B",
+      "title": "Calabozos, arena de Gaspar de Armenta",
+      "usage": "misión 36 / combate",
+      "sourceFilename": "a_highly_detailed_stylized_digital_illustration.png",
+      "format": "webp",
+      "masterFormat": "png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "targetPath": "public/artes/generaciones/DR-G2-2026/fondos-especiales/G2-M36-B.webp",
+      "status": "aprobado_pendiente_importacion"
+    }
+  ],
+  "existingException": {
+    "id": "G2-FON-010",
+    "instruction": "Conservar imagen original aprobada, sin cambios en los estandartes; cerrar observación de corrección; no usar variante de banderas corregidas."
+  },
+  "timeline": "M35 atardecer dorado -> M36 atardecer rojizo -> M37/38 crepúsculo violeta -> epílogo Xervias camina solo al anochecer bajo la luna",
+  "technicalNote": "campaign/regionAssets.ts utiliza el fondo base del capítulo final para M35 y M36. Asignar M35-A/B/C y M36-A/B por escena o misión cuando se integren los binarios. No publicar antes de QA visual."
+}
