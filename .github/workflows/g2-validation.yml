@@ -5,6 +5,7 @@ on:
     branches:
       - feat/arte-g2-2026-catalogo-y-archivo
       - feat/drstudio-g2-biblioteca-publicada
+      - feat/g2-qa-encuadre-movil-2026
     paths:
       - .github/workflows/g2-validation.yml
       - campaign/g2Artwork.ts
@@ -13,10 +14,14 @@ on:
       - campaign/studio/g2PackageImport.ts
       - campaign/studio/g2SceneAssignments.ts
       - screens/ArtGallery.tsx
+      - screens/art-gallery.css
+      - screens/RegionScene.tsx
+      - screens/region-scenes.css
       - screens/CampaignMission.tsx
       - screens/BossConfrontation.tsx
       - tests/e2e/g2-graphics.spec.ts
       - tests/e2e/g2-studio-library.spec.ts
+      - tests/e2e/g2-mobile-framing.spec.ts
       - screens/studio/StudioLibrary.tsx
       - screens/studio/StudioScreenKit.tsx
       - screens/decreto-real-studio.css
@@ -56,7 +61,15 @@ jobs:
       - name: Instalar Chromium
         run: npx playwright install --with-deps chromium
       - name: QA navegador G2 - catálogo, galería, M01 y finales M35-M36
-        run: npx playwright test tests/e2e/g2-graphics.spec.ts tests/e2e/g2-studio-library.spec.ts --project=mobile-390 --workers=1 --reporter=line
+        run: npx playwright test tests/e2e/g2-graphics.spec.ts tests/e2e/g2-studio-library.spec.ts tests/e2e/g2-mobile-framing.spec.ts --project=mobile-390 --workers=1 --reporter=line
+      - name: Guardar 25 capturas de revisión G2 en formato móvil
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: g2-25-encuadres-movil-390x844
+          path: test-results/**/g2-mobile-*.png
+          retention-days: 14
+          if-no-files-found: warn
       - name: Capturas y trazas si falla
         if: failure()
         uses: actions/upload-artifact@v4

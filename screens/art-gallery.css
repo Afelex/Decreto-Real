@@ -56,3 +56,29 @@
 @media(max-width:560px){.dr-art-root{padding:12px 12px 36px}.dr-art-header h1{font-size:25px}.dr-art-actions{width:100%}.dr-art-actions button,.dr-art-actions a{flex:1;font-size:12px}.dr-art-grid{gap:9px;grid-template-columns:repeat(2,minmax(0,1fr))}.dr-art-thumb{height:136px}.dr-art-toolbar>input{max-width:none}.dr-art-inspector{padding:12px}.dr-art-inspector dl{grid-template-columns:105px 1fr}}
 
 .dr-art-chip.generation{top:auto;bottom:7px;left:7px;background:#27364b;color:#e2ecf8;font-size:10px;letter-spacing:.02em}
+
+
+/* Revisión G2: la imagen original nunca se recorta ni se modifica.
+   Los dos marcos alternativos emulan las proporciones reales del móvil. */
+.dr-art-preview-modes{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 9px}
+.dr-art-preview-modes button{
+  flex:1 1 auto;min-height:36px;padding:6px 8px;border:1px solid #5b6b7e;border-radius:7px;
+  background:#172538;color:#e3eaf4;font:600 11px system-ui,sans-serif;
+}
+.dr-art-preview-modes button[aria-pressed="true"]{background:#59442b;color:#ffe4a9;border-color:#e3c184}
+.dr-art-preview-mobile,.dr-art-preview-strip{
+  position:relative;margin:0 auto;min-height:0;max-height:none;isolation:isolate;
+  border:1px solid #998268;
+}
+.dr-art-preview-mobile{width:min(100%,280px);aspect-ratio:390 / 844}
+.dr-art-preview-strip{width:100%;aspect-ratio:390 / 120}
+.dr-art-preview-mobile img,.dr-art-preview-strip img{
+  position:absolute;inset:0;width:100%;height:100%;max-width:none;max-height:none;
+  object-fit:cover;object-position:50% 50%;display:block;
+}
+.dr-art-preview-strip img{object-position:50% 32%}
+.dr-art-preview-guide{position:absolute;inset:0;pointer-events:none;font:600 10px/1.3 system-ui,sans-serif;text-shadow:0 1px 3px #000}
+.dr-art-preview-guide span{position:absolute;left:0;right:0;color:#ffdfaa;padding:6px 7px}
+.dr-art-preview-top-guide{top:0;height:16%;background:#07132155;border-bottom:1px dashed #ffe4aa99}
+.dr-art-preview-bottom-guide{bottom:0;height:20%;background:#07132166;border-top:1px dashed #ffe4aa99;display:flex;align-items:flex-end}
+.dr-art-preview-help{display:block;color:#adbac8;font:11px/1.4 system-ui,sans-serif;margin:8px auto 0;max-width:310px}
