@@ -236,7 +236,7 @@ export default function ArtGallery(){
           {replacements[chosen.id]&&<><dt>Dimensiones del original</dt><dd>{aspect(dims[chosen.id])}</dd></>}
           <dt>Archivo original</dt><dd className="dr-art-path">{chosen.path}</dd>
           <dt>Categoría</dt><dd>{chosen.group}</dd>
-          <dt>Generación</dt><dd>{chosen.generation} · {chosen.state==='borrador-local'?'Borrador local en este navegador':chosen.state==='nueva-generacion'?'Nueva generación publicada':'Arte anterior (en transición)'}</dd>
+          <dt>Generación</dt><dd>{chosen.generation} · {chosen.state==='borrador-local'?'Borrador local en este navegador':chosen.state==='nueva-generacion'?'Nueva generación publicada':chosen.state==='referencia-maestra'?'Referencia maestra G2 · No es expresión jugable':'Arte anterior (en transición)'}</dd>
           <dt>Formato y tamaño</dt><dd>{showExt(chosen)} · {human(chosen.bytes)}</dd>
           <dt>Uso / reemplazo</dt><dd>Usa el mismo ancho, alto y proporción para evitar recortes en el juego. Los archivos nuevos no reemplazan automáticamente un recurso publicado.</dd>
         </dl>
