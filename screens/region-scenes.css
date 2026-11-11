@@ -41,6 +41,12 @@
   object-position:50% 52%;
   z-index:0;
 }
+/* Los G2 2:3, al verse en la franja horizontal (~390×120), solo enseñan
+   alrededor del 20% de su altura. El foco 32% conserva fachadas, horizontes
+   y puertas; 52% mostraba principalmente pavimento. No afecta a G1. */
+.dc-region-scene.dc-region-has-illustration.dc-region-g2 .dc-region-illustration{
+  object-position:50% 32%;
+}
 .dc-region-scene.dc-region-has-illustration > svg,
 .dc-region-scene.dc-region-has-illustration > .dc-region-sun { display:none; }
 .dc-region-scene.dc-region-has-illustration::before {
