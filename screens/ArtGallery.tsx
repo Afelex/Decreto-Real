@@ -44,6 +44,7 @@ export default function ArtGallery(){
   const [query,setQuery]=React.useState('');
   const [showHidden,setShowHidden]=React.useState(false);
   const [selected,setSelected]=React.useState<string|null>(null);
+  const [previewMode,setPreviewMode]=React.useState<'original'|'mobile'|'strip'>('original');
   const [message,setMessage]=React.useState('');
   const [busy,setBusy]=React.useState(false);
   const addInput=React.useRef<HTMLInputElement>(null);
@@ -80,6 +81,7 @@ export default function ArtGallery(){
     (showHidden||!flags[i.id])&&
     (!query||[i.name,i.group,i.path].join(' ').toLocaleLowerCase('es').includes(query.toLocaleLowerCase('es'))));
   const chosen=all.find(i=>i.id===selected)??null;
+  const g2Review=Boolean(chosen&&chosen.generation===CURRENT_GENERATION&&IMAGES.test(chosen.path));
   const realUrl=(item:Art)=>replacements[item.id]?urls[replacements[item.id]]??item.url:item.url;
   const showExt=(item:Art)=>replacements[item.id]?'Reemplazo local':item.ext.toUpperCase();
   const changeFlag=(id:string,status:'hidden'|'delete'|null)=>{
@@ -210,9 +212,25 @@ export default function ArtGallery(){
       <aside className="dr-art-inspector" aria-label="Detalles del arte">
       {chosen?<React.Fragment>
         <h2>{chosen.name}</h2>
-        <div className="dr-art-preview">{/\.(mp4|webm)$/i.test(chosen.path)||chosen.kind==='local'&&/^(mp4|webm)$/.test(chosen.ext)?
+        {g2Review&&<div className="dr-art-preview-modes" role="group" aria-label="Comparar encuadre G2">
+          <button type="button" aria-pressed={previewMode==='original'} onClick={()=>setPreviewMode('original')}>Original</button>
+          <button type="button" data-testid="g2-preview-mobile-button" aria-pressed={previewMode==='mobile'} onClick={()=>setPreviewMode('mobile')}>Móvil 390 × 844</button>
+          <button type="button" data-testid="g2-preview-strip-button" aria-pressed={previewMode==='strip'} onClick={()=>setPreviewMode('strip')}>Franja de misión</button>
+        </div>}
+        <div className={'dr-art-preview'+(g2Review&&previewMode!=='original'?' dr-art-preview-'+previewMode:'')}
+          data-testid="g2-review-preview" data-preview-mode={g2Review?previewMode:'original'}>{/\.(mp4|webm)$/i.test(chosen.path)||chosen.kind==='local'&&/^(mp4|webm)$/.test(chosen.ext)?
           <video key={realUrl(chosen)} src={realUrl(chosen)} controls playsInline onLoadedMetadata={e=>measure(replacements[chosen.id]??chosen.id,e.currentTarget.videoWidth,e.currentTarget.videoHeight)}/>:
-          <img key={realUrl(chosen)} src={realUrl(chosen)} alt={chosen.name} onLoad={e=>measure(replacements[chosen.id]??chosen.id,e.currentTarget.naturalWidth,e.currentTarget.naturalHeight)}/>}</div>
+          <img key={realUrl(chosen)} src={realUrl(chosen)} alt={chosen.name} onLoad={e=>measure(replacements[chosen.id]??chosen.id,e.currentTarget.naturalWidth,e.currentTarget.naturalHeight)}/>}
+          {g2Review&&previewMode==='mobile'&&<div className="dr-art-preview-guide" aria-hidden="true">
+            <span className="dr-art-preview-top-guide">Cabecera orientativa</span>
+            <span className="dr-art-preview-bottom-guide">Diálogos y botones</span>
+          </div>}
+        </div>
+        {g2Review&&previewMode!=='original'&&<small className="dr-art-preview-help">
+          {previewMode==='mobile'
+            ? 'Simulación del recorte a pantalla completa con object-fit: cover. Las bandas de interfaz son orientativas, no una captura exacta del juego.'
+            : 'Simulación de la franja estrecha de presentación. El foco G2 está situado al 32 % de la altura para mostrar el paisaje y su arquitectura.'}
+        </small>}
         <dl>
           <dt>Dimensiones del arte actual</dt><dd>{aspect(dims[replacements[chosen.id]??chosen.id])}</dd>
           {replacements[chosen.id]&&<><dt>Dimensiones del original</dt><dd>{aspect(dims[chosen.id])}</dd></>}
