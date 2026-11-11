@@ -1,4 +1,5 @@
 import React from 'react';
+import { importApprovedG2Package } from '../campaign/studio/g2PackageImport.ts';
 import { addStudioMedia, deleteStudioMedia, listStudioMedia, loadStudioMediaUrls, revokeStudioMediaUrls, type StudioMediaInfo } from '../campaign/studioMedia';
 import './art-gallery.css';
 
@@ -46,6 +47,7 @@ export default function ArtGallery(){
   const [message,setMessage]=React.useState('');
   const [busy,setBusy]=React.useState(false);
   const addInput=React.useRef<HTMLInputElement>(null);
+  const g2Input=React.useRef<HTMLInputElement>(null);
   const replaceInput=React.useRef<HTMLInputElement>(null);
   const [replaceTarget,setReplaceTarget]=React.useState<string|null>(null);
   const markLocalGeneration=(id:string,gen:string)=>setLocalGenerations(prev=>{
@@ -70,7 +72,7 @@ export default function ArtGallery(){
   },[refresh]);
   const all=React.useMemo<Art[]>(()=>[
     ...catalog.map(i=>({id:i.path,name:i.name,group:i.group,bytes:i.bytes,url:source(i.path),kind:'repo' as const,path:i.path,ext:i.path.split('.').at(-1)?.toLowerCase()??'',generation:i.generation??LEGACY_GENERATION,state:i.state??'anterior-en-uso'})),
-    ...local.filter(i=>!i.mime.startsWith('audio/')).map(i=>({id:i.id,name:i.name,group:'Subidos desde DRStudio o esta galería',bytes:i.size,url:urls[i.id]??'',kind:'local' as const,path:i.id,ext:i.mime.split('/').at(-1)??'',generation:localGenerations[i.id]??LEGACY_GENERATION,state:'borrador-local'}))
+    ...local.filter(i=>!i.mime.startsWith('audio/')).map(i=>({id:i.id,name:i.name,group:i.name.startsWith('DR-G2-2026_')?'G2 · Aprobados en DRStudio':'Subidos desde DRStudio o esta galería',bytes:i.size,url:urls[i.id]??'',kind:'local' as const,path:i.id,ext:i.mime.split('/').at(-1)??'',generation:localGenerations[i.id]??LEGACY_GENERATION,state:'borrador-local'}))
   ],[catalog,local,urls,localGenerations]);
   const groups=['Todos',...new Set(all.map(i=>i.group))];
   const shown=all.filter(i=>(group==='Todos'||i.group===group)&&
@@ -117,6 +119,16 @@ export default function ArtGallery(){
     }catch(e){setMessage(e instanceof Error?e.message:String(e));}
     finally{setBusy(false);}
   };
+  const installG2=async(file:File)=>{
+    setBusy(true);setMessage('');
+    try{
+      const report=await importApprovedG2Package(file,window.localStorage);
+      await refresh();
+      setMessage('G2 importada: '+report.count+' fondos disponibles en DRStudio; '+report.scenes+' escenas vinculadas. '+report.preserved+' fondos personalizados conservados. Abre de nuevo una escena de Studio para ver el cambio.');
+      setGroup('Todos');
+    }catch(e){setMessage(e instanceof Error?e.message:'No se pudo importar el lote G2.');}
+    finally{setBusy(false);}
+  };
   const importForStudio=async(item:Art)=>{
     if(item.kind==='local'||replacements[item.id]){setMessage('Este recurso ya está disponible en la Biblioteca de DRStudio.');return;}
     if(!IMPORTABLE.test(item.path)){setMessage('DRStudio no admite '+item.ext.toUpperCase()+' directamente. Convierte el recurso a PNG, JPG, WebP o GIF y súbelo.');return;}
@@ -161,10 +173,12 @@ export default function ArtGallery(){
         <p>Revisa originales, registra cambios y reutiliza imágenes en DRStudio.</p></div>
       <div className="dr-art-actions">
         <button type="button" onClick={()=>addInput.current?.click()} disabled={busy}>＋ Subir imágenes o videos</button>
+        <button type="button" data-testid="g2-package-import" onClick={()=>g2Input.current?.click()} disabled={busy}>▧ Importar lote G2 (25 fondos)</button>
         <button type="button" onClick={exportPlan}>↓ Exportar decisiones</button>
         <a href={import.meta.env.BASE_URL+'?drDev=1#/studio'}>Abrir DRStudio ↗</a>
       </div>
     </header>
+    <input ref={g2Input} type="file" accept=".zip,application/zip" hidden aria-label="Paquete G2 de fondos aprobados" onChange={e=>{const file=e.currentTarget.files?.[0];e.currentTarget.value='';if(file)void installG2(file);}}/>
     <input ref={addInput} type="file" accept=".png,.jpg,.jpeg,.webp,.gif,.mp4,.webm" multiple hidden onChange={e=>{const f:File[]=e.currentTarget.files?Array.from(e.currentTarget.files):[];e.currentTarget.value='';void putFiles(f,null);}}/>
     <input ref={replaceInput} type="file" accept=".png,.jpg,.jpeg,.webp,.gif,.mp4,.webm" hidden onChange={e=>{const f:File[]=e.currentTarget.files?Array.from(e.currentTarget.files):[];e.currentTarget.value='';void putFiles(f,replaceTarget);}}/>
     <div className="dr-art-notice"><strong>{catalog.length} artes del repositorio</strong> · {all.filter(i=>i.generation===CURRENT_GENERATION).length} G2 nuevos/locales · {all.filter(i=>i.generation===LEGACY_GENERATION).length} G1 anteriores · {local.length} archivos subidos · {Object.values(flags).filter(x=>x==='hidden').length} ocultos · {Object.values(flags).filter(x=>x==='delete').length} por eliminar.

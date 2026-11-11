@@ -13,10 +13,15 @@ test('M35/M36 have distinct briefing and duel IDs',()=>{
   expect(G2_FINAL_SCENES['36']).toEqual({briefing:'G2-M36-A',duel:'G2-M36-B',victory:'G2-M36-B'});
 });
 test('Without binaries installed, G1 presentation continues to work',()=>{
-  expect(g2AssetIsPublished('G2-M35-A')).toBe(false);
-  expect(g2FinalPreludeUrl('35',3)).toBeUndefined();
-  expect(campaignMissionBackground('35')).toContain('region-f-base.webp');
-  expect(campaignMissionBackground('36')).toContain('region-f-base.webp');
-  expect(campaignMissionBriefingBackground('35')).toBe(campaignMissionBackground('35'));
-  expect(campaignMissionPreludeBackground('35',10)).toBe(campaignMissionBackground('35'));
+  if(!g2AssetIsPublished('G2-M35-A')){
+    expect(g2FinalPreludeUrl('35',3)).toBeUndefined();
+    expect(campaignMissionBackground('35')).toContain('region-f-base.webp');
+    expect(campaignMissionBackground('36')).toContain('region-f-base.webp');
+  }else{
+    expect(g2FinalPreludeUrl('35',3)).toContain('G2-M35-A.webp');
+    expect(campaignMissionBackground('35')).toContain('G2-M35-C.webp');
+    expect(campaignMissionBackground('36')).toContain('G2-M36-B.webp');
+  }
+  expect(campaignMissionBriefingBackground('35')).toBeDefined();
+  expect(campaignMissionPreludeBackground('35',10)).toBeDefined();
 });

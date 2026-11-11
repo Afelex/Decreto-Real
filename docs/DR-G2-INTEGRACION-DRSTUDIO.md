@@ -21,3 +21,7 @@ El importador copia los 25 WebP a `public/artes/generaciones/DR-G2-2026/`, compr
 No se cambian los efectos, la baraja, la IA, ni las reglas del combate. Los fondos G1 **no se eliminan** y conservan prioridad como reemplazo cuando G2 no está instalado. Los efectos especiales del derrumbe y del León del Edicto se trabajan por capas PNG transparentes, no se incrustan en el fondo.
 
 **Nota:** La corrección de banderas de G2-FON-010 fue cancelada por decisión expresa del autor; se utiliza el archivo original aprobado.
+
+## Importación de un clic desde la Galería
+
+El ZIP distribuido está en formato ZIP STORE (sin compresión adicional, porque los WebP ya están comprimidos) y contiene un manifiesto con SHA-256 por recurso. En la aplicación, abrir **Galería de artes → Importar lote G2 (25 fondos)** y elegir el ZIP: se comprueba integridad, se guardan los 25 WebP en IndexedDB y se asignan automáticamente a 110 escenas o estados de DRStudio, sin sobrescribir fondos personalizados. Esto es una instalación **local** para revisión, no publica los binarios en GitHub ni modifica la partida del usuario. En otra sesión/dispositivo se necesita una publicación GitHub posterior.

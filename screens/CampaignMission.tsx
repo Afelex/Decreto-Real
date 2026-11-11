@@ -41,16 +41,19 @@ const CampaignMissionScreen: React.FC = () => {
   const chapter = chapterForStage(missionId ?? '');
   const enemy = enemyForMission(missionId ?? '');
   const originalConversation = mission ? combatConversationForMission(mission.id) : undefined;
-  const briefingKey = 'mision-' + (mission?.id ?? '00');
+  const missionPrefix = 'mision-' + (mission?.id ?? '00');
+  const briefingKey = missionPrefix + '/briefing';
   const briefingTitle = useStudioTitle(briefingKey, mission?.title ?? '');
   const briefingArt = useStudioBackground(briefingKey, campaignMissionBriefingBackground(mission?.id ?? '') ?? '');
+  const duelArt = useStudioBackground(missionPrefix + '/duelo',
+    campaignMissionBackground(mission?.id ?? '') ?? '/Decreto-Real/escenarios/plaza-virreinal-v2.svg');
   const briefingObjective = mission?.openingLine.includes(':')
     ? mission.openingLine.substring(mission.openingLine.indexOf(':') + 1).trim()
     : mission?.openingLine ?? '';
   // Cada intervención tiene una clave estable, compartida entre juego y DRStudio.
   // Las ediciones no afectan el motor de combate, solo lo que dicen los personajes.
   const speechKey = (phase: string, index: number) =>
-    briefingKey + '/' + phase + '-' + String(index + 1).padStart(2, '0');
+    missionPrefix + '/' + phase + '-' + String(index + 1).padStart(2, '0');
   const visibleSpeech = (key: string, original: string) => {
     const scene = studio.viewScene(key);
     return studio.visibleTo(scene?.devOnly) ? scene?.dialogue?.text ?? original : original;
@@ -72,8 +75,8 @@ const CampaignMissionScreen: React.FC = () => {
     })),
   } : undefined;
   const briefingTexts = [
-    { key: briefingKey + '/descripcion', label: 'Contexto de la misión', original: mission?.description ?? '' },
-    { key: briefingKey + '/objetivo', label: 'Objetivo', original: briefingObjective },
+    { key: missionPrefix + '/descripcion', label: 'Contexto de la misión', original: mission?.description ?? '' },
+    { key: missionPrefix + '/objetivo', label: 'Objetivo', original: briefingObjective },
     ...phases.flatMap(phase => (originalConversation?.[phase] ?? []).map((line, index) => ({
       key: speechKey(phase, index),
       label: ({ intro:'Antes del duelo', midpoint:'Mitad del combate', critical:'Rival en peligro', victory:'Después del duelo' })[phase]
@@ -215,7 +218,7 @@ const CampaignMissionScreen: React.FC = () => {
       ? { name: 'León del Edicto', hp: 4, attack: 2 }
       : mission.id === '38' ? { name: 'Guardián del Sol Negro', hp: 6, attack: 2 } : undefined}
     opponentMysticSlots={mission ? bossMysticSlots(mission.id) : []}
-    presentation={{ background: campaignMissionBackground(mission.id) ?? '/Decreto-Real/escenarios/plaza-virreinal-v2.svg', opponentPortrait: campaignOpponentPortrait(mission.id) }}
+    presentation={{ background: duelArt, opponentPortrait: campaignOpponentPortrait(mission.id) }}
     onReturn={() => navigate(returnToMap)}
   />;
 };
