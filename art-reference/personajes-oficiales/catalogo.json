@@ -172,7 +172,7 @@
       "id": "vandalo-rojo",
       "nombre": "Vándalo Rojo",
       "rol": "antagonista secundario",
-      "mision": "36",
+      "mision": "35",
       "descripcion": "Antagonista joven sin vello facial, cabello rojizo oscuro visible bajo una gran capucha rojo carmesí de ribete y adorno lateral dorado; antifaz angular granate y oro con aberturas de ojos en sombra negra. Sonrisa contenida. Cordones y remates metálicos bajo el mentón. Capa carmesí con pliegues amplios y broche circular dorado de flor de lis; ropa de cuero negro/marrón con ribetes dorados y correas cruzadas.",
       "originalChatFile": "168753.png",
       "sha256Prefix": "6c1db656e9709b6c3e554",
@@ -199,7 +199,8 @@
         "sha256": "6c1db656e9709b6c3e554ce1b467fe9caf4bbb97eb6fd2f23e584fc21705ab72",
         "nota": "Huella de la copia entregada en este chat. Se debe comprobar el formato y la huella antes de la futura subida al repositorio."
       },
-      "confirmadoPorUsuarioEnConversacion": true
+      "confirmadoPorUsuarioEnConversacion": true,
+      "notaNarrativa": "En M35, después de la desaparición aparente de Zhinchi tras el derrumbe, Xervias se enfrenta a Vándalo Rojo y lo derrota usando por primera vez el poder heredado. No colocar su enfrentamiento definitivo en M36, donde aparece Gaspar de Armenta y el León del Edicto."
     }
   ],
   "variantes": [
