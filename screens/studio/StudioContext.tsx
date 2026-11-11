@@ -25,6 +25,7 @@ import {
 
 import type { StudioMediaMime } from '../../campaign/studio/mediaSignature';
 import { loadPublishedStudio, publishedMediaUrls } from '../../campaign/studio/published';
+import { publishedG2MediaUrls } from '../../campaign/studio/g2PublishedLibrary.ts';
 
 export const STUDIO_PACKAGE_VERSION = 3;
 export type StudioAudience = 'player'|'developer';
@@ -297,7 +298,7 @@ function LoadedStudioProvider({children,published}:{children:React.ReactNode;pub
       (scenes.length?' · '+scenes.map(describeScene).join(', '):''));
   },[]);
 
-  const publicUrls=React.useMemo(()=>publishedMediaUrls(published,import.meta.env.BASE_URL),[published]);
+  const publicUrls=React.useMemo(()=>({...publishedMediaUrls(published,import.meta.env.BASE_URL),...publishedG2MediaUrls(import.meta.env.BASE_URL)}),[published]);
   const value=React.useMemo<StudioContextValue>(()=>!active?{
     ...INACTIVE,doc:published,mediaUrls:publicUrls,
     scene:key=>key?published.scenes[key]:undefined,
