@@ -4,6 +4,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import CampaignRegionMoment from '../../screens/CampaignRegionMoment';
 import { STORY_CHAPTERS } from '../../campaign/story.ts';
+import { g2AssetIsPublished, g2AssetPath, G2_REGION_BASE } from '../../campaign/g2Artwork.ts';
 import { CAMPAIGN_STORAGE_KEY } from '../../campaign/campaign.ts';
 import {
   REGION_ENTRANCES_KEY, REGION_LIBERATIONS_KEY,
@@ -35,8 +36,9 @@ test('each of the eight territories presents four named, distinct missions and i
     const chapter = STORY_CHAPTERS.find(item => item.id === String(n))!;
     expect(screen.getByRole('heading', { name: chapter.title })).toBeTruthy();
     expect(document.querySelectorAll('.dcmoment-missions li')).toHaveLength(4);
-    expect(document.querySelector('.dcmoment-landscape>img')?.getAttribute('src'))
-      .toContain(`arte/fondos/region-${n}-base.webp`);
+    const g2Id = G2_REGION_BASE[String(n) as keyof typeof G2_REGION_BASE];
+    const expectedPath = g2AssetIsPublished(g2Id) ? g2AssetPath(g2Id) : `campania/arte/fondos/region-${n}-base.webp`;
+    expect(document.querySelector('.dcmoment-landscape>img')?.getAttribute('src')).toContain(expectedPath);
     expect(screen.getByText('Xervias:')).toBeTruthy();
     expect(screen.getByText('Zhinchi:')).toBeTruthy();
     view.unmount();
