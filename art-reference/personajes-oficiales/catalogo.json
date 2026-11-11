@@ -17,7 +17,17 @@
       "sha256Prefix": "7fd80d2fb821229cff55",
       "archivoPendiente": "art-reference/personajes-oficiales/imagenes/xervias.png",
       "imagenEnRepositorio": false,
-      "estadoIdentidad": "referencia_original_usuario"
+      "estadoIdentidad": "referencia_original_usuario",
+      "perfilVisualCanon": "Cabello castaño oscuro, abundante y despeinado en mechones largos, ojos marrones, cejas definidas, rostro joven de mirada firme y boca cerrada; uniforme azul marino con filigranas y broches dorados, capa roja sobre ambos hombros, corbatín blanco recogido por broche floral dorado.",
+      "expresionesG2Previstas": [
+        "neutral",
+        "decidido",
+        "sorprendido",
+        "herido sin lágrimas",
+        "invocación",
+        "reflexivo"
+      ],
+      "confirmadoPorUsuarioEnConversacion": true
     },
     {
       "id": "zhinchi",
@@ -29,7 +39,17 @@
       "sha256Prefix": "dd89c367c85f176095bf",
       "archivoPendiente": "art-reference/personajes-oficiales/imagenes/zhinchi.png",
       "imagenEnRepositorio": false,
-      "estadoIdentidad": "referencia_original_usuario"
+      "estadoIdentidad": "referencia_original_usuario",
+      "perfilVisualCanon": "Cabello rubio dorado de mechones puntiagudos abundantes, ojos azules claros, expresión de autoridad serena y boca cerrada; uniforme azul oscuro con ribetes y flor de lis dorados, capa azul sobre un hombro, hombrera de galones dorados, corbatín blanco y gema azul central en engaste dorado.",
+      "expresionesG2Previstas": [
+        "neutral",
+        "investigando",
+        "ordenando",
+        "invocando poder",
+        "herido o agotado",
+        "desaparición tras derrumbe"
+      ],
+      "confirmadoPorUsuarioEnConversacion": true
     },
     {
       "id": "siguman",
@@ -41,7 +61,16 @@
       "sha256Prefix": "86301f9bd669deaa2763",
       "archivoPendiente": "art-reference/personajes-oficiales/imagenes/siguman.png",
       "imagenEnRepositorio": false,
-      "estadoIdentidad": "referencia_original_usuario"
+      "estadoIdentidad": "referencia_original_usuario",
+      "perfilVisualCanon": "Hombre calvo de rostro ancho y expresión amenazante; ojos verde intenso, cejas negras marcadas, cicatriz roja vertical que cruza la ceja y el ojo derecho del personaje, gran bigote castaño oscuro con puntas curvadas hacia arriba y sonrisa abierta que exhibe los dientes. Uniforme noble púrpura y rojo oscuro con bordados vegetales dorados, cuello muy alto con interior granate, hombreras de piel clara, jabot blanco abundante, cordones dorados cruzados con broches de gemas rojas y gran cruz dorada con rubí rojo en el pecho.",
+      "expresionesG2Previstas": [
+        "sonrisa amenazante",
+        "serio y calculador",
+        "furioso",
+        "guantelete de oro con energía mística",
+        "sorprendido en derrota"
+      ],
+      "confirmadoPorUsuarioEnConversacion": true
     },
     {
       "id": "aukan-del-condor",
@@ -160,5 +189,15 @@
       "descripcion": "Sigumán con guantelete de oro y energía mística",
       "imagenEnRepositorio": false
     }
-  ]
+  ],
+  "avanceCanonVisual": {
+    "version": "G2-R1",
+    "perfilesConfirmados": [
+      "xervias",
+      "zhinchi",
+      "siguman"
+    ],
+    "totalPerfilesPrincipales": 12,
+    "nota": "Confirmados visualmente por el creador mediante imágenes compartidas. Los originales binarios aún no se han cargado en el repositorio; no marcar imagenEnRepositorio como true antes de comprobarlo. No sustituye ni publica retratos del juego."
+  }
 }
