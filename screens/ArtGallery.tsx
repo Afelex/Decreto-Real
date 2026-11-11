@@ -203,7 +203,7 @@ export default function ArtGallery(){
               <img src={display} loading="lazy" alt="" onLoad={e=>measure(changed?replacements[item.id]:item.id,e.currentTarget.naturalWidth,e.currentTarget.naturalHeight)}/>}
               {flags[item.id]&&<span className="dr-art-chip">{flags[item.id]==='hidden'?'OCULTO':'ELIMINACIÓN PENDIENTE'}</span>}
               {changed&&<span className="dr-art-chip right">REEMPLAZADO</span>}
-              <span className="dr-art-chip generation">{item.state==='referencia-maestra'?'G2 · MAESTRO':item.generation===CURRENT_GENERATION?'G2 · '+(item.kind==='local'?'BORRADOR':'NUEVA'):'G1 · ANTERIOR'}</span></div>
+              <span className="dr-art-chip generation">{item.state==='referencia-maestra'?'G2 · MAESTRO':item.state==='candidato-sin-aprobar'?'G2 · CANDIDATO':item.generation===CURRENT_GENERATION?'G2 · '+(item.kind==='local'?'BORRADOR':'NUEVA'):'G1 · ANTERIOR'}</span></div>
             <div className="dr-art-card-info"><strong>{item.name}</strong><small>{aspect(dims[changed?replacements[item.id]:item.id])}</small><small>{showExt(item)} · {human(item.bytes)}</small></div>
           </button>;
         })}
@@ -236,12 +236,12 @@ export default function ArtGallery(){
           {replacements[chosen.id]&&<><dt>Dimensiones del original</dt><dd>{aspect(dims[chosen.id])}</dd></>}
           <dt>Archivo original</dt><dd className="dr-art-path">{chosen.path}</dd>
           <dt>Categoría</dt><dd>{chosen.group}</dd>
-          <dt>Generación</dt><dd>{chosen.generation} · {chosen.state==='borrador-local'?'Borrador local en este navegador':chosen.state==='nueva-generacion'?'Nueva generación publicada':chosen.state==='referencia-maestra'?'Referencia maestra G2 · No es expresión jugable':'Arte anterior (en transición)'}</dd>
+          <dt>Generación</dt><dd>{chosen.generation} · {chosen.state==='borrador-local'?'Borrador local en este navegador':chosen.state==='nueva-generacion'?'Nueva generación publicada':chosen.state==='referencia-maestra'?'Referencia maestra G2 · No es expresión jugable':chosen.state==='candidato-sin-aprobar'?'Expresión candidata G2 · No aprobada ni activada':'Arte anterior (en transición)'}</dd>
           <dt>Formato y tamaño</dt><dd>{showExt(chosen)} · {human(chosen.bytes)}</dd>
           <dt>Uso / reemplazo</dt><dd>Usa el mismo ancho, alto y proporción para evitar recortes en el juego. Los archivos nuevos no reemplazan automáticamente un recurso publicado.</dd>
         </dl>
         <div className="dr-art-detail-actions">
-          {chosen.state==='referencia-maestra'?<small>Original de control. Las expresiones se producirán y aprobarán antes de usarse como sprites en DRStudio.</small>:<React.Fragment>
+          {chosen.state==='referencia-maestra'||chosen.state==='candidato-sin-aprobar'?<small>{chosen.state==='referencia-maestra'?'Original de control; no es sprite jugable.':'Candidato de control; revisa y aprueba antes de activar en DRStudio.'}</small>:<React.Fragment>
             <button type="button" disabled={busy} onClick={()=>void importForStudio(chosen)}>↗ Usar en DRStudio</button>
             <button type="button" disabled={busy} onClick={()=>{setReplaceTarget(chosen.id);replaceInput.current?.click();}}>⇄ Subir reemplazo</button>
           </React.Fragment>}
