@@ -5,7 +5,7 @@
  */
 import { G2_ASSET_PATHS, g2AssetIsPublished, type G2AssetId } from '../g2Artwork.ts';
 import { g2SceneAssignments } from './g2SceneAssignments.ts';
-import { MAX_STUDIO_MEDIA_BYTES } from '../studioMedia.ts';
+const MAX_G2_ASSET_BYTES=25*1024*1024; // Mismo límite de la biblioteca local.
 
 export type PublishedG2Asset = {
   id:G2AssetId;
@@ -62,7 +62,7 @@ export async function fetchPublishedG2File(asset:PublishedG2Asset,request:typeof
   const response=await request(asset.url);
   if(!response.ok)throw new Error('No se pudo descargar el fondo G2 publicado.');
   const bytes=new Uint8Array(await response.arrayBuffer());
-  if(bytes.byteLength<32||bytes.byteLength>MAX_STUDIO_MEDIA_BYTES)
+  if(bytes.byteLength<32||bytes.byteLength>MAX_G2_ASSET_BYTES)
     throw new Error('Tamaño inválido del fondo G2.');
   const signature=(offset:number)=>String.fromCharCode(...bytes.subarray(offset,offset+4));
   if(signature(0)!=='RIFF'||signature(8)!=='WEBP')
