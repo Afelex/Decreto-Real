@@ -67,3 +67,13 @@ El conector GitHub de este chat dispone de operaciones de contenido textual y ob
 - Guía de fondos ya publicados: [DR-G2-INTEGRACION-DRSTUDIO.md](../../docs/DR-G2-INTEGRACION-DRSTUDIO.md)
 
 **Corte correcto:** seis primeras identidades aprobadas; seis originales adicionales exactos recuperados, con fichas preparadas; expresiones G2 e integración de retratos aún pendientes.
+
+## 7. Importador preparado para una sola carga
+
+Se ha añadido `tools/importar-personajes-g2-bloque02.mjs` con pruebas de seguridad y validación individual de SHA. El workflow `.github/workflows/g2-personajes-bloque02-import.yml` solo se activa cuando se sube a `main` el archivo `incoming/DR-G2-BLOQUE-02-ORIGINALES-VERIFICADOS.zip`.
+
+- SHA-256 exacto del ZIP: `6a448921391caaa7a2e1c27ae8fe4c0d8fe0579f85e800ce0835f1967d383cd2`.
+- Una sola intervención: subir dicho archivo en `incoming/` después de publicar esta preparación.
+- Destino de los originales: `art-reference/personajes-oficiales/imagenes/`, con extensión real `.jpg` para JPEG, `.png` para PNG y bytes **sin modificar**.
+- Estado tras el importador: `imagenEnRepositorio=true` solo al terminar la verificación y el commit; ningún cambio en retratos G1 ni en la campaña activa.
+- Expresiones G2 y visibilidad en DRStudio siguen pendientes de producción, revisión y publicación por separado.
