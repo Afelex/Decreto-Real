@@ -1,4 +1,4 @@
-import { g2FinalSceneUrl, g2FinalPreludeUrl, g2RegionalUrl } from './g2Artwork.ts';
+import { g2AssetUrl, g2FinalSceneUrl, g2FinalPreludeUrl, g2RegionalUrl } from './g2Artwork.ts';
 /** Campaign scenery and rival portraits. 47 approved assets from GitHub Actions run 41921898124.
  * Battle scenes remain separate from the regional map; prologue retains its own illustration.
  * All generated assets are served from Vite's public/campania/arte/ folder.
@@ -30,7 +30,14 @@ export function campaignLandscape(chapterId: string | undefined): string {
 /** Boss stages have their own battle arena; the final chapter uses its boss arena only against Sigumán. */
 export function campaignMissionBackground(missionId: string): string | undefined {
   const stage = STORY_STAGES.find(item => item.id === missionId);
-  if (!stage || stage.chapterId === 'p') return undefined;
+  if (!stage) return undefined;
+  // Los dos fondos del prólogo pertenecen a misiones jugables; conservar G1
+  // automáticamente si los WebP G2 aún no están publicados.
+  if (stage.chapterId === 'p') {
+    if (missionId === '01') return g2AssetUrl('G2-FON-002');
+    if (missionId === '02') return g2AssetUrl('G2-FON-001');
+    return undefined;
+  }
   const finalG2=g2FinalSceneUrl(missionId,'duel');
   if (finalG2) return finalG2;
   const variant = stage.kind === 'boss' || stage.kind === 'final' ? 'jefe' : 'base';
