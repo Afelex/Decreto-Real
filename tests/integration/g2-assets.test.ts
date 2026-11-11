@@ -22,6 +22,13 @@ test('Without binaries installed, G1 presentation continues to work',()=>{
     expect(campaignMissionBackground('35')).toContain('G2-M35-C.webp');
     expect(campaignMissionBackground('36')).toContain('G2-M36-B.webp');
   }
+  if (g2AssetIsPublished('G2-FON-002')) {
+    expect(campaignMissionBackground('01')).toContain('prologo-plaza-del-pregon.webp');
+    expect(campaignMissionBriefingBackground('01')).toContain('prologo-plaza-del-pregon.webp');
+  } else expect(campaignMissionBackground('01')).toBeUndefined();
+  if (g2AssetIsPublished('G2-FON-001')) {
+    expect(campaignMissionBackground('02')).toContain('prologo-camino-real-de-los-reinos-del-peru.webp');
+  } else expect(campaignMissionBackground('02')).toBeUndefined();
   expect(campaignMissionBriefingBackground('35')).toBeDefined();
   expect(campaignMissionPreludeBackground('35',10)).toBeDefined();
 });
