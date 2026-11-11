@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "batch": "DR-G2-PER-LOTE-02",
   "generation": "DR-G2-2026",
-  "status": "planning_only_no_images_generated",
+  "status": "six_control_candidates_imported_not_approved",
   "referencePolicy": "Originales verificados por SHA-256 en art-reference. Conservar rostro, uniforme y accesorios. No generar libremente a partir de texto sin cargar el retrato maestro real.",
   "goal": "6 generales × 6 expresiones = 36 candidatos. Primero un modelo de control por general, luego lotes aprobados, luego sprites transparentes para DRStudio.",
   "output": {
@@ -42,7 +42,13 @@
           "id": "G2-PER-LEANDRO-VALCAZAR-02",
           "expression": "orden de carga",
           "outputCandidate": "art-output/g2-personajes/lote-02/leandro-valcazar/02-orden-de-carga.png",
-          "status": "planned_not_generated"
+          "status": "candidate_generated_not_approved",
+          "fileInRepo": "art-reference/personajes-oficiales/candidatos/leandro-valcazar/orden-de-carga.png",
+          "sha256": "f2e1d54a2803a03a46525c951c4465b97f1783d762456236d7f32b75354a8477",
+          "width": 1024,
+          "height": 1536,
+          "alphaRequired": true,
+          "alphaCoverage": 0.1554
         },
         {
           "id": "G2-PER-LEANDRO-VALCAZAR-03",
@@ -91,7 +97,13 @@
           "id": "G2-PER-OCTAVIO-ARGENTO-02",
           "expression": "propuesta de pacto",
           "outputCandidate": "art-output/g2-personajes/lote-02/octavio-argento/02-propuesta-de-pacto.png",
-          "status": "planned_not_generated"
+          "status": "candidate_generated_not_approved",
+          "fileInRepo": "art-reference/personajes-oficiales/candidatos/octavio-argento/propuesta-de-pacto.png",
+          "sha256": "dfce1c9ac857971277608f6d7f8094752142a6dff390e79fda4b528489ac0d9b",
+          "width": 1024,
+          "height": 1536,
+          "alphaRequired": true,
+          "alphaCoverage": 0.1951
         },
         {
           "id": "G2-PER-OCTAVIO-ARGENTO-03",
@@ -140,7 +152,13 @@
           "id": "G2-PER-JERONIMO-ARRELLANO-02",
           "expression": "orden de fuego",
           "outputCandidate": "art-output/g2-personajes/lote-02/jeronimo-arrellano/02-orden-de-fuego.png",
-          "status": "planned_not_generated"
+          "status": "candidate_generated_not_approved",
+          "fileInRepo": "art-reference/personajes-oficiales/candidatos/jeronimo-arrellano/orden-de-fuego.png",
+          "sha256": "832941fd569bebf17aefe29be1a0b018ae983878ba31a5b1169fb42be1870775",
+          "width": 1024,
+          "height": 1536,
+          "alphaRequired": true,
+          "alphaCoverage": 0.1662
         },
         {
           "id": "G2-PER-JERONIMO-ARRELLANO-03",
@@ -189,7 +207,13 @@
           "id": "G2-PER-ISABELA-VALDIERRA-02",
           "expression": "sentenciando",
           "outputCandidate": "art-output/g2-personajes/lote-02/isabela-valdierra/02-sentenciando.png",
-          "status": "planned_not_generated"
+          "status": "candidate_generated_not_approved",
+          "fileInRepo": "art-reference/personajes-oficiales/candidatos/isabela-valdierra/sentenciando.png",
+          "sha256": "1a7b67be0575c38b68c7f6c7036209965fdf582018652547c24f65f1bd7cb14e",
+          "width": 1024,
+          "height": 1536,
+          "alphaRequired": true,
+          "alphaCoverage": 0.1982
         },
         {
           "id": "G2-PER-ISABELA-VALDIERRA-03",
@@ -238,7 +262,13 @@
           "id": "G2-PER-AUKAN-DEL-CONDOR-02",
           "expression": "orden de avance",
           "outputCandidate": "art-output/g2-personajes/lote-02/aukan-del-condor/02-orden-de-avance.png",
-          "status": "planned_not_generated"
+          "status": "candidate_generated_not_approved",
+          "fileInRepo": "art-reference/personajes-oficiales/candidatos/aukan-del-condor/orden-de-avance.png",
+          "sha256": "c61c8af7c8429a4a22178a9c5347fa05f678d2967a6f2eb1637687f008b81ae5",
+          "width": 1024,
+          "height": 1536,
+          "alphaRequired": true,
+          "alphaCoverage": 0.1672
         },
         {
           "id": "G2-PER-AUKAN-DEL-CONDOR-03",
@@ -287,7 +317,13 @@
           "id": "G2-PER-GONZALO-DE-MONTES-02",
           "expression": "dando orden",
           "outputCandidate": "art-output/g2-personajes/lote-02/gonzalo-de-montes/02-dando-orden.png",
-          "status": "planned_not_generated"
+          "status": "candidate_generated_not_approved",
+          "fileInRepo": "art-reference/personajes-oficiales/candidatos/gonzalo-de-montes/dando-orden.png",
+          "sha256": "f2489c98488701a592f729437fe44f177be3886db0640d1d355c457140f93704",
+          "width": 1024,
+          "height": 1536,
+          "alphaRequired": true,
+          "alphaCoverage": 0.2088
         },
         {
           "id": "G2-PER-GONZALO-DE-MONTES-03",
