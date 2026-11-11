@@ -6,6 +6,7 @@ on:
       - feat/arte-g2-2026-catalogo-y-archivo
     paths:
       - incoming/Decreto_Real_G2_25_fondos_para_integrar.zip
+      - .github/workflows/g2-import-approved.yml
   workflow_dispatch:
 
 permissions:
