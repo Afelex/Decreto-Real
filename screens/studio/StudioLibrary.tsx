@@ -2,6 +2,7 @@ import React from 'react';
 import { loadStudioMediaUrls, revokeStudioMediaUrls } from '../../campaign/studioMedia';
 import { fetchPublishedG2File, publishedG2StudioAssets, type PublishedG2Asset } from '../../campaign/studio/g2PublishedLibrary.ts';
 import { publishedG2GeneralMasters } from '../../campaign/studio/g2CharacterMasters.ts';
+import { loadG2ControlCandidates, type G2ControlCandidate } from '../../campaign/studio/g2ControlCandidateLibrary.ts';
 import { useStudio, type StudioLibraryItem } from './StudioContext';
 
 export type LibraryUse = 'sprite'|'effect'|'background'|'replace';
@@ -30,11 +31,16 @@ export default function StudioLibrary({canReplace,onUse,onClose}:Props){
   const [reloadKey,setReloadKey]=React.useState(0);
   const [dimensions,setDimensions]=React.useState<Record<string,string>>({});
   const [showHidden,setShowHidden]=React.useState(false);
-  const [source,setSource]=React.useState<'all'|'g2'|'masters'|'local'>('all');
+  const [source,setSource]=React.useState<'all'|'g2'|'masters'|'candidates'|'local'>('all');
   const [query,setQuery]=React.useState('');
   const [loadingG2,setLoadingG2]=React.useState<string|null>(null);
   const published=React.useMemo(()=>publishedG2StudioAssets(import.meta.env.BASE_URL),[]);
   const masters=React.useMemo(()=>publishedG2GeneralMasters(),[]);
+  const [candidates,setCandidates]=React.useState<G2ControlCandidate[]>([]);
+  React.useEffect(()=>{let current=true;
+    void loadG2ControlCandidates(import.meta.env.BASE_URL).then(value=>{if(current)setCandidates(value);});
+    return ()=>{current=false;};
+  },[]);
   const hidden=React.useMemo(()=>{
     try{return JSON.parse(localStorage.getItem('decreto-real.artes.estados.v1')||'{}') as Record<string,string>;}
     catch{return {} as Record<string,string>;}
@@ -74,6 +80,9 @@ export default function StudioLibrary({canReplace,onUse,onClose}:Props){
   const visibleMasters=masters.filter(item=>(source==='all'||source==='masters')&&
     (showHidden||!hidden[item.path])&&
     (!q||[item.label,item.characterId,item.id,item.mission].join(' ').toLocaleLowerCase('es').includes(q)));
+  const visibleCandidates=candidates.filter(item=>(source==='all'||source==='candidates')&&
+    (showHidden||!hidden[item.path])&&
+    (!q||[item.label,item.id,item.characterId,item.mission,item.variant].join(' ').toLocaleLowerCase('es').includes(q)));
   const orphanBytes=orphans.reduce((n,item)=>n+item.size,0);
   const total=(items??[]).reduce((n,item)=>n+item.size,0);
   const run=async(work:()=>Promise<unknown>)=>{
@@ -97,7 +106,7 @@ export default function StudioLibrary({canReplace,onUse,onClose}:Props){
     <header>
       <strong>Biblioteca</strong>
       <a href={import.meta.env.BASE_URL+'?drDev=1#/artes'} target="_blank" rel="noopener noreferrer" title="Abrir biblioteca de todos los artes en otra pestaña">Galería de artes ↗</a>
-      <span data-testid="studio-library-summary">{items?items.length+' archivos · '+formatBytes(total)+' · '+published.length+' fondos G2 · '+masters.length+' maestros G2':'Cargando…'}</span>
+      <span data-testid="studio-library-summary">{items?items.length+' archivos · '+formatBytes(total)+' · '+published.length+' fondos G2 · '+masters.length+' maestros G2 · '+candidates.length+' candidatos sin aprobar':'Cargando…'}</span>
       <button type="button" onClick={onClose} aria-label="Cerrar biblioteca">×</button>
     </header>
     {error&&<p className="dr-studio-library-error" role="alert">{error}</p>}
@@ -106,6 +115,7 @@ export default function StudioLibrary({canReplace,onUse,onClose}:Props){
         <option value="all">Todos</option>
         <option value="g2">25 fondos G2 publicados</option>
         <option value="masters">6 personajes G2 · originales</option>
+        <option value="candidates">Expresiones G2 · candidatos</option>
         <option value="local">Mis archivos</option>
       </select>
       <input type="search" aria-label="Buscar en biblioteca" placeholder="Buscar arte, personaje o misión…" value={query}
@@ -135,6 +145,20 @@ export default function StudioLibrary({canReplace,onUse,onClose}:Props){
           <small>Referencia maestra, no expresión aprobada. No sustituye sprites G1.</small>
           <div className="dr-studio-library-actions">
             <a href={item.url} target="_blank" rel="noopener noreferrer" aria-label={'Ver referencia maestra de '+item.label}>Ver original ↗</a>
+          </div>
+        </div>
+      </li>)}
+      {visibleCandidates.map(item=><li key={item.id} data-testid="studio-library-candidate-item"
+          data-g2-id={item.id} data-source="candidate-review">
+        <span className="dr-studio-library-thumb" aria-hidden="true">
+          <img loading="lazy" src={item.url} alt="" onLoad={e=>recordDimensions(item.id,e.currentTarget.naturalWidth,e.currentTarget.naturalHeight)}/>
+        </span>
+        <div className="dr-studio-library-info">
+          <strong>{item.label} · {item.mission}</strong>
+          <small>{item.id} · {dimensions[item.id]??item.width+' × '+item.height+' px'} · PNG RGBA</small>
+          <small>Candidato sin aprobar. Original G2 y sprites G1 conservados; solo revisión visual.</small>
+          <div className="dr-studio-library-actions">
+            <a href={item.url} target="_blank" rel="noopener noreferrer" aria-label={'Ver expresión candidata de '+item.label}>Ver candidato ↗</a>
           </div>
         </div>
       </li>)}
@@ -184,7 +208,7 @@ export default function StudioLibrary({canReplace,onUse,onClose}:Props){
           </div>
         </li>;
       })}
-      {items&&!visibleItems.length&&!visiblePublished.length&&!visibleMasters.length&&<li className="dr-studio-library-empty">No hay archivos visibles con este filtro.</li>}
+      {items&&!visibleItems.length&&!visiblePublished.length&&!visibleMasters.length&&!visibleCandidates.length&&<li className="dr-studio-library-empty">No hay archivos visibles con este filtro.</li>}
     </ul>
   </section>;
 }
