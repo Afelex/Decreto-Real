@@ -28,8 +28,10 @@ test('only the eight generals and Sigumán receive the distinct boss background'
       (expected==='jefe' ? G2_REGION_BOSS : G2_REGION_BASE)[stage.chapterId as keyof typeof G2_REGION_BASE];
     expect(campaignMissionBackground(stage.id)).toContain(g2AssetIsPublished(id) ? 'DR-G2-2026/' : `region-${stage.chapterId}-${expected}.webp`);
   }
-  expect(campaignMissionBackground('01')).toBeUndefined();
-  expect(campaignMissionBackground('02')).toBeUndefined();
+  expect(campaignMissionBackground('01')).toBe(g2AssetIsPublished('G2-FON-002')
+    ? expect.stringContaining('/fondos/prologo-plaza-del-pregon.webp') : undefined);
+  expect(campaignMissionBackground('02')).toBe(g2AssetIsPublished('G2-FON-001')
+    ? expect.stringContaining('/fondos/prologo-camino-real-de-los-reinos-del-peru.webp') : undefined);
 });
 
 test('every non-general opponent uses exactly the image file generated for their mission', () => {
