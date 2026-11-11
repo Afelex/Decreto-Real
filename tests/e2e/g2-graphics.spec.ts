@@ -105,7 +105,7 @@ test('un fondo G2 publicado puede incorporarse a la biblioteca local de DRStudio
 test('la Galería G2 distingue los seis originales de las expresiones pendientes',async({page})=>{
   await page.goto(root+'?drDev=1#/artes');
   await page.getByRole('combobox',{name:'Filtrar por generación'}).selectOption('DR-G2-2026');
-  await page.getByRole('combobox',{name:'Filtrar por categoría'}).selectOption('Personajes · Referencias G2');
+  await page.getByRole('combobox',{name:'Filtrar por sección'}).selectOption('Personajes · Referencias G2');
   const cards=page.locator('.dr-art-card');
   await expect(cards).toHaveCount(6);
   await expect(page.getByRole('button',{name:/Isabela Valdierra/i})).toBeVisible();
