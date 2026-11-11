@@ -6,6 +6,7 @@ import {
 } from '../../campaign/studio/ops';
 import { defaultLayerTransform, type StudioLayer, type StudioMediaLayer } from '../../campaign/studio/schema';
 import { StudioProvider, useStudio } from './StudioContext';
+import { publishedG2Options } from '../../campaign/studio/g2PublishedLibrary.ts';
 import { studioLayerStyle } from './StageComposer';
 import { useStudioDrag } from './useStudioDrag';
 import { StudioTextArea } from './StudioTextArea';
@@ -112,6 +113,14 @@ export function StudioScreenPanel({label,sceneKey,originalTitle,texts}:PanelProp
   const text=texts.find(t=>t.key===textKey)??texts[0];
   const textScene=text?studio.scene(text.key):undefined;
   const scene=studio.scene(sceneKey);
+  const g2Options=React.useMemo(()=>publishedG2Options(import.meta.env.BASE_URL),[]);
+  const chooseG2=(mediaId:string)=>{
+    const option=g2Options.find(item=>item.mediaId===mediaId);
+    if(!option)return;
+    studio.apply(d=>withSceneSettings(
+      withAsset(d,option.mediaId,{name:option.label,mime:'image/webp'}),
+      sceneKey,{background:{assetId:option.mediaId}}),'Fondo G2 aplicado a esta escena.');
+  };
   const media=sceneLayers(studio.doc,sceneKey).filter((l):l is StudioMediaLayer=>l.kind==='image'||l.kind==='effect');
   const selected=media.find(l=>l.id===studio.selected)??null;
   const patch=(part:Partial<StudioLayer>)=>{if(selected)studio.apply(d=>withLayer(d,sceneKey,{...selected,...part} as StudioLayer),'Cambios sin guardar');};
@@ -194,6 +203,14 @@ export function StudioScreenPanel({label,sceneKey,originalTitle,texts}:PanelProp
         <button type="button" data-testid="studio-background" onClick={()=>pick('background')}>▧ Fondo</button>
         <button type="button" disabled={!scene?.background} onClick={()=>studio.apply(d=>withSceneSettings(d,sceneKey,{background:null}),'Fondo original restaurado.')}>↺ Fondo original</button>
       </div>
+      {g2Options.length>0&&<label className="dr-studio-label">Biblioteca de fondos G2 publicados
+        <select data-testid="studio-g2-background-select"
+          value={g2Options.some(item=>item.mediaId===scene?.background?.assetId)?scene?.background?.assetId:''}
+          onChange={e=>chooseG2(e.target.value)}>
+          <option value="">Seleccionar fondo G2 · sin descargar ZIP</option>
+          {g2Options.map(item=><option key={item.id} value={item.mediaId}>{item.label}</option>)}
+        </select>
+      </label>}
       {media.length>0&&<label className="dr-studio-label">Capa
         <select data-testid="studio-actor-select" value={selected?.id??''} onChange={e=>studio.select(e.target.value||null)}>
           <option value="">Seleccionar capa</option>
