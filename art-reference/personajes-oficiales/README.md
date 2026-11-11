@@ -49,3 +49,7 @@ Los siguientes diseños deben derivarse de esta guía, conservando cada identida
 ## Segundo bloque de generales G2
 
 La recuperación exacta de seis originales con hashes verificados, rasgos invariables y proceso de incorporación por un ZIP se documenta en [G2-RELEVO-CHAT-BLOQUE-02.md](G2-RELEVO-CHAT-BLOQUE-02.md). En el corte previo a subir el ZIP, sus `imagenEnRepositorio` siguen en `false`; no se sustituyen sprites de producción.
+
+## Referencias del bloque 02 publicadas
+
+Los seis originales de Leandro, Octavio, Jerónimo, Isabela, Aukan y Gonzalo se incorporaron mediante importación SHA-256 y constan como archivos en `imagenes/` (tres JPEG reales con extensión `.jpg` y tres PNG RGBA). Los otros seis maestros del bloque 01 siguen pendientes de publicación binaria. Ver `G2-RELEVO-CHAT-BLOQUE-02.md` para el estado detallado y `G2-EXPRESIONES-BLOQUE-02.json` para las 36 expresiones previstas. La Galería y DRStudio podrán mostrar estas seis fuentes **solo como referencias**; no se activan retratos G2 en juego ni se sustituyen los G1.
