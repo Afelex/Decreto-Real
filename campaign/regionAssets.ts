@@ -1,3 +1,4 @@
+import { g2FinalSceneUrl, g2FinalPreludeUrl, g2RegionalUrl } from './g2Artwork.ts';
 /** Campaign scenery and rival portraits. 47 approved assets from GitHub Actions run 41921898124.
  * Battle scenes remain separate from the regional map; prologue retains its own illustration.
  * All generated assets are served from Vite's public/campania/arte/ folder.
@@ -23,15 +24,17 @@ export type CampaignArtworkId = keyof typeof CAMPAIGN_LANDSCAPE_FILES;
 export function campaignLandscape(chapterId: string | undefined): string {
   const id: CampaignArtworkId = chapterId && Object.prototype.hasOwnProperty.call(CAMPAIGN_LANDSCAPE_FILES, chapterId)
     ? chapterId as CampaignArtworkId : 'p';
-  return `${import.meta.env.BASE_URL}campania/${CAMPAIGN_LANDSCAPE_FILES[id]}`;
+  return g2RegionalUrl(id,'base') ?? `${import.meta.env.BASE_URL}campania/${CAMPAIGN_LANDSCAPE_FILES[id]}`;
 }
 
 /** Boss stages have their own battle arena; the final chapter uses its boss arena only against Sigumán. */
 export function campaignMissionBackground(missionId: string): string | undefined {
   const stage = STORY_STAGES.find(item => item.id === missionId);
   if (!stage || stage.chapterId === 'p') return undefined;
+  const finalG2=g2FinalSceneUrl(missionId,'duel');
+  if (finalG2) return finalG2;
   const variant = stage.kind === 'boss' || stage.kind === 'final' ? 'jefe' : 'base';
-  return `${import.meta.env.BASE_URL}campania/arte/fondos/region-${stage.chapterId}-${variant}.webp`;
+  return g2RegionalUrl(stage.chapterId,variant) ?? `${import.meta.env.BASE_URL}campania/arte/fondos/region-${stage.chapterId}-${variant}.webp`;
 }
 
 const rivalSlug = (name: string): string => name.toLowerCase().normalize('NFD')
@@ -52,3 +55,13 @@ export const CAMPAIGN_ART_BASE_SIZES = {
   region: { width: 720, height: 1100 },
   hub: { width: 941, height: 1672 },
 } as const;
+
+/** Fondo inicial de la misión. M35 y M36 se muestran antes del duelo con su escena propia. */
+export function campaignMissionBriefingBackground(missionId:string):string|undefined {
+  return g2FinalSceneUrl(missionId,'briefing')??campaignMissionBackground(missionId);
+}
+
+/** Cambia el estado visual del preludio sin alterar la escena ni el motor. */
+export function campaignMissionPreludeBackground(missionId:string,lineIndex:number):string|undefined {
+  return g2FinalPreludeUrl(missionId,lineIndex)??campaignMissionBackground(missionId);
+}

@@ -17,7 +17,7 @@ import BattleResultScreen from './BattleResultScreen';
 import { RegionScene } from './RegionScene';
 import { GeneralPortrait } from './GeneralPortrait';
 import BossConfrontation from './BossConfrontation';
-import { campaignMissionBackground, campaignOpponentPortrait } from '../campaign/regionAssets.ts';
+import { campaignMissionBackground, campaignMissionBriefingBackground, campaignOpponentPortrait } from '../campaign/regionAssets.ts';
 import { StudioScreenLayers, StudioScreenPanel, StudioScreenProvider, StudioText, useStudioBackground, useStudioTitle } from './studio/StudioScreenKit';
 import { useStudio } from './studio/StudioContext';
 import './campaign.css';
@@ -43,7 +43,7 @@ const CampaignMissionScreen: React.FC = () => {
   const originalConversation = mission ? combatConversationForMission(mission.id) : undefined;
   const briefingKey = 'mision-' + (mission?.id ?? '00');
   const briefingTitle = useStudioTitle(briefingKey, mission?.title ?? '');
-  const briefingArt = useStudioBackground(briefingKey, '');
+  const briefingArt = useStudioBackground(briefingKey, campaignMissionBriefingBackground(mission?.id ?? '') ?? '');
   const briefingObjective = mission?.openingLine.includes(':')
     ? mission.openingLine.substring(mission.openingLine.indexOf(':') + 1).trim()
     : mission?.openingLine ?? '';
@@ -170,7 +170,7 @@ const CampaignMissionScreen: React.FC = () => {
     </header>
     <section className="dc-story-scene dc-briefing-scene" aria-labelledby="dc-scene-title"
       style={briefingArt ? {backgroundImage:'url("'+briefingArt+'")',backgroundSize:'cover',backgroundPosition:'center'} : undefined}>
-      <RegionScene chapterId={chapter?.id} missionId={mission.id} formidable={mission.kind === 'boss' || mission.id === '38'}/>
+      <RegionScene chapterId={chapter?.id} missionId={mission.id} backgroundOverride={briefingArt||undefined} formidable={mission.kind === 'boss' || mission.id === '38'}/>
       {mission.kind === 'boss' && <span className="dc-general-banner"><GeneralPortrait chapterId={chapter?.id ?? ''} className="dc-mini-general"/><span>♛ GENERAL DE LA REGIÓN · {mission.title}</span></span>}
       <span className="dc-scene-label">{mission.kind === 'boss' ? 'ENCUENTRO CON GENERAL' : mission.kind === 'subboss' ? 'ENCUENTRO CON SUBJEFE' : mission.kind === 'final' ? 'ENFRENTAMIENTO FINAL' : 'NUEVA MISIÓN'} · {mission.id}/38</span>
       {briefingTitle !== null && <h2 id="dc-scene-title">{briefingTitle}</h2>}

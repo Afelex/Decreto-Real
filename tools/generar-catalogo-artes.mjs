@@ -17,6 +17,7 @@ export function category(path){
     if(path.includes('/retratos/')||path.includes('/personajes/'))return 'Personajes';
     return 'Nueva generación';
   }
+  if(path.includes('/artes/generaciones/DR-G2-2026/'))return 'G2 · Fondos de campaña';
   if(path.includes('/studio/media/'))return 'Arte publicado desde DRStudio';
   if(path.includes('/campania/arte/fondos/'))return 'Fondos de campaña';
   if(path.includes('/campania/arte/retratos/'))return 'Rivales de campaña';
