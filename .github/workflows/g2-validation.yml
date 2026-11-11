@@ -15,6 +15,13 @@ on:
       - screens/CampaignMission.tsx
       - screens/BossConfrontation.tsx
       - tests/e2e/g2-graphics.spec.ts
+  pull_request:
+    paths:
+      - .github/workflows/g2-validation.yml
+      - campaign/studio/g2PublishedLibrary.ts
+      - screens/studio/StudioContext.tsx
+      - screens/studio/StudioScreenKit.tsx
+      - tests/e2e/g2-graphics.spec.ts
   workflow_dispatch:
 
 permissions:
