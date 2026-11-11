@@ -1,0 +1,81 @@
+name: G2 - Importar 25 fondos aprobados
+
+on:
+  push:
+    branches:
+      - feat/arte-g2-2026-catalogo-y-archivo
+    paths:
+      - incoming/Decreto_Real_G2_25_fondos_para_integrar.zip
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: decreto-real-g2-import
+  cancel-in-progress: false
+
+jobs:
+  import-g2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout de la rama G2
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Verificar ZIP aprobado
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f incoming/Decreto_Real_G2_25_fondos_para_integrar.zip
+          echo 'fa01e33e8c339afd445aead6f1e1dd599301ea2077517f1ab5807d438f978f47  incoming/Decreto_Real_G2_25_fondos_para_integrar.zip' | sha256sum --check
+          unzip -t incoming/Decreto_Real_G2_25_fondos_para_integrar.zip | tail -2
+      - name: Instalar Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Instalar dependencias
+        run: npm ci
+      - name: Importar G2 a rutas exclusivas sin tocar G1
+        run: npm run g2:import -- incoming/Decreto_Real_G2_25_fondos_para_integrar.zip
+      - name: Validar 25 fondos y activaciones
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import {readFileSync, existsSync} from 'node:fs';
+          import {createHash} from 'node:crypto';
+          import {execFileSync} from 'node:child_process';
+          const manifest=JSON.parse(execFileSync('unzip',['-p','incoming/Decreto_Real_G2_25_fondos_para_integrar.zip','MANIFIESTO-G2.json'],{encoding:'utf8'}));
+          if(manifest.count!==25 || manifest.assets?.length!==25)throw Error('El manifiesto no tiene 25 recursos');
+          for(const asset of manifest.assets){
+            if(!asset.path.startsWith('public/artes/generaciones/DR-G2-2026/'))throw Error('Ruta fuera de G2: '+asset.path);
+            if(!existsSync(asset.path))throw Error('Falta '+asset.id);
+            if(createHash('sha256').update(readFileSync(asset.path)).digest('hex')!==asset.sha256)throw Error('SHA inválido: '+asset.id);
+          }
+          const active=readFileSync('campaign/g2Published.ts','utf8');
+          if((active.match(/"G2-(?:FON|M35|M36)-/g)||[]).length!==25)throw Error('No están activados los 25 IDs');
+          console.log('25 fondos G2 verificados; G1 preservado.');
+          NODE
+      - name: Pruebas unitarias
+        run: npm test
+      - name: Pruebas de interfaz
+        run: npm run test:ui
+      - name: Verificar TypeScript
+        run: npx tsc --noEmit
+      - name: Verificar compilación de producción
+        run: npm run build
+      - name: Confirmar los fondos en la PR sin fusionar main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add campaign/g2Published.ts public/artes/catalogo.json public/artes/generaciones/DR-G2-2026/fondos public/artes/generaciones/DR-G2-2026/fondos-especiales
+          git rm -- incoming/Decreto_Real_G2_25_fondos_para_integrar.zip
+          if ! git diff --cached --quiet; then
+            git commit -m 'assets(g2): instalar 25 fondos aprobados y activar rutas con respaldo G1'
+            git push origin HEAD:feat/arte-g2-2026-catalogo-y-archivo
+          fi
