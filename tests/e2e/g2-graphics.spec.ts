@@ -110,5 +110,5 @@ test('la Galería G2 distingue los seis originales de las expresiones pendientes
   await expect(cards).toHaveCount(6);
   await expect(page.getByRole('button',{name:/Isabela Valdierra/i})).toBeVisible();
   await page.getByRole('button',{name:/Isabela Valdierra/i}).click();
-  await expect(page.getByRole('complementary',{name:'Detalles del arte'})).toContainText('referencia-maestra');
+  await expect(page.getByRole('complementary',{name:'Detalles del arte'})).toContainText('Referencia maestra G2');
 });
