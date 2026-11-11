@@ -85,3 +85,16 @@ test('M36 muestra acceso a prisión y calabozos donde combate Gaspar de Armenta'
   await verifyImage(backdrop, /G2-M36-B\.webp$/);
   await expect(page.getByText('León del Edicto').first()).toBeVisible();
 });
+
+test('un fondo G2 publicado puede incorporarse a la biblioteca local de DRStudio', async ({page}) => {
+  await page.goto(root + '?drDev=1#/artes');
+  await expect(page.getByRole('heading',{name:'Biblioteca central de artes'})).toBeVisible();
+  await page.getByRole('combobox',{name:'Filtrar por generación'}).selectOption('DR-G2-2026');
+  await page.getByRole('button',{name:/G2 M35 C/i}).click();
+  await page.getByRole('button',{name:/Usar en DRStudio/}).click();
+  await expect(page.getByRole('status')).toContainText('está disponible en DRStudio');
+  await expect(page.locator('.dr-art-card')).toHaveCount(26);
+  await page.reload();
+  await page.getByRole('combobox',{name:'Filtrar por generación'}).selectOption('DR-G2-2026');
+  await expect(page.locator('.dr-art-card').filter({hasText:'G2-M35-C.webp'})).toBeVisible();
+});
