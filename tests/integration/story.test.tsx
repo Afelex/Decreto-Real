@@ -160,8 +160,10 @@ test('the chosen territory changes only campaign scenery, not the original battl
   view.unmount();
 });
 
-test('the two prologue missions retain their original combat backdrop', () => {
+test('the prologue uses the G2 Plaza del Pregón when published and preserves the G1 fallback', () => {
   screenAt('/campania/mision/01');
   fireEvent.click(screen.getByRole('button', { name: /Preparar combate/ }));
-  expect(screen.getByTestId('original-board').getAttribute('data-background')).toContain('plaza-virreinal-v2.svg');
+  expect(screen.getByTestId('original-board').getAttribute('data-background')).toContain(
+    g2AssetIsPublished('G2-FON-002') ? g2AssetPath('G2-FON-002') : 'plaza-virreinal-v2.svg'
+  );
 });
