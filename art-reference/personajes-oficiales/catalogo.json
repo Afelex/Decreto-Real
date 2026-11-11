@@ -125,12 +125,35 @@
       "nombre": "Nayisa de Sombras",
       "rol": "general",
       "mision": "22",
-      "descripcion": "Cabello oscuro con trenza, ojos claros, marcas rojas en mejillas, capucha/tocado verde con plumas verdes, grandes pendientes dorados, manto verde y oro con textil moteado.",
-      "originalChatFile": "163484.png",
+      "descripcion": "Mujer joven de expresión firme, ojos azul turquesa claros, cabello oscuro abundante con matices violáceos y trenza larga sobre su lado derecho (izquierda para el observador), dos marcas rojas diagonales en cada mejilla. Capucha verde con ornamentos geométricos dorados, gran penacho de plumas verdes, vincha dorada con disco frontal, pendientes largos geométricos dorados. Manto verde oscuro y oro sujeto por gema esmeralda, prenda de piel moteada y carcaj de flechas.",
+      "originalChatFile": "168754.png",
       "sha256Prefix": "5d7821e18bc05112278d",
       "archivoPendiente": "art-reference/personajes-oficiales/imagenes/nayisa-de-sombras.png",
       "imagenEnRepositorio": false,
-      "estadoIdentidad": "referencia_original_usuario"
+      "estadoIdentidad": "referencia_maestra_confirmada_usuario",
+      "perfilVisualCanon": "Retrato frontal de mujer joven de mirada intensa, boca cerrada, ojos grandes color azul hielo/turquesa y cejas marcadas. Cabello negro castaño con reflejos violáceos, abundante, ondulado, con trenza gruesa larga cayendo por el lado derecho del personaje (izquierda del espectador), ceñida por aros dorados. Marcas faciales: dos bandas rojas diagonales paralelas en cada mejilla. Vincha metálica dorada horizontal con medallón redondo lateral visible en frente. Capucha verde oscura de borde dorado con arabescos/geométricos, triángulo decorativo frontal, penacho largo de plumas verdes a su derecha (izquierda del espectador). Pendientes colgantes de piezas geométricas doradas. Capa o manto verde intenso con amplias solapas y galones dorados, cierre central con gema verde facetada, placa pectoral dorada; piel de animal moteada en hombro derecho del personaje (izquierda de la imagen); carcaj con flechas visibles por detrás del hombro derecho.",
+      "expresionesG2Previstas": [
+        "neutral vigilante",
+        "decidida en desafío",
+        "enojada ante una orden injusta",
+        "sorprendida o alerta",
+        "serena después del combate",
+        "acción con arco y flechas"
+      ],
+      "detallesArchivoRecibido": {
+        "nombre": "168754.png",
+        "dimensionesPx": {
+          "ancho": 1125,
+          "alto": 1398
+        },
+        "formatoReal": "PNG",
+        "modoColor": "RGBA",
+        "canalAlfa": true,
+        "descripcionTransparencia": "El archivo contiene alfa real, con exterior transparente y bordes parcialmente transparentes; verificar resultado visual al incorporarlo a DRStudio.",
+        "sha256": "5d7821e18bc05112278d29274c22cb10ebdfae76cea0c84ca75263638c9314d4",
+        "verificacionIdentidad": "La huella SHA-256 coincide con el prefijo ya documentado para la antigua referencia 163484.png; se confirma continuidad exacta del original."
+      },
+      "confirmadoPorUsuarioEnConversacion": true
     },
     {
       "id": "octavio-argento",
@@ -213,14 +236,15 @@
     }
   ],
   "avanceCanonVisual": {
-    "version": "G2-R2",
+    "version": "G2-R3",
     "perfilesConfirmados": [
       "xervias",
       "zhinchi",
       "siguman",
-      "vandalo-rojo"
+      "vandalo-rojo",
+      "nayisa-de-sombras"
     ],
     "totalPerfilesPrincipales": 12,
-    "nota": "Cuatro referencias visuales maestras confirmadas por el creador. Los archivos originales aún no están montados como binarios en GitHub; no sustituye los retratos de producción. La referencia más reciente de Vándalo Rojo prevalece sobre bocetos anteriores."
+    "nota": "Cinco referencias visuales maestras confirmadas en esta conversación. La copia 168754.png de Nayisa coincide en SHA-256 con la antigua referencia registrada, dispone de canal alfa y sus rasgos están fijados. Los binarios maestros aún no están subidos a GitHub ni integrados como retratos G2 en el juego."
   }
 }
