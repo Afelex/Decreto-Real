@@ -12,7 +12,8 @@ test('G2: todas las imágenes 2:3 se pueden comparar en el recorte móvil y guar
   await page.goto(root+'?drDev=1#/artes');
   await expect(page.getByRole('heading',{name:'Biblioteca central de artes'})).toBeVisible();
   await page.getByRole('combobox',{name:'Filtrar por generación'}).selectOption('DR-G2-2026');
-  const cards=page.locator('.dr-art-card');
+  // Solo los 25 fondos, no los seis maestros G2 visibles en el mismo filtro.
+  const cards=page.locator('.dr-art-card').filter({hasText:/G2 (?:FON|M35|M36)/i});
   await expect(cards).toHaveCount(25);
   for(let index=0;index<25;index++){
     await cards.nth(index).click();
@@ -40,7 +41,8 @@ test('G2: todas las imágenes 2:3 se pueden comparar en el recorte móvil y guar
 test('la galería compara franja horizontal con foco al 32% y permite volver a original',async({page})=>{
   await page.goto(root+'?drDev=1#/artes');
   await page.getByRole('combobox',{name:'Filtrar por generación'}).selectOption('DR-G2-2026');
-  const cards=page.locator('.dr-art-card');
+  // Solo los 25 fondos, no los seis maestros G2 visibles en el mismo filtro.
+  const cards=page.locator('.dr-art-card').filter({hasText:/G2 (?:FON|M35|M36)/i});
   await expect(cards).toHaveCount(25);
   // Verifica prólogo, regiones y transición del derrumbe.
   for(const index of [0,1,3,9,17,20,21,22,23,24]){
