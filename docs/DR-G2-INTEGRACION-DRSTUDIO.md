@@ -1,27 +1,59 @@
-# Integración G2 en Decreto Real Studio
+# G2 · Fondos publicados y biblioteca de Decreto Real Studio
 
-Esta rama incorpora **25 fondos aprobados** al catálogo técnico: 20 fondos regionales y 5 imágenes especiales para misiones 35 y 36. **Los archivos WebP deben instalarse antes de que G2 se active en el juego.** La bandera `campaign/g2Published.ts` está vacía para que el juego use G1 sin mostrar enlaces rotos.
+## Estado actual
+Los **25 WebP G2** (20 fondos de regiones/prólogo y 5 especiales de M35–M36) están
+publicados en `main`, activados en `campaign/g2Published.ts` e incluidos en
+`public/artes/catalogo.json`. G1 **sigue presente como respaldo**, sin borrados.
 
-## Instalación única de los binarios
+## Cómo usar G2 sin importar el ZIP
+1. Abrir Decreto Real Studio con modo desarrollador y elegir una intervención del
+   prólogo o una pantalla de campaña desde «Escenas».
+2. Abrir **Biblioteca 🖼** (en pantallas narrativas también está el botón
+   **Fondos G2 publicados**).
+3. Filtrar por **25 fondos G2 publicados** y buscar el ID, zona o misión.
+4. Elegir **Usar como fondo** o **Como sprite**. El fondo seleccionado se
+   descarga del repositorio, se verifica por firma WebP y **solo entonces** se
+   incorpora a IndexedDB para su edición, deshacer y exportación.
+5. Guardar el borrador. La escena mantiene el recurso elegido tras recargar ese
+   mismo navegador. Para llevar el borrador a otro dispositivo, exportar el
+   proyecto ZIP de Studio.
 
-1. Descarga el paquete `Decreto_Real_G2_25_fondos_para_integrar.zip` proporcionado en la conversación.
-2. En una copia local del repositorio, ejecuta `npm run g2:import -- ruta/al/archivo.zip` (requiere `unzip` instalado; también acepta la carpeta descomprimida).
-3. Ejecuta `npm run test`, `npm run test:ui`, `npm run build` y publica la PR tras la revisión.
+**Abrir la biblioteca no descarga 25 imágenes a IndexedDB ni sobrescribe
+fondos personalizados.** Los 25 recursos se ven como miniaturas del catálogo
+público; solo al elegir uno se guarda una copia local reutilizable por SHA-256.
+La pestaña «Mis archivos» muestra las copias locales. La limpieza de archivos
+sin uso afecta solo a esas copias, nunca a los recursos del repositorio.
 
-El importador copia los 25 WebP a `public/artes/generaciones/DR-G2-2026/`, comprueba su cabecera, crea la lista de archivos activos y actualiza `public/artes/catalogo.json`. Después se pueden revisar en **Galería de artes → G2 · Fondos de campaña**, e incorporar a la biblioteca local de DRStudio con «Usar en DRStudio».
+## Vínculos de escena existentes
+`campaign/studio/g2SceneAssignments.ts` declara las 110 asignaciones de
+fondos por defecto para misiones, duelos, preludios y transiciones regionales.
+La biblioteca muestra el número de escenas asociadas a cada G2. El juego ya
+utiliza los G2 publicados como fondos por defecto, con alternativa G1 para
+fondos no publicados. **No hace falta realizar ninguna importación local para
+que esos fondos se vean en el juego**.
 
-## Escenas mapeadas
+- Prólogo: Camino Real y Plaza del Pregón en sus misiones correspondientes.
+- M35: preludios 01–05 casona intacta (A); 06–10 derrumbe (B); 11–12
+  ruinas (C); el combate utiliza C.
+- M36: preludio 01 acceso a prisión (A); siguientes intervenciones y duelo,
+  calabozos (B).
+- M37: exteriores; M38: arena final.
+- El resto de capítulos usa fondos regionales base y arenas de generales.
 
-- M35: preludio 1–5 casona intacta (A), 6–10 derrumbe (B), 11–12 ruinas (C); combate y diálogo posterior usan C.
-- M36: primera línea de presentación acceso a prisión (A), las siguientes y el combate usan interior (B).
-- M37: exterior final G2-FON-019 (si está activo). M38: cámara del Decreto Viviente G2-FON-020.
-- Resto de capítulos: fondo G2 regional base o arena de jefe por misión.
-- Las escenas del preludio son editables por separado en DRStudio y mantienen sus claves `mision-35/preludio-01` etc.
+Las ediciones manuales de DRStudio guardadas para una escena tienen prioridad
+sobre los fondos originales y no alteran narrativa, turnos, baraja, IA ni HP.
+La versión original **G2-FON-010** se conserva sin correcciones adicionales.
 
-No se cambian los efectos, la baraja, la IA, ni las reglas del combate. Los fondos G1 **no se eliminan** y conservan prioridad como reemplazo cuando G2 no está instalado. Los efectos especiales del derrumbe y del León del Edicto se trabajan por capas PNG transparentes, no se incrustan en el fondo.
+## Herramientas opcionales de mantenimiento
+El importador original de la **Galería de artes → Importar lote G2 (25 fondos)**
+permanece disponible para recuperar **todos** los recursos y asignaciones en
+un borrador local en un único paso, usando un ZIP STORE firmado con SHA-256 por
+archivo. No es necesario para usar la biblioteca publicada ni para jugar.
 
-**Nota:** La corrección de banderas de G2-FON-010 fue cancelada por decisión expresa del autor; se utiliza el archivo original aprobado.
+Para reinstalar archivos en una copia *de desarrollo* del repositorio, se puede
+usar `npm run g2:import -- ruta/al/ZIP`. Esto se reserva para producción
+técnica, no para la revisión cotidiana.
 
-## Importación de un clic desde la Galería
-
-El ZIP distribuido está en formato ZIP STORE (sin compresión adicional, porque los WebP ya están comprimidos) y contiene un manifiesto con SHA-256 por recurso. En la aplicación, abrir **Galería de artes → Importar lote G2 (25 fondos)** y elegir el ZIP: se comprueba integridad, se guardan los 25 WebP en IndexedDB y se asignan automáticamente a 110 escenas o estados de DRStudio, sin sobrescribir fondos personalizados. Esto es una instalación **local** para revisión, no publica los binarios en GitHub ni modifica la partida del usuario. En otra sesión/dispositivo se necesita una publicación GitHub posterior.
+Se recomienda verificar la composición en móvil (390 × 844) y el encuadre de
+cada preludio antes de generar nuevas capas transparentes de derrumbe o del
+León del Edicto.
