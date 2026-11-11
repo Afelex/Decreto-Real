@@ -20,6 +20,7 @@ test('25 fondos G2 aparecen automáticamente en la biblioteca de Studio sin subi
   await expect(g2).toContainText('Plaza del Pregón');
   await g2.getByTestId('studio-g2-use-background').click();
   await expect(page.locator('.dcop-backdrop')).toHaveAttribute('src',/^blob:/);
+  await page.getByRole('combobox',{name:'Origen de la biblioteca'}).selectOption('local');
   await expect(page.getByTestId('studio-library-item')).toHaveCount(1);
   await page.getByTestId('studio-save').click();
   await page.reload();
