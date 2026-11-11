@@ -105,11 +105,14 @@ test('DRStudio permite elegir fondos G2 publicados sin ZIP y conserva el borrado
   const picker=page.getByTestId('studio-g2-background-select');
   await expect(picker).toBeVisible();
   await expect(picker.locator('option')).toHaveCount(26);
-  await picker.selectOption({label:/G2-M35-C/});
+  const g2Option=picker.locator('option').filter({hasText:'G2-M35-C'});
+  const mediaId=await g2Option.getAttribute('value');
+  expect(mediaId).toBeTruthy();
+  await picker.selectOption(mediaId!);
   await verifyImage(page.locator('.dc-region-illustration'), /G2-M35-C\.webp$/);
   await page.getByTestId('studio-save').click();
   await page.reload();
-  await expect(picker).toHaveValue(await picker.inputValue());
+  await expect(picker).toHaveValue(mediaId!);
   await verifyImage(page.locator('.dc-region-illustration'), /G2-M35-C\.webp$/);
   await page.getByRole('button',{name:/Fondo original/}).click();
   await verifyImage(page.locator('.dc-region-illustration'), /G2-M35-A\.webp$/);
