@@ -1,0 +1,76 @@
+name: "Decreto Real · G2 Personajes (lote 01, ocho retratos)"
+run-name: "Personajes G2 · ${{ github.event_name == 'push' && 'Plan gratis' || inputs.modo }} · ${{ github.event_name == 'push' && 'ambos' || inputs.personajes }}"
+
+on:
+  push:
+    branches:
+      - feat/g2-personajes-lote01-plan-y-qa
+    paths:
+      - art-reference/personajes-g2/lote-01.json
+      - tools/generate-g2-characters.mjs
+      - tools/generate-g2-characters.test.mjs
+      - .github/workflows/g2-characters-production.yml
+  workflow_dispatch:
+    inputs:
+      modo:
+        description: "plan = GRATIS; generar = utiliza créditos de la API"
+        required: true
+        type: choice
+        options: [plan, generar]
+        default: plan
+      personajes:
+        description: "4 retratos de Xervias, 4 de Zhinchi o ambos"
+        required: true
+        type: choice
+        options: [xervias, zhinchi, ambos]
+        default: xervias
+      calidad:
+        description: "Calidad de las imágenes generadas"
+        required: true
+        type: choice
+        options: [low, medium, high]
+        default: medium
+      confirmar:
+        description: "Para gastar créditos escribe exactamente GENERAR_8_PERSONAJES_G2"
+        required: true
+        type: string
+        default: "NO"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: "decreto-real-g2-personajes-${{ github.ref }}"
+  cancel-in-progress: false
+
+jobs:
+  personajes-g2:
+    name: "Referencias, PNG transparentes y revisión sin autopublicación"
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: "Obtener repositorio sin mutaciones"
+        uses: actions/checkout@v4
+      - name: "Instalar Node.js 24"
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: "Validar identidad, referencias, transparencia y bloqueo de gasto"
+        run: node --test tools/generate-g2-characters.test.mjs
+      - name: "Preparar plan gratis o generar candidatos tras autorización"
+        env:
+          OPENAI_API_KEY: "${{ secrets.OPENAI_API_KEY }}"
+          G2_PERSON_MODE: "${{ github.event_name == 'push' && 'plan' || (inputs.modo == 'generar' && 'generate' || 'plan') }}"
+          G2_PERSON_GROUP: "${{ github.event_name == 'push' && 'ambos' || inputs.personajes }}"
+          G2_PERSON_QUALITY: "${{ github.event_name == 'push' && 'medium' || inputs.calidad }}"
+          G2_PERSON_CONFIRM: "${{ github.event_name == 'push' && 'NO' || inputs.confirmar }}"
+          G2_PERSON_MAX: "8"
+        run: node tools/generate-g2-characters.mjs
+      - name: "Entregar propuestas PNG y manifiesto para revisión"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: "decreto-real-g2-personajes-lote01-${{ github.run_id }}"
+          path: art-output/g2-personajes/lote-01/
+          if-no-files-found: warn
+          retention-days: 30
