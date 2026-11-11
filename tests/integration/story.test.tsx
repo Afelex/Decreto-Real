@@ -1,4 +1,5 @@
 import React from 'react';
+import { g2AssetIsPublished, g2AssetPath, G2_REGION_BASE } from '../../campaign/g2Artwork.ts';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
@@ -153,7 +154,9 @@ test('the chosen territory changes only campaign scenery, not the original battl
   const view = screenAt('/campania/mision/27');
   expect(screen.getByRole('heading', { name: 'El paso de las nubes' })).toBeTruthy();
   fireEvent.click(screen.getByRole('button', { name: /Preparar combate/ }));
-  expect(screen.getByTestId('original-board').getAttribute('data-background')).toContain('arte/fondos/region-7-base.webp');
+  const g2Id = G2_REGION_BASE['7'];
+  const expectedPath = g2AssetIsPublished(g2Id) ? g2AssetPath(g2Id) : 'campania/arte/fondos/region-7-base.webp';
+  expect(screen.getByTestId('original-board').getAttribute('data-background')).toContain(expectedPath);
   view.unmount();
 });
 
