@@ -5,7 +5,7 @@ test('La galería muestra el catálogo, dimensiones y el arte que se sube desde 
   test.skip(!['desktop-1280','mobile-390'].includes(info.project.name));
   await page.goto('/Decreto-Real/?drDev=1#/artes');
   await expect(page.getByRole('heading',{name:'Biblioteca central de artes'})).toBeVisible();
-  await expect(page.getByText(/\\d+ artes del repositorio/)).toBeVisible();
+  await expect(page.getByText(/\d+ artes del repositorio/)).toBeVisible();
   await page.getByRole('button',{name:'＋ Subir imágenes o videos'}).click();
   await page.locator('input[type=file][multiple]').setInputFiles({name:'prueba-galeria.png',mimeType:'image/png',buffer:PNG});
   await expect(page.getByRole('status')).toContainText('DRStudio puede utilizarlos');
