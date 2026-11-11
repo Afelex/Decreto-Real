@@ -173,12 +173,33 @@
       "nombre": "Vándalo Rojo",
       "rol": "antagonista secundario",
       "mision": "36",
-      "descripcion": "Joven sin barba ni bigote, cabello corto rojo oscuro parcialmente cubierto por capucha roja ajustada, antifaz rojo/dorado que oculta los ojos, cordones sujetos bajo barbilla, ropa oscura funcional y capa roja desgastada; criminal de alto rango.",
-      "originalChatFile": "a_highly_stylized_crisp_anime_manga_illustration.png",
-      "sha256Prefix": "1a45234d761712256779",
+      "descripcion": "Antagonista joven sin vello facial, cabello rojizo oscuro visible bajo una gran capucha rojo carmesí de ribete y adorno lateral dorado; antifaz angular granate y oro con aberturas de ojos en sombra negra. Sonrisa contenida. Cordones y remates metálicos bajo el mentón. Capa carmesí con pliegues amplios y broche circular dorado de flor de lis; ropa de cuero negro/marrón con ribetes dorados y correas cruzadas.",
+      "originalChatFile": "168753.png",
+      "sha256Prefix": "6c1db656e9709b6c3e554",
       "archivoPendiente": "art-reference/personajes-oficiales/imagenes/vandalo-rojo.png",
       "imagenEnRepositorio": false,
-      "estadoIdentidad": "propuesta_con_capucha_por_validar"
+      "estadoIdentidad": "referencia_maestra_confirmada_usuario",
+      "perfilVisualCanon": "Hombre joven, rostro estrecho, mentón definido, piel clara, sonrisa pequeña y segura, sin barba ni bigote. Cabello corto-mediano de mechones granate oscuro bajo capucha roja amplia y estructurada; borde dorado que enmarca el rostro y ornamento geométrico dorado en el costado superior. Antifaz rígido vino oscuro con filigranas y aristas doradas, puente central puntiagudo, cubre por completo la mirada: ojos NO visibles; no inventar color de iris. Cordones de capucha granate trenzados bajo la barbilla con herrajes dorados. Cuello negro alto con cantos dorados; capa rojo intenso de grandes pliegues sobre hombros, sujeta con medallón circular de flor de lis dorada; correa diagonal oscura y hebilla cuadrada dorada sobre torso de cuero.",
+      "expresionesG2Previstas": [
+        "sonrisa desafiante (máscara puesta)",
+        "serio y calculador",
+        "furioso",
+        "sorprendido ante el poder heredado de Zhinchi",
+        "derrotado por Xervias"
+      ],
+      "detallesArchivoRecibido": {
+        "nombre": "168753.png",
+        "dimensionesPx": {
+          "ancho": 1236,
+          "alto": 1536
+        },
+        "formatoReal": "JPEG (aunque el archivo recibido lleva extensión .png)",
+        "canalAlfa": false,
+        "fondo": "negro sólido (no transparente)",
+        "sha256": "6c1db656e9709b6c3e554ce1b467fe9caf4bbb97eb6fd2f23e584fc21705ab72",
+        "nota": "Huella de la copia entregada en este chat. Se debe comprobar el formato y la huella antes de la futura subida al repositorio."
+      },
+      "confirmadoPorUsuarioEnConversacion": true
     }
   ],
   "variantes": [
@@ -191,13 +212,14 @@
     }
   ],
   "avanceCanonVisual": {
-    "version": "G2-R1",
+    "version": "G2-R2",
     "perfilesConfirmados": [
       "xervias",
       "zhinchi",
-      "siguman"
+      "siguman",
+      "vandalo-rojo"
     ],
     "totalPerfilesPrincipales": 12,
-    "nota": "Confirmados visualmente por el creador mediante imágenes compartidas. Los originales binarios aún no se han cargado en el repositorio; no marcar imagenEnRepositorio como true antes de comprobarlo. No sustituye ni publica retratos del juego."
+    "nota": "Cuatro referencias visuales maestras confirmadas por el creador. Los archivos originales aún no están montados como binarios en GitHub; no sustituye los retratos de producción. La referencia más reciente de Vándalo Rojo prevalece sobre bocetos anteriores."
   }
 }
