@@ -1,0 +1,82 @@
+name: G2 - Importar seis expresiones candidatas
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - incoming/DR-G2-LOTE-02-SEIS-EXPRESIONES-CANDIDATAS.zip
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: decreto-real-g2-expresiones-control
+  cancel-in-progress: false
+
+jobs:
+  conservar-candidatos:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Confirmar exactamente el paquete preparado
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f incoming/DR-G2-LOTE-02-SEIS-EXPRESIONES-CANDIDATAS.zip
+          echo '8396309193aba69cd42bf0c0dbf7a86007dd3f4534d9b1e0563db9d84760da99  incoming/DR-G2-LOTE-02-SEIS-EXPRESIONES-CANDIDATAS.zip' | sha256sum --check
+          unzip -t incoming/DR-G2-LOTE-02-SEIS-EXPRESIONES-CANDIDATAS.zip | tail -2
+      - name: Instalar Node.js 22 y dependencias
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Pruebas de rutas, hashes e identidades
+        run: node --test tools/importar-g2-expresiones-control.test.mjs
+      - name: Extraer únicamente seis PNG candidatos transparentes
+        run: node tools/importar-g2-expresiones-control.mjs incoming/DR-G2-LOTE-02-SEIS-EXPRESIONES-CANDIDATAS.zip
+      - name: Verificar que ningún retrato G1 haya cambiado
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --name-only | grep -E '^(public/campania/|campaign/|screens/|game/|public/artes/generaciones/)'; then
+            echo 'Error: la importación de candidatos no debe modificar recursos jugables o G1.' >&2
+            exit 1
+          fi
+      - name: Verificar seis candidatos sin aprobación ni publicación jugable
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import {readFileSync,existsSync} from 'node:fs';
+          import {createHash} from 'node:crypto';
+          const root='art-reference/personajes-oficiales/candidatos/';
+          const m=JSON.parse(readFileSync(root+'manifest.json'));
+          if(m.assetCount!==6||m.approved!==false||m.publishedToGame!==false)throw Error('Estado de candidatos incorrecto');
+          for(const c of m.items){
+            if(!c.path.startsWith(root)||!existsSync(c.path))throw Error('Falta PNG del candidato '+c.id);
+            const digest=createHash('sha256').update(readFileSync(c.path)).digest('hex');
+            if(digest!==c.sha256||c.status!=='candidate_not_approved')throw Error('SHA/estado inválido '+c.id);
+          }
+          console.log('6/6 candidatos almacenados, sin aprobación ni sustitución G1.');
+          NODE
+      - name: Pruebas y catálogo de arte actualizado
+        run: |
+          npm test
+          npm run build
+      - name: Confirmar candidatos y retirar el ZIP temporal
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add art-reference/personajes-oficiales/candidatos art-reference/personajes-oficiales/G2-EXPRESIONES-BLOQUE-02.json public/artes/catalogo.json
+          git rm -- incoming/DR-G2-LOTE-02-SEIS-EXPRESIONES-CANDIDATAS.zip
+          if ! git diff --cached --quiet; then
+            git commit -m 'assets(g2): conservar seis expresiones candidatas sin activar sprites'
+            git push origin HEAD:main
+          fi
