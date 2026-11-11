@@ -1,6 +1,6 @@
 # Decreto Real · Registro de continuidad G2 (fase retratos)
 
-**Estado del corte:** 5 de 12 personajes principales con referencias maestras visuales confirmadas en esta conversación. **Los archivos binarios de sus retratos originales siguen pendientes de cargarse en GitHub**; el hecho de describirlos aquí no equivale a instalar imágenes en la aplicación.
+**Estado del corte:** 6 de 12 personajes principales con referencias maestras visuales confirmadas en esta conversación. **Los archivos binarios de sus retratos originales siguen pendientes de cargarse en GitHub**; el hecho de describirlos aquí no equivale a instalar imágenes en la aplicación.
 
 | Personaje | Referencia visual validada | Familia de expresiones | Imagen maestra en repositorio | Integrado como G2 jugable |
 |---|---|---|---|---|
@@ -9,7 +9,8 @@
 | Sigumán | Sí | 5 previstas; no generadas | No | No |
 | Vándalo Rojo | **Sí; capucha y máscara ornamentada confirmadas** | 5 previstas; no generadas | No | No |
 | Nayisa | **Sí; referencia exacta confirmada** | 6 previstas; no generadas | No | No |
-| Ocho generales | Referencias documentadas; por ratificar en esta ronda | Pendiente | No | No |
+| Baltasar de Fierro | **Sí; almirante y referencia reciente confirmados** | 6 previstas; no generadas | No | No |
+| Otros seis generales | Referencias documentadas; por ratificar en esta ronda | Pendiente | No | No |
 
 ## Sigumán — rasgos invariables
 
@@ -45,6 +46,18 @@
 - **Referencia recibida:** `168754.png`, **1125 × 1398**, PNG RGBA con transparencia real. SHA-256 `5d7821e18bc05112278d29274c22cb10ebdfae76cea0c84ca75263638c9314d4`, cuyo prefijo **coincide** con el de la referencia ya documentada como `163484.png`. Es el mismo original, no un rediseño.
 - **Estado binario:** recibido en esta conversación; aún no comprobado como cargado en la ruta maestra de GitHub. Expresiones G2 pendientes de generar y aprobar.
 
+## Baltasar de Fierro — sexta referencia maestra confirmada
+
+- **Nombre canónico:** Baltasar de Fierro; apodo «Almirante de Hierro», general de la **misión 06**. El nombre registrado es Baltasar, aunque se le mencione ocasionalmente «Baltazar».
+- **Rostro:** hombre mayor de expresión severa, piel curtida, cejas blancas anchas, ojos oscuros, nariz prominente; cabello largo, barba abundante y bigote blanco arqueado hacia fuera.
+- **Bicornio naval:** azul marino/azul real, ala triangular amplia, ribetes de oro, arabescos y **ancla dorada central**; gran penacho blanco que emerge por arriba a la derecha del personaje (izquierda de la imagen).
+- **Casaca:** azul intenso con oro; cuello alto de motivos vegetales dorados, dos anclas doradas en las solapas, grandes charreteras con flecos dorados y cadenas cruzadas sobre el pecho.
+- **Corbatín:** gran tela blanca anudada y sujetada con broche rectangular dorado. **Pecho:** olas azules y blancas estilizadas.
+- **No alterar:** forma del bicornio, ancla central, penacho blanco, longitud de barba, bigote arqueado, emblemas navales y color azul/oro.
+- **Archivo proporcionado:** `168782.png`, **1152 × 1536**, datos **JPEG reales pese a la extensión .png**, RGB, **sin alfa**, fondo negro. 502 339 bytes; SHA-256 `03b01e7aa58c3785cf267a50da516e00949a4f52199e2bb70d3e7bfcf71c3643`.
+- **Nota de versiones:** el SHA de la nueva referencia no coincide con el prefijo antiguo de `163481.png`; esta imagen reciente pasa a ser la **referencia maestra aprobada**. No se debe asumir que ambas copias son idénticas.
+- Las variantes deberán generarse con transparencia verificada antes de incorporarlas a DRStudio; no se han generado ni publicado todavía.
+
 ## Control de cambios
 
 1. Nunca usar una descripción escrita como sustituto del archivo maestro.
@@ -55,6 +68,6 @@
 
 ## Próximo punto de relevo
 
-Cuando estén confirmadas al menos **seis** referencias maestras principales o terminadas varias familias de expresiones, preparar un resumen de continuidad antes de cambiar de conversación: nombres, rasgos, imágenes originales disponibles, variantes aprobadas, rutas de GitHub, PR fusionadas, decisiones pendientes y enlaces a DRStudio. Avisar expresamente al creador cuándo conviene abrir el nuevo chat.
+**Hito alcanzado: seis referencias maestras confirmadas.** Se ha preparado el documento de transferencia `G2-RELEVO-CHAT-BLOQUE-01.md` con nombres, imágenes de referencia, variantes pendientes, enlaces al repositorio y siguiente secuencia de trabajo. Avisar al creador que **ya es buen momento para abrir un nuevo chat**, distinguiendo claramente aprobación de identidad visual de generación/integración de sprites.
 
-**Siguiente referencia sugerida:** Baltasar de Fierro (o cualquier otro general cuya imagen maestra esté disponible). Al confirmar la sexta referencia, preparar el corte de continuidad y avisar expresamente al creador que ya puede abrir un nuevo chat si lo desea. **No presentar seis referencias aprobadas como seis familias de expresiones o seis archivos publicados.**
+**Para continuar en un nuevo chat:** empezar con las otras seis referencias maestras aún pendientes: Leandro Valcázar, Octavio Argento, Jerónimo Arrellano, Isabela Valdierra, Gonzalo de Montes y Aukan del Cóndor. Alternativamente, empezar la generación de las seis expresiones de Xervias basadas en su imagen maestra ya aprobada. **No presentar seis referencias aprobadas como seis familias de expresiones o seis archivos publicados.**
