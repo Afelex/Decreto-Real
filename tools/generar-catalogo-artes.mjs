@@ -12,6 +12,7 @@ const project=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const supported=/\.(png|jpe?g|webp|gif|avif|svg|mp4|webm)$/i;
 
 export function category(path){
+  if(path.startsWith('art-reference/personajes-oficiales/candidatos/'))return 'Personajes · Candidatos G2';
   if(path.startsWith('art-reference/personajes-oficiales/imagenes/'))return 'Personajes · Referencias G2';
   if(path.startsWith('public/artes/generaciones/')){
     if(path.includes('/fondos/'))return 'Fondos de campaña';
@@ -45,6 +46,13 @@ export function buildCatalog(){
   const canonical=JSON.parse(readFileSync(join(project,'art-reference/personajes-oficiales/catalogo.json'),'utf8'));
   const officialNames=new Map(canonical.personajes.filter(p=>p.imagenEnRepositorio)
     .map(p=>[p.archivoPendiente,p.nombre]));
+  const plan=JSON.parse(readFileSync(join(project,'art-reference/personajes-oficiales/G2-EXPRESIONES-BLOQUE-02.json'),'utf8'));
+  for(const p of plan.characters){
+    for(const v of p.variants){
+      if(v.status==='candidate_generated_not_approved'&&v.fileInRepo)
+        officialNames.set(v.fileInRepo,p.name+' · '+v.expression);
+    }
+  }
   const items=[...collect(join(project,'art-reference')),...collect(join(project,'public'))]
     .filter(i=>!i.path.startsWith('public/archivo-historico/'))
     .map(i=>({...i,name:officialNames.get(i.path)??i.name,
