@@ -12,6 +12,7 @@ const project=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const supported=/\.(png|jpe?g|webp|gif|avif|svg|mp4|webm)$/i;
 
 export function category(path){
+  if(path.startsWith('art-reference/personajes-oficiales/imagenes/'))return 'Personajes · Referencias G2';
   if(path.startsWith('public/artes/generaciones/')){
     if(path.includes('/fondos/'))return 'Fondos de campaña';
     if(path.includes('/retratos/')||path.includes('/personajes/'))return 'Personajes';
