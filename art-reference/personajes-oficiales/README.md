@@ -17,7 +17,7 @@
 5. Un fondo negro o de cuadrícula **no equivale** a transparencia real; comprobar alfa antes de usar en escenas de DRStudio.
 6. **Vándalo Rojo confirmado:** seguir la referencia maestra recibida como `168753.png`, con capucha amplia carmesí, máscara angular rojo oscuro/oro que oculta los ojos, cordones bajo la barbilla, sin bigote ni barba, y capa con medallón dorado. La aprobación está cerrada para esta referencia; las variantes expresivas siguen pendientes. El archivo mostrado tenía firma JPEG pese a la extensión .png y fondo negro sin transparencia; comprobarlo antes de generar sprites.
 
-**Avance de validación visual G2:** 5/12 referencias confirmadas por el creador: Xervias, Zhinchi, Sigumán, Vándalo Rojo y Nayisa de Sombras. La imagen de Nayisa se recibió como PNG RGBA transparente (1125 × 1398); su SHA-256 coincide con la ficha visual anterior. Los binarios maestros aún no están publicados en el repositorio.
+**Avance de validación visual G2:** 6/12 referencias confirmadas por el creador: Xervias, Zhinchi, Sigumán, Vándalo Rojo, Nayisa de Sombras y Baltasar de Fierro. La imagen reciente del almirante se recibió como `168782.png` (1152 × 1536) con datos JPEG y fondo negro sin alfa; es la referencia maestra actual aunque difiera de la huella del archivo anterior. La imagen de Nayisa tiene PNG RGBA. **Los seis binarios maestros aún no están publicados en este repositorio.** Primer bloque documentado en [`G2-RELEVO-CHAT-BLOQUE-01.md`](G2-RELEVO-CHAT-BLOQUE-01.md).
 
 ## Índice de personajes
 
