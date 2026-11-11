@@ -98,3 +98,19 @@ test('un fondo G2 publicado puede incorporarse a la biblioteca local de DRStudio
   await page.getByRole('combobox',{name:'Filtrar por generación'}).selectOption('DR-G2-2026');
   await expect(page.locator('.dr-art-card').filter({hasText:'G2-M35-C.webp'})).toBeVisible();
 });
+
+test('DRStudio permite elegir fondos G2 publicados sin ZIP y conserva el borrador al recargar', async ({page}) => {
+  await page.addInitScript(progressThrough,34);
+  await page.goto(root + '?drDev=1#/campania/mision/35?studio=1');
+  const picker=page.getByTestId('studio-g2-background-select');
+  await expect(picker).toBeVisible();
+  await expect(picker.locator('option')).toHaveCount(26);
+  await picker.selectOption({label:/G2-M35-C/});
+  await verifyImage(page.locator('.dc-region-illustration'), /G2-M35-C\.webp$/);
+  await page.getByTestId('studio-save').click();
+  await page.reload();
+  await expect(picker).toHaveValue(await picker.inputValue());
+  await verifyImage(page.locator('.dc-region-illustration'), /G2-M35-C\.webp$/);
+  await page.getByRole('button',{name:/Fondo original/}).click();
+  await verifyImage(page.locator('.dc-region-illustration'), /G2-M35-A\.webp$/);
+});
