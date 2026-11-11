@@ -1,5 +1,6 @@
 import React from 'react';
 import { loadStudioMediaUrls, revokeStudioMediaUrls } from '../../campaign/studioMedia';
+import { fetchPublishedG2File, publishedG2StudioAssets, type PublishedG2Asset } from '../../campaign/studio/g2PublishedLibrary.ts';
 import { useStudio, type StudioLibraryItem } from './StudioContext';
 
 export type LibraryUse = 'sprite'|'effect'|'background'|'replace';
@@ -28,6 +29,10 @@ export default function StudioLibrary({canReplace,onUse,onClose}:Props){
   const [reloadKey,setReloadKey]=React.useState(0);
   const [dimensions,setDimensions]=React.useState<Record<string,string>>({});
   const [showHidden,setShowHidden]=React.useState(false);
+  const [source,setSource]=React.useState<'all'|'g2'|'local'>('all');
+  const [query,setQuery]=React.useState('');
+  const [loadingG2,setLoadingG2]=React.useState<string|null>(null);
+  const published=React.useMemo(()=>publishedG2StudioAssets(import.meta.env.BASE_URL),[]);
   const hidden=React.useMemo(()=>{
     try{return JSON.parse(localStorage.getItem('decreto-real.artes.estados.v1')||'{}') as Record<string,string>;}
     catch{return {} as Record<string,string>;}
@@ -57,21 +62,49 @@ export default function StudioLibrary({canReplace,onUse,onClose}:Props){
   },[listLibrary,libraryVersion,docKey,reloadKey]);
 
   const orphans=(items??[]).filter(item=>!item.protected);
-  const visibleItems=(items??[]).filter(item=>showHidden||!hidden[item.id]);
+  const q=query.trim().toLocaleLowerCase('es');
+  const visibleItems=(items??[]).filter(item=>source!=='g2'&&
+    (showHidden||!hidden[item.id])&&
+    (!q||[item.name,item.id].join(' ').toLocaleLowerCase('es').includes(q)));
+  const visiblePublished=published.filter(item=>source!=='local'&&
+    (showHidden||!hidden['public/'+item.path])&&
+    (!q||[item.label,item.id,item.path,...item.sceneKeys].join(' ').toLocaleLowerCase('es').includes(q)));
   const orphanBytes=orphans.reduce((n,item)=>n+item.size,0);
   const total=(items??[]).reduce((n,item)=>n+item.size,0);
   const run=async(work:()=>Promise<unknown>)=>{
     setError('');
     try{await work();}catch(err){setError(err instanceof Error?err.message:'No se pudo completar la acción.');}
   };
+  const usePublished=async(asset:PublishedG2Asset,use:LibraryUse)=>{
+    if(loadingG2)return;
+    setError('');setLoadingG2(asset.id);
+    try{
+      // Los 25 fondos permanecen en el repositorio. Solo el elegido ocupa
+      // almacenamiento local para que Studio lo pueda editar y exportar.
+      const file=await fetchPublishedG2File(asset);
+      const stored=await studio.storeMedia(file);
+      onUse({id:stored.id,name:stored.name,mime:stored.mime,size:file.size,
+        usedIn:[],protected:true},use);
+    }catch(err){setError(err instanceof Error?err.message:'No se pudo utilizar el fondo publicado.');}
+    finally{setLoadingG2(null);}
+  };
   return <section className="dr-studio-library" aria-label="Biblioteca multimedia" data-testid="studio-library">
     <header>
       <strong>Biblioteca</strong>
       <a href={import.meta.env.BASE_URL+'?drDev=1#/artes'} target="_blank" rel="noopener noreferrer" title="Abrir biblioteca de todos los artes en otra pestaña">Galería de artes ↗</a>
-      <span data-testid="studio-library-summary">{items?items.length+' archivos · '+formatBytes(total):'Cargando…'}</span>
+      <span data-testid="studio-library-summary">{items?items.length+' archivos · '+formatBytes(total)+' · '+published.length+' G2 publicados':'Cargando…'}</span>
       <button type="button" onClick={onClose} aria-label="Cerrar biblioteca">×</button>
     </header>
     {error&&<p className="dr-studio-library-error" role="alert">{error}</p>}
+    <div className="dr-studio-library-filters">
+      <select aria-label="Origen de la biblioteca" value={source} onChange={e=>setSource(e.target.value as typeof source)}>
+        <option value="all">Todos</option>
+        <option value="g2">25 fondos G2 publicados</option>
+        <option value="local">Mis archivos</option>
+      </select>
+      <input type="search" aria-label="Buscar en biblioteca" placeholder="Buscar fondo o misión…" value={query}
+        onChange={e=>setQuery(e.target.value)}/>
+    </div>
     <div className="dr-studio-library-clean">
       {!confirmClean?<button type="button" data-testid="studio-library-clean" disabled={!orphans.length}
         onClick={()=>setConfirmClean(true)}>
@@ -85,7 +118,23 @@ export default function StudioLibrary({canReplace,onUse,onClose}:Props){
       <small>Nunca se borra lo que usan tus escenas, el historial de deshacer, el borrador guardado ni el autoguardado.</small>
     </div>
     <ul>
-      {(items??[]).map(item=>{
+      {visiblePublished.map(item=><li key={item.id} data-testid="studio-library-g2-item"
+          data-g2-id={item.id} data-source="published">
+        <span className="dr-studio-library-thumb" aria-hidden="true">
+          <img loading="lazy" src={item.url} alt="" onLoad={e=>recordDimensions(item.id,e.currentTarget.naturalWidth,e.currentTarget.naturalHeight)}/>
+        </span>
+        <div className="dr-studio-library-info">
+          <strong>{item.label}</strong>
+          <small>{item.id} · {dimensions[item.id]??'WebP publicado'} · Vinculado por defecto a {item.sceneKeys.length} escenas · No ocupa espacio local</small>
+          <div className="dr-studio-library-actions">
+            <button type="button" data-testid="studio-g2-use-background" disabled={Boolean(loadingG2)}
+              onClick={()=>void usePublished(item,'background')}>▧ Usar como fondo</button>
+            <button type="button" data-testid="studio-g2-use-sprite" disabled={Boolean(loadingG2)}
+              onClick={()=>void usePublished(item,'sprite')}>＋ Como sprite</button>
+          </div>
+        </div>
+      </li>)}
+      {visibleItems.map(item=>{
         const isVideo=item.mime.startsWith('video/');
         const isAudio=item.mime.startsWith('audio/');
         return <li key={item.id} data-testid="studio-library-item" data-id={item.id}
@@ -115,7 +164,7 @@ export default function StudioLibrary({canReplace,onUse,onClose}:Props){
           </div>
         </li>;
       })}
-      {items&&!visibleItems.length&&<li className="dr-studio-library-empty">No hay archivos visibles con este filtro.</li>}
+      {items&&!visibleItems.length&&!visiblePublished.length&&<li className="dr-studio-library-empty">No hay archivos visibles con este filtro.</li>}
     </ul>
   </section>;
 }

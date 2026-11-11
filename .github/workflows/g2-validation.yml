@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feat/arte-g2-2026-catalogo-y-archivo
+      - feat/drstudio-g2-biblioteca-publicada
     paths:
       - .github/workflows/g2-validation.yml
       - campaign/g2Artwork.ts
@@ -15,6 +16,12 @@ on:
       - screens/CampaignMission.tsx
       - screens/BossConfrontation.tsx
       - tests/e2e/g2-graphics.spec.ts
+      - tests/e2e/g2-studio-library.spec.ts
+      - screens/studio/StudioLibrary.tsx
+      - screens/studio/StudioScreenKit.tsx
+      - screens/decreto-real-studio.css
+      - campaign/studio/g2PublishedLibrary.ts
+      - campaign/studio/g2PublishedLibrary.test.ts
   workflow_dispatch:
 
 permissions:
@@ -49,7 +56,7 @@ jobs:
       - name: Instalar Chromium
         run: npx playwright install --with-deps chromium
       - name: QA navegador G2 - catálogo, galería, M01 y finales M35-M36
-        run: npx playwright test tests/e2e/g2-graphics.spec.ts --project=mobile-390 --workers=1 --reporter=line
+        run: npx playwright test tests/e2e/g2-graphics.spec.ts tests/e2e/g2-studio-library.spec.ts --project=mobile-390 --workers=1 --reporter=line
       - name: Capturas y trazas si falla
         if: failure()
         uses: actions/upload-artifact@v4

@@ -9,6 +9,8 @@ import { StudioProvider, useStudio } from './StudioContext';
 import { studioLayerStyle } from './StageComposer';
 import { useStudioDrag } from './useStudioDrag';
 import { StudioTextArea } from './StudioTextArea';
+import StudioLibrary, { type LibraryUse } from './StudioLibrary';
+import type { StudioLibraryItem } from './StudioContext';
 import {StudioSceneAVDirector} from './StudioSceneAVDirector';
 import '../decreto-real-studio.css';
 
@@ -103,6 +105,7 @@ export function StudioScreenPanel({label,sceneKey,originalTitle,texts}:PanelProp
   const navigate=useNavigate();
   const location=useLocation();
   const [expanded,setExpanded]=React.useState(true);
+  const [libraryOpen,setLibraryOpen]=React.useState(false);
   const [textKey,setTextKey]=React.useState(texts[0]?.key??'');
   const field=React.useRef<HTMLTextAreaElement|null>(null);
   const files=React.useRef<Record<string,HTMLInputElement|null>>({});
@@ -133,6 +136,20 @@ export function StudioScreenPanel({label,sceneKey,originalTitle,texts}:PanelProp
       studio.select(layer.id);
     }catch(err){studio.setStatus(err instanceof Error?err.message:'No se pudo usar el archivo.');}
   };
+  const fromLibrary=(item:StudioLibraryItem,use:LibraryUse)=>{
+    const register=(d:typeof studio.doc)=>withAsset(d,item.id,{name:item.name,mime:item.mime});
+    if(use==='background'){
+      if(!item.mime.startsWith('image/'))throw new Error('El fondo debe ser una imagen.');
+      studio.apply(d=>withSceneSettings(register(d),sceneKey,{background:{assetId:item.id}}),'Fondo de biblioteca vinculado a esta pantalla.');
+    }else if(use==='sprite'||use==='effect'){
+      const kind=use==='effect'?'effect':'image';
+      if(kind==='image'&&!item.mime.startsWith('image/'))throw new Error('El sprite debe ser una imagen.');
+      const layer:StudioMediaLayer={id:'extra-'+crypto.randomUUID(),kind,name:item.name,assetId:item.id,...defaultLayerTransform(kind)};
+      studio.apply(d=>withLayer(register(d),sceneKey,layer),'Recurso de biblioteca añadido como '+(kind==='effect'?'efecto.':'sprite.'));
+      studio.select(layer.id);
+    }
+    setLibraryOpen(false);
+  };
   const pick=(id:string)=>files.current[id]?.click();
   const exit=()=>{
     studio.commit();if(studio.dirty&&!studio.save())return;
@@ -149,9 +166,15 @@ export function StudioScreenPanel({label,sceneKey,originalTitle,texts}:PanelProp
       <div><small>STUDIO · {label.toUpperCase()}</small><strong>Decreto Real Studio <em>v3</em></strong></div>
       <div className="dr-studio-heading-actions">
         <button type="button" data-testid="studio-scenes-catalog" title="Otras pantallas" onClick={()=>{exit();navigate('/studio/escenas');}}>☷</button>
+        <button type="button" data-testid="studio-screen-library-toggle" aria-label="Biblioteca de fondos y recursos"
+          aria-expanded={libraryOpen} onClick={()=>setLibraryOpen(v=>!v)}>🖼</button>
         <button type="button" onClick={()=>setExpanded(v=>!v)} aria-label={expanded?'Contraer editor':'Abrir editor'}>{expanded?'−':'＋'}</button>
       </div>
     </header>
+    {libraryOpen&&<StudioLibrary canReplace={false} onClose={()=>setLibraryOpen(false)}
+      onUse={(item,use)=>{try{fromLibrary(item,use);}catch(error){
+        studio.setStatus(error instanceof Error?error.message:'No se pudo usar el recurso.');
+      }}}/>}
     {(['image','effect','background'] as const).map(kind=><input key={kind} hidden type="file" aria-label={'Archivo '+kind}
       accept={kind==='image'?'image/*':'image/*,video/mp4,video/webm'} ref={el=>{files.current[kind]=el;}}
       onChange={e=>{const f=e.currentTarget.files?.[0];e.currentTarget.value='';if(f)void upload(kind,f);}}/>)}
@@ -192,6 +215,7 @@ export function StudioScreenPanel({label,sceneKey,originalTitle,texts}:PanelProp
         <button type="button" data-testid="studio-add" onClick={()=>pick('image')}>＋ Sprite</button>
         <button type="button" data-testid="studio-add-effect" onClick={()=>pick('effect')}>✦ Efecto</button>
         <button type="button" data-testid="studio-background" onClick={()=>pick('background')}>▧ Fondo</button>
+        <button type="button" data-testid="studio-screen-library-open" onClick={()=>setLibraryOpen(true)}>🖼 Fondos G2 publicados</button>
         <button type="button" disabled={!scene?.background} onClick={()=>studio.apply(d=>withSceneSettings(d,sceneKey,{background:null}),'Fondo original restaurado.')}>↺ Fondo original</button>
       </div>
       {media.length>0&&<label className="dr-studio-label">Capa
