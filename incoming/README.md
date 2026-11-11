@@ -7,3 +7,13 @@ El workflow `.github/workflows/g2-import-approved.yml` comprobará su SHA-256, i
 **SHA-256 aprobado:** `fa01e33e8c339afd445aead6f1e1dd599301ea2077517f1ab5807d438f978f47`.
 
 El ZIP se retirará del árbol de archivos tras importar para evitar duplicarlo en el juego. Esta acción no borra los artes G1, no fusiona la PR y no publica por sí sola en GitHub Pages.
+
+## Recuperación seis generales G2 · bloque 02
+
+El lote de maestros de Leandro, Octavio, Jerónimo, Isabela, Aukan y Gonzalo se recibe como **un único archivo** llamado `DR-G2-BLOQUE-02-ORIGINALES-VERIFICADOS.zip`.
+
+Tras fusionar la PR de preparación del bloque 02, subir **solo ese ZIP** dentro de `incoming/` en `main` mediante GitHub («Add file → Upload files» y «Commit changes»). El workflow `.github/workflows/g2-personajes-bloque02-import.yml` comprobará su hash exacto, validará individualmente los seis archivos, creará sus copias maestras en `art-reference/personajes-oficiales/imagenes/` usando extensiones reales, actualizará el catálogo y retirará el ZIP temporal.
+
+SHA-256 esperado del ZIP: `6a448921391caaa7a2e1c27ae8fe4c0d8fe0579f85e800ce0835f1967d383cd2`.
+
+**No publica expresiones nuevas ni modifica los recursos G1, el juego o DRStudio**. Los derivados G2 se generarán, verificarán e integrarán en una fase posterior.
