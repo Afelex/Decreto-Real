@@ -198,19 +198,20 @@
       "category": "fondos",
       "title": "Región 4 - jefe",
       "usage": "Región 4 - combate de jefe",
-      "status": "aprobado_pendiente_correccion",
+      "status": "aprobado_pendiente_importacion",
       "path": "public/artes/generaciones/DR-G2-2026/fondos/region-4-jefe.webp",
       "format": "webp",
       "chapter": "4",
       "variant": "jefe",
-      "notes": "Generación preliminar vertical 1024x1536 de la batería fortificada del Artillero del Trueno: vista de patio amurallado y cañones, perspectiva distinta moderadamente. Requiere corrección artística antes de aprobar/publicar: varios estandartes combinan rojo y blanco en un mismo paño o bandera, pero la norma G2 exige paños lisos monocromos rojos o blancos, sin X/franjas/símbolos. Un intento posterior de edición produjo un valle fluvial, descartado, no usar. Binarios PNG/WebP en conversación, aún no en GitHub/DRStudio. El usuario aprobó avanzar ('genial! ahora continuemos'); sigue pendiente corregir estandartes bicolores antes de integrarlo en DRStudio. Corrección visual alternativa generada (fondo de fortaleza, estandartes ahora monocromos rojo/blanco) el 10-11-2026: G2-FON-010_artillero_del_trueno_banderas_corregidas.png y .webp, creada en conversación; revisar/aceptar la alternativa antes de importar. No sustituye automáticamente la imagen previamente aprobada.",
+      "notes": "Generación preliminar vertical 1024x1536 de la batería fortificada del Artillero del Trueno: vista de patio amurallado y cañones, perspectiva distinta moderadamente. Requiere corrección artística antes de aprobar/publicar: varios estandartes combinan rojo y blanco en un mismo paño o bandera, pero la norma G2 exige paños lisos monocromos rojos o blancos, sin X/franjas/símbolos. Un intento posterior de edición produjo un valle fluvial, descartado, no usar. Binarios PNG/WebP en conversación, aún no en GitHub/DRStudio. El usuario aprobó avanzar ('genial! ahora continuemos'); sigue pendiente corregir estandartes bicolores antes de integrarlo en DRStudio. Corrección visual alternativa generada (fondo de fortaleza, estandartes ahora monocromos rojo/blanco) el 10-11-2026: G2-FON-010_artillero_del_trueno_banderas_corregidas.png y .webp, creada en conversación; revisar/aceptar la alternativa antes de importar. No sustituye automáticamente la imagen previamente aprobada. DECISIÓN FINAL DEL USUARIO (10/11/2026): 'dejémosla así'. Se conserva expresamente el G2-FON-010 ORIGINAL, sin corregir banderas ni hacer nuevas generaciones; corrección artística cerrada por aceptación. No sustituir por G2-FON-010_artillero_del_trueno_banderas_corregidas.png.",
       "generatedFileName": "G2-FON-010_artillero_del_trueno.png",
       "optimizedFileName": "G2-FON-010_artillero_del_trueno.webp",
       "originalFormat": "png",
       "originalDimensions": {
         "width": 1024,
         "height": 1536
-      }
+      },
+      "qualityException": "Excepción aprobada por usuario: conservar los estandartes originales sin corregir, aunque algunos combinen rojo y blanco; no aplicar esta excepción a otros recursos."
     },
     {
       "id": "G2-FON-011",
@@ -1416,5 +1417,13 @@
       "format": "webp"
     }
   ],
-  "lastReview": "2026-11-10"
+  "lastReview": "2026-11-10",
+  "narrativeExpansion": {
+    "manifestPath": "public/artes/generaciones/DR-G2-2026/catalogo-tramo-final-M35-M36.json",
+    "additionalPlanned": 5,
+    "additionalApproved": 5,
+    "additionalPublished": 0,
+    "totalPlannedInclusive": 115,
+    "totalApprovedInclusive": 25
+  }
 }
