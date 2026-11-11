@@ -184,12 +184,35 @@
       "nombre": "Baltasar de Fierro",
       "rol": "general",
       "mision": "06",
-      "descripcion": "Adulto mayor, cabello y barba larga blancos, sombrero de almirante azul con ancla dorada y pluma blanca, uniforme naval azul y oro, insignias de ancla y corbatín blanco.",
-      "originalChatFile": "163481.png",
-      "sha256Prefix": "5685b162e7ad3b3d5c5b",
+      "descripcion": "Almirante veterano de rostro curtido, cejas blancas muy pobladas, mirada dura, cabellera blanca larga y ondulada, bigote blanco abierto y curvado, barba blanca densa con punta definida. Sombrero bicornio azul marino con ancla dorada frontal, arabescos dorados y gran pluma blanca. Casaca naval azul y oro con charreteras doradas, motivos de anclas, olas estilizadas azules y blancas en el pecho, corbatín blanco con cierre rectangular y cordones dorados ornamentales.",
+      "originalChatFile": "168782.png",
+      "sha256Prefix": "03b01e7aa58c3785cf267",
       "archivoPendiente": "art-reference/personajes-oficiales/imagenes/baltasar-de-fierro.png",
       "imagenEnRepositorio": false,
-      "estadoIdentidad": "referencia_original_usuario"
+      "estadoIdentidad": "referencia_maestra_confirmada_usuario",
+      "perfilVisualCanon": "Hombre de edad avanzada, rostro ancho y curtido con líneas de expresión en frente y comisuras, cejas plateadas espesas, ojos oscuros de mirada severa frontal, nariz prominente, gran bigote blanco curvado hacia fuera, barba blanca larga y espesa que termina en punta; cabello blanco ondulado que cae hasta los hombros. Bicornio de copa azul real con silueta triangular ancha, bordes y arabescos dorados, gran ancla dorada simétrica al centro y pluma blanca alta y abundante que sobresale hacia su derecha (izquierda del espectador). Casaca naval azul marino con cuello alto bordado con filigranas y flores de oro; hombreras grandes de cordones dorados con flecos; dos anclas doradas en solapas superiores, corbatín blanco amplio recogido con broche rectangular dorado de centro claro; cadena doble dorada sobre pecho y patrón de olas blancas y azules. Colores constantes: azul real, oro cálido, blanco plateado y sombras azul violeta. Sin rediseñar sombrero, ancla frontal, barba ni bigote.",
+      "expresionesG2Previstas": [
+        "neutral severo",
+        "ordenando maniobra naval",
+        "furioso o desafiante",
+        "sorprendido ante la derrota",
+        "derrotado con dignidad",
+        "acción de mando en cubierta"
+      ],
+      "detallesArchivoRecibido": {
+        "nombre": "168782.png",
+        "dimensionesPx": {
+          "ancho": 1152,
+          "alto": 1536
+        },
+        "formatoReal": "JPEG (aunque recibido con extensión .png)",
+        "canalAlfa": false,
+        "fondo": "negro sólido; no transparente",
+        "bytes": 502339,
+        "sha256": "03b01e7aa58c3785cf267a50da516e00949a4f52199e2bb70d3e7bfcf71c3643",
+        "verificacionIdentidad": "La huella no coincide con el prefijo de la referencia previa 163481.png: se conserva la nueva imagen 168782.png como maestra aprobada y no se presume que ambas sean binariamente idénticas."
+      },
+      "confirmadoPorUsuarioEnConversacion": true
     },
     {
       "id": "vandalo-rojo",
@@ -236,15 +259,17 @@
     }
   ],
   "avanceCanonVisual": {
-    "version": "G2-R3",
+    "version": "G2-R4",
     "perfilesConfirmados": [
       "xervias",
       "zhinchi",
       "siguman",
       "vandalo-rojo",
-      "nayisa-de-sombras"
+      "nayisa-de-sombras",
+      "baltasar-de-fierro"
     ],
     "totalPerfilesPrincipales": 12,
-    "nota": "Cinco referencias visuales maestras confirmadas en esta conversación. La copia 168754.png de Nayisa coincide en SHA-256 con la antigua referencia registrada, dispone de canal alfa y sus rasgos están fijados. Los binarios maestros aún no están subidos a GitHub ni integrados como retratos G2 en el juego."
+    "bloque": "01 - protagonistas y antagonistas, Nayisa y Baltasar",
+    "nota": "6 de 12 fichas visuales confirmadas con originales enviados por el creador. Los retratos maestros aún no están subidos como binarios al repositorio ni sustituyen los retratos jugables. Falta generar, aprobar e integrar variantes de expresiones G2. Preparado traspaso de continuidad para el próximo chat."
   }
 }
