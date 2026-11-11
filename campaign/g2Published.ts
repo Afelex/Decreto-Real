@@ -1,4 +1,28 @@
-/** Generado por tools/importar-g2.mjs después de comprobar los WebP en public/.
- * Inicialmente vacío: conserva G1 hasta instalar los binarios aprobados.
- */
-export const G2_PUBLISHED_IDS:readonly string[]=[];
+/** Generado por tools/importar-g2.mjs; activar solo archivos G2 presentes y verificados. */
+export const G2_PUBLISHED_IDS:readonly string[]=[
+  "G2-FON-001",
+  "G2-FON-002",
+  "G2-FON-003",
+  "G2-FON-004",
+  "G2-FON-005",
+  "G2-FON-006",
+  "G2-FON-007",
+  "G2-FON-008",
+  "G2-FON-009",
+  "G2-FON-010",
+  "G2-FON-011",
+  "G2-FON-012",
+  "G2-FON-013",
+  "G2-FON-014",
+  "G2-FON-015",
+  "G2-FON-016",
+  "G2-FON-017",
+  "G2-FON-018",
+  "G2-FON-019",
+  "G2-FON-020",
+  "G2-M35-A",
+  "G2-M35-B",
+  "G2-M35-C",
+  "G2-M36-A",
+  "G2-M36-B"
+];
