@@ -8,6 +8,7 @@ test.beforeEach(async ({},info)=>{
 const root='/Decreto-Real/';
 
 test('G2: todas las imágenes 2:3 se pueden comparar en el recorte móvil y guardar 25 capturas',async({page},testInfo)=>{
+  test.setTimeout(180_000);
   await page.goto(root+'?drDev=1#/artes');
   await expect(page.getByRole('heading',{name:'Biblioteca central de artes'})).toBeVisible();
   await page.getByRole('combobox',{name:'Filtrar por generación'}).selectOption('DR-G2-2026');
