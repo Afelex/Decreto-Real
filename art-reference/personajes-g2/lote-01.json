@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "batch": "DR-G2-PER-LOTE-01",
+  "model": "gpt-image-2.5-flare",
+  "assetType": "png_transparent",
+  "resolution": {
+    "width": 1024,
+    "height": 1536
+  },
+  "publicationPolicy": "no_autopublish_require_human_review_and_original_master_verification",
+  "sourceMasterStatus": "official_13_original_pngs_not_yet_in_repo",
+  "description": "Ocho propuestas derivadas de sprites existentes del prólogo, cuatro de Xervias y cuatro de Zhinchi, sin sustituir activos hasta aprobación",
+  "items": [
+    {
+      "id": "G2-PER-XERVIAS-01",
+      "characterId": "xervias",
+      "characterName": "Xervias",
+      "variant": "neutro",
+      "status": "candidate_not_approved",
+      "file": "xervias/xervias_neutro.png",
+      "references": [
+        "public/campania/prologo/sprites/xervias_01_objecion.webp",
+        "public/campania/prologo/sprites/xervias_02_invoca.webp"
+      ],
+      "prompt": "PERSONAJE: Xervias. Ilustración ORIGINAL para videojuego Decreto Real, Reinos del Perú ficticios, siglo XVII. Estética anime fantástico de duelos con cel shading nítido, anatomía adulta, bordes limpios, colores profundos y detalles dorados controlados. Composición vertical 2:3, medio cuerpo hasta cintura, figura completa dentro del encuadre, rostro y manos bien dibujados, PNG con fondo alfa verdaderamente TRANSPARENTE. Una sola persona, sin decorado, texto, títulos, paneles, tarjetas, logos, marcos, interfaz, collage, damero ni banderas. La identidad facial y la indumentaria deben ser las MISMAS del personaje de las imágenes adjuntas, no rediseñarlo. Soldado joven de la Orden de la Corona Solar, cabello castaño oscuro despeinado, ojos marrones, uniforme azul oscuro ribeteado en oro, capa roja, corbatín blanco y broche dorado. No coronas ni nuevos símbolos religiosos o dinásticos. EXPRESIÓN Y POSE: Mirada frontal seria pero serena, boca cerrada, brazos relajados, pose de diálogo habitual. Mantener ángulo frontal tres cuartos, cel shading artístico consistente entre variantes."
+    },
+    {
+      "id": "G2-PER-XERVIAS-02",
+      "characterId": "xervias",
+      "characterName": "Xervias",
+      "variant": "decidido",
+      "status": "candidate_not_approved",
+      "file": "xervias/xervias_decidido.png",
+      "references": [
+        "public/campania/prologo/sprites/xervias_01_objecion.webp",
+        "public/campania/prologo/sprites/xervias_02_invoca.webp"
+      ],
+      "prompt": "PERSONAJE: Xervias. Ilustración ORIGINAL para videojuego Decreto Real, Reinos del Perú ficticios, siglo XVII. Estética anime fantástico de duelos con cel shading nítido, anatomía adulta, bordes limpios, colores profundos y detalles dorados controlados. Composición vertical 2:3, medio cuerpo hasta cintura, figura completa dentro del encuadre, rostro y manos bien dibujados, PNG con fondo alfa verdaderamente TRANSPARENTE. Una sola persona, sin decorado, texto, títulos, paneles, tarjetas, logos, marcos, interfaz, collage, damero ni banderas. La identidad facial y la indumentaria deben ser las MISMAS del personaje de las imágenes adjuntas, no rediseñarlo. Soldado joven de la Orden de la Corona Solar, cabello castaño oscuro despeinado, ojos marrones, uniforme azul oscuro ribeteado en oro, capa roja, corbatín blanco y broche dorado. No coronas ni nuevos símbolos religiosos o dinásticos. EXPRESIÓN Y POSE: Mirada decidida hacia el frente, cejas ligeramente fruncidas, mano en el pecho a punto de prestar juramento, boca cerrada. Mantener ángulo frontal tres cuartos, cel shading artístico consistente entre variantes."
+    },
+    {
+      "id": "G2-PER-XERVIAS-03",
+      "characterId": "xervias",
+      "characterName": "Xervias",
+      "variant": "dolor",
+      "status": "candidate_not_approved",
+      "file": "xervias/xervias_dolor.png",
+      "references": [
+        "public/campania/prologo/sprites/xervias_01_objecion.webp",
+        "public/campania/prologo/sprites/xervias_02_invoca.webp"
+      ],
+      "prompt": "PERSONAJE: Xervias. Ilustración ORIGINAL para videojuego Decreto Real, Reinos del Perú ficticios, siglo XVII. Estética anime fantástico de duelos con cel shading nítido, anatomía adulta, bordes limpios, colores profundos y detalles dorados controlados. Composición vertical 2:3, medio cuerpo hasta cintura, figura completa dentro del encuadre, rostro y manos bien dibujados, PNG con fondo alfa verdaderamente TRANSPARENTE. Una sola persona, sin decorado, texto, títulos, paneles, tarjetas, logos, marcos, interfaz, collage, damero ni banderas. La identidad facial y la indumentaria deben ser las MISMAS del personaje de las imágenes adjuntas, no rediseñarlo. Soldado joven de la Orden de la Corona Solar, cabello castaño oscuro despeinado, ojos marrones, uniforme azul oscuro ribeteado en oro, capa roja, corbatín blanco y broche dorado. No coronas ni nuevos símbolos religiosos o dinásticos. EXPRESIÓN Y POSE: Expresión de dolor contenido sin lágrimas, mirando al frente, hombros tensos, una mano cerca del pecho, sin sangre ni heridas gráficas. Mantener ángulo frontal tres cuartos, cel shading artístico consistente entre variantes."
+    },
+    {
+      "id": "G2-PER-XERVIAS-04",
+      "characterId": "xervias",
+      "characterName": "Xervias",
+      "variant": "sorpresa",
+      "status": "candidate_not_approved",
+      "file": "xervias/xervias_sorpresa.png",
+      "references": [
+        "public/campania/prologo/sprites/xervias_01_objecion.webp",
+        "public/campania/prologo/sprites/xervias_02_invoca.webp"
+      ],
+      "prompt": "PERSONAJE: Xervias. Ilustración ORIGINAL para videojuego Decreto Real, Reinos del Perú ficticios, siglo XVII. Estética anime fantástico de duelos con cel shading nítido, anatomía adulta, bordes limpios, colores profundos y detalles dorados controlados. Composición vertical 2:3, medio cuerpo hasta cintura, figura completa dentro del encuadre, rostro y manos bien dibujados, PNG con fondo alfa verdaderamente TRANSPARENTE. Una sola persona, sin decorado, texto, títulos, paneles, tarjetas, logos, marcos, interfaz, collage, damero ni banderas. La identidad facial y la indumentaria deben ser las MISMAS del personaje de las imágenes adjuntas, no rediseñarlo. Soldado joven de la Orden de la Corona Solar, cabello castaño oscuro despeinado, ojos marrones, uniforme azul oscuro ribeteado en oro, capa roja, corbatín blanco y broche dorado. No coronas ni nuevos símbolos religiosos o dinásticos. EXPRESIÓN Y POSE: Ojos abiertos por sorpresa, cejas elevadas, boca apenas entreabierta, torso inclinado hacia atrás con gesto legible. Mantener ángulo frontal tres cuartos, cel shading artístico consistente entre variantes."
+    },
+    {
+      "id": "G2-PER-ZHINCHI-01",
+      "characterId": "zhinchi",
+      "characterName": "Zhinchi",
+      "variant": "neutro",
+      "status": "candidate_not_approved",
+      "file": "zhinchi/zhinchi_neutro.png",
+      "references": [
+        "public/campania/prologo/sprites/zhinchi_01_entrada.webp",
+        "public/campania/prologo/sprites/zhinchi_03_cetro.webp"
+      ],
+      "prompt": "PERSONAJE: Zhinchi. Ilustración ORIGINAL para videojuego Decreto Real, Reinos del Perú ficticios, siglo XVII. Estética anime fantástico de duelos con cel shading nítido, anatomía adulta, bordes limpios, colores profundos y detalles dorados controlados. Composición vertical 2:3, medio cuerpo hasta cintura, figura completa dentro del encuadre, rostro y manos bien dibujados, PNG con fondo alfa verdaderamente TRANSPARENTE. Una sola persona, sin decorado, texto, títulos, paneles, tarjetas, logos, marcos, interfaz, collage, damero ni banderas. La identidad facial y la indumentaria deben ser las MISMAS del personaje de las imágenes adjuntas, no rediseñarlo. Capitán y mentor masculino joven adulto, cabello RUBIO distribuido en mechones, ojos AZULES, uniforme AZUL con ribetes y ornamentos DORADOS, capa AZUL, corbatín BLANCO y gema AZUL en el pecho. No es mujer ni personaje andino con trenzas oscuras; no lleva capucha. NO alterar color de pelo, ojos ni capa. EXPRESIÓN Y POSE: Expresión protectora y serena del mentor, labios cerrados, mirada directa, postura erguida sin elevar las armas. Mantener ángulo frontal tres cuartos, cel shading artístico consistente entre variantes."
+    },
+    {
+      "id": "G2-PER-ZHINCHI-02",
+      "characterId": "zhinchi",
+      "characterName": "Zhinchi",
+      "variant": "advertencia",
+      "status": "candidate_not_approved",
+      "file": "zhinchi/zhinchi_advertencia.png",
+      "references": [
+        "public/campania/prologo/sprites/zhinchi_01_entrada.webp",
+        "public/campania/prologo/sprites/zhinchi_03_cetro.webp"
+      ],
+      "prompt": "PERSONAJE: Zhinchi. Ilustración ORIGINAL para videojuego Decreto Real, Reinos del Perú ficticios, siglo XVII. Estética anime fantástico de duelos con cel shading nítido, anatomía adulta, bordes limpios, colores profundos y detalles dorados controlados. Composición vertical 2:3, medio cuerpo hasta cintura, figura completa dentro del encuadre, rostro y manos bien dibujados, PNG con fondo alfa verdaderamente TRANSPARENTE. Una sola persona, sin decorado, texto, títulos, paneles, tarjetas, logos, marcos, interfaz, collage, damero ni banderas. La identidad facial y la indumentaria deben ser las MISMAS del personaje de las imágenes adjuntas, no rediseñarlo. Capitán y mentor masculino joven adulto, cabello RUBIO distribuido en mechones, ojos AZULES, uniforme AZUL con ribetes y ornamentos DORADOS, capa AZUL, corbatín BLANCO y gema AZUL en el pecho. No es mujer ni personaje andino con trenzas oscuras; no lleva capucha. NO alterar color de pelo, ojos ni capa. EXPRESIÓN Y POSE: Mirada severa y concentrada, alza una mano abierta para detener un peligro, expresión decidida sin agresividad descontrolada. Mantener ángulo frontal tres cuartos, cel shading artístico consistente entre variantes."
+    },
+    {
+      "id": "G2-PER-ZHINCHI-03",
+      "characterId": "zhinchi",
+      "characterName": "Zhinchi",
+      "variant": "combate",
+      "status": "candidate_not_approved",
+      "file": "zhinchi/zhinchi_combate.png",
+      "references": [
+        "public/campania/prologo/sprites/zhinchi_01_entrada.webp",
+        "public/campania/prologo/sprites/zhinchi_03_cetro.webp"
+      ],
+      "prompt": "PERSONAJE: Zhinchi. Ilustración ORIGINAL para videojuego Decreto Real, Reinos del Perú ficticios, siglo XVII. Estética anime fantástico de duelos con cel shading nítido, anatomía adulta, bordes limpios, colores profundos y detalles dorados controlados. Composición vertical 2:3, medio cuerpo hasta cintura, figura completa dentro del encuadre, rostro y manos bien dibujados, PNG con fondo alfa verdaderamente TRANSPARENTE. Una sola persona, sin decorado, texto, títulos, paneles, tarjetas, logos, marcos, interfaz, collage, damero ni banderas. La identidad facial y la indumentaria deben ser las MISMAS del personaje de las imágenes adjuntas, no rediseñarlo. Capitán y mentor masculino joven adulto, cabello RUBIO distribuido en mechones, ojos AZULES, uniforme AZUL con ribetes y ornamentos DORADOS, capa AZUL, corbatín BLANCO y gema AZUL en el pecho. No es mujer ni personaje andino con trenzas oscuras; no lleva capucha. NO alterar color de pelo, ojos ni capa. EXPRESIÓN Y POSE: Gesto intenso de combate, cejas fruncidas, una mano invoca un tenue brillo azul místico junto a una gema, no añadir otros personajes ni fondo. Mantener ángulo frontal tres cuartos, cel shading artístico consistente entre variantes."
+    },
+    {
+      "id": "G2-PER-ZHINCHI-04",
+      "characterId": "zhinchi",
+      "characterName": "Zhinchi",
+      "variant": "legado",
+      "status": "candidate_not_approved",
+      "file": "zhinchi/zhinchi_legado.png",
+      "references": [
+        "public/campania/prologo/sprites/zhinchi_01_entrada.webp",
+        "public/campania/prologo/sprites/zhinchi_03_cetro.webp"
+      ],
+      "prompt": "PERSONAJE: Zhinchi. Ilustración ORIGINAL para videojuego Decreto Real, Reinos del Perú ficticios, siglo XVII. Estética anime fantástico de duelos con cel shading nítido, anatomía adulta, bordes limpios, colores profundos y detalles dorados controlados. Composición vertical 2:3, medio cuerpo hasta cintura, figura completa dentro del encuadre, rostro y manos bien dibujados, PNG con fondo alfa verdaderamente TRANSPARENTE. Una sola persona, sin decorado, texto, títulos, paneles, tarjetas, logos, marcos, interfaz, collage, damero ni banderas. La identidad facial y la indumentaria deben ser las MISMAS del personaje de las imágenes adjuntas, no rediseñarlo. Capitán y mentor masculino joven adulto, cabello RUBIO distribuido en mechones, ojos AZULES, uniforme AZUL con ribetes y ornamentos DORADOS, capa AZUL, corbatín BLANCO y gema AZUL en el pecho. No es mujer ni personaje andino con trenzas oscuras; no lleva capucha. NO alterar color de pelo, ojos ni capa. EXPRESIÓN Y POSE: Expresión de sacrificio consciente y determinación, mirada al horizonte, gesto protector con un brazo extendido; sin confirmar muerte, sin lágrimas. Mantener ángulo frontal tres cuartos, cel shading artístico consistente entre variantes."
+    }
+  ]
+}
