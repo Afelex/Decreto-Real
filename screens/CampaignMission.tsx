@@ -178,10 +178,10 @@ const CampaignMissionScreen: React.FC = () => {
       <span className="dc-scene-label">{mission.kind === 'boss' ? 'ENCUENTRO CON GENERAL' : mission.kind === 'subboss' ? 'ENCUENTRO CON SUBJEFE' : mission.kind === 'final' ? 'ENFRENTAMIENTO FINAL' : 'NUEVA MISIÓN'} · {mission.id}/38</span>
       {briefingTitle !== null && <h2 id="dc-scene-title">{briefingTitle}</h2>}
       <p className="dc-scene-location">⌖ {chapter?.region} · {enemy ? `${enemy.role}: ${enemy.name}` : mission.opponent}</p>
-      <p className="dc-scene-narration"><StudioText k={briefingKey + '/descripcion'} original={mission.description}/></p>
+      <p className="dc-scene-narration"><StudioText k={missionPrefix + '/descripcion'} original={mission.description}/></p>
       <div className="dc-story-conversation">
         <small>{mission.openingLine.includes(':') ? mission.openingLine.split(':', 1)[0] : 'CRÓNICA'}</small>
-        <p><StudioText k={briefingKey + '/objetivo'} original={briefingObjective}/></p>
+        <p><StudioText k={missionPrefix + '/objetivo'} original={briefingObjective}/></p>
       </div>
       <div className="dc-mission-card">
         {missionStarGoals(mission).map(goal =>

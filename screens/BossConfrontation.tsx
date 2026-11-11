@@ -11,6 +11,7 @@ import { GeneralPortrait } from './GeneralPortrait';
 import { generalForChapter } from '../campaign/characters.ts';
 import { campaignLandscape, campaignMissionPreludeBackground } from '../campaign/regionAssets.ts';
 import { StudioScreenLayers, StudioScreenPanel, StudioText, useStudioBackground } from './studio/StudioScreenKit';
+import { useStudio } from './studio/StudioContext';
 import './boss-confrontation.css';
 
 type Props = Readonly<{
@@ -68,6 +69,7 @@ export const CONFRONTATION_MISSIONS = Object.freeze(Object.keys(BOSS_LINES));
 /** Presentation only: the original game still handles every duel, mystic effect and victory. */
 const BossConfrontation: React.FC<Props> = ({ mission, alreadyDefeated, legacyAwakened, onBeginBattle, onBack }) => {
   const [lineIndex, setLineIndex] = React.useState(0);
+  const studio = useStudio();
   const chapter = chapterForStage(mission.id);
   const region = regionVisual(mission.chapterId);
   const isFinal = mission.kind === 'final';
@@ -156,8 +158,8 @@ const BossConfrontation: React.FC<Props> = ({ mission, alreadyDefeated, legacyAw
       </footer>
     </div>
     <StudioScreenLayers sceneKey={sceneKey}/>
-    <StudioScreenPanel label={'Preludio · misión '+mission.id+' · '+(lineIndex+1)+'/'+lines.length}
-      sceneKey={sceneKey} texts={[{key:sceneKey+'/dialogo',label:current.name,original:current.text}]}/>
+    {studio.editing && <StudioScreenPanel label={'Preludio · misión '+mission.id+' · '+(lineIndex+1)+'/'+lines.length}
+      sceneKey={sceneKey} texts={[{key:sceneKey+'/dialogo',label:current.name,original:current.text}]}/>}
   </main>;
 };
 
