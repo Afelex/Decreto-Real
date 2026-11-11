@@ -10,7 +10,7 @@
 | Vándalo Rojo | **Sí; capucha y máscara ornamentada confirmadas** | 5 previstas; no generadas | No | No |
 | Nayisa | **Sí; referencia exacta confirmada** | 6 previstas; no generadas | No | No |
 | Baltasar de Fierro | **Sí; almirante y referencia reciente confirmados** | 6 previstas; no generadas | No | No |
-| Otros seis generales | Referencias documentadas; por ratificar en esta ronda | Pendiente | No | No |
+| Otros seis generales (Leandro, Octavio, Jerónimo, Isabela, Aukan, Gonzalo) | Originales recuperados y cotejados por SHA; aprobación visual de esta ronda pendiente | 36 previstas, ninguna generada | **Sí, seis maestros** | No |
 
 ## Sigumán — rasgos invariables
 
@@ -71,3 +71,10 @@
 **Hito alcanzado: seis referencias maestras confirmadas.** Se ha preparado el documento de transferencia `G2-RELEVO-CHAT-BLOQUE-01.md` con nombres, imágenes de referencia, variantes pendientes, enlaces al repositorio y siguiente secuencia de trabajo. Avisar al creador que **ya es buen momento para abrir un nuevo chat**, distinguiendo claramente aprobación de identidad visual de generación/integración de sprites.
 
 **Para continuar en un nuevo chat:** empezar con las otras seis referencias maestras aún pendientes: Leandro Valcázar, Octavio Argento, Jerónimo Arrellano, Isabela Valdierra, Gonzalo de Montes y Aukan del Cóndor. Alternativamente, empezar la generación de las seis expresiones de Xervias basadas en su imagen maestra ya aprobada. **No presentar seis referencias aprobadas como seis familias de expresiones o seis archivos publicados.**
+
+## Actualización — bloque 02 (posterior al corte inicial)
+
+- El ZIP de seis maestros (M10, M14, M18, M26, M30, M34) fue importado en `main`, commit `e1d85098c3ce4e501e6cde53a6b243198db5adc5`, con seis archivos de referencia conservados y verificados.
+- Las **seis identidades aprobadas de este documento original siguen siendo las del bloque 01**. La recuperación binaria de los otros seis no implica aprobación visual automática ni creación de expresiones.
+- La Galería y DRStudio muestran los otros seis originales como referencias consultables, **sin permitir su uso directo como sprites**, hasta disponer de PNG RGBA transparentes y aprobados.
+- Los 36 candidatos expresivos del bloque 02 están planificados en `G2-EXPRESIONES-BLOQUE-02.json`, pero aún no generados, revisados ni integrados a escenas. Se preservan los fondos G2 publicados y los recursos G1.

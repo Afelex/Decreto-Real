@@ -4,6 +4,54 @@
   "description": "G2 es la nueva generación; G1 continúa disponible hasta su sustitución.",
   "items": [
     {
+      "path": "art-reference/personajes-oficiales/imagenes/aukan-del-condor.jpg",
+      "group": "Personajes · Referencias G2",
+      "name": "Aukan del Cóndor",
+      "bytes": 462757,
+      "generation": "DR-G2-2026",
+      "state": "referencia-maestra"
+    },
+    {
+      "path": "art-reference/personajes-oficiales/imagenes/gonzalo-de-montes.jpg",
+      "group": "Personajes · Referencias G2",
+      "name": "Gonzalo de Montes",
+      "bytes": 436040,
+      "generation": "DR-G2-2026",
+      "state": "referencia-maestra"
+    },
+    {
+      "path": "art-reference/personajes-oficiales/imagenes/isabela-valdierra.png",
+      "group": "Personajes · Referencias G2",
+      "name": "Isabela Valdierra",
+      "bytes": 2734491,
+      "generation": "DR-G2-2026",
+      "state": "referencia-maestra"
+    },
+    {
+      "path": "art-reference/personajes-oficiales/imagenes/jeronimo-arrellano.png",
+      "group": "Personajes · Referencias G2",
+      "name": "Jerónimo Arrellano",
+      "bytes": 2543659,
+      "generation": "DR-G2-2026",
+      "state": "referencia-maestra"
+    },
+    {
+      "path": "art-reference/personajes-oficiales/imagenes/leandro-valcazar.jpg",
+      "group": "Personajes · Referencias G2",
+      "name": "Leandro Valcázar",
+      "bytes": 431399,
+      "generation": "DR-G2-2026",
+      "state": "referencia-maestra"
+    },
+    {
+      "path": "art-reference/personajes-oficiales/imagenes/octavio-argento.png",
+      "group": "Personajes · Referencias G2",
+      "name": "Octavio Argento",
+      "bytes": 2522755,
+      "generation": "DR-G2-2026",
+      "state": "referencia-maestra"
+    },
+    {
       "path": "art-reference/xervias-estilo.webp",
       "group": "Otros",
       "name": "Xervias Estilo",

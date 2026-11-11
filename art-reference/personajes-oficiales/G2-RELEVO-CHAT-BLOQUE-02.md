@@ -77,3 +77,9 @@ Se ha añadido `tools/importar-personajes-g2-bloque02.mjs` con pruebas de seguri
 - Destino de los originales: `art-reference/personajes-oficiales/imagenes/`, con extensión real `.jpg` para JPEG, `.png` para PNG y bytes **sin modificar**.
 - Estado tras el importador: `imagenEnRepositorio=true` solo al terminar la verificación y el commit; ningún cambio en retratos G1 ni en la campaña activa.
 - Expresiones G2 y visibilidad en DRStudio siguen pendientes de producción, revisión y publicación por separado.
+
+## Actualización posterior: importación completada y visibilidad de maestros
+
+El creador subió el ZIP a `incoming/` y el workflow incorporó los seis originales exactos en el commit `e1d85098c3ce4e501e6cde53a6b243198db5adc5`, después de validar su contenido. El ZIP temporal fue retirado. Los seis registros correspondientes tienen ahora `imagenEnRepositorio=true`. No se tocaron recursos G1 ni retratos activos.
+
+El siguiente cambio de catálogo habilita las **seis referencias como consultas de solo lectura** en Galería y Biblioteca de DRStudio. **No convierte los maestros en sprites jugables**: tres imágenes JPEG son opacas, y faltan expresiones. El plan completo de 36 variantes se registra en `G2-EXPRESIONES-BLOQUE-02.json`, todas con estado `planned_not_generated` y ruta de salida separada. Antes de publicarlas debe hacerse comparación facial y de accesorios con el original y comprobar PNG RGBA con alfa real.

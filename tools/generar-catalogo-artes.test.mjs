@@ -24,3 +24,12 @@ test('G1 y G2 conservan rutas diferentes',()=>{
   assert.equal(artGeneration('public/artes/generaciones/DR-G2-2026/fondos/callao.png'),ACTIVE_GENERATION);
   assert.equal(category('public/artes/generaciones/DR-G2-2026/personajes/xervias.png'),'Personajes');
 });
+
+test('seis maestros G2 del bloque 02 visibles en Galería sin tocar G1',()=>{
+  const cat=buildCatalog();
+  const masters=cat.items.filter(item=>item.path.startsWith('art-reference/personajes-oficiales/imagenes/'));
+  assert.equal(masters.length,6);
+  assert.ok(masters.every(item=>item.generation===ACTIVE_GENERATION&&item.state==='referencia-maestra'));
+  assert.ok(masters.every(item=>item.group==='Personajes · Referencias G2'));
+  assert.equal(artGeneration('public/campania/arte/fondos/region-1-base.webp'),LEGACY_GENERATION);
+});

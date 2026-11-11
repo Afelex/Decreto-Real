@@ -12,6 +12,7 @@ const project=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const supported=/\.(png|jpe?g|webp|gif|avif|svg|mp4|webm)$/i;
 
 export function category(path){
+  if(path.startsWith('art-reference/personajes-oficiales/imagenes/'))return 'Personajes · Referencias G2';
   if(path.startsWith('public/artes/generaciones/')){
     if(path.includes('/fondos/'))return 'Fondos de campaña';
     if(path.includes('/retratos/')||path.includes('/personajes/'))return 'Personajes';
@@ -41,9 +42,13 @@ function collect(folder,output=[]){
   return output;
 }
 export function buildCatalog(){
+  const canonical=JSON.parse(readFileSync(join(project,'art-reference/personajes-oficiales/catalogo.json'),'utf8'));
+  const officialNames=new Map(canonical.personajes.filter(p=>p.imagenEnRepositorio)
+    .map(p=>[p.archivoPendiente,p.nombre]));
   const items=[...collect(join(project,'art-reference')),...collect(join(project,'public'))]
     .filter(i=>!i.path.startsWith('public/archivo-historico/'))
-    .map(i=>({...i,generation:artGeneration(i.path),state:artState(i.path)}))
+    .map(i=>({...i,name:officialNames.get(i.path)??i.name,
+      generation:artGeneration(i.path),state:artState(i.path)}))
     .sort((a,b)=>a.path.localeCompare(b.path,'en'));
   if(!items.length)throw new Error('No se encontró arte en el proyecto.');
   return {version:2,activeGeneration:ACTIVE_GENERATION,description:'G2 es la nueva generación; G1 continúa disponible hasta su sustitución.',items};

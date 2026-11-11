@@ -1,6 +1,7 @@
 import React from 'react';
 import { loadStudioMediaUrls, revokeStudioMediaUrls } from '../../campaign/studioMedia';
 import { fetchPublishedG2File, publishedG2StudioAssets, type PublishedG2Asset } from '../../campaign/studio/g2PublishedLibrary.ts';
+import { publishedG2GeneralMasters } from '../../campaign/studio/g2CharacterMasters.ts';
 import { useStudio, type StudioLibraryItem } from './StudioContext';
 
 export type LibraryUse = 'sprite'|'effect'|'background'|'replace';
@@ -29,10 +30,11 @@ export default function StudioLibrary({canReplace,onUse,onClose}:Props){
   const [reloadKey,setReloadKey]=React.useState(0);
   const [dimensions,setDimensions]=React.useState<Record<string,string>>({});
   const [showHidden,setShowHidden]=React.useState(false);
-  const [source,setSource]=React.useState<'all'|'g2'|'local'>('all');
+  const [source,setSource]=React.useState<'all'|'g2'|'masters'|'local'>('all');
   const [query,setQuery]=React.useState('');
   const [loadingG2,setLoadingG2]=React.useState<string|null>(null);
   const published=React.useMemo(()=>publishedG2StudioAssets(import.meta.env.BASE_URL),[]);
+  const masters=React.useMemo(()=>publishedG2GeneralMasters(),[]);
   const hidden=React.useMemo(()=>{
     try{return JSON.parse(localStorage.getItem('decreto-real.artes.estados.v1')||'{}') as Record<string,string>;}
     catch{return {} as Record<string,string>;}
@@ -63,12 +65,15 @@ export default function StudioLibrary({canReplace,onUse,onClose}:Props){
 
   const orphans=(items??[]).filter(item=>!item.protected);
   const q=query.trim().toLocaleLowerCase('es');
-  const visibleItems=(items??[]).filter(item=>source!=='g2'&&
+  const visibleItems=(items??[]).filter(item=>(source==='all'||source==='local')&&
     (showHidden||!hidden[item.id])&&
     (!q||[item.name,item.id].join(' ').toLocaleLowerCase('es').includes(q)));
-  const visiblePublished=published.filter(item=>source!=='local'&&
+  const visiblePublished=published.filter(item=>(source==='all'||source==='g2')&&
     (showHidden||!hidden['public/'+item.path])&&
     (!q||[item.label,item.id,item.path,...item.sceneKeys].join(' ').toLocaleLowerCase('es').includes(q)));
+  const visibleMasters=masters.filter(item=>(source==='all'||source==='masters')&&
+    (showHidden||!hidden[item.path])&&
+    (!q||[item.label,item.characterId,item.id,item.mission].join(' ').toLocaleLowerCase('es').includes(q)));
   const orphanBytes=orphans.reduce((n,item)=>n+item.size,0);
   const total=(items??[]).reduce((n,item)=>n+item.size,0);
   const run=async(work:()=>Promise<unknown>)=>{
@@ -92,7 +97,7 @@ export default function StudioLibrary({canReplace,onUse,onClose}:Props){
     <header>
       <strong>Biblioteca</strong>
       <a href={import.meta.env.BASE_URL+'?drDev=1#/artes'} target="_blank" rel="noopener noreferrer" title="Abrir biblioteca de todos los artes en otra pestaña">Galería de artes ↗</a>
-      <span data-testid="studio-library-summary">{items?items.length+' archivos · '+formatBytes(total)+' · '+published.length+' G2 publicados':'Cargando…'}</span>
+      <span data-testid="studio-library-summary">{items?items.length+' archivos · '+formatBytes(total)+' · '+published.length+' fondos G2 · '+masters.length+' maestros G2':'Cargando…'}</span>
       <button type="button" onClick={onClose} aria-label="Cerrar biblioteca">×</button>
     </header>
     {error&&<p className="dr-studio-library-error" role="alert">{error}</p>}
@@ -100,9 +105,10 @@ export default function StudioLibrary({canReplace,onUse,onClose}:Props){
       <select aria-label="Origen de la biblioteca" value={source} onChange={e=>setSource(e.target.value as typeof source)}>
         <option value="all">Todos</option>
         <option value="g2">25 fondos G2 publicados</option>
+        <option value="masters">6 personajes G2 · originales</option>
         <option value="local">Mis archivos</option>
       </select>
-      <input type="search" aria-label="Buscar en biblioteca" placeholder="Buscar fondo o misión…" value={query}
+      <input type="search" aria-label="Buscar en biblioteca" placeholder="Buscar arte, personaje o misión…" value={query}
         onChange={e=>setQuery(e.target.value)}/>
     </div>
     <div className="dr-studio-library-clean">
@@ -118,6 +124,20 @@ export default function StudioLibrary({canReplace,onUse,onClose}:Props){
       <small>Nunca se borra lo que usan tus escenas, el historial de deshacer, el borrador guardado ni el autoguardado.</small>
     </div>
     <ul>
+      {visibleMasters.map(item=><li key={item.id} data-testid="studio-library-master-item"
+          data-g2-id={item.id} data-source="master-reference">
+        <span className="dr-studio-library-thumb" aria-hidden="true">
+          <img loading="lazy" src={item.url} alt="" onLoad={e=>recordDimensions(item.id,e.currentTarget.naturalWidth,e.currentTarget.naturalHeight)}/>
+        </span>
+        <div className="dr-studio-library-info">
+          <strong>{item.label} · {item.mission}</strong>
+          <small>{item.id} · {dimensions[item.id]??item.width+' × '+item.height+' px'} · {item.mime==='image/png'?'PNG RGBA':'JPEG sin transparencia'} · Original intacto</small>
+          <small>Referencia maestra, no expresión aprobada. No sustituye sprites G1.</small>
+          <div className="dr-studio-library-actions">
+            <a href={item.url} target="_blank" rel="noopener noreferrer" aria-label={'Ver referencia maestra de '+item.label}>Ver original ↗</a>
+          </div>
+        </div>
+      </li>)}
       {visiblePublished.map(item=><li key={item.id} data-testid="studio-library-g2-item"
           data-g2-id={item.id} data-source="published">
         <span className="dr-studio-library-thumb" aria-hidden="true">
@@ -164,7 +184,7 @@ export default function StudioLibrary({canReplace,onUse,onClose}:Props){
           </div>
         </li>;
       })}
-      {items&&!visibleItems.length&&!visiblePublished.length&&<li className="dr-studio-library-empty">No hay archivos visibles con este filtro.</li>}
+      {items&&!visibleItems.length&&!visiblePublished.length&&!visibleMasters.length&&<li className="dr-studio-library-empty">No hay archivos visibles con este filtro.</li>}
     </ul>
   </section>;
 }

@@ -29,8 +29,11 @@ test('los 25 fondos G2 existen, aparecen en el catálogo y sirven WebP válidos'
     items: Array<{path: string; generation?: string}>;
   };
   expect(catalog.version).toBe(2);
-  const g2 = catalog.items.filter(x => x.generation === 'DR-G2-2026');
+  const g2 = catalog.items.filter(x => x.generation === 'DR-G2-2026' && x.path.startsWith('public/artes/generaciones/'));
   expect(g2).toHaveLength(25);
+  const masters=catalog.items.filter(x=>x.path.startsWith('art-reference/personajes-oficiales/imagenes/'));
+  expect(masters).toHaveLength(6);
+  expect(masters.every(x=>x.generation==='DR-G2-2026')).toBe(true);
   for (const item of g2) {
     const response = await request.get(root + item.path.replace(/^public\//, ''));
     expect(response.status(), item.path).toBe(200);
@@ -44,9 +47,9 @@ test('los 25 fondos G2 existen, aparecen en el catálogo y sirven WebP válidos'
 test('la galería distingue 25 G2 de G1 y muestra el fondo de las ruinas', async ({page}) => {
   await page.goto(root + '?drDev=1#/artes');
   await expect(page.getByRole('heading',{name:'Biblioteca central de artes'})).toBeVisible();
-  await expect(page.locator('.dr-art-notice')).toContainText('25 G2 nuevos/locales');
+  await expect(page.locator('.dr-art-notice')).toContainText('31 G2 nuevos/locales');
   await page.getByRole('combobox',{name:'Filtrar por generación'}).selectOption('DR-G2-2026');
-  await expect(page.locator('.dr-art-card')).toHaveCount(25);
+  await expect(page.locator('.dr-art-card')).toHaveCount(31);
   await page.getByRole('button',{name:/G2 M35 C/i}).click();
   await expect(page.getByRole('complementary',{name:'Detalles del arte'})).toContainText('G2 M35 C');
   await verifyImage(page.locator('.dr-art-preview img'), /G2-M35-C\.webp$/);
@@ -93,8 +96,19 @@ test('un fondo G2 publicado puede incorporarse a la biblioteca local de DRStudio
   await page.getByRole('button',{name:/G2 M35 C/i}).click();
   await page.getByRole('button',{name:/Usar en DRStudio/}).click();
   await expect(page.getByRole('status')).toContainText('está disponible en DRStudio');
-  await expect(page.locator('.dr-art-card')).toHaveCount(26);
+  await expect(page.locator('.dr-art-card')).toHaveCount(32);
   await page.reload();
   await page.getByRole('combobox',{name:'Filtrar por generación'}).selectOption('DR-G2-2026');
   await expect(page.locator('.dr-art-card').filter({hasText:'G2-M35-C.webp'})).toBeVisible();
+});
+
+test('la Galería G2 distingue los seis originales de las expresiones pendientes',async({page})=>{
+  await page.goto(root+'?drDev=1#/artes');
+  await page.getByRole('combobox',{name:'Filtrar por generación'}).selectOption('DR-G2-2026');
+  await page.getByRole('combobox',{name:'Filtrar por sección'}).selectOption('Personajes · Referencias G2');
+  const cards=page.locator('.dr-art-card');
+  await expect(cards).toHaveCount(6);
+  await expect(page.getByRole('button',{name:/Isabela Valdierra/i})).toBeVisible();
+  await page.getByRole('button',{name:/Isabela Valdierra/i}).click();
+  await expect(page.getByRole('complementary',{name:'Detalles del arte'})).toContainText('Referencia maestra G2');
 });
