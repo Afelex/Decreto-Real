@@ -214,7 +214,7 @@ export function StudioScreenPanel({label,sceneKey,originalTitle,texts}:PanelProp
       <div className="dr-studio-actions">
         <button type="button" data-testid="studio-add" onClick={()=>pick('image')}>＋ Sprite</button>
         <button type="button" data-testid="studio-add-effect" onClick={()=>pick('effect')}>✦ Efecto</button>
-        <button type="button" data-testid="studio-background" onClick={()=>pick('background')}>▧ Subir fondo</button>
+        <button type="button" data-testid="studio-background" onClick={()=>pick('background')}>▧ Fondo</button>
         <button type="button" data-testid="studio-screen-library-open" onClick={()=>setLibraryOpen(true)}>🖼 Fondos G2 publicados</button>
         <button type="button" disabled={!scene?.background} onClick={()=>studio.apply(d=>withSceneSettings(d,sceneKey,{background:null}),'Fondo original restaurado.')}>↺ Fondo original</button>
       </div>
