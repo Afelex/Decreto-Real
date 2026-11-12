@@ -133,16 +133,17 @@ test('star goals dialog is complete, keyboard-accessible and fits the phone', as
   await expect(page.getByRole('button', { name: 'Ver objetivos del reto' })).toBeFocused();
 });
 
-test('main-menu campaign CTA previews the latest verified stage', async ({ page }) => {
+test('QA menu keeps campaign progress but hides the unpublished campaign access', async ({ page }) => {
   await page.goto(campaign);
   await page.evaluate(() => localStorage.setItem('decreto-real.campania.v1', JSON.stringify({
     version: 1, stars: { '01': 2, '38': 3 },
   })));
   await page.goto('/Decreto-Real/#/');
-  const campaignButton = page.getByRole('button', { name: 'Empezar campaña' });
-  await expect(campaignButton).toContainText('Reto 2/38');
-  await expect(campaignButton).toContainText('La orden sin sello');
-  await expect(campaignButton.locator('.dr-menu-progress-track span')).toHaveCSS('width', /[0-9.]+px/);
+  await expect(page.getByRole('button', { name: 'Empezar campaña' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Jugar con la IA' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Multijugador' })).toBeVisible();
+  const progress = await page.evaluate(() => localStorage.getItem('decreto-real.campania.v1'));
+  expect(JSON.parse(progress!).stars).toEqual({ '01': 2, '38': 3 });
   const menu = await page.locator('.dr-cinematic-actions').boundingBox();
   expect(menu).not.toBeNull();
   expect(menu!.y + menu!.height).toBeLessThanOrEqual(page.viewportSize()!.height + 2);
@@ -277,8 +278,8 @@ test('four Impact placements are ordered, and hands remain visible without numer
 
 
 test('campaign begins with a cinematic cover and continues to the Sello Real mystery', async ({ page }) => {
-  await page.goto('/Decreto-Real/#/');
-  await page.getByRole('button', { name: 'Empezar campaña' }).click();
+  // El acceso público está oculto durante QA; la ruta interna se preserva.
+  await page.goto('/Decreto-Real/#/campania/inicio');
   await expect(page.getByRole('heading', { name: 'El Sello y la Revolución Solar' })).toBeVisible();
   await expect(page.locator('.dci-story p')).toHaveCount(0);
   await page.getByRole('button', { name: /Comenzar historia/ }).click();
