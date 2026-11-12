@@ -51,11 +51,13 @@ async function noPageScroll(page: Page) {
 
 test('home menu stays fully inside one screen', async ({ page }, testInfo) => {
   await page.goto(route(''));
-  await expect(page.getByRole('button', { name: 'Empezar campaña' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Jugar con la IA' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Multijugador' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Empezar campaña' })).toHaveCount(0);
   await fits(page, '.dr-cinematic-brand');
   await fits(page, '.dr-cinematic-actions');
   await expect(page.getByText('Juego de Cartas', { exact: true })).toBeVisible();
-  await expect(page.locator('.dr-cinematic-actions button')).toHaveCount(5);
+  await expect(page.locator('.dr-cinematic-actions button')).toHaveCount(2);
   for (const button of await page.locator('.dr-cinematic-actions button').all()) {
     const bounds = await button.boundingBox();
     expect(bounds).not.toBeNull();
