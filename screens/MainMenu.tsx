@@ -29,6 +29,12 @@ const BUTTON_PNG: Record<MenuArtKey, MenuArt> = {
   options: { src: null, includesText: false },
 };
 
+/** La prueba de calidad publica solo las dos modalidades de duelo.
+ * Para restaurar el menú completo, compilar con VITE_DR_FULL_MAIN_MENU=true.
+ * Las demás pantallas y datos se conservan.
+ */
+const SHOW_FULL_MENU = import.meta.env.VITE_DR_FULL_MAIN_MENU === 'true';
+
 type MenuButtonProps = {
   artKey: MenuArtKey;
   className?: string;
@@ -138,7 +144,8 @@ const MainMenu: React.FC = () => {
       </header>
 
       {/* Campaña, duelo y baraja en columna; reglas y opciones en una sola fila. */}
-      <nav className="dr-cinematic-actions" aria-label="Menú principal">
+      <nav className="dr-cinematic-actions" aria-label="Menú principal" data-menu-mode={SHOW_FULL_MENU ? "completo" : "qa-duelos"}>
+        {SHOW_FULL_MENU && (
         <MenuButton
           artKey="campaign"
           className="dr-cinematic-button-primary"
@@ -154,15 +161,16 @@ const MainMenu: React.FC = () => {
             <span style={{ width: String(journey.percentage) + '%' }} />
           </span>
         </MenuButton>
+        )}
 
         <MenuButton
           artKey="duel"
           className="dr-cinematic-button-secondary"
-          ariaLabel="Duelo contra IA"
+          ariaLabel="Jugar con la IA"
           onClick={() => navigate('/game')}
         >
           <span className="dr-cinematic-button-icon" aria-hidden="true">⚔️</span>
-          <strong>DUELO CONTRA IA</strong>
+          <strong>JUGAR CON LA IA</strong>
         </MenuButton>
 
         <MenuButton
@@ -175,6 +183,8 @@ const MainMenu: React.FC = () => {
           <strong>MULTIJUGADOR</strong>
         </MenuButton>
 
+        {SHOW_FULL_MENU && (
+          <>
         <MenuButton
           artKey="duel"
           className="dr-cinematic-button-secondary dr-cinematic-button-disabled dr-cinematic-button-deck"
@@ -209,6 +219,8 @@ const MainMenu: React.FC = () => {
             <strong>OPCIONES</strong>
           </MenuButton>
         </div>
+          </>
+        )}
       </nav>
     </div>
   );
