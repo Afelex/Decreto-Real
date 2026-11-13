@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import {
   resolveBattleScenery,
   STANDARD_BATTLE_POSTER,
@@ -35,4 +37,13 @@ test('introductory video can be disabled explicitly', () => {
     resolveBattleScenery({ backgroundVideo: null }),
     { poster: STANDARD_BATTLE_POSTER },
   );
+});
+
+test('the standard battle film must actually exist in the published assets', () => {
+  const prefix = '/Decreto-Real/';
+  assert.ok(STANDARD_BATTLE_VIDEO.startsWith(prefix));
+  const file = join(process.cwd(), 'public', STANDARD_BATTLE_VIDEO.slice(prefix.length));
+  assert.equal(existsSync(file), true, 'The configured MP4 is missing: ' + file);
+  assert.ok(!STANDARD_BATTLE_VIDEO.includes('partida-inicial-loop.mp4'),
+    'Do not reintroduce a video filename absent from the repository');
 });
