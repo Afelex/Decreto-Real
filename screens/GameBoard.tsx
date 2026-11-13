@@ -12,7 +12,7 @@ import { cardPlacementPrompt, checkCardPlacement, resolveVisualDropZone, type Ca
 import { CardActivationBanner } from './CardActivationBanner';
 import { LastDecreeIndicator } from './LastDecreeIndicator';
 import { ComboEffectOverlay } from './ComboEffectOverlay';
-import { cardEffectCue, comboEffectCue, DECREE_BANNER_DURATION_MS } from '../game/effectCues';
+import { comboEffectCue, DECREE_BANNER_DURATION_MS } from '../game/effectCues';
 import { TurnIndicator, TurnAnnouncement, ComboChoicePanel, CoinTossPanel } from './CombatEventUI';
 import { resolveBattleScenery } from '../game/battleScenery';
 import { getRoyalCardText } from '../game/royalCardText';
