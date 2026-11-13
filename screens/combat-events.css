@@ -563,3 +563,17 @@
   background:transparent;
   box-shadow:none;
 }
+
+/* Combo: mask only the outer black matte of the original WebP. The interior
+   grey panel is part of the image and stays 100% opaque, as requested.
+   Artwork, text and buttons retain their existing placement and hit targets. */
+.dr-royal-screen .dr-event-choice .dr-event-choice__art {
+  -webkit-mask-image:url('/Decreto-Real/interfaz/recorte-marco-combo.svg');
+  mask-image:url('/Decreto-Real/interfaz/recorte-marco-combo.svg');
+  -webkit-mask-size:100% 100%;
+  mask-size:100% 100%;
+  -webkit-mask-position:center;
+  mask-position:center;
+  -webkit-mask-repeat:no-repeat;
+  mask-repeat:no-repeat;
+}
