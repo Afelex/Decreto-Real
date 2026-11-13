@@ -23,13 +23,21 @@ export function TurnAnnouncement({ variant, turn, preview = false, ribbonProps }
   preview?: boolean;
   ribbonProps?: React.HTMLAttributes<HTMLDivElement>;
 }) {
+  const [videoFailed, setVideoFailed] = React.useState(false);
   const opening = variant === 'opening';
+  const showVideo = !opening && !preview && !videoFailed;
+  const videoSrc = `${import.meta.env.BASE_URL}animaciones/banner-${variant === 'player' ? 'jugador-rojo' : 'rival-azul'}.webm`;
   const title = opening ? '¡INICIA EL COMBATE!' : variant === 'player' ? 'Tu Turno' : 'Turno del Rival';
   const subtitle = opening ? 'Prepárate para el duelo' : variant === 'player' ? 'Juega una carta' : 'El rival está actuando';
   return (
     <div className={`dr-event-turn dr-event-turn--${variant}${preview ? ' dr-event-turn--studio-preview' : ''}`} role="status"
       aria-live="polite" aria-label={`${title}. ${subtitle}${turn ? ` (turno ${turn})` : ''}`}>
-      <div {...ribbonProps} className={`dr-event-turn__ribbon${ribbonProps?.className ? ' ' + ribbonProps.className : ''}`}>
+      <div {...ribbonProps} className={`dr-event-turn__ribbon${showVideo ? ' dr-event-turn__ribbon--video' : ''}${ribbonProps?.className ? ' ' + ribbonProps.className : ''}`}>
+        {showVideo && <video className="dr-event-turn__video" autoPlay muted playsInline preload="auto"
+          aria-hidden="true" onLoadedMetadata={event => { event.currentTarget.playbackRate = 4; }}
+          onError={() => setVideoFailed(true)}>
+          <source src={videoSrc} type="video/webm" />
+        </video>}
         <strong>{title}</strong>
         {opening && <small>{subtitle}</small>}
       </div>
