@@ -6,6 +6,7 @@ import { CAMPAIGN_INTRO_KEY } from './CampaignIntro';
 import { PROLOGUE_COMPLETE_KEY } from '../campaign/prologueArt';
 import { isCampaignQaActive } from '../campaign/campaignQA';
 import { campaignOverview } from '../campaign/progressView.ts';
+import { STANDARD_BATTLE_VIDEO } from '../game/battleScenery';
 import './main-menu-cinematic.css';
 
 /**
@@ -74,6 +75,15 @@ const MenuButton: React.FC<MenuButtonProps> = ({
 
 const MainMenu: React.FC = () => {
   const navigate = useNavigate();
+  // Start fetching the real battle MP4 while the player is still on the menu.
+  // A resource hint warms the browser cache without displaying a second scene.
+  React.useEffect(() => {
+    const hint = document.createElement('link');
+    hint.rel = 'prefetch';
+    hint.href = STANDARD_BATTLE_VIDEO;
+    document.head.appendChild(hint);
+    return () => hint.remove();
+  }, []);
   const progress = React.useMemo(() => {
     try { return loadCampaignProgress(getCampaignStorage()); }
     catch { return loadCampaignProgress(null); }

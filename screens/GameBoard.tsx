@@ -1009,7 +1009,6 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
               } as React.CSSProperties}><span className="dr-royal-card-crest">✥</span></div>;
             })}
           </div>
-          <LastDecreeIndicator type={opponentLastDecree} side="opponent" />
         </section>
 
         <section className={`dr-royal-field${selectedCard ? ' is-guiding' : ''}${dragAt ? ' is-dragging' : ''}${selectedCard && selectedCard.type !== 'IMPACT' ? ' is-regular' : ''}`}
@@ -1084,7 +1083,6 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
               </button>;
             })}
           </div>
-          <LastDecreeIndicator type={playerLastDecree} side="player" />
         </section>
 
         <footer className="dr-royal-player-area" aria-label="Tus estadísticas y controles">
@@ -1107,6 +1105,13 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
             <EndTurnOrnament disabled={endTurnUnavailable}/>
             <strong>FIN<br/>TURNO</strong>
           </button>
+          {(playerLastDecree || opponentLastDecree) && (
+            <div className="dr-last-decree-stack" role="group"
+              aria-label="Últimos decretos activados, sobre el botón Fin de turno">
+              <LastDecreeIndicator type={opponentLastDecree} side="opponent" />
+              <LastDecreeIndicator type={playerLastDecree} side="player" />
+            </div>
+          )}
         </footer>
       </div>
       <StudioBoardPanel sceneKey={board.sceneKey} profile={board.profile}

@@ -84,6 +84,10 @@ test('Order draws one replacement card without changing the starting 28-card dec
   fireEvent.click(screen.getByRole('button', { name: 'Campo para activar Ataque, Defensa, Orden o Mística' }));
   expect(screen.getByRole('status', {name: /HAS ACTIVADO/})).toBeTruthy();
   expect(screen.getByRole('status', { name: 'Último decreto del jugador: Orden' })).toBeTruthy();
+  const badges = screen.getByRole('group', { name: 'Últimos decretos activados, sobre el botón Fin de turno' });
+  expect(badges.closest('footer')?.classList.contains('dr-royal-player-area')).toBe(true);
+  expect(screen.getByLabelText(/Tu mano:/).querySelector('.dr-last-decree-indicator')).toBeNull();
+  expect(badges.querySelector('.dr-last-decree-indicator--player')).toBeTruthy();
   const orderVideo = document.querySelector<HTMLVideoElement>('.dr-cinematic-overlay--energy video');
   expect(orderVideo?.querySelector('source')?.getAttribute('src')).toContain('/efectos/orden.webm');
   expect(orderVideo?.muted).toBe(true); // Mocked test preferences disable SFX.

@@ -1,7 +1,9 @@
-# Escenarios de combate
+# Escenario animado del duelo estándar
 
-- `partida-inicial-loop.mp4`: fondo animado vertical de **la partida estándar** (`/#/game`), en reproducción automática, silenciada y en bucle.
-- `plaza-arcilla-estandar.webp`: imagen de respaldo mientras carga el video, si el dispositivo bloquea su reproducción o si el usuario prefiere movimiento reducido.
-- Las misiones de campaña mantienen su propio fondo definido en `screens/CampaignMission.tsx`, y podrán configurar `presentation.backgroundVideo` por misión sin afectar a la partida estándar.
+- `gemini_generated_video_b8059a5c.mp4`: vídeo existente y versionado de la partida contra IA (`/#/game`).
+- El componente `BattleSceneryLayer` muestra exclusivamente este MP4 en el modo estándar; **no se monta** la imagen de arcilla debajo ni se usa como póster.
+- `plaza-arcilla-estandar.webp` permanece como recurso legado, sin mostrarse cuando existe un vídeo.
+- Los fondos propios de las misiones siguen independientes: pueden tener una imagen o un vídeo especificado en `presentation.backgroundVideo`.
+- El menú principal sugiere al navegador la precarga del vídeo estándar para reducir la pantalla negra al iniciar el duelo.
 
-El MP4 debe estar físicamente en este directorio y servirse en producción bajo `/Decreto-Real/escenarios/partida-inicial-loop.mp4`. Se recomienda H.264, `yuv420p`, sin audio y `faststart` para el inicio rápido en móviles.
+**Control de publicación:** la ruta configurada en `game/battleScenery.ts` tiene que corresponder a un archivo físico de `public/escenarios/`. Los tests impiden volver a apuntar a un MP4 inexistente.

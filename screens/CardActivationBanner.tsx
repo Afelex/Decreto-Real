@@ -48,6 +48,7 @@ export const CardActivationBanner: React.FC<Props> = ({ card, isPlayer, paused }
   return (
     <div className={`dr-cinematic-overlay ${isPlayer ? 'player' : 'rival'}${isEnergy ? ' dr-cinematic-overlay--energy' : ''}${paused ? ' paused' : ''}`}
       role="status" aria-live="polite" aria-atomic="true"
+      style={{ '--dr-cue-duration': `${Math.max(cue.durationMs, 900)}ms` } as React.CSSProperties}
       aria-label={`${copy.kicker}: ${card.name}. ${copy.effect}`}>
       {isEnergy && energySrc && !failedEnergy && (
         <div className="dr-cinematic-effect-media" aria-hidden="true">
