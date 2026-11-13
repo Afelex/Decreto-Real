@@ -48,7 +48,7 @@ for (const type of Object.keys(names) as CardType[]) {
       );
       const srcs = Array.from(container.querySelectorAll('video source')).map(source=>source.getAttribute('src')||'');
       expect(container.querySelector('.dr-cinematic-copy')).toBeTruthy();
-      expect(container.querySelector('.dr-cinematic-overlay')?.getAttribute('style')).toContain('--dr-cue-duration');
+      expect(container.querySelector('.dr-cinematic-overlay')?.getAttribute('style')).toContain('--dr-cue-duration: 1000ms');
       expect(srcs).toContainEqual(expect.stringContaining(isPlayer ? 'banner-jugador-rojo.webm' : 'banner-rival-azul.webm'));
       if (clips[type]) expect(srcs).toContainEqual(expect.stringContaining(clips[type]!));
       unmount();
