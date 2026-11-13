@@ -10,6 +10,7 @@ import {scheduleNarrativeMusic,scheduleNarrativeSound,
 import { AiTurnController, runOpponentTurn } from '../game/aiTurn';
 import { cardPlacementPrompt, checkCardPlacement, resolveVisualDropZone, type CardDropZone } from '../game/cardPlacement.ts';
 import { CardActivationBanner } from './CardActivationBanner';
+import { LastDecreeIndicator } from './LastDecreeIndicator';
 import { ComboEffectOverlay } from './ComboEffectOverlay';
 import { cardEffectCue, comboEffectCue } from '../game/effectCues';
 import { TurnIndicator, TurnAnnouncement, ComboChoicePanel, CoinTossPanel } from './CombatEventUI';
@@ -246,6 +247,8 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const [playerImpactPlayedThisTurn, setPlayerImpactPlayedThisTurn] = useState(false);
   const [playerGauge, setPlayerGauge] = useState(0);
   const [playerLastType, setPlayerLastType] = useState<CardType | null>(null);
+  // Separate from combo tracking: a ×3 reset must not clear the last card icon.
+  const [playerLastDecree, setPlayerLastDecree] = useState<CardType | null>(null);
   const [showSpecialSelection, setShowSpecialSelection] = useState(false);
   const [comboChoice, setComboChoice] = useState<2 | 3>(3);
   const [comboAnnouncement, setComboAnnouncement] = useState<{ id: number; level: 2 | 3; ability: 'DAMAGE' | 'HEAL'; isPlayer: boolean } | null>(null);
@@ -259,6 +262,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const [opponentImpactPlayedThisTurn, setOpponentImpactPlayedThisTurn] = useState(false);
   const [opponentGauge, setOpponentGauge] = useState(0);
   const [opponentLastType, setOpponentLastType] = useState<CardType | null>(null);
+  const [opponentLastDecree, setOpponentLastDecree] = useState<CardType | null>(null);
   const [playerSummon, setPlayerSummon] = useState<MysticSummon | null>(null);
   const [opponentSummon, setOpponentSummon] = useState<MysticSummon | null>(initialOpponentSummon ?? null);
   const playerSummonRef = useRef<MysticSummon | null>(null);
@@ -538,8 +542,14 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
     if (card.type === 'MYSTIC' && !canActivateMystic(card.mysticId,
       isPlayer ? latestPlayer.current.impactPlayedThisTurn : latestOpponent.current.impactPlayedThisTurn)) return;
     announcementBusy.current = true;
-    if (isPlayer) setPlayerHand(prev => prev.filter(c => c.id !== card.id));
-    else setOpponentHand(prev => prev.filter(c => c.id !== card.id));
+    // Update the independent latest-card status for the corresponding hand.
+    if (isPlayer) {
+      setPlayerLastDecree(card.type);
+      setPlayerHand(prev => prev.filter(c => c.id !== card.id));
+    } else {
+      setOpponentLastDecree(card.type);
+      setOpponentHand(prev => prev.filter(c => c.id !== card.id));
+    }
 
     setCardAnnouncement({ id: ++announcementCount.current, card, isPlayer });
     // Sound accompanies the card animation; actual HP/draw effects still wait.
@@ -999,6 +1009,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
               } as React.CSSProperties}><span className="dr-royal-card-crest">✥</span></div>;
             })}
           </div>
+          <LastDecreeIndicator type={opponentLastDecree} side="opponent" />
         </section>
 
         <section className={`dr-royal-field${selectedCard ? ' is-guiding' : ''}${dragAt ? ' is-dragging' : ''}${selectedCard && selectedCard.type !== 'IMPACT' ? ' is-regular' : ''}`}
@@ -1073,6 +1084,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
               </button>;
             })}
           </div>
+          <LastDecreeIndicator type={playerLastDecree} side="player" />
         </section>
 
         <footer className="dr-royal-player-area" aria-label="Tus estadísticas y controles">
