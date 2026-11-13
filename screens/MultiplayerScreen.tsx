@@ -1,6 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './multiplayer.css';
+import { MultiplayerCinematicCue } from './MultiplayerCinematicCue';
+import { multiplayerCueFromState, type MultiplayerCue } from '../game/multiplayerPresentation';
 
 type Card = { id: string; type: 'ATTACK' | 'DEFENSE' | 'IMPACT' | 'ORDER'; rank?: number };
 type Player = { name: string; hp: number; impact: number; connected: boolean; deckCount: number; discarded: number;
@@ -45,6 +47,19 @@ export default function MultiplayerScreen() {
   const [view, setView] = React.useState<View | null>(null);
   const [waiting, setWaiting] = React.useState(false);
   const [error, setError] = React.useState('');
+  const previousView = React.useRef<View | null>(null);
+  const activeCue = React.useRef<MultiplayerCue | null>(null);
+  const queuedCues = React.useRef<MultiplayerCue[]>([]);
+  const [cinematicCue, setCinematicCue] = React.useState<MultiplayerCue | null>(null);
+  const enqueueCue = (next: MultiplayerCue) => {
+    if (activeCue.current) queuedCues.current.push(next);
+    else { activeCue.current = next; setCinematicCue(next); }
+  };
+  const finishCue = () => {
+    const next = queuedCues.current.shift() ?? null;
+    activeCue.current = next;
+    setCinematicCue(next);
+  };
 
   React.useEffect(() => {
     if (!SOCKET_URL) return;
@@ -78,7 +93,11 @@ export default function MultiplayerScreen() {
         } else if (msg.type === 'waiting') {
           setWaiting(true); setView(null);
         } else if (msg.type === 'state') {
-          setWaiting(false); setView(msg.view);
+          const latest = msg.view as View;
+          const animation = multiplayerCueFromState(previousView.current, latest);
+          previousView.current = latest;
+          setWaiting(false); setView(latest);
+          if (animation) enqueueCue(animation);
           pendingRef.current = null; setPending(false);
         } else if (msg.type === 'ack' && msg.id === pendingRef.current) {
           pendingRef.current = null; setPending(false);
@@ -128,6 +147,10 @@ export default function MultiplayerScreen() {
   const resetSession = () => {
     sessionRef.current = null; setSession(null); setView(null); setWaiting(false); setError('');
     pendingRef.current = null; setPending(false);
+    previousView.current = null;
+    queuedCues.current = [];
+    activeCue.current = null;
+    setCinematicCue(null);
     try { sessionStorage.removeItem(SESSION_KEY); } catch { /* private mode */ }
     socketRef.current?.close(4000, 'Salir de la sala');
   };
@@ -239,5 +262,6 @@ export default function MultiplayerScreen() {
         {view.status === 'finished' && <button type="button" onClick={() => navigate('/')}>Volver al menú</button>}
       </footer>
     </section>}
+    {cinematicCue && <MultiplayerCinematicCue cue={cinematicCue} onEnded={finishCue} />}
   </main>;
 }

@@ -517,3 +517,40 @@
 /* Vista estática de Studio: la cinta del turno seleccionado se puede mover con el dedo. */
 .dr-royal-screen .dr-event-turn--studio-preview{animation:none;pointer-events:none;z-index:45}
 .dr-royal-screen .dr-event-turn--studio-preview .dr-event-turn__ribbon[data-studio-actor]{pointer-events:auto;touch-action:none;cursor:grab}
+
+/* Las cintas de turno usan el vídeo transparente aprobado; la imagen previa
+   queda disponible si el WebM no se puede reproducir o en Studio. */
+.dr-royal-screen .dr-event-turn__ribbon--video {
+  width:min(100%,520px);
+  aspect-ratio:16 / 9;
+  min-height:0;
+  background:none;
+  border:0;
+  box-shadow:none;
+  filter:none;
+  overflow:visible;
+}
+.dr-royal-screen .dr-event-turn__video {
+  position:absolute;
+  inset:0;
+  z-index:0;
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  pointer-events:none;
+}
+.dr-royal-screen .dr-event-turn__ribbon--video strong {
+  position:relative;
+  z-index:1;
+  text-shadow:0 3px 6px #090613,0 0 12px #090613;
+}
+@media (prefers-reduced-motion:reduce) {
+  .dr-royal-screen .dr-event-turn__video {display:none;}
+  .dr-royal-screen .dr-event-turn__ribbon--video {
+    background:url('/Decreto-Real/interfaz/banner-tu-turno.webp') center/contain no-repeat;
+  }
+  .dr-royal-screen .dr-event-turn--opponent .dr-event-turn__ribbon--video {
+    background-image:url('/Decreto-Real/interfaz/banner-turno-rival.webp');
+  }
+}

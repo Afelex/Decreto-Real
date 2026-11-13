@@ -355,7 +355,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
         if (gameOverRef.current) return;
         if (currentPlayer === 'PLAYER') startPlayerTurn();
         else startOpponentTurn();
-      }, 1000);
+      }, 1500); // visible WebM transition for both turns
     }
   }, [phase, turnCount]);
 
