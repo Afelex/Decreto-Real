@@ -554,3 +554,12 @@
     background-image:url('/Decreto-Real/interfaz/banner-turno-rival.webp');
   }
 }
+
+/* QA 13/11: estandartes actualizados (1000x747). Conservan la proporción
+   del recurso y las zonas pulsables de Furia Real / Gracia Divina. */
+.dr-royal-screen .dr-event-choice.dr-event-choice--2,
+.dr-royal-screen .dr-event-choice.dr-event-choice--3 {
+  aspect-ratio:1000 / 747;
+  background:transparent;
+  box-shadow:none;
+}

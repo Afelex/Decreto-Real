@@ -2,44 +2,30 @@ import React from 'react';
 import type { BattleScenery } from '../game/battleScenery';
 import './battle-scenery.css';
 
-/** Lightweight, non-interactive scenery. Poster stays visible until playback
- * starts, and on unsupported/blocked media or when reduced motion is preferred. */
+/** A duel with backgroundVideo displays ONLY that video.
+ * Do not mount a clay poster (not even as <video poster>), vignette or crossfade
+ * behind it: they were visibly flashing before the film loaded on mobile. */
 export const BattleSceneryLayer: React.FC<BattleScenery> = ({ poster, video }) => {
-  const [playing, setPlaying] = React.useState(false);
   const [failed, setFailed] = React.useState(false);
-  const [reducedMotion, setReducedMotion] = React.useState(() =>
-    typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true
-  );
-
-  React.useEffect(() => {
-    const preference = window.matchMedia?.('(prefers-reduced-motion: reduce)');
-    if (!preference) return;
-    const onChange = () => setReducedMotion(preference.matches);
-    onChange();
-    preference.addEventListener('change', onChange);
-    return () => preference.removeEventListener('change', onChange);
-  }, []);
-
-  React.useEffect(() => { setPlaying(false); setFailed(false); }, [video]);
+  React.useEffect(() => setFailed(false), [video]);
 
   return (
-    <div className="absolute inset-0 z-0 dr-battle-scenery" aria-hidden="true">
-      <img src={poster} alt="" className="dr-royal-background w-full h-full object-cover opacity-100" />
-      {video && !reducedMotion && !failed && (
-        <video
-          key={video}
-          className={`dr-royal-background dr-royal-background-video${playing ? ' is-playing' : ''}`}
-          autoPlay loop muted playsInline preload="metadata"
-          poster={poster}
-          controls={false}
-          disablePictureInPicture
-          onPlaying={() => setPlaying(true)}
+    <div className="absolute inset-0 z-0 dr-battle-scenery"
+      data-scenery-mode={video ? 'video-only' : 'still'}
+      aria-hidden="true">
+      {video ? (
+        !failed && <video key={video}
+          className="dr-royal-background dr-royal-background-video"
+          autoPlay loop muted playsInline preload="auto"
+          controls={false} disablePictureInPicture
           onError={() => setFailed(true)}
-        >
-          <source src={video} type="video/mp4" />
-        </video>
+        ><source src={video} type="video/mp4" /></video>
+      ) : (
+        <>
+          <img src={poster} alt="" className="dr-royal-background w-full h-full object-cover opacity-100" />
+          <div className="absolute inset-0 dr-royal-vignette" />
+        </>
       )}
-      <div className="absolute inset-0 dr-royal-vignette" />
     </div>
   );
 };

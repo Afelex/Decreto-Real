@@ -1,10 +1,12 @@
-/* Video is confined to the battle scenery, below every interactive layer.
-   Exact aspect ratio is preserved with cover for vertical mobile screens. */
+/* In free duel mode the moving image is the sole scenery layer.
+   The stage stays dark until the first video frame is available; never flash
+   an unrelated image, placeholder or CSS crossfade into it. */
 .dr-battle-scenery {
   overflow: hidden;
   pointer-events: none;
+  background: #080b12;
 }
-.dr-battle-scenery .dr-royal-background-video {
+.dr-battle-scenery[data-scenery-mode="video-only"] .dr-royal-background-video {
   position: absolute;
   inset: 0;
   display: block;
@@ -12,15 +14,7 @@
   height: 100%;
   object-fit: cover;
   object-position: center;
-  opacity: 0;
-  transition: opacity 300ms ease;
-  pointer-events: none;
-}
-.dr-battle-scenery .dr-royal-background-video.is-playing {
   opacity: 1;
-}
-@media (prefers-reduced-motion: reduce) {
-  .dr-battle-scenery .dr-royal-background-video {
-    display: none;
-  }
+  transition: none;
+  pointer-events: none;
 }
