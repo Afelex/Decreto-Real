@@ -30,6 +30,7 @@ test('rival row follows a real AI Impact while player slots remain independent',
   expect(screen.getByRole('group', { name: 'Progreso de impactos del rival: 1 de 4' })).toBeTruthy();
   expect(within(row).getByRole('img', { name: 'Impacto rival I, completado' })).toBeTruthy();
   expect(row.querySelectorAll('.completed')).toHaveLength(1);
+  expect(screen.getByRole('status', { name: 'Último decreto del rival: Impacto' })).toBeTruthy();
   const player = screen.getByRole('group', { name: 'Las cuatro posiciones de Impacto' });
   expect(within(player).getAllByRole('button')).toHaveLength(4);
   expect(player.querySelectorAll('.completed')).toHaveLength(0);
@@ -82,6 +83,7 @@ test('Order draws one replacement card without changing the starting 28-card dec
   fireEvent.click(screen.getByRole('button', { name: /Decreto de Orden:/ }));
   fireEvent.click(screen.getByRole('button', { name: 'Campo para activar Ataque, Defensa, Orden o Mística' }));
   expect(screen.getByRole('status', {name: /HAS ACTIVADO/})).toBeTruthy();
+  expect(screen.getByRole('status', { name: 'Último decreto del jugador: Orden' })).toBeTruthy();
   const orderVideo = document.querySelector<HTMLVideoElement>('.dr-cinematic-overlay--energy video');
   expect(orderVideo?.querySelector('source')?.getAttribute('src')).toContain('/efectos/orden.webm');
   expect(orderVideo?.muted).toBe(true); // Mocked test preferences disable SFX.
