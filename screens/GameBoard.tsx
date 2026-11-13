@@ -1009,7 +1009,6 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
               } as React.CSSProperties}><span className="dr-royal-card-crest">✥</span></div>;
             })}
           </div>
-          <LastDecreeIndicator type={opponentLastDecree} side="opponent" />
         </section>
 
         <section className={`dr-royal-field${selectedCard ? ' is-guiding' : ''}${dragAt ? ' is-dragging' : ''}${selectedCard && selectedCard.type !== 'IMPACT' ? ' is-regular' : ''}`}
@@ -1084,7 +1083,6 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
               </button>;
             })}
           </div>
-          <LastDecreeIndicator type={playerLastDecree} side="player" />
         </section>
 
         <footer className="dr-royal-player-area" aria-label="Tus estadísticas y controles">
