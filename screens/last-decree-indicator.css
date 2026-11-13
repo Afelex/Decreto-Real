@@ -1,0 +1,40 @@
+/* A legible indicator BELOW each fan, never over the playable card faces.
+   Each side has its own independent last-activated decree. */
+.dr-royal-screen .dr-last-decree-indicator {
+  position:absolute;
+  left:50%;
+  bottom:0;
+  z-index:30;
+  transform:translateX(-50%);
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  min-width:56px;
+  min-height:23px;
+  max-width:150px;
+  padding:2px 8px;
+  border-radius:99px;
+  border:1px solid #e9ca83;
+  background:rgba(11,14,28,.93);
+  box-shadow:0 2px 7px rgba(0,0,0,.6);
+  color:#ffe8a3;
+  pointer-events:none;
+  white-space:nowrap;
+}
+.dr-royal-screen .dr-last-decree-icon {display:grid;place-items:center;flex:0 0 20px;}
+.dr-royal-screen .dr-last-decree-name {
+  font:800 clamp(9px,2.6cqw,12px)/1.1 Georgia,serif;
+}
+.dr-royal-screen .dr-last-decree-indicator--attack {color:#ffb5a4;border-color:#e7a18e;}
+.dr-royal-screen .dr-last-decree-indicator--defense {color:#adddff;border-color:#7baed6;}
+.dr-royal-screen .dr-last-decree-indicator--order {color:#ffe09f;border-color:#d7aa66;}
+.dr-royal-screen .dr-last-decree-indicator--impact {color:#fff2af;border-color:#e8cf76;}
+.dr-royal-screen .dr-last-decree-indicator--mystic {color:#ffde73;border-color:#f3c254;}
+@media(max-height:590px) {
+  .dr-royal-screen .dr-last-decree-indicator {min-height:19px;padding:1px 6px;gap:3px;}
+  .dr-royal-screen .dr-last-decree-icon {flex-basis:17px;}
+  .dr-royal-screen .dr-last-decree-icon svg {width:17px;height:17px;}
+  .dr-royal-screen .dr-last-decree-name {font-size:9px;}
+}
