@@ -29,6 +29,7 @@ export function MultiplayerCinematicCue({ cue, onEnded }: {
   };
   React.useEffect(() => {
     completed.current = false;
+    setFailed(false);
     const timer = window.setTimeout(finish, durationMs + 250);
     return () => window.clearTimeout(timer);
   }, [cue.id, durationMs]);
@@ -49,7 +50,7 @@ export function MultiplayerCinematicCue({ cue, onEnded }: {
   return <div key={cue.id} className={`dr-pvp-cinematic ${cue.isPlayer ? 'is-player' : 'is-opponent'}${isEnergy ? ' is-energy' : ''}`}
     role="status" aria-live="polite" aria-label={`${kicker}: ${heading}. ${detail}`}>
     <div className="dr-pvp-cinematic-media" aria-hidden="true">
-      {!failed ? <video autoPlay muted playsInline preload="auto"
+      {!failed ? <video key={cue.id} autoPlay muted playsInline preload="auto"
         onLoadedMetadata={event => { event.currentTarget.playbackRate = isEnergy ? 1 : 4; }}
         onError={() => setFailed(true)} onEnded={finish}>
         <source src={import.meta.env.BASE_URL + file} type="video/webm" />
