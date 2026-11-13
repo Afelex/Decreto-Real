@@ -1,5 +1,5 @@
-/* A legible indicator BELOW each fan, never over the playable card faces.
-   Each side has its own independent last-activated decree. */
+/* Indicators retain independent histories for each duel side. Placement is now a
+   compact stack on the right immediately above the Fin de turno button. */
 .dr-royal-screen .dr-last-decree-indicator {
   position:absolute;
   left:50%;
@@ -37,4 +37,56 @@
   .dr-royal-screen .dr-last-decree-icon {flex-basis:17px;}
   .dr-royal-screen .dr-last-decree-icon svg {width:17px;height:17px;}
   .dr-royal-screen .dr-last-decree-name {font-size:9px;}
+}
+
+/* Mobile HUD: right-aligned vertical history immediately over FIN TURNO.
+   Not a child of the hand fan: never covers the card selection area. */
+.dr-royal-screen .dr-last-decree-stack {
+  position:absolute;
+  right:clamp(6px,2cqw,13px);
+  bottom:calc(100% + 5px);
+  z-index:35;
+  width:max-content;
+  max-width:clamp(105px,30cqw,138px);
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:4px;
+  pointer-events:none;
+}
+.dr-royal-screen .dr-last-decree-stack .dr-last-decree-indicator {
+  position:relative;
+  left:auto;
+  bottom:auto;
+  transform:none;
+  max-width:100%;
+  min-height:22px;
+  padding:2px 6px;
+  gap:4px;
+  flex:0 0 auto;
+}
+.dr-royal-screen .dr-last-decree-stack .dr-last-decree-indicator--opponent {
+  background:rgba(10,26,55,.96);
+}
+.dr-royal-screen .dr-last-decree-stack .dr-last-decree-indicator--player {
+  background:rgba(54,12,24,.96);
+}
+.dr-royal-screen .dr-last-decree-stack .dr-last-decree-indicator::before {
+  font:800 8px/1 system-ui,sans-serif;
+  letter-spacing:.02em;
+  opacity:.8;
+}
+.dr-royal-screen .dr-last-decree-stack .dr-last-decree-indicator--opponent::before {content:"RIVAL";}
+.dr-royal-screen .dr-last-decree-stack .dr-last-decree-indicator--player::before {content:"TÚ";}
+.dr-royal-screen .dr-last-decree-stack .dr-last-decree-icon {
+  flex:0 0 17px;
+}
+.dr-royal-screen .dr-last-decree-stack .dr-last-decree-icon svg {width:17px;height:17px;}
+.dr-royal-screen .dr-last-decree-stack .dr-last-decree-name {
+  font-size:clamp(9px,2.3cqw,11px);
+}
+@media(max-height:650px) {
+  .dr-royal-screen .dr-last-decree-stack {bottom:calc(100% + 2px);gap:2px;}
+  .dr-royal-screen .dr-last-decree-stack .dr-last-decree-indicator {min-height:18px;padding:1px 4px;}
+  .dr-royal-screen .dr-last-decree-stack .dr-last-decree-indicator::before {font-size:7px;}
 }
