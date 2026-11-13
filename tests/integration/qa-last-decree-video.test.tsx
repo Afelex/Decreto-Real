@@ -11,14 +11,14 @@ afterEach(cleanup);
 test('duelo estándar: solo vídeo sin imagen clay, poster ni viñeta', () => {
   const { container } = render(<BattleSceneryLayer
     poster="/Decreto-Real/escenarios/plaza-arcilla-estandar.webp"
-    video="/Decreto-Real/escenarios/gemini_generated_video_b8059a5c.mp4" />);
+    video="/Decreto-Real/escenarios/partida-inicial-loop.mp4" />);
   expect(container.querySelector('[data-scenery-mode="video-only"]')).toBeTruthy();
   expect(container.querySelector('img')).toBeNull();
   expect(container.querySelector('.dr-royal-vignette')).toBeNull();
   const video = container.querySelector('video')!;
   expect(video).toBeTruthy();
   expect(video.getAttribute('poster')).toBeNull();
-  expect(video.querySelector('source')?.getAttribute('src')).toContain('gemini_generated_video_b8059a5c.mp4');
+  expect(video.querySelector('source')?.getAttribute('src')).toContain('partida-inicial-loop.mp4');
 });
 
 test('escenas sin vídeo conservan su imagen de campaña', () => {
