@@ -2,9 +2,15 @@
   <!-- Alpha stencil for the existing combo frame. The grey interior remains
        fully opaque; only the matte outside the gilded silhouette is hidden.
        Keep the original WebP untouched as an editable fallback. -->
-  <path fill="white" d="M 244 10
-    C 345 4 653 4 756 10
-    C 784 11 796 37 814 58
+  <!-- The refined top follows the gold jewel rather than the black
+       rectangular matte above it; the interior remains fully opaque. -->
+  <path fill="white" d="M 244 18
+    C 337 9 420 10 474 12
+    L 489 0
+    Q 500 -2 511 0
+    L 526 12
+    C 580 10 663 9 756 18
+    C 784 19 796 37 814 58
     C 832 70 852 73 881 82
     C 917 85 941 104 953 143
     C 964 174 962 196 962 222

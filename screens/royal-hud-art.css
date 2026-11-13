@@ -280,3 +280,71 @@
     bottom:3px;
   }
 }
+
+/* DR-QA: animated team-colored ambience inside the existing portrait frames.
+   Respect the HUD atlas, portrait crop and HP label: the glow is limited to
+   the central portrait window, behind the gold ornament, never over controls. */
+.dr-royal-screen .dr-royal-rival-area .dr-royal-character-frame,
+.dr-royal-screen .dr-royal-player-area .dr-royal-character-frame {
+  isolation:isolate;
+  --dr-portrait-dark:#09254d;
+  --dr-portrait-mid:#2563b1;
+  --dr-portrait-light:#90d5ff;
+}
+.dr-royal-screen .dr-royal-player-area .dr-royal-character-frame {
+  --dr-portrait-dark:#370919;
+  --dr-portrait-mid:#9b273a;
+  --dr-portrait-light:#ff9a8e;
+}
+/* A gradient appears wherever the portrait artwork has alpha. */
+.dr-royal-screen .dr-royal-character-frame::before {
+  content:"";
+  position:absolute;
+  left:13%;
+  top:20%;
+  width:74%;
+  height:60%;
+  z-index:0;
+  border-radius:4px;
+  pointer-events:none;
+  background:
+    radial-gradient(ellipse at 35% 15%,var(--dr-portrait-light),transparent 62%),
+    radial-gradient(ellipse at 85% 75%,var(--dr-portrait-mid),transparent 66%),
+    linear-gradient(155deg,var(--dr-portrait-dark),var(--dr-portrait-mid) 55%,var(--dr-portrait-dark));
+  background-size:155% 155%;
+  animation:dr-portrait-ambient 7s ease-in-out infinite alternate;
+}
+/* A faint moving light over the image keeps the ambiance visible even when
+   an older portrait file contains opaque pixels behind the character. */
+.dr-royal-screen .dr-royal-character-frame::after {
+  content:"";
+  position:absolute;
+  left:13%;
+  top:20%;
+  width:74%;
+  height:60%;
+  z-index:2;
+  border-radius:4px;
+  pointer-events:none;
+  background:
+    radial-gradient(ellipse 80% 110% at 25% 12%,var(--dr-portrait-light),transparent 70%),
+    linear-gradient(120deg,transparent 32%,var(--dr-portrait-mid) 54%,transparent 74%);
+  opacity:.28;
+  mix-blend-mode:screen;
+  animation:dr-portrait-shimmer 6s ease-in-out infinite alternate;
+}
+.dr-royal-screen .dr-royal-character-frame > img:first-child { z-index:1; }
+.dr-royal-screen .dr-royal-portrait-ornament { z-index:3; }
+.dr-royal-screen .dr-royal-character-frame .dr-royal-hp { z-index:4; }
+@keyframes dr-portrait-ambient {
+  from { background-position:0% 10%; }
+  to { background-position:100% 90%; }
+}
+@keyframes dr-portrait-shimmer {
+  from {opacity:.18;transform:translateY(1px);}
+  to {opacity:.34;transform:translateY(-2px);}
+}
+@media (prefers-reduced-motion:reduce) {
+  .dr-royal-screen .dr-royal-character-frame::before,
+  .dr-royal-screen .dr-royal-character-frame::after {animation:none;}
+}

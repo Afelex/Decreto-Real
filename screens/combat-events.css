@@ -577,3 +577,10 @@
   -webkit-mask-repeat:no-repeat;
   mask-repeat:no-repeat;
 }
+
+/* QA móvil: el título ×3 se coloca más arriba dentro del pergamino rojo.
+   El ×2 conserva su posición previa; ambos permanecen por encima del arte. */
+.dr-royal-screen .dr-event-choice.dr-event-choice--3 h2 {
+  top:8.3%;
+  z-index:4;
+}
