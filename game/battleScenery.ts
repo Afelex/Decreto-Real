@@ -9,7 +9,7 @@ export type BattleSceneryOverride = Readonly<{
 }>;
 
 export const STANDARD_BATTLE_POSTER = '/Decreto-Real/escenarios/plaza-arcilla-estandar.webp';
-export const STANDARD_BATTLE_VIDEO = '/Decreto-Real/escenarios/partida-inicial-loop.mp4';
+export const STANDARD_BATTLE_VIDEO = '/Decreto-Real/escenarios/gemini_generated_video_b8059a5c.mp4';
 
 export function resolveBattleScenery(presentation?: BattleSceneryOverride): BattleScenery {
   const poster = presentation?.background ?? STANDARD_BATTLE_POSTER;
