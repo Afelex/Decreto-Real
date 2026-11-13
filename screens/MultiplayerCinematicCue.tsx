@@ -1,6 +1,6 @@
 import React from 'react';
 import { cardActivationCopy } from '../game/cardActivationText';
-import { cardEffectCue } from '../game/effectCues';
+import { cardEffectCue, DECREE_BANNER_DURATION_MS } from '../game/effectCues';
 import type { MultiplayerCue } from '../game/multiplayerPresentation';
 import type { CardType } from '../types';
 
@@ -21,7 +21,7 @@ export function MultiplayerCinematicCue({ cue, onEnded }: {
     ? `animaciones/banner-${cue.isPlayer ? 'jugador-rojo' : 'rival-azul'}.webm`
     : cardEffectCue(cue.cardType as CardType).file
       ?? `animaciones/banner-${cue.isPlayer ? 'jugador-rojo' : 'rival-azul'}.webm`;
-  const durationMs = turn ? 1500 : cardEffectCue(cue.cardType as CardType).durationMs;
+  const durationMs = turn ? 1500 : DECREE_BANNER_DURATION_MS;
   const finish = () => {
     if (completed.current) return;
     completed.current = true;
@@ -30,7 +30,7 @@ export function MultiplayerCinematicCue({ cue, onEnded }: {
   React.useEffect(() => {
     completed.current = false;
     setFailed(false);
-    const timer = window.setTimeout(finish, durationMs + 250);
+    const timer = window.setTimeout(finish, durationMs + (turn ? 250 : 0));
     return () => window.clearTimeout(timer);
   }, [cue.id, durationMs]);
 
@@ -52,7 +52,7 @@ export function MultiplayerCinematicCue({ cue, onEnded }: {
     <div className="dr-pvp-cinematic-media" aria-hidden="true">
       {!failed ? <video key={cue.id} autoPlay muted playsInline preload="auto"
         onLoadedMetadata={event => { event.currentTarget.playbackRate = isEnergy ? 1 : 4; }}
-        onError={() => setFailed(true)} onEnded={finish}>
+        onError={() => setFailed(true)} onEnded={turn ? finish : undefined}>
         <source src={import.meta.env.BASE_URL + file} type="video/webm" />
       </video> : <div className="dr-pvp-cinematic-fallback" />}
     </div>

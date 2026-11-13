@@ -11,14 +11,14 @@ afterEach(cleanup);
 test('duelo estándar: solo vídeo sin imagen clay, poster ni viñeta', () => {
   const { container } = render(<BattleSceneryLayer
     poster="/Decreto-Real/escenarios/plaza-arcilla-estandar.webp"
-    video="/Decreto-Real/escenarios/gemini_generated_video_b8059a5c.mp4" />);
+    video="/Decreto-Real/escenarios/partida-inicial-loop.mp4" />);
   expect(container.querySelector('[data-scenery-mode="video-only"]')).toBeTruthy();
   expect(container.querySelector('img')).toBeNull();
   expect(container.querySelector('.dr-royal-vignette')).toBeNull();
   const video = container.querySelector('video')!;
   expect(video).toBeTruthy();
   expect(video.getAttribute('poster')).toBeNull();
-  expect(video.querySelector('source')?.getAttribute('src')).toContain('gemini_generated_video_b8059a5c.mp4');
+  expect(video.querySelector('source')?.getAttribute('src')).toContain('partida-inicial-loop.mp4');
 });
 
 test('escenas sin vídeo conservan su imagen de campaña', () => {
@@ -48,7 +48,7 @@ for (const type of Object.keys(names) as CardType[]) {
       );
       const srcs = Array.from(container.querySelectorAll('video source')).map(source=>source.getAttribute('src')||'');
       expect(container.querySelector('.dr-cinematic-copy')).toBeTruthy();
-      expect(container.querySelector('.dr-cinematic-overlay')?.getAttribute('style')).toContain('--dr-cue-duration');
+      expect(container.querySelector('.dr-cinematic-overlay')?.getAttribute('style')).toContain('--dr-cue-duration: 1000ms');
       expect(srcs).toContainEqual(expect.stringContaining(isPlayer ? 'banner-jugador-rojo.webm' : 'banner-rival-azul.webm'));
       if (clips[type]) expect(srcs).toContainEqual(expect.stringContaining(clips[type]!));
       unmount();

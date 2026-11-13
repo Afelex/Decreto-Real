@@ -12,7 +12,7 @@ import { cardPlacementPrompt, checkCardPlacement, resolveVisualDropZone, type Ca
 import { CardActivationBanner } from './CardActivationBanner';
 import { LastDecreeIndicator } from './LastDecreeIndicator';
 import { ComboEffectOverlay } from './ComboEffectOverlay';
-import { cardEffectCue, comboEffectCue } from '../game/effectCues';
+import { comboEffectCue, DECREE_BANNER_DURATION_MS } from '../game/effectCues';
 import { TurnIndicator, TurnAnnouncement, ComboChoicePanel, CoinTossPanel } from './CombatEventUI';
 import { resolveBattleScenery } from '../game/battleScenery';
 import { getRoyalCardText } from '../game/royalCardText';
@@ -556,7 +556,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
     if (card.type === 'ATTACK' || card.type === 'MYSTIC') playSound('ATTACK');
     else if (card.type === 'DEFENSE') playSound('DEFENSE');
     else if (card.type === 'ORDER') playSound('FLIP');
-    const active = await waitForCue(cardEffectCue(card.type).durationMs);
+    const active = await waitForCue(DECREE_BANNER_DURATION_MS);
     if (!active) return; // Unmounted/cancelled: do not mutate the match.
     setCardAnnouncement(null);
     announcementBusy.current = false;

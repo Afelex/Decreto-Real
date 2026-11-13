@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="747" viewBox="0 0 1000 747">
+  <!-- Alpha stencil for the existing combo frame. The grey interior remains
+       fully opaque; only the matte outside the gilded silhouette is hidden.
+       Keep the original WebP untouched as an editable fallback. -->
+  <path fill="white" d="M 244 10
+    C 345 4 653 4 756 10
+    C 784 11 796 37 814 58
+    C 832 70 852 73 881 82
+    C 917 85 941 104 953 143
+    C 964 174 962 196 962 222
+    L 962 618
+    C 961 678 939 713 882 718
+    L 118 718
+    C 61 713 39 678 38 618
+    L 38 222
+    C 38 196 36 174 47 143
+    C 59 104 83 85 119 82
+    C 148 73 168 70 186 58
+    C 204 37 216 11 244 10 Z"/>
+</svg>

@@ -34,30 +34,34 @@ jobs:
           VITE_MULTIPLAYER_WS_URL: wss://decreto-real-production.up.railway.app
         run: npm run build
 
-      - name: Optimize initial battle background (bounded)
+      - name: Install FFmpeg for the mobile battle background
         shell: bash
         timeout-minutes: 4
+        run: |
+          set -euo pipefail
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends ffmpeg
+          fi
+          ffmpeg -version | head -n 1
+
+      - name: Encode verified H264 faststart loop for GitHub Pages
+        shell: bash
+        timeout-minutes: 5
         run: |
           set -euo pipefail
           source_video="public/escenarios/gemini_generated_video_b8059a5c.mp4"
           optimized_video="dist/escenarios/partida-inicial-loop.mp4"
           test -s "$source_video"
-          # Keep the scene animated, but never stall UI releases on video encoding.
-          # The runner generally includes ffmpeg. Avoid a slow apt-get update here.
-          if command -v ffmpeg >/dev/null 2>&1; then
-            if ! timeout -k 5s 90s ffmpeg -hide_banner -loglevel error -nostdin -y \
-              -threads 2 -i "$source_video" \
-              -vf "fps=24,scale=480:854:flags=fast_bilinear" \
-              -c:v libx264 -preset ultrafast -crf 29 \
-              -pix_fmt yuv420p -an -movflags +faststart "$optimized_video"; then
-              echo "::warning::Optimized background unavailable; using source video for this release."
-              cp "$source_video" "$optimized_video"
-            fi
-          else
-            echo "::warning::ffmpeg missing; using source video for this release."
-            cp "$source_video" "$optimized_video"
-          fi
+          ffmpeg -hide_banner -loglevel error -nostdin -y \
+            -threads 2 -i "$source_video" \
+            -vf "fps=24,scale=480:854:flags=fast_bilinear" \
+            -c:v libx264 -preset veryfast -crf 29 \
+            -pix_fmt yuv420p -an -movflags +faststart "$optimized_video"
           test -s "$optimized_video"
+          codec="$(ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of default=noprint_wrappers=1:nokey=1 "$optimized_video")"
+          test "$codec" = "h264"
+          echo "Verified mobile-ready codec: $codec"
           rm -f dist/escenarios/gemini_generated_video_b8059a5c.mp4
           ls -lh "$optimized_video"
 

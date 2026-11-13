@@ -269,3 +269,22 @@
     font-size:clamp(14px,4.1cqw,20px);
   }
 }
+
+/* Last QA pass: both uploaded WebM ribbons rise toward the right on screen.
+   The rival's caption previously rotated the opposite way (+12deg), crossing
+   the blue band. Align it with the actual visible ribbon, not its team color. */
+.dr-royal-screen .dr-cinematic-overlay.rival .dr-cinematic-copy,
+.dr-royal-screen .dr-cinematic-overlay--energy.rival .dr-cinematic-copy {
+  transform:translate(-50%,-50%) rotate(-12deg);
+}
+/* Each activation has an equally legible one-second caption.
+   Preserve the angle: keyframes animate opacity only, not transform. */
+.dr-royal-screen .dr-cinematic-overlay .dr-cinematic-copy,
+.dr-royal-screen .dr-cinematic-overlay--energy .dr-cinematic-copy {
+  animation:dr-decree-readable var(--dr-cue-duration,1000ms) linear both;
+}
+@keyframes dr-decree-readable {
+  0% {opacity:0}
+  8%,92% {opacity:1}
+  100% {opacity:0}
+}

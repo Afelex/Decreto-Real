@@ -4,6 +4,11 @@ import type { CardType } from '../types';
  * Each file is a transparent VP9/WebM built from the approved MP4 effect. */
 export type EffectCue = { file: string | null; durationMs: number };
 
+/** Every decree announcement (player and rival) is visible for exactly one
+ * second. The underlying energy clips retain their original source lengths
+ * and are cut visually at the end of this presentation window. */
+export const DECREE_BANNER_DURATION_MS = 1000;
+
 const CARD_CUES: Record<CardType, EffectCue> = {
   ATTACK: { file: 'efectos/ataque.webm', durationMs: 1680 },
   DEFENSE: { file: 'efectos/defensa.webm', durationMs: 1000 },

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
   resolveBattleScenery,
@@ -39,11 +39,15 @@ test('introductory video can be disabled explicitly', () => {
   );
 });
 
-test('the standard battle film must actually exist in the published assets', () => {
-  const prefix = '/Decreto-Real/';
+test('battle video URL matches the deployment output, not its removed source MP4', () => {
+  const prefix='/Decreto-Real/';
   assert.ok(STANDARD_BATTLE_VIDEO.startsWith(prefix));
-  const file = join(process.cwd(), 'public', STANDARD_BATTLE_VIDEO.slice(prefix.length));
-  assert.equal(existsSync(file), true, 'The configured MP4 is missing: ' + file);
-  assert.ok(!STANDARD_BATTLE_VIDEO.includes('partida-inicial-loop.mp4'),
-    'Do not reintroduce a video filename absent from the repository');
+  const relative=STANDARD_BATTLE_VIDEO.slice(prefix.length);
+  const workflow=readFileSync('.github/workflows/deploy.yml','utf8');
+  assert.ok(workflow.includes('optimized_video="dist/' + relative + '"'),
+    'The referenced background must match the actual Pages output filename');
+  assert.ok(workflow.includes('test -s "$optimized_video"'),
+    'The release must fail if it cannot produce the background MP4');
+  assert.ok(existsSync(join(process.cwd(),'public','escenarios','gemini_generated_video_b8059a5c.mp4')),
+    'The source film for optimization must remain in source control');
 });
