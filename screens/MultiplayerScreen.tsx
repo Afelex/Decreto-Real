@@ -262,6 +262,6 @@ export default function MultiplayerScreen() {
         {view.status === 'finished' && <button type="button" onClick={() => navigate('/')}>Volver al menú</button>}
       </footer>
     </section>}
-    {cinematicCue && <MultiplayerCinematicCue key={cinematicCue.id} cue={cinematicCue} onEnded={finishCue} />}
+    {cinematicCue && <MultiplayerCinematicCue cue={cinematicCue} onEnded={finishCue} />}
   </main>;
 }
