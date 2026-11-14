@@ -584,3 +584,18 @@
   top:8.3%;
   z-index:4;
 }
+
+/* Final G3 plaque geometry: the centre of the red cartouche is at 21.5%
+   of the approved illustration, not at 7% (which overlaps the gold crest).
+   Defined here AND in hud-g3.css to withstand either bundler import order. */
+.dr-royal-screen .dr-event-choice.dr-event-choice--2 h2,
+.dr-royal-screen .dr-event-choice.dr-event-choice--3 h2 {
+  top:21.5%;
+  left:50%;
+  width:58%;
+  transform:translate(-50%,-50%);
+  z-index:5;
+  line-height:1.05;
+  white-space:nowrap;
+  text-align:center;
+}
