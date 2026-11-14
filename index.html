@@ -6,6 +6,10 @@
     <title>Decreto Real — Duelo de cartas</title>
     <meta name="description" content="Un duelo táctico de cartas inspirado en la historia del Perú."/>
     <meta name="theme-color" content="#101c2d"/>
+    <!-- The first arena frame is available before React/coin toss is mounted.
+         Prefetch the small loop without competing with the JPG's high priority. -->
+    <link rel="preload" as="image" href="/Decreto-Real/escenarios/partida-inicial-poster.jpg" fetchpriority="high"/>
+    <link rel="prefetch" as="video" href="/Decreto-Real/escenarios/partida-inicial-loop.mp4" type="video/mp4"/>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
