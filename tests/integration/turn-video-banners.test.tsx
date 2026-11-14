@@ -44,13 +44,13 @@ test('PvP primero presenta el banner y solo después la animación del decreto',
     expect(container.querySelector('[data-decree-stage]')?.getAttribute('data-decree-stage')).toBe('banner');
     expect(container.querySelector('source')?.getAttribute('src')).toContain('animaciones/banner-jugador-rojo.webm');
     expect(container.querySelector('.dr-pvp-cinematic-copy')).toBeTruthy();
-    await act(async () => { await vi.advanceTimersByTimeAsync(2000); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(1500); });
     if (file) {
       expect(container.querySelector('[data-decree-stage]')?.getAttribute('data-decree-stage')).toBe('effect');
       expect(container.querySelector('source')?.getAttribute('src')).toContain(file);
       expect(container.querySelector('.dr-pvp-cinematic-copy')).toBeNull();
       expect(finished).not.toHaveBeenCalled();
-      await act(async () => { await vi.advanceTimersByTimeAsync(type === 'ATTACK' ? 1680 : 1000); });
+      await act(async () => { await vi.advanceTimersByTimeAsync(1500); });
     }
     expect(finished).toHaveBeenCalledTimes(1);
     unmount();
