@@ -247,3 +247,48 @@
 /* The ×3 title stays slightly higher than ×2, as requested in the mobile QA. */
 .dr-royal-screen .dr-event-choice.dr-event-choice--2 h2 {top:15.1%;}
 .dr-royal-screen .dr-event-choice.dr-event-choice--3 h2 {top:13.6%;}
+
+/* DR-QA 14/11 · mobile-safe visual refinements for the G3 artwork. */
+
+/* The separate title sits inside the upper burgundy cartouche, not over
+   the shield paintings; keep the ×3 title slightly higher than ×2. */
+.dr-royal-screen .dr-event-choice.dr-event-choice--2 h2 {
+  top:7.4%;
+  z-index:5;
+}
+.dr-royal-screen .dr-event-choice.dr-event-choice--3 h2 {
+  top:6.6%;
+  z-index:5;
+}
+
+/* Show the portrait all the way to the upper inner opening. The team-color
+   glow behind the character uses the same aperture, not an inset rectangle. */
+.dr-royal-screen .dr-royal-rival-area .dr-royal-character-frame > img:first-child,
+.dr-royal-screen .dr-royal-player-area .dr-royal-character-frame > img:first-child {
+  top:15.5%;
+  height:65.5%;
+  object-position:center 20%;
+}
+
+/* Align the editable deck count and name with the same central axis. */
+.dr-royal-screen .dr-royal-deck-back > small {
+  left:50%;
+  right:auto;
+  top:25%;
+  bottom:auto;
+  width:86%;
+  transform:translate(-50%,-50%);
+  margin:0;
+  text-align:center;
+  font-size:clamp(9px,1.8dvh,12px);
+  letter-spacing:.015em;
+}
+.dr-royal-screen .dr-royal-deck-back > span {
+  left:50%;
+  top:49%;
+  width:90%;
+  transform:translate(-50%,-50%);
+  margin:0;
+  text-align:center;
+  font-size:clamp(22px,4.3dvh,34px);
+}
