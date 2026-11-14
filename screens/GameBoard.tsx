@@ -11,6 +11,7 @@ import { AiTurnController, runOpponentTurn } from '../game/aiTurn';
 import { cardPlacementPrompt, checkCardPlacement, resolveVisualDropZone, type CardDropZone } from '../game/cardPlacement.ts';
 import { CardActivationBanner } from './CardActivationBanner';
 import { LastDecreeIndicator } from './LastDecreeIndicator';
+import { nextDecreeStreak } from '../game/decreeStreak';
 import './hud-g3.css';
 import { ComboEffectOverlay } from './ComboEffectOverlay';
 import { cardEffectCue, comboEffectCue, DECREE_BANNER_DURATION_MS } from '../game/effectCues';
@@ -241,6 +242,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const [playerLastType, setPlayerLastType] = useState<CardType | null>(null);
   // Separate from combo tracking: a ×3 reset must not clear the last card icon.
   const [playerLastDecree, setPlayerLastDecree] = useState<CardType | null>(null);
+  const [playerLastDecreeLevel, setPlayerLastDecreeLevel] = useState<1 | 2 | 3>(1);
   const [showSpecialSelection, setShowSpecialSelection] = useState(false);
   const [comboChoice, setComboChoice] = useState<2 | 3>(3);
   const [comboAnnouncement, setComboAnnouncement] = useState<{ id: number; level: 2 | 3; ability: 'DAMAGE' | 'HEAL'; isPlayer: boolean } | null>(null);
@@ -255,6 +257,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const [opponentGauge, setOpponentGauge] = useState(0);
   const [opponentLastType, setOpponentLastType] = useState<CardType | null>(null);
   const [opponentLastDecree, setOpponentLastDecree] = useState<CardType | null>(null);
+  const [opponentLastDecreeLevel, setOpponentLastDecreeLevel] = useState<1 | 2 | 3>(1);
   const [playerSummon, setPlayerSummon] = useState<MysticSummon | null>(null);
   const [opponentSummon, setOpponentSummon] = useState<MysticSummon | null>(initialOpponentSummon ?? null);
   const playerSummonRef = useRef<MysticSummon | null>(null);
@@ -424,7 +427,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const updateGauge = (isPlayer: boolean, cardType: CardType): 0 | 2 | 3 => {
     const previousType = isPlayer ? playerLastType : latestOpponent.current.lastType;
     const previousGauge = isPlayer ? playerGauge : latestOpponent.current.gauge;
-    const next = previousType === cardType ? Math.min(GAUGE_MAX, previousGauge + 1) : 1;
+    const next = nextDecreeStreak(previousType, previousGauge, cardType);
     if (isPlayer) { setPlayerLastType(cardType); setPlayerGauge(next); }
     else { setOpponentLastType(cardType); setOpponentGauge(next); }
     return next === 2 || next === 3 ? next : 0;
@@ -537,9 +540,11 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
     // Update the independent latest-card status for the corresponding hand.
     if (isPlayer) {
       setPlayerLastDecree(card.type);
+      setPlayerLastDecreeLevel(nextDecreeStreak(playerLastType, playerGauge, card.type));
       setPlayerHand(prev => prev.filter(c => c.id !== card.id));
     } else {
       setOpponentLastDecree(card.type);
+      setOpponentLastDecreeLevel(nextDecreeStreak(latestOpponent.current.lastType, latestOpponent.current.gauge, card.type));
       setOpponentHand(prev => prev.filter(c => c.id !== card.id));
     }
 
@@ -1117,8 +1122,8 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
           {(playerLastDecree || opponentLastDecree) && (
             <div className="dr-last-decree-stack" role="group"
               aria-label="Últimos decretos activados, sobre el botón Fin de turno">
-              <LastDecreeIndicator type={opponentLastDecree} side="opponent" />
-              <LastDecreeIndicator type={playerLastDecree} side="player" />
+              <LastDecreeIndicator type={opponentLastDecree} comboLevel={opponentLastDecreeLevel} side="opponent" />
+              <LastDecreeIndicator type={playerLastDecree} comboLevel={playerLastDecreeLevel} side="player" />
             </div>
           )}
         </footer>
