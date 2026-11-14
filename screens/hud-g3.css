@@ -1,0 +1,226 @@
+/* Decreto Real · HUD G3 · Graphics created and approved in chat, 14 Nov 2026.
+   All artwork is transparent outside its silhouette. The previous PNG/AVIF/WebP
+   remains in /public/interfaz/ as a reversible backup. Do not render it. */
+
+/* The previously cropped 3-cell AVIF is replaced by a single image with a
+   genuinely transparent center. Existing characters and animated red/blue
+   ambience remain underneath and the life label stays above the ornament. */
+.dr-royal-screen .dr-royal-portrait-ornament {
+  overflow:visible !important;
+  contain:none;
+  clip-path:none;
+}
+.dr-royal-screen .dr-royal-portrait-ornament > img.dr-royal-portrait-art-image {
+  left:0;
+  top:0;
+  width:100%;
+  height:100%;
+  max-width:100%;
+  object-fit:fill;
+  filter:none;
+}
+.dr-royal-screen .dr-royal-character-frame {
+  border:0;
+  padding:0;
+  background:transparent;
+  box-shadow:none;
+}
+.dr-royal-screen .dr-royal-character-frame .dr-royal-hp {
+  bottom:7%;
+  left:15%;
+  right:15%;
+  width:70%;
+  height:9%;
+  z-index:4;
+  padding:0 2px;
+  border:0;
+  border-radius:5px;
+  background:transparent;
+  box-shadow:none;
+  text-shadow:0 2px 4px #120612,0 0 4px #180a1e;
+}
+.dr-royal-screen .dr-royal-character-frame .dr-royal-hp.blue,
+.dr-royal-screen .dr-royal-character-frame .dr-royal-hp.red {
+  background:transparent;
+}
+.dr-royal-screen .dr-royal-character-frame > img:first-child {
+  left:13%;
+  top:20%;
+  width:74%;
+  height:60%;
+  object-fit:cover;
+  z-index:1;
+}
+
+/* G3 end-turn medallion owns its arrow and "FIN TURNO" text. The button
+   remains native and keyboard/touch accessible; no duplicate drawn text. */
+.dr-royal-screen .dr-royal-finish,
+.dr-royal-screen .dr-royal-player-area > .dr-royal-finish {
+  border:0;
+  padding:0;
+  background:none;
+  box-shadow:none;
+  filter:none;
+  overflow:visible;
+}
+.dr-royal-screen .dr-royal-finish .dr-royal-finish-ornament {
+  inset:0;
+  display:block;
+  visibility:visible;
+  overflow:visible !important;
+  clip-path:none;
+  border-radius:0;
+  contain:none;
+}
+.dr-royal-screen .dr-royal-finish img.dr-royal-finish-art-image {
+  inset:0;
+  left:0;
+  top:0;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  max-width:100%;
+}
+.dr-royal-screen .dr-royal-finish strong {
+  opacity:0;
+  pointer-events:none;
+}
+.dr-royal-screen .dr-royal-finish:disabled img.dr-royal-finish-art-image {
+  filter:grayscale(.65) brightness(.76);
+  opacity:.85;
+}
+.dr-royal-screen .dr-royal-finish:not(:disabled) img.dr-royal-finish-art-image {
+  filter:drop-shadow(0 0 4px #ffc76c88);
+}
+
+/* Each deck still prints the actual remaining card count and "MAZO" as live
+   text, keeping them legible and updated after every draw. */
+.dr-royal-screen .dr-royal-deck-back,
+.dr-royal-screen .dr-royal-deck-back.red,
+.dr-royal-screen .dr-royal-deck-back.blue {
+  position:relative;
+  border:0;
+  border-radius:0;
+  padding:0;
+  background:transparent;
+  box-shadow:none;
+  overflow:visible;
+}
+.dr-royal-screen .dr-royal-deck-back::before {content:none;}
+.dr-royal-screen .dr-royal-deck-back .dr-g3-deck-art {
+  display:block;
+  position:absolute;
+  inset:0;
+  z-index:0;
+  width:100%;
+  height:100%;
+  max-width:100%;
+  object-fit:fill;
+  pointer-events:none;
+  user-select:none;
+}
+.dr-royal-screen .dr-royal-deck-back > span {
+  position:absolute;
+  z-index:1;
+  top:31%;
+  left:0;
+  width:100%;
+  font:900 clamp(21px,4.4dvh,35px)/1 Cinzel,Georgia,serif;
+  color:#fffbdf;
+  text-align:center;
+}
+.dr-royal-screen .dr-royal-deck-back > small {
+  position:absolute;
+  z-index:1;
+  left:7%;
+  right:7%;
+  bottom:10%;
+  width:86%;
+  margin:0;
+  font:900 clamp(9px,1.8dvh,13px)/1.05 Cinzel,Georgia,serif;
+  color:#fff8df;
+  text-align:center;
+}
+
+/* Three-line pause menu: the icon is part of the transparent new artwork. */
+.dr-royal-screen .dr-royal-menu-button.dr-g3-menu {
+  display:block;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:none;
+  box-shadow:none;
+  overflow:visible;
+}
+.dr-royal-screen .dr-g3-menu-art {
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  pointer-events:none;
+}
+
+/* Both sound states use the same metal frame; muted state is the diagonal
+   red slash from the approved two-icon artwork, not a CSS-generated overlay. */
+.dr-royal-screen .dr-royal-audio.dr-g3-audio {
+  display:block;
+  border:0;
+  border-radius:0;
+  padding:0;
+  background:none;
+  box-shadow:none;
+  overflow:visible;
+}
+.dr-royal-screen .dr-g3-audio-art {
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  pointer-events:none;
+}
+
+/* Combo G3: transparent outside the new gold silhouette, solid graphite
+   interior. Disable the OLD tailored mask, which would clip the new crest. */
+.dr-royal-screen .dr-event-choice.dr-event-choice--2 .dr-event-choice__art,
+.dr-royal-screen .dr-event-choice.dr-event-choice--3 .dr-event-choice__art {
+  -webkit-mask-image:none;
+  mask-image:none;
+  object-fit:contain;
+}
+.dr-royal-screen .dr-event-choice.dr-event-choice--2 h2,
+.dr-royal-screen .dr-event-choice.dr-event-choice--3 h2 {
+  top:14.5%;
+  left:16%;
+  width:68%;
+  font-size:clamp(16px,4.4cqw,23px);
+  z-index:4;
+}
+.dr-royal-screen .dr-event-choice.dr-event-choice--2 .dr-event-choice__options,
+.dr-royal-screen .dr-event-choice.dr-event-choice--3 .dr-event-choice__options {
+  top:31%;
+  bottom:18%;
+  left:11%;
+  right:11%;
+  gap:9%;
+}
+
+/* Last decree: keep separate opponent/player tracks and existing placement
+   above FIN TURNO. All five golden PNGs are individual drop-in resources. */
+.dr-royal-screen .dr-last-decree-icon > img.dr-g3-decree-visual {
+  display:block;
+  width:20px;
+  height:20px;
+  object-fit:contain;
+  max-width:none;
+  pointer-events:none;
+}
+.dr-royal-screen .dr-last-decree-stack .dr-last-decree-icon > img.dr-g3-decree-visual {
+  width:17px;
+  height:17px;
+}
+@media (max-height:590px) {
+  .dr-royal-screen .dr-last-decree-icon > img.dr-g3-decree-visual {
+    width:17px;
+    height:17px;
+  }
+}
