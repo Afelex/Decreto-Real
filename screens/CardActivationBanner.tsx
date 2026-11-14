@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { CardData } from '../types';
 import { cardActivationCopy } from '../game/cardActivationText';
-import { cardEffectCue, DECREE_BANNER_DURATION_MS } from '../game/effectCues';
+import { cardEffectCue, DECREE_BANNER_DURATION_MS, DECREE_EFFECT_DURATION_MS, syncCueVideoRate } from '../game/effectCues';
 import './card-activation-banner.css';
 
 type Props = {
@@ -34,12 +34,12 @@ export const CardActivationBanner: React.FC<Props> = ({
 
   useEffect(() => {
     const videos: Array<[HTMLVideoElement | null, number, (bad: boolean) => void]> = [
-      [bannerRef.current, 4, setFailedBanner],
-      [energyRef.current, 1, setFailedEnergy],
+      [bannerRef.current, DECREE_BANNER_DURATION_MS, setFailedBanner],
+      [energyRef.current, DECREE_EFFECT_DURATION_MS, setFailedEnergy],
     ];
-    for (const [video, rate, onFailure] of videos) {
+    for (const [video, durationMs, onFailure] of videos) {
       if (!video) continue;
-      video.playbackRate = rate;
+      syncCueVideoRate(video, durationMs);
       video.muted = true;
       if (paused) video.pause();
       else {
@@ -55,11 +55,12 @@ export const CardActivationBanner: React.FC<Props> = ({
     <div className={`dr-cinematic-overlay ${isPlayer ? 'player' : 'rival'}${showEnergy ? ' dr-cinematic-overlay--effect-only' : ''}${paused ? ' paused' : ''}`}
       data-decree-stage={stage}
       role="status" aria-live="polite" aria-atomic="true"
-      style={{ '--dr-cue-duration': `${DECREE_BANNER_DURATION_MS}ms` } as React.CSSProperties}
+      style={{ '--dr-cue-duration': `${showBanner ? DECREE_BANNER_DURATION_MS : DECREE_EFFECT_DURATION_MS}ms` } as React.CSSProperties}
       aria-label={showBanner ? `${copy.kicker}: ${card.name}. ${copy.effect}` : `Animación de ${card.name}`}>
       {showEnergy && energySrc && (
         <div className="dr-cinematic-effect-media" aria-hidden="true">
-          {!failedEnergy ? <video ref={energyRef} autoPlay muted playsInline preload="auto"
+          {!failedEnergy ? <video ref={energyRef} autoPlay muted loop playsInline preload="auto"
+            onLoadedMetadata={event => syncCueVideoRate(event.currentTarget, DECREE_EFFECT_DURATION_MS)}
             onEnded={onEnded} onError={() => setFailedEnergy(true)}>
             <source src={energySrc} type="video/webm" />
           </video> : <div className="dr-cinematic-effect-fallback" />}
@@ -68,7 +69,7 @@ export const CardActivationBanner: React.FC<Props> = ({
       {showBanner && <>
         <div className="dr-cinematic-media" aria-hidden="true">
           {!failedBanner ? <video ref={bannerRef} autoPlay muted loop playsInline preload="auto"
-            onLoadedMetadata={event => { event.currentTarget.playbackRate = 4; }}
+            onLoadedMetadata={event => syncCueVideoRate(event.currentTarget, DECREE_BANNER_DURATION_MS)}
             onError={() => setFailedBanner(true)}>
             <source src={bannerSrc} type="video/webm" />
           </video> : <div className="dr-cinematic-fallback" />}
