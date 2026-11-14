@@ -8,16 +8,20 @@ import type { CardData, CardType } from '../../types';
 
 afterEach(cleanup);
 
-test('duelo estándar: solo vídeo sin imagen clay, poster ni viñeta', () => {
+test('duelo estándar: muestra fotograma del MISMO vídeo sin imagen clay ni viñeta', () => {
   const { container } = render(<BattleSceneryLayer
     poster="/Decreto-Real/escenarios/plaza-arcilla-estandar.webp"
     video="/Decreto-Real/escenarios/partida-inicial-loop.mp4" />);
   expect(container.querySelector('[data-scenery-mode="video-only"]')).toBeTruthy();
-  expect(container.querySelector('img')).toBeNull();
+  const preview = container.querySelector('img.dr-battle-video-poster')!;
+  expect(preview).toBeTruthy();
+  expect(preview.getAttribute('src')).toContain('partida-inicial-poster.jpg');
+  expect(container.querySelector('img[src*="plaza-arcilla"]')).toBeNull();
   expect(container.querySelector('.dr-royal-vignette')).toBeNull();
   const video = container.querySelector('video')!;
   expect(video).toBeTruthy();
-  expect(video.getAttribute('poster')).toBeNull();
+  expect(video.getAttribute('poster')).toContain('partida-inicial-poster.jpg');
+  expect(container.querySelector('[data-video-ready="false"]')).toBeTruthy();
   expect(video.querySelector('source')?.getAttribute('src')).toContain('partida-inicial-loop.mp4');
 });
 
@@ -77,3 +81,14 @@ for (const type of Object.keys(names) as CardType[]) {
     expect(container.querySelector('[aria-label="Último decreto del rival: '+names[type]+'"]')).toBeTruthy();
   });
 }
+
+test('indicador ×2/×3 comunica la racha real en ambos lados con su icono', () => {
+  const { container }=render(<>
+    <LastDecreeIndicator type="ATTACK" comboLevel={2} side="player"/>
+    <LastDecreeIndicator type="DEFENSE" comboLevel={3} side="opponent"/>
+  </>);
+  expect(container.querySelector('[aria-label="Último decreto del jugador: Ataque ×2"]')).toBeTruthy();
+  expect(container.querySelector('[aria-label="Último decreto del rival: Defensa ×3"]')).toBeTruthy();
+  expect(Array.from(container.querySelectorAll('.dr-last-decree-combo')).map(x=>x.textContent)).toEqual(['×2','×3']);
+  expect(container.querySelectorAll('.dr-g3-decree-visual')).toHaveLength(2);
+});

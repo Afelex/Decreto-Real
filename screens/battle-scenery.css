@@ -1,20 +1,39 @@
-/* In free duel mode the moving image is the sole scenery layer.
-   The stage stays dark until the first video frame is available; never flash
-   an unrelated image, placeholder or CSS crossfade into it. */
+/* Free duel: the sole scene is its moving film. A lightweight JPG sampled
+   from that same film covers the arena until the FIRST decoded playing frame.
+   This avoids both a black loading state and the old clay-to-film flash. */
 .dr-battle-scenery {
-  overflow: hidden;
-  pointer-events: none;
-  background: #080b12;
+  overflow:hidden;
+  pointer-events:none;
+  background:#3972a3;
+}
+.dr-battle-scenery[data-scenery-mode="video-only"] .dr-battle-video-poster,
+.dr-battle-scenery[data-scenery-mode="video-only"] .dr-royal-background-video {
+  position:absolute;
+  inset:0;
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  /* avoid per-frame saturation/contrast filters on low-end Android GPUs */
+  filter:none;
+  transform:none;
+  pointer-events:none;
+}
+.dr-battle-scenery[data-scenery-mode="video-only"] .dr-battle-video-poster {
+  z-index:0;
+  opacity:1;
 }
 .dr-battle-scenery[data-scenery-mode="video-only"] .dr-royal-background-video {
-  position: absolute;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  opacity: 1;
-  transition: none;
-  pointer-events: none;
+  z-index:1;
+  opacity:0;
+  transition:opacity 120ms linear;
+}
+.dr-battle-scenery[data-scenery-mode="video-only"] .dr-royal-background-video.is-playing {
+  opacity:1;
+}
+@media (prefers-reduced-motion:reduce) {
+  .dr-battle-scenery[data-scenery-mode="video-only"] .dr-royal-background-video {
+    transition:none;
+  }
 }

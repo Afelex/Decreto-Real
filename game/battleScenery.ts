@@ -10,6 +10,8 @@ export type BattleSceneryOverride = Readonly<{
 
 export const STANDARD_BATTLE_POSTER = '/Decreto-Real/escenarios/plaza-arcilla-estandar.webp';
 export const STANDARD_BATTLE_VIDEO = '/Decreto-Real/escenarios/partida-inicial-loop.mp4';
+/** Exact still extracted from this video during the Pages build, never the clay scene. */
+export const STANDARD_BATTLE_VIDEO_POSTER = '/Decreto-Real/escenarios/partida-inicial-poster.jpg';
 
 export function resolveBattleScenery(presentation?: BattleSceneryOverride): BattleScenery {
   const poster = presentation?.background ?? STANDARD_BATTLE_POSTER;
