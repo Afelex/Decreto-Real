@@ -45,7 +45,7 @@ test('a single clipped end-turn illustration stays in the player footer', async 
     await img.decode();
     return [img.naturalWidth, img.naturalHeight];
   }, url);
-  expect(dimensions).toEqual([576, 240]);
+  expect(dimensions).toEqual([256, 256]);
 
   // Prevent the cropped sprite from spilling near the rival/top of the board.
   const layout = await page.evaluate(() => {
