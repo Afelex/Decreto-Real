@@ -31,7 +31,7 @@ test('cada fase de anuncio, efecto y combo tiene 1500 ms sin alterar clips origi
   const video = { duration: 1, playbackRate: 1 } as HTMLVideoElement;
   syncCueVideoRate(video, DECREE_EFFECT_DURATION_MS);
   assert.ok(Math.abs(video.playbackRate - 2 / 3) < 0.001);
-  video.duration = 1.68;
-  syncCueVideoRate(video, DECREE_EFFECT_DURATION_MS);
-  assert.ok(Math.abs(video.playbackRate - 1.12) < 0.001);
+  const longerVideo = { duration: 1.68, playbackRate: 1 } as HTMLVideoElement;
+  syncCueVideoRate(longerVideo, DECREE_EFFECT_DURATION_MS);
+  assert.ok(Math.abs(longerVideo.playbackRate - 1.12) < 0.001);
 });
