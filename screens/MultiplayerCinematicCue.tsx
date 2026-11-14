@@ -1,11 +1,11 @@
 import React from 'react';
 import { cardActivationCopy } from '../game/cardActivationText';
-import { cardEffectCue, DECREE_BANNER_DURATION_MS } from '../game/effectCues';
+import { cardEffectCue, DECREE_BANNER_DURATION_MS, DECREE_EFFECT_DURATION_MS, syncCueVideoRate } from '../game/effectCues';
 import type { MultiplayerCue } from '../game/multiplayerPresentation';
 import type { CardType } from '../types';
 
 /** Online duels follow the same two separate visual phases as IA:
- * banner with decree title (2 seconds), THEN a transparent energy WebM.
+ * banner with decree title (1.5 seconds), THEN a 1.5-second transparent energy WebM.
  * Presentation does not alter WebSocket server authority or game rules.
  */
 export function MultiplayerCinematicCue({ cue, onEnded }: {
@@ -43,7 +43,7 @@ export function MultiplayerCinematicCue({ cue, onEnded }: {
   }, [cue.id, turn]);
   React.useEffect(() => {
     if (stage !== 'effect' || cue.kind !== 'card') return;
-    const timer = window.setTimeout(finish, cardEffectCue(cue.cardType).durationMs);
+    const timer = window.setTimeout(finish, DECREE_EFFECT_DURATION_MS);
     return () => window.clearTimeout(timer);
   }, [cue.id, cue.kind, stage]);
 
@@ -65,7 +65,11 @@ export function MultiplayerCinematicCue({ cue, onEnded }: {
     aria-label={stage === 'banner' ? `${kicker}: ${heading}. ${detail}` : `Animación de ${heading}`}>
     <div className="dr-pvp-cinematic-media" aria-hidden="true">
       {!failed ? <video key={`${cue.id}-${stage}`} autoPlay muted playsInline preload="auto"
-        onLoadedMetadata={event => { event.currentTarget.playbackRate = isEnergy ? 1 : 4; }}
+        onLoadedMetadata={event => {
+          if (turn) event.currentTarget.playbackRate = 4;
+          else syncCueVideoRate(event.currentTarget,
+            isEnergy ? DECREE_EFFECT_DURATION_MS : DECREE_BANNER_DURATION_MS);
+        }}
         onError={() => setFailed(true)} onEnded={turn ? finish : undefined}>
         <source src={import.meta.env.BASE_URL + file} type="video/webm" />
       </video> : <div className="dr-pvp-cinematic-fallback" />}

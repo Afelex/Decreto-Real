@@ -66,6 +66,9 @@ test('two Impacts across turns offer the one-point combo and preserve the streak
   expect(screen.getByRole('status', { name: /Combo ×2: Ataque/ })).toBeTruthy();
   expect((screen.getByRole('button', { name: 'Terminar turno' }) as HTMLButtonElement).disabled).toBe(true);
   await act(async () => { await vi.advanceTimersByTimeAsync(1000); });
+  expect(screen.queryByLabelText('Vida del rival: 18 de 20')).toBeNull();
+  expect((screen.getByRole('button', { name: 'Terminar turno' }) as HTMLButtonElement).disabled).toBe(true);
+  await act(async () => { await vi.advanceTimersByTimeAsync(550); });
   expect(screen.getByLabelText('Vida del rival: 18 de 20')).toBeTruthy();
   expect(screen.getByText('de Impacto')).toBeTruthy();
 });
@@ -92,13 +95,13 @@ test('Order draws one replacement card without changing the starting 28-card dec
   expect(document.querySelector('.dr-cinematic-overlay')?.getAttribute('data-decree-stage')).toBe('banner');
   expect(document.querySelector('.dr-cinematic-overlay source')?.getAttribute('src')).toContain('banner-jugador-rojo.webm');
   expect(document.querySelector('.dr-cinematic-overlay source')?.getAttribute('src')).not.toContain('/efectos/');
-  await act(async () => { await vi.advanceTimersByTimeAsync(2050); });
+  await act(async () => { await vi.advanceTimersByTimeAsync(1550); });
   expect(screen.queryByRole('status', { name: /HAS ACTIVADO/ })).toBeNull();
   expect(document.querySelector('.dr-cinematic-overlay')?.getAttribute('data-decree-stage')).toBe('effect');
   const orderVideo = document.querySelector<HTMLVideoElement>('.dr-cinematic-overlay--effect-only video');
   expect(orderVideo?.querySelector('source')?.getAttribute('src')).toContain('/efectos/orden.webm');
   expect(orderVideo?.muted).toBe(true); // Mocked test preferences disable SFX.
-  await act(async () => { await vi.advanceTimersByTimeAsync(1100); });
+  await act(async () => { await vi.advanceTimersByTimeAsync(1600); });
   expect(screen.getByLabelText(/Tu mano:/).querySelectorAll('.dr-royal-hand-card')).toHaveLength(before);
   expect(Number(document.querySelector('.dr-royal-player-deck span')?.textContent)).toBe(deckBefore - 1);
 });

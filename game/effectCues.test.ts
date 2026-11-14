@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { cardEffectCue, comboEffectCue, DECREE_BANNER_DURATION_MS } from './effectCues.ts';
+import { cardEffectCue, comboEffectCue, DECREE_BANNER_DURATION_MS, DECREE_EFFECT_DURATION_MS, syncCueVideoRate } from './effectCues.ts';
 
 test('card activation clips map to correct art; Impact keeps its existing sequence', () => {
   assert.equal(cardEffectCue('ATTACK').file, 'efectos/ataque.webm');
@@ -25,6 +25,13 @@ test('combo effects play according to choice and multiplier', () => {
   assert.equal(comboEffectCue('DAMAGE', 3).durationMs, 1680);
 });
 
-test('todas las cartas de ambos jugadores tienen 2 segundos de lectura sin modificar clips de combo', () => {
-  assert.equal(DECREE_BANNER_DURATION_MS, 2000);
+test('cada fase de anuncio, efecto y combo tiene 1500 ms sin alterar clips originales', () => {
+  assert.equal(DECREE_BANNER_DURATION_MS, 1500);
+  assert.equal(DECREE_EFFECT_DURATION_MS, 1500);
+  const video = { duration: 1, playbackRate: 1 } as HTMLVideoElement;
+  syncCueVideoRate(video, DECREE_EFFECT_DURATION_MS);
+  assert.ok(Math.abs(video.playbackRate - 2 / 3) < 0.001);
+  const longerVideo = { duration: 1.68, playbackRate: 1 } as HTMLVideoElement;
+  syncCueVideoRate(longerVideo, DECREE_EFFECT_DURATION_MS);
+  assert.ok(Math.abs(longerVideo.playbackRate - 1.12) < 0.001);
 });

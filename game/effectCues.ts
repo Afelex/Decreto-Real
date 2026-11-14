@@ -4,10 +4,21 @@ import type { CardType } from '../types';
  * Each file is a transparent VP9/WebM built from the approved MP4 effect. */
 export type EffectCue = { file: string | null; durationMs: number };
 
-/** Every decree announcement (player and rival) is visible for exactly two
- * second. The underlying energy clips retain their original source lengths
- * and are cut visually at the end of this presentation window. */
-export const DECREE_BANNER_DURATION_MS = 2000;
+/** Each card activation is presented as two strictly consecutive stages:
+ * 1.5 seconds of the colored banner AND its caption, then 1.5 seconds of
+ * the transparent effect video, when that decree has an effect asset.
+ * The media playback rate is adjusted to fit the stage rather than ending
+ * the stage early when the source clip is shorter.
+ */
+export const DECREE_BANNER_DURATION_MS = 1500;
+export const DECREE_EFFECT_DURATION_MS = 1500;
+
+/** Keep the complete supplied clip visible for the requested duration.
+ * Metadata may not be available yet; fallback to normal speed until it loads. */
+export function syncCueVideoRate(video: HTMLVideoElement, durationMs: number): void {
+  if (!Number.isFinite(video.duration) || video.duration <= 0) return;
+  video.playbackRate = Math.max(0.25, Math.min(4, video.duration * 1000 / durationMs));
+}
 
 const CARD_CUES: Record<CardType, EffectCue> = {
   ATTACK: { file: 'efectos/ataque.webm', durationMs: 1680 },

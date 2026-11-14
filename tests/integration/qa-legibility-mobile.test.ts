@@ -4,13 +4,13 @@ import { DECREE_BANNER_DURATION_MS } from '../../game/effectCues';
 
 const source=(path:string)=>readFileSync(path,'utf8');
 
-test('los anuncios de decretos duran dos segundos en IA y multijugador',()=>{
-  expect(DECREE_BANNER_DURATION_MS).toBe(2000);
+test('los anuncios de decretos duran 1,5 segundos en IA y multijugador',()=>{
+  expect(DECREE_BANNER_DURATION_MS).toBe(1500);
   const game=source('screens/GameBoard.tsx');
   const multiplayer=source('screens/MultiplayerCinematicCue.tsx');
   expect(game).toContain('waitForCue(DECREE_BANNER_DURATION_MS)');
   expect(multiplayer).toContain('turn ? 1750 : DECREE_BANNER_DURATION_MS');
-  expect(source('screens/card-activation-banner.css')).toContain('--dr-cue-duration,2000ms');
+  expect(source('screens/card-activation-banner.css')).toContain('--dr-cue-duration,1500ms');
   expect(source('screens/multiplayer.css')).toContain('.dr-pvp-cinematic.is-card');
 });
 
@@ -48,5 +48,5 @@ test('la resolución de cartas en IA reproduce banner antes de la animación',()
   expect(game).toContain("stage: 'banner'");
   expect(game).toContain("stage: 'effect'");
   expect(game.indexOf('await waitForCue(DECREE_BANNER_DURATION_MS)')).toBeLessThan(
-    game.indexOf('await waitForCue(energyCue.durationMs)'));
+    game.indexOf('await waitForCue(DECREE_EFFECT_DURATION_MS)'));
 });
