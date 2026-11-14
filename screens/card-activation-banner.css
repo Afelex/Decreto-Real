@@ -281,10 +281,20 @@
    Preserve the angle: keyframes animate opacity only, not transform. */
 .dr-royal-screen .dr-cinematic-overlay .dr-cinematic-copy,
 .dr-royal-screen .dr-cinematic-overlay--energy .dr-cinematic-copy {
-  animation:dr-decree-readable var(--dr-cue-duration,1000ms) linear both;
+  animation:dr-decree-readable var(--dr-cue-duration,2000ms) linear both;
 }
 @keyframes dr-decree-readable {
   0% {opacity:0}
   8%,92% {opacity:1}
   100% {opacity:0}
+}
+
+/* QA 14/11: improve legibility by ~8%, preserving the ribbon inclination. */
+.dr-royal-screen .dr-cinematic-overlay .dr-cinematic-title {
+  font-size:clamp(16px,4.95cqw,33px);
+}
+@media(max-width:390px) {
+  .dr-royal-screen .dr-cinematic-overlay .dr-cinematic-title {
+    font-size:clamp(15px,4.5cqw,22px);
+  }
 }
