@@ -15,7 +15,7 @@ test('a single clipped end-turn illustration stays in the player footer', async 
   await expect(page.locator('.dr-royal-finish')).toHaveCount(1);
   await expect(page.locator('.dr-royal-rival-area .dr-royal-finish')).toHaveCount(0);
   await expect(page.locator('.dr-royal-finish-ornament')).toHaveCount(1);
-  await expect(button).toHaveAttribute('data-art-version', 'hud-v4');
+  await expect(button).toHaveAttribute('data-art-version', 'hud-g3');
   await expect(viewport).toBeVisible();
   // Regression: the previous CSS hid the entire art layer with
   // ".dr-royal-finish > span { display:none }" while leaving FIN TURNO visible.
