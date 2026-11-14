@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { comboEffectCue } from '../game/effectCues';
+import { comboEffectCue, DECREE_EFFECT_DURATION_MS, syncCueVideoRate } from '../game/effectCues';
 import './card-activation-banner.css';
 
 type Props = {
   level: 2 | 3;
   ability: 'DAMAGE' | 'HEAL';
   paused: boolean;
-  onEnded: () => void;
+  onEnded?: () => void;
 };
 
 export const ComboEffectOverlay: React.FC<Props> = ({ level, ability, paused, onEnded }) => {
@@ -18,6 +18,7 @@ export const ComboEffectOverlay: React.FC<Props> = ({ level, ability, paused, on
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
+    syncCueVideoRate(video, DECREE_EFFECT_DURATION_MS);
     if (paused) video.pause();
     else {
       const playback = video.play();
@@ -31,7 +32,8 @@ export const ComboEffectOverlay: React.FC<Props> = ({ level, ability, paused, on
     <div className={`dr-energy-overlay dr-energy-overlay--combo ${ability === 'HEAL' ? 'is-heal' : 'is-damage'} ${paused ? 'paused' : ''}`}
       role="status" aria-label={`Combo ×${level}: ${ability === 'DAMAGE' ? 'Ataque' : 'Curación'}`}>
       <div className="dr-energy-overlay__media" aria-hidden="true">
-        {!failed && <video ref={videoRef} autoPlay muted playsInline preload="auto"
+        {!failed && <video ref={videoRef} autoPlay muted loop playsInline preload="auto"
+          onLoadedMetadata={event => syncCueVideoRate(event.currentTarget, DECREE_EFFECT_DURATION_MS)}
           onEnded={onEnded} onError={() => setFailed(true)}>
           <source src={src} type="video/webm" />
         </video>}
