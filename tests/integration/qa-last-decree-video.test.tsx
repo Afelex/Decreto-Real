@@ -50,8 +50,19 @@ for (const type of Object.keys(names) as CardType[]) {
       expect(container.querySelector('.dr-cinematic-copy')).toBeTruthy();
       expect(container.querySelector('.dr-cinematic-overlay')?.getAttribute('style')).toContain('--dr-cue-duration: 2000ms');
       expect(srcs).toContainEqual(expect.stringContaining(isPlayer ? 'banner-jugador-rojo.webm' : 'banner-rival-azul.webm'));
-      if (clips[type]) expect(srcs).toContainEqual(expect.stringContaining(clips[type]!));
+      // The banner and energy clips must never occupy the same frame.
+      expect(srcs).not.toContainEqual(expect.stringContaining('efectos/'));
       unmount();
+      if (clips[type]) {
+        const { container: energy, unmount: stop } = render(
+          <CardActivationBanner card={card} isPlayer={isPlayer} paused={false} stage="effect" />
+        );
+        const effectSources = Array.from(energy.querySelectorAll('video source')).map(source => source.getAttribute('src') || '');
+        expect(effectSources).toContainEqual(expect.stringContaining(clips[type]!));
+        expect(effectSources).not.toContainEqual(expect.stringContaining('animaciones/banner-'));
+        expect(energy.querySelector('.dr-cinematic-copy')).toBeNull();
+        stop();
+      }
     }
   });
   test(`el último decreto ${names[type]} tiene insignia SVG para ambos participantes`, () => {

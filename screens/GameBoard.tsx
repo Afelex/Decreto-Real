@@ -13,7 +13,7 @@ import { CardActivationBanner } from './CardActivationBanner';
 import { LastDecreeIndicator } from './LastDecreeIndicator';
 import './hud-g3.css';
 import { ComboEffectOverlay } from './ComboEffectOverlay';
-import { comboEffectCue, DECREE_BANNER_DURATION_MS } from '../game/effectCues';
+import { cardEffectCue, comboEffectCue, DECREE_BANNER_DURATION_MS } from '../game/effectCues';
 import { TurnIndicator, TurnAnnouncement, ComboChoicePanel, CoinTossPanel } from './CombatEventUI';
 import { resolveBattleScenery } from '../game/battleScenery';
 import { getRoyalCardText } from '../game/royalCardText';
@@ -268,7 +268,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showSurrenderConfirm, setShowSurrenderConfirm] = useState(false);
   const [visualEffect, setVisualEffect] = useState<{ type: EffectType, target: EffectTarget }>({ type: null, target: null });
-  const [cardAnnouncement, setCardAnnouncement] = useState<{ id: number; card: CardData; isPlayer: boolean } | null>(null);
+  const [cardAnnouncement, setCardAnnouncement] = useState<{ id: number; card: CardData; isPlayer: boolean; stage: 'banner' | 'effect' } | null>(null);
   const announcementBusy = useRef(false);
   const announcementCount = useRef(0);
   const announcementClock = useRef(new AiTurnController());
@@ -543,13 +543,21 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
       setOpponentHand(prev => prev.filter(c => c.id !== card.id));
     }
 
-    setCardAnnouncement({ id: ++announcementCount.current, card, isPlayer });
-    // Sound accompanies the card animation; actual HP/draw effects still wait.
-    if (card.type === 'ATTACK' || card.type === 'MYSTIC') playSound('ATTACK');
-    else if (card.type === 'DEFENSE') playSound('DEFENSE');
-    else if (card.type === 'ORDER') playSound('FLIP');
-    const active = await waitForCue(DECREE_BANNER_DURATION_MS);
-    if (!active) return; // Unmounted/cancelled: do not mutate the match.
+    // Two sequential, non-overlapping presentation phases: announce decree
+    // first, then show only the transparent card-specific energy animation.
+    // The rules are applied once BOTH visual phases have completed.
+    setCardAnnouncement({ id: ++announcementCount.current, card, isPlayer, stage: 'banner' });
+    const announced = await waitForCue(DECREE_BANNER_DURATION_MS);
+    if (!announced) return; // Unmounted/cancelled: do not mutate the match.
+    const energyCue = cardEffectCue(card.type);
+    if (energyCue.file) {
+      setCardAnnouncement({ id: ++announcementCount.current, card, isPlayer, stage: 'effect' });
+      if (card.type === 'ATTACK' || card.type === 'MYSTIC') playSound('ATTACK');
+      else if (card.type === 'DEFENSE') playSound('DEFENSE');
+      else if (card.type === 'ORDER') playSound('FLIP');
+      const played = await waitForCue(energyCue.durationMs);
+      if (!played) return;
+    } else if (card.type === 'ATTACK' || card.type === 'MYSTIC') playSound('ATTACK');
     setCardAnnouncement(null);
     announcementBusy.current = false;
     if (gameOverRef.current) return;
@@ -892,7 +900,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
       {/* Real card animation completes before a ×2/×3 combo may be chosen. */}
       {cardAnnouncement && (
         <CardActivationBanner key={cardAnnouncement.id} card={cardAnnouncement.card}
-          isPlayer={cardAnnouncement.isPlayer} paused={isMenuOpen}
+          isPlayer={cardAnnouncement.isPlayer} stage={cardAnnouncement.stage} paused={isMenuOpen}
           onEnded={() => cueFinished.current?.()} />
       )}
       {mysticComboAnnouncement && (
@@ -976,7 +984,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
           <div {...board.attrs('native-tablero-mazo-rival', 'dr-royal-deck dr-royal-rival-deck')}>
             <div className="dr-royal-deck-back">
               <img className="dr-g3-deck-art" src={`${HUD_G3}mazo.webp`} alt="" aria-hidden="true" draggable={false}/>
-              <span>{opponentDeck.length}</span><small>MAZO</small>
+              <div className="dr-g3-deck-copy"><small>MAZO</small><span>{opponentDeck.length}</span></div>
             </div>
           </div>
           <div {...board.attrs('native-tablero-retrato-rival', 'dr-royal-character')}>
@@ -1047,7 +1055,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
               </button>;
             })}
           </div>
-          {((!board.editing&&playerGauge >= 2 && phase === 'PLAYER_TURN') || (board.editing&&(board.selected==='native-tablero-combo'||previewNarrativeAction?.startsWith('combo')))) && <div key={board.editing?'studio-preview':playerGauge} {...board.attrs('native-tablero-combo', `dr-royal-combo combo-${board.editing&&previewNarrativeAction==='combo3'?3:playerGauge>=2?playerGauge:2}`)}
+          {((!board.editing&&playerGauge >= 2 && phase === 'PLAYER_TURN' && !showSpecialSelection) || (board.editing&&(board.selected==='native-tablero-combo'||previewNarrativeAction?.startsWith('combo')))) && <div key={board.editing?'studio-preview':playerGauge} {...board.attrs('native-tablero-combo', `dr-royal-combo combo-${board.editing&&previewNarrativeAction==='combo3'?3:playerGauge>=2?playerGauge:2}`)}
             aria-label={`Combo por ${board.editing&&previewNarrativeAction==='combo3'?3:playerGauge>=2?playerGauge:2}`} role="status"><strong>COMBO</strong><b>×{board.editing&&previewNarrativeAction==='combo3'?3:playerGauge>=2?playerGauge:2}</b><em>de {{ ATTACK: 'Ataque', DEFENSE: 'Defensa', IMPACT: 'Impacto', ORDER: 'Orden' }[playerLastType ?? 'ATTACK']}</em></div>}
         </section>
 
@@ -1089,7 +1097,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
             </button>
             <div className="dr-royal-deck-back red">
               <img className="dr-g3-deck-art" src={`${HUD_G3}mazo.webp`} alt="" aria-hidden="true" draggable={false}/>
-              <span>{playerDeck.length}</span><small>MAZO</small>
+              <div className="dr-g3-deck-copy"><small>MAZO</small><span>{playerDeck.length}</span></div>
             </div>
           </div>
           <div {...board.attrs('native-tablero-retrato-jugador', 'dr-royal-character player')}>

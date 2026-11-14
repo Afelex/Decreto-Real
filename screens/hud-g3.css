@@ -292,3 +292,57 @@
   text-align:center;
   font-size:clamp(22px,4.3dvh,34px);
 }
+
+/* QA 14/11: MAZO and count share ONE centered layout. Previously two
+   independently positioned text elements inherited conflicting old rules,
+   leaving the count/label below the red face of the G3 deck illustration. */
+.dr-royal-screen .dr-royal-deck-back > .dr-g3-deck-copy {
+  position:absolute;
+  z-index:3;
+  left:12%;
+  right:12%;
+  top:22%;
+  bottom:23%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:clamp(2px,.5dvh,5px);
+  text-align:center;
+  pointer-events:none;
+}
+.dr-royal-screen .dr-royal-deck-back > .dr-g3-deck-copy > small,
+.dr-royal-screen .dr-royal-deck-back > .dr-g3-deck-copy > span {
+  display:block;
+  position:static;
+  left:auto;
+  right:auto;
+  top:auto;
+  bottom:auto;
+  width:100%;
+  height:auto;
+  margin:0;
+  padding:0;
+  transform:none;
+  text-align:center;
+  line-height:1;
+  color:#fff6d4;
+  white-space:nowrap;
+}
+.dr-royal-screen .dr-royal-deck-back > .dr-g3-deck-copy > small {
+  font:900 clamp(9px,1.9dvh,13px)/1 Cinzel,Georgia,serif;
+  letter-spacing:.025em;
+}
+.dr-royal-screen .dr-royal-deck-back > .dr-g3-deck-copy > span {
+  font:900 clamp(23px,4.35dvh,35px)/1 Cinzel,Georgia,serif;
+  letter-spacing:-.04em;
+}
+@media(max-height:570px) {
+  .dr-royal-screen .dr-royal-deck-back > .dr-g3-deck-copy {
+    top:20%;
+    bottom:20%;
+    gap:1px;
+  }
+}
+/* The stand-alone combo status remains available between actions, but the
+   larger choice panel is the sole combo header while choosing a bonus. */
