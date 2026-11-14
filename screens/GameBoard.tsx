@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { StudioBoardPanel, StudioBoardProvider, useBoardStudio } from './studio/StudioBoardKit';
 import { NarrativePortrait } from './studio/NarrativePortrait';
 import { OPPONENT_IMG, PLAYER_IMG } from '../constants';
@@ -20,6 +20,7 @@ import { resolveBattleScenery } from '../game/battleScenery';
 import { getRoyalCardText } from '../game/royalCardText';
 import { resolveBattleEnd, resolveSurrender, resolveDevelopmentVictory, type BattleEndResult } from '../game/battleEnd';
 import { BattleSceneryLayer } from './BattleSceneryLayer';
+import { DuelEntrance } from './DuelEntrance';
 import StorySpeechPanel from './StorySpeechPanel';
 import type { CombatConversation } from '../campaign/combatDialogues.ts';
 import { GUIDED_STEPS, GUIDED_ACTION_CARDS, arrangeGuidedDeck, guidedActionForCard, type GuidedAction } from '../campaign/guidedOpeningDuel';
@@ -139,6 +140,17 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const playerPortrait = presentation?.playerPortrait ?? PLAYER_IMG;
   const rivalPortrait = presentation?.opponentPortrait ?? OPPONENT_IMG;
   const navigate = useNavigate();
+  const location = useLocation();
+  // La ceremonia solo se habilita al elegir Jugar con la IA en el menú.
+  // Acceso directo, campaña, tutorial y editor conservan su inicio habitual.
+  const [entranceActive, setEntranceActive] = useState(() =>
+    location.state?.duelEntrance === true && !onOutcome && !guidedOpening && !storyConversation);
+  const [entranceSeen, setEntranceSeen] = useState(false);
+  useEffect(() => {
+    if (entranceSeen && document.querySelector('.dr-royal-screen .dr-event-coin')) {
+      document.querySelector<HTMLButtonElement>('.dr-royal-screen .dr-event-coin')?.focus({ preventScroll: true });
+    }
+  }, [entranceSeen]);
   // Studio · Tablero: ajustes visuales por perfil de pantalla (solo QA edita).
   const boardLayoutRef = React.useRef<HTMLDivElement | null>(null);
   const [studioGuidePreview,setStudioGuidePreview] = useState(0);
@@ -322,7 +334,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   }, []);
 
   const handleCoinToss = () => {
-    if (isCoinFlipping || gameOverRef.current || storyMoment || !guideAllows('coin')) return;
+    if (entranceActive || isCoinFlipping || gameOverRef.current || storyMoment || !guideAllows('coin')) return;
     playSound('FLIP');
     setIsCoinFlipping(true);
     // One tap, a single short flip, then the result before battle begins.
@@ -827,7 +839,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const endTurnUnavailable = (guidedOpening && !expectedGuideAction?.startsWith('end')) || phase !== 'PLAYER_TURN' || !!storyMoment || showSpecialSelection || !!comboAnnouncement || !!mysticComboAnnouncement || isMenuOpen || !!cardAnnouncement || announcementBusy.current;
 
   const Board = (
-    <div ref={boardLayoutRef} className={`dr-classic-screen dr-royal-screen${board.editing ? ' dr-royal-tutorial-studio' : ''}${board.editing&&studioPlayerPreview ? ' dr-royal-player-preview' : ''} bg-[#050505] font-body w-full overflow-hidden select-none flex flex-col relative text-white ${shakeScreen ? 'animate-shake' : ''}`} style={{ width: 'min(100vw, 430px)', height: '100dvh' }}>
+    <div ref={boardLayoutRef} className={`dr-classic-screen dr-royal-screen${entranceSeen ? ' dr-duel-entrance-complete' : ''}${board.editing ? ' dr-royal-tutorial-studio' : ''}${board.editing&&studioPlayerPreview ? ' dr-royal-player-preview' : ''} bg-[#050505] font-body w-full overflow-hidden select-none flex flex-col relative text-white ${shakeScreen ? 'animate-shake' : ''}`} style={{ width: 'min(100vw, 430px)', height: '100dvh' }}>
       <style>{`
         /* Animaciones para el botón de fuego */
         @keyframes fire-glow { 0%, 100% { box-shadow: 0 0 15px #f59e0b, 0 0 30px #f97316; } 50% { box-shadow: 0 0 25px #fbbf24, 0 0 50px #ef4444; } }
@@ -1200,7 +1212,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
           variant={phase === 'START_BANNER' ? 'opening' : turnOwner === 'PLAYER' ? 'player' : 'opponent'}
           ribbonProps={phase === 'START_BANNER' ? undefined : board.attrs(turnOwner==='PLAYER'?'native-tablero-turno-jugador':'native-tablero-turno-rival','')}
           turn={turnCount} />}
-      {((phase === 'COIN_TOSS' && !storyMoment && !board.editing)||
+      {((phase === 'COIN_TOSS' && !entranceActive && !storyMoment && !board.editing)||
         (board.editing&&(board.selected==='native-tablero-moneda'||previewNarrativeAction==='coin')))&&
         <CoinTossPanel coinSide={board.editing?null:coinSide} isFlipping={board.editing?false:isCoinFlipping}
           onToss={board.editing?()=>{}:handleCoinToss} preview={board.editing}
@@ -1222,6 +1234,8 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
           </section>
         </div>
       )}
+      {entranceActive && <DuelEntrance playerPortrait={playerPortrait} rivalPortrait={rivalPortrait}
+        onFinish={() => { setEntranceActive(false); setEntranceSeen(true); }} />}
     </div>
   );
 
