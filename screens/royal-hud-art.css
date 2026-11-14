@@ -301,9 +301,9 @@
   content:"";
   position:absolute;
   left:13%;
-  top:20%;
+  top:15.5%;
   width:74%;
-  height:60%;
+  height:65.5%;
   z-index:0;
   border-radius:4px;
   pointer-events:none;
@@ -320,9 +320,9 @@
   content:"";
   position:absolute;
   left:13%;
-  top:20%;
+  top:15.5%;
   width:74%;
-  height:60%;
+  height:65.5%;
   z-index:2;
   border-radius:4px;
   pointer-events:none;

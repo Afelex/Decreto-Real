@@ -215,3 +215,11 @@
   .dr-pvp-cinematic-copy {animation:none;}
   .dr-pvp-cinematic-fallback {display:block;}
 }
+
+/* Online decree activations have the same two-second reading interval as IA. */
+.dr-pvp-cinematic.is-card .dr-pvp-cinematic-copy {
+  animation:dr-pvp-cue-caption 2s ease both;
+}
+.dr-pvp-cinematic.is-card .dr-pvp-cinematic-copy strong {
+  font-size:clamp(20px,5.6vw,34px);
+}

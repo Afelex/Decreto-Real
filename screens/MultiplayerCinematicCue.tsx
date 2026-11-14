@@ -47,7 +47,7 @@ export function MultiplayerCinematicCue({ cue, onEnded }: {
   const detail = turn ? (cue.isPlayer ? 'Es tu momento de jugar' : 'El rival está actuando') : cardCopy!.effect;
   const kicker = turn ? 'DECRETO REAL' : cardCopy!.kicker;
 
-  return <div key={cue.id} className={`dr-pvp-cinematic ${cue.isPlayer ? 'is-player' : 'is-opponent'}${isEnergy ? ' is-energy' : ''}`}
+  return <div key={cue.id} className={`dr-pvp-cinematic ${cue.isPlayer ? 'is-player' : 'is-opponent'}${turn ? ' is-turn' : ' is-card'}${isEnergy ? ' is-energy' : ''}`}
     role="status" aria-live="polite" aria-label={`${kicker}: ${heading}. ${detail}`}>
     <div className="dr-pvp-cinematic-media" aria-hidden="true">
       {!failed ? <video key={cue.id} autoPlay muted playsInline preload="auto"
