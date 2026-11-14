@@ -62,6 +62,13 @@ jobs:
           codec="$(ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of default=noprint_wrappers=1:nokey=1 "$optimized_video")"
           test "$codec" = "h264"
           echo "Verified mobile-ready codec: $codec"
+          # Produce a frame from the SAME video (not the obsolete clay still).
+          # The JPG paints the arena immediately while Android decodes the MP4.
+          poster_image="dist/escenarios/partida-inicial-poster.jpg"
+          ffmpeg -hide_banner -loglevel error -nostdin -y \
+            -ss 0.6 -i "$optimized_video" -frames:v 1 -q:v 6 "$poster_image"
+          test -s "$poster_image"
+          ls -lh "$poster_image"
           rm -f dist/escenarios/gemini_generated_video_b8059a5c.mp4
           ls -lh "$optimized_video"
 
