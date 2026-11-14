@@ -59,6 +59,7 @@ test('two Impacts across turns offer the one-point combo and preserve the streak
   fireEvent.click(screen.getByRole('button', { name: 'Casilla Impacto II' }));
   await act(async () => { await vi.advanceTimersByTimeAsync(2500); });
   expect(screen.getByText('Combo ×2')).toBeTruthy();
+  expect(screen.queryByRole('status', { name: 'Combo por 2' })).toBeNull(); // The dialog owns the title, no duplicate floating label.
   expect(screen.getByText('1 Daño al Rival')).toBeTruthy();
   fireEvent.click(screen.getByRole('button', { name: /Furia Real/ }));
   // The combo choice triggers a clip; the bonus waits until it finishes.
@@ -88,11 +89,16 @@ test('Order draws one replacement card without changing the starting 28-card dec
   expect(badges.closest('footer')?.classList.contains('dr-royal-player-area')).toBe(true);
   expect(screen.getByLabelText(/Tu mano:/).querySelector('.dr-last-decree-indicator')).toBeNull();
   expect(badges.querySelector('.dr-last-decree-indicator--player')).toBeTruthy();
-  const orderVideo = document.querySelector<HTMLVideoElement>('.dr-cinematic-overlay--energy video');
-  expect(orderVideo?.querySelector('source')?.getAttribute('src')).toContain('/efectos/orden.webm');
-  expect(orderVideo?.muted).toBe(true); // Mocked test preferences disable SFX.
+  expect(document.querySelector('.dr-cinematic-overlay')?.getAttribute('data-decree-stage')).toBe('banner');
+  expect(document.querySelector('.dr-cinematic-overlay source')?.getAttribute('src')).toContain('banner-jugador-rojo.webm');
+  expect(document.querySelector('.dr-cinematic-overlay source')?.getAttribute('src')).not.toContain('/efectos/');
   await act(async () => { await vi.advanceTimersByTimeAsync(2050); });
   expect(screen.queryByRole('status', { name: /HAS ACTIVADO/ })).toBeNull();
+  expect(document.querySelector('.dr-cinematic-overlay')?.getAttribute('data-decree-stage')).toBe('effect');
+  const orderVideo = document.querySelector<HTMLVideoElement>('.dr-cinematic-overlay--effect-only video');
+  expect(orderVideo?.querySelector('source')?.getAttribute('src')).toContain('/efectos/orden.webm');
+  expect(orderVideo?.muted).toBe(true); // Mocked test preferences disable SFX.
+  await act(async () => { await vi.advanceTimersByTimeAsync(1100); });
   expect(screen.getByLabelText(/Tu mano:/).querySelectorAll('.dr-royal-hand-card')).toHaveLength(before);
   expect(Number(document.querySelector('.dr-royal-player-deck span')?.textContent)).toBe(deckBefore - 1);
 });
