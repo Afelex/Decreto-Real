@@ -224,3 +224,26 @@
     height:17px;
   }
 }
+
+/* Specificity guards against older responsive rules in royal-table-v2.css. */
+.dr-royal-screen .dr-royal-rival-area .dr-royal-deck-back {
+  border:0;
+  background:transparent;
+  box-shadow:none;
+}
+.dr-royal-screen .dr-royal-player-area > .dr-royal-finish:disabled,
+.dr-royal-screen .dr-royal-player-area > .dr-royal-finish:not(:disabled) {
+  box-shadow:none;
+  border:0;
+  background:none;
+}
+.dr-royal-screen .dr-royal-player-area > .dr-royal-finish strong {
+  opacity:0;
+}
+.dr-royal-screen .dr-royal-character-frame .dr-royal-hp.blue,
+.dr-royal-screen .dr-royal-character-frame .dr-royal-hp.red {
+  background:transparent!important;
+}
+/* The ×3 title stays slightly higher than ×2, as requested in the mobile QA. */
+.dr-royal-screen .dr-event-choice.dr-event-choice--2 h2 {top:15.1%;}
+.dr-royal-screen .dr-event-choice.dr-event-choice--3 h2 {top:13.6%;}
