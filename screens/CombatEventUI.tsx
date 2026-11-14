@@ -59,7 +59,7 @@ export function ComboChoicePanel({ level, onDamage, onHeal, preview = false, pan
       <div className="dr-event-stage__veil" aria-hidden="true" />
       <div {...panelProps} className={`dr-event-choice dr-event-choice--${level}${panelProps?.className?" "+panelProps.className:""}`} role="dialog"
         aria-modal="true" aria-labelledby="dr-event-combo-title" aria-describedby="dr-event-combo-help">
-        <img className="dr-event-choice__art" src={`${import.meta.env.BASE_URL}interfaz/combo-estandartes-nuevo.webp?v=qa20261113`}
+        <img className="dr-event-choice__art" src={`${import.meta.env.BASE_URL}interfaz/hud-g3/combo_panel.webp`}
           alt="" aria-hidden="true" draggable={false} />
         <h2 id="dr-event-combo-title">Combo ×{level}</h2>
         <p className="dr-event-combo-sr-only" id="dr-event-combo-help">Elige el efecto de tu combo.</p>

@@ -11,6 +11,7 @@ import { AiTurnController, runOpponentTurn } from '../game/aiTurn';
 import { cardPlacementPrompt, checkCardPlacement, resolveVisualDropZone, type CardDropZone } from '../game/cardPlacement.ts';
 import { CardActivationBanner } from './CardActivationBanner';
 import { LastDecreeIndicator } from './LastDecreeIndicator';
+import './hud-g3.css';
 import { ComboEffectOverlay } from './ComboEffectOverlay';
 import { comboEffectCue, DECREE_BANNER_DURATION_MS } from '../game/effectCues';
 import { TurnIndicator, TurnAnnouncement, ComboChoicePanel, CoinTossPanel } from './CombatEventUI';
@@ -39,31 +40,22 @@ const SPECIAL_VALUE = 3;
 const SHOW_DEV_WIN = import.meta.env.DEV ||
   (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('drDev') === '1');
 
-/** DR-HUD-V3 — arte renderizado en el DOM, no como fondo CSS.
- * Tres celdas del atlas: retrato (0), FIN TURNO activo (1) y desactivado (2).
- * La ruta incorpora versión para evitar que Android reutilice el recurso anterior. */
-const ROYAL_HUD_SPRITE = '/Decreto-Real/interfaz/retratos-fin-turno.avif?v=3';
-/** A portrait frame cropped from the first atlas cell. HTML overflow clipping
- * prevents the adjacent button icons from appearing beside each character. */
+/** G3 approved HUD graphics. Each asset is separate so artists can replace
+ * it later without editing an atlas or changing game rules and hit areas. */
+const HUD_G3 = `${import.meta.env.BASE_URL}interfaz/hud-g3/`;
 const PortraitOrnament: React.FC = () => (
   <span className="dr-royal-portrait-ornament" aria-hidden="true">
-    <img className="dr-royal-portrait-art-image" src={ROYAL_HUD_SPRITE}
+    <img className="dr-royal-portrait-art-image" src={`${HUD_G3}retrato_marco.webp`}
       alt="" draggable={false}/>
   </span>
 );
-/** A single button graphic. The HTML clipping viewport hides the other two
- * sprite cells, preventing Chromium/WebView from painting them outside the HUD.
- * Atlas dimensions: 576x240 = 3 columns of 192x240. Crop the central 192x192.
- */
 const EndTurnOrnament: React.FC<{ disabled: boolean }> = ({ disabled }) => (
   <span className="dr-royal-finish-ornament" aria-hidden="true"
     data-state={disabled ? 'disabled' : 'active'}>
-    <img className="dr-royal-finish-art-image" src={ROYAL_HUD_SPRITE}
-      draggable={false} alt=""
-      style={{ left: disabled ? '-200%' : '-100%' }}/>
+    <img className="dr-royal-finish-art-image" src={`${HUD_G3}fin_turno.webp`}
+      alt="" draggable={false}/>
   </span>
 );
-
 
 // --- ASSETS ---
 // Artes aprobadas, servidas desde el propio juego para que funcionen en GitHub Pages.
@@ -982,7 +974,10 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
         onClickCapture={board.editing ? event => { event.stopPropagation(); event.preventDefault(); } : undefined}>
         <header className="dr-royal-rival-area" aria-label="Estado del rival">
           <div {...board.attrs('native-tablero-mazo-rival', 'dr-royal-deck dr-royal-rival-deck')}>
-            <div className="dr-royal-deck-back"><span>{opponentDeck.length}</span><small>MAZO</small></div>
+            <div className="dr-royal-deck-back">
+              <img className="dr-g3-deck-art" src={`${HUD_G3}mazo.webp`} alt="" aria-hidden="true" draggable={false}/>
+              <span>{opponentDeck.length}</span><small>MAZO</small>
+            </div>
           </div>
           <div {...board.attrs('native-tablero-retrato-rival', 'dr-royal-character')}>
             <div className="dr-royal-character-frame gold-leaf-frame">
@@ -992,8 +987,8 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
             </div>
 
           </div>
-          {!guidedOpening && <button {...board.attrs('native-tablero-menu', 'dr-royal-menu-button')} type="button" onClick={handleMenuToggle} aria-label="Abrir menú de pausa">
-            <span className="material-icons" aria-hidden="true">menu</span>
+          {!guidedOpening && <button {...board.attrs('native-tablero-menu', 'dr-royal-menu-button dr-g3-menu')} type="button" onClick={handleMenuToggle} aria-label="Abrir menú de pausa">
+            <img className="dr-g3-menu-art" src={`${HUD_G3}menu.webp`} alt="" aria-hidden="true" draggable={false}/>
           </button>}
         </header>
 
@@ -1087,9 +1082,15 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
 
         <footer className="dr-royal-player-area" aria-label="Tus estadísticas y controles">
           <div {...board.attrs('native-tablero-mazo-jugador', 'dr-royal-player-deck')}>
-            <button className="dr-royal-audio" type="button" onClick={handleGlobalAudioToggle}
-              aria-label={isMuted ? 'Activar sonido' : 'Silenciar sonido'}><span className="material-icons" aria-hidden="true">{isMuted ? 'volume_off' : 'volume_up'}</span></button>
-            <div className="dr-royal-deck-back red"><span>{playerDeck.length}</span><small>MAZO</small></div>
+            <button className="dr-royal-audio dr-g3-audio" type="button" onClick={handleGlobalAudioToggle}
+              aria-label={isMuted ? 'Activar sonido' : 'Silenciar sonido'}>
+              <img className="dr-g3-audio-art" src={`${HUD_G3}${isMuted ? 'sonido_silenciado.webp' : 'sonido_activado.webp'}`}
+                alt="" aria-hidden="true" draggable={false}/>
+            </button>
+            <div className="dr-royal-deck-back red">
+              <img className="dr-g3-deck-art" src={`${HUD_G3}mazo.webp`} alt="" aria-hidden="true" draggable={false}/>
+              <span>{playerDeck.length}</span><small>MAZO</small>
+            </div>
           </div>
           <div {...board.attrs('native-tablero-retrato-jugador', 'dr-royal-character player')}>
             <div className="dr-royal-character-frame gold-leaf-frame">
@@ -1101,7 +1102,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
           </div>
           <button {...board.attrs('native-tablero-fin-turno', 'dr-royal-finish')} type="button" onClick={handleEndTurn}
             disabled={endTurnUnavailable}
-            aria-label="Terminar turno" data-art-version="hud-v4">
+            aria-label="Terminar turno" data-art-version="hud-g3">
             <EndTurnOrnament disabled={endTurnUnavailable}/>
             <strong>FIN<br/>TURNO</strong>
           </button>
