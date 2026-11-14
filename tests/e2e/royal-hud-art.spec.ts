@@ -9,7 +9,7 @@ test('a single clipped end-turn illustration stays in the player footer', async 
   const sprite = viewport.locator('img.dr-royal-finish-art-image');
 
   await expect(portraits).toHaveCount(2);
-  await expect(portraits.first()).toHaveCSS('overflow', 'hidden');
+  await expect(portraits.first()).toHaveCSS('overflow', 'visible');
   await expect(portraits.locator('img.dr-royal-portrait-art-image')).toHaveCount(2);
   await expect(button).toHaveCount(1);
   await expect(page.locator('.dr-royal-finish')).toHaveCount(1);
@@ -21,7 +21,7 @@ test('a single clipped end-turn illustration stays in the player footer', async 
   // ".dr-royal-finish > span { display:none }" while leaving FIN TURNO visible.
   await expect(viewport).toHaveCSS('display', 'block');
   await expect(viewport).toHaveCSS('visibility', 'visible');
-  await expect(viewport).toHaveCSS('overflow', 'hidden');
+  await expect(viewport).toHaveCSS('overflow', 'visible');
   await expect(button).toHaveCSS('box-shadow', 'none');
   await expect(page.locator('.dr-royal-character-frame')).toHaveCount(2);
   await expect(page.locator('.dr-royal-character-frame').first()).toHaveCSS('box-shadow', 'none');
@@ -33,9 +33,12 @@ test('a single clipped end-turn illustration stays in the player footer', async 
     await expect(deck.locator('span')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
     await expect(deck.locator('small')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
   }
-  await expect(sprite).toHaveCSS('left', /-\d+(\.\d+)?px/);
+  await expect(sprite).toHaveCSS('left', '0px');
   await expect(button).toBeDisabled();
   await expect(viewport).toHaveAttribute('data-state', 'disabled');
+  await expect(page.locator('img.dr-g3-deck-art')).toHaveCount(2);
+  await expect(page.locator('img.dr-g3-menu-art')).toHaveCount(1);
+  await expect(page.locator('img.dr-g3-audio-art')).toHaveCount(1);
 
   const url = await sprite.getAttribute('src');
   expect(url).toContain('interfaz/hud-g3/fin_turno.webp');
