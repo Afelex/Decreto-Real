@@ -32,7 +32,6 @@ import {
 const MAX_HP = 20;
 const INITIAL_HAND_SIZE = 3;
 const ATTACK_DAMAGE = 2;
-const GAUGE_MAX = 3;
 const SPECIAL_VALUE = 3;
 /** TODO BEFORE RELEASE: remove this QA-only win control and outcome.
  * Visible automatically in Vite dev or only on an explicit hosted test URL
