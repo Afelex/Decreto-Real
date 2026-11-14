@@ -298,3 +298,54 @@
     font-size:clamp(15px,4.5cqw,22px);
   }
 }
+
+/* QA: the approved red AND blue WebM ribbons cross the viewport diagonally
+   at its geometrical centre. Put the whole caption stack at that centre,
+   rotate it by the actual film slope, and make it readable on small phones.
+   Keep the separate energy-only stage free of text. */
+.dr-royal-screen .dr-cinematic-overlay[data-decree-stage="banner"] .dr-cinematic-copy,
+.dr-royal-screen .dr-cinematic-overlay[data-decree-stage="banner"].player .dr-cinematic-copy,
+.dr-royal-screen .dr-cinematic-overlay[data-decree-stage="banner"].rival .dr-cinematic-copy {
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:min(92%,630px);
+  max-width:92%;
+  transform:translate(-50%,-50%) rotate(-12deg);
+  transform-origin:center;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:clamp(4px,.75dvh,8px);
+  margin:0;
+  padding:0 8px;
+  text-align:center;
+}
+.dr-royal-screen .dr-cinematic-overlay[data-decree-stage="banner"] .dr-cinematic-kicker {
+  font:900 clamp(13px,3.9cqw,21px)/1.06 Cinzel,Georgia,serif;
+  text-align:center;
+  letter-spacing:.025em;
+}
+.dr-royal-screen .dr-cinematic-overlay[data-decree-stage="banner"] .dr-cinematic-title {
+  font:900 clamp(23px,6.65cqw,40px)/1.05 Cinzel,Georgia,serif;
+  width:100%;
+  max-width:100%;
+  margin:0;
+  overflow-wrap:normal;
+  word-break:normal;
+  text-wrap:balance;
+  text-align:center;
+  text-shadow:0 3px 5px #080512,0 0 12px #080512;
+}
+.dr-royal-screen .dr-cinematic-overlay[data-decree-stage="banner"] .dr-cinematic-effect {
+  font:800 clamp(14px,3.85cqw,22px)/1.12 Georgia,serif;
+  width:100%;
+  max-width:100%;
+  text-align:center;
+}
+@media(max-width:375px) {
+  .dr-royal-screen .dr-cinematic-overlay[data-decree-stage="banner"] .dr-cinematic-title {
+    font-size:clamp(22px,6.15cqw,29px);
+  }
+}
