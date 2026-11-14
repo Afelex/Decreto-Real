@@ -59,7 +59,8 @@ for (const type of Object.keys(names) as CardType[]) {
       <LastDecreeIndicator type={type} side="player"/>
       <LastDecreeIndicator type={type} side="opponent"/>
     </>);
-    const icons=container.querySelectorAll('.dr-last-decree-icon svg');
+    const icons=container.querySelectorAll('.dr-last-decree-icon img.dr-g3-decree-visual');
+    expect(Array.from(icons).every(icon => icon.getAttribute('src')?.includes('interfaz/hud-g3/'))).toBe(true);
     expect(icons).toHaveLength(2);
     expect(container.querySelector('[aria-label="Último decreto del jugador: '+names[type]+'"]')).toBeTruthy();
     expect(container.querySelector('[aria-label="Último decreto del rival: '+names[type]+'"]')).toBeTruthy();
