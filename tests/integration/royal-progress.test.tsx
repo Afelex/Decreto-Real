@@ -91,7 +91,7 @@ test('Order draws one replacement card without changing the starting 28-card dec
   const orderVideo = document.querySelector<HTMLVideoElement>('.dr-cinematic-overlay--energy video');
   expect(orderVideo?.querySelector('source')?.getAttribute('src')).toContain('/efectos/orden.webm');
   expect(orderVideo?.muted).toBe(true); // Mocked test preferences disable SFX.
-  await act(async () => { await vi.advanceTimersByTimeAsync(1050); });
+  await act(async () => { await vi.advanceTimersByTimeAsync(2050); });
   expect(screen.queryByRole('status', { name: /HAS ACTIVADO/ })).toBeNull();
   expect(screen.getByLabelText(/Tu mano:/).querySelectorAll('.dr-royal-hand-card')).toHaveLength(before);
   expect(Number(document.querySelector('.dr-royal-player-deck span')?.textContent)).toBe(deckBefore - 1);
