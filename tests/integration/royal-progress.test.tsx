@@ -66,6 +66,9 @@ test('two Impacts across turns offer the one-point combo and preserve the streak
   expect(screen.getByRole('status', { name: /Combo ×2: Ataque/ })).toBeTruthy();
   expect((screen.getByRole('button', { name: 'Terminar turno' }) as HTMLButtonElement).disabled).toBe(true);
   await act(async () => { await vi.advanceTimersByTimeAsync(1000); });
+  expect(screen.queryByLabelText('Vida del rival: 18 de 20')).toBeNull();
+  expect((screen.getByRole('button', { name: 'Terminar turno' }) as HTMLButtonElement).disabled).toBe(true);
+  await act(async () => { await vi.advanceTimersByTimeAsync(550); });
   expect(screen.getByLabelText('Vida del rival: 18 de 20')).toBeTruthy();
   expect(screen.getByText('de Impacto')).toBeTruthy();
 });
