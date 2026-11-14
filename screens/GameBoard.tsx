@@ -14,7 +14,7 @@ import { LastDecreeIndicator } from './LastDecreeIndicator';
 import { nextDecreeStreak } from '../game/decreeStreak';
 import './hud-g3.css';
 import { ComboEffectOverlay } from './ComboEffectOverlay';
-import { cardEffectCue, comboEffectCue, DECREE_BANNER_DURATION_MS } from '../game/effectCues';
+import { cardEffectCue, DECREE_BANNER_DURATION_MS, DECREE_EFFECT_DURATION_MS } from '../game/effectCues';
 import { TurnIndicator, TurnAnnouncement, ComboChoicePanel, CoinTossPanel } from './CombatEventUI';
 import { resolveBattleScenery } from '../game/battleScenery';
 import { getRoyalCardText } from '../game/royalCardText';
@@ -405,7 +405,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
     if (user === 'PLAYER') setShowSpecialSelection(false);
     setComboAnnouncement({ id: ++announcementCount.current, level, ability, isPlayer: user === 'PLAYER' });
     playSound('IMPACT');
-    const active = await waitForCue(comboEffectCue(ability, level).durationMs);
+    const active = await waitForCue(DECREE_EFFECT_DURATION_MS);
     setComboAnnouncement(null);
     announcementBusy.current = false;
     if (!active || gameOverRef.current) return;
@@ -559,7 +559,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
       if (card.type === 'ATTACK' || card.type === 'MYSTIC') playSound('ATTACK');
       else if (card.type === 'DEFENSE') playSound('DEFENSE');
       else if (card.type === 'ORDER') playSound('FLIP');
-      const played = await waitForCue(energyCue.durationMs);
+      const played = await waitForCue(DECREE_EFFECT_DURATION_MS);
       if (!played) return;
     } else if (card.type === 'ATTACK' || card.type === 'MYSTIC') playSound('ATTACK');
     setCardAnnouncement(null);
@@ -904,8 +904,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
       {/* Real card animation completes before a ×2/×3 combo may be chosen. */}
       {cardAnnouncement && (
         <CardActivationBanner key={cardAnnouncement.id} card={cardAnnouncement.card}
-          isPlayer={cardAnnouncement.isPlayer} stage={cardAnnouncement.stage} paused={isMenuOpen}
-          onEnded={() => cueFinished.current?.()} />
+          isPlayer={cardAnnouncement.isPlayer} stage={cardAnnouncement.stage} paused={isMenuOpen} />
       )}
       {mysticComboAnnouncement && (
         <div className="dr-mystic-combo-overlay" role="status" aria-live="assertive"
@@ -921,8 +920,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
       {/* The selected combo video completes before the bonus damage/healing applies. */}
       {comboAnnouncement && (
         <ComboEffectOverlay key={comboAnnouncement.id} level={comboAnnouncement.level}
-          ability={comboAnnouncement.ability} paused={isMenuOpen}
-          onEnded={() => cueFinished.current?.()} />
+          ability={comboAnnouncement.ability} paused={isMenuOpen} />
       )}
 
       {guidedOpening && <button type="button" className="dr-royal-guided-pause" onClick={handleMenuToggle}
