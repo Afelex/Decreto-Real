@@ -38,7 +38,7 @@ test('a single clipped end-turn illustration stays in the player footer', async 
   await expect(viewport).toHaveAttribute('data-state', 'disabled');
 
   const url = await sprite.getAttribute('src');
-  expect(url).toContain('retratos-fin-turno.avif?v=3');
+  expect(url).toContain('interfaz/hud-g3/fin_turno.webp');
   const dimensions = await page.evaluate(async (src) => {
     const img = new Image();
     img.src = src!;
