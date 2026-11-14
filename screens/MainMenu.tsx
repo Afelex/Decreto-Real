@@ -177,7 +177,7 @@ const MainMenu: React.FC = () => {
           artKey="duel"
           className="dr-cinematic-button-secondary"
           ariaLabel="Jugar con la IA"
-          onClick={() => navigate('/game')}
+          onClick={() => navigate('/game', { state: { duelEntrance: true } })}
         >
           <span className="dr-cinematic-button-icon" aria-hidden="true">⚔️</span>
           <strong>JUGAR CON LA IA</strong>
