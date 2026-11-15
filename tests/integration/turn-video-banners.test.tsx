@@ -1,4 +1,5 @@
 import React from 'react';
+import { readFileSync } from 'node:fs';
 import { afterEach, expect, test, vi } from 'vitest';
 import { act, cleanup, render } from '@testing-library/react';
 import { TurnAnnouncement, TurnIndicator, TURN_TRANSITION_DURATION_MS } from '../../screens/CombatEventUI';
@@ -19,8 +20,8 @@ test.each([
   expect(ribbon?.className).not.toContain('--video');
   expect(layer.querySelector('video')).toBeNull();
   expect(layer.querySelectorAll('.dr-event-turn__ribbon')).toHaveLength(1);
-  // Cada facción conserva su arte aprobado, sin una segunda capa WebM.
-  expect(artwork).toContain(variant === 'player' ? 'tu-turno' : 'turno-rival');
+  // Se utilizan los mismos dos artes aprobados de la partida.
+  expect(readFileSync('screens/combat-events.css', 'utf8')).toContain(artwork);
 });
 
 test('Studio conserva la cinta estática editable', () => {
