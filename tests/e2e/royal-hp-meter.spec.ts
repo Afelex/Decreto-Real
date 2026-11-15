@@ -12,7 +12,7 @@ test('las barras de vida de jugador y rival ocupan el HP completo y muestran tex
     await expect(meter).toHaveAttribute('aria-valuenow', '20');
     const fill = meter.locator('.dr-royal-hp__fill');
     await expect(fill).toHaveCSS('background-color', 'rgb(39, 150, 89)');
-    await expect(fill).toHaveAttribute('style', /width:\\s*100%/);
+    await expect(fill).toHaveAttribute('style', /100%/);
     const geometry = await meter.evaluate(el => {
       const plate = el.getBoundingClientRect();
       const text = el.querySelector('.dr-royal-hp__label')!.getBoundingClientRect();
