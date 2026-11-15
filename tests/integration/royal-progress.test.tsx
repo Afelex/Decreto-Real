@@ -154,6 +154,7 @@ test('si gana el rival la moneda, se anuncia en azul y antes de la primera acciÃ
   expect(screen.getByText('Empieza el oponente')).toBeTruthy();
   await act(async () => { await vi.advanceTimersByTimeAsync(450); });
   expect(document.querySelector('.dr-turn-portal--opponent .dr-event-turn--opponent')).toBeTruthy();
-  expect(document.querySelector('.dr-turn-portal source')?.getAttribute('src')).toContain('banner-rival-azul.webm');
+  expect(document.querySelector('.dr-turn-portal--opponent .dr-event-turn__ribbon')).toBeTruthy();
+  expect(document.querySelector('.dr-turn-portal--opponent video')).toBeNull();
   expect(screen.queryByText('Â¡INICIA EL COMBATE!')).toBeNull();
 });

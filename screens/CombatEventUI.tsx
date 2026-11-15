@@ -1,6 +1,5 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
-import { syncCueVideoRate } from '../game/effectCues';
 import './combat-events.css';
 
 /** Duración exclusiva del aviso de cambio de turno en el duelo contra la IA. */
@@ -30,28 +29,16 @@ export function TurnAnnouncement({ variant, turn, preview = false, fullscreen = 
   preview?: boolean;
   ribbonProps?: React.HTMLAttributes<HTMLDivElement>;
 }) {
-  const [videoFailed, setVideoFailed] = React.useState(false);
-  // Android may block or stall autoplay without dispatching an error. Keep
-  // the static approved ribbon visible until an actual playing frame exists.
-  const [videoPlaying, setVideoPlaying] = React.useState(false);
+  // Un único arte aprobado por facción. Los antiguos WebM, brillo y rótulos
+  // duplicados podían aparecer simultáneamente durante el cambio de turno.
   const opening = variant === 'opening';
-  const showVideo = !opening && !preview && !videoFailed;
-  const videoSrc = `${import.meta.env.BASE_URL}animaciones/banner-${variant === 'player' ? 'jugador-rojo' : 'rival-azul'}.webm`;
   const title = opening ? '¡INICIA EL COMBATE!' : variant === 'player' ? 'Tu Turno' : 'Turno del Rival';
   const subtitle = opening ? 'Prepárate para el duelo' : variant === 'player' ? 'Juega una carta' : 'El rival está actuando';
   const announcement = (
     <div className={`dr-event-turn dr-event-turn--${variant}${preview ? ' dr-event-turn--studio-preview' : ''}`} role="status"
-      aria-live="polite" style={!opening && !preview ? { animationDuration: `${TURN_TRANSITION_DURATION_MS}ms` } : undefined} aria-label={`${title}. ${subtitle}${turn ? ` (turno ${turn})` : ''}`}>
-      <div {...ribbonProps} className={`dr-event-turn__ribbon${showVideo ? ' dr-event-turn__ribbon--video' : ''}${videoPlaying ? ' dr-event-turn__ribbon--playing' : ''}${ribbonProps?.className ? ' ' + ribbonProps.className : ''}`}>
-        {showVideo && <video className="dr-event-turn__video" autoPlay muted playsInline preload="auto"
-          aria-hidden="true" onLoadedMetadata={event => syncCueVideoRate(event.currentTarget, TURN_TRANSITION_DURATION_MS)}
-          onPlaying={() => setVideoPlaying(true)}
-          onWaiting={() => setVideoPlaying(false)}
-          onStalled={() => setVideoPlaying(false)}
-          onEnded={() => setVideoPlaying(false)}
-          onError={() => { setVideoPlaying(false); setVideoFailed(true); }}>
-          <source src={videoSrc} type="video/webm" />
-        </video>}
+      aria-live="polite" style={!opening && !preview ? { animationDuration: `${TURN_TRANSITION_DURATION_MS}ms` } : undefined}
+      aria-label={`${title}. ${subtitle}${turn ? ` (turno ${turn})` : ''}`}>
+      <div {...ribbonProps} className={`dr-event-turn__ribbon${ribbonProps?.className ? ' ' + ribbonProps.className : ''}`}>
         <strong>{title}</strong>
         {opening && <small>{subtitle}</small>}
       </div>

@@ -518,42 +518,8 @@
 .dr-royal-screen .dr-event-turn--studio-preview{animation:none;pointer-events:none;z-index:45}
 .dr-royal-screen .dr-event-turn--studio-preview .dr-event-turn__ribbon[data-studio-actor]{pointer-events:auto;touch-action:none;cursor:grab}
 
-/* Las cintas de turno usan el vídeo transparente aprobado; la imagen previa
-   queda disponible si el WebM no se puede reproducir o en Studio. */
-.dr-royal-screen .dr-event-turn__ribbon--video {
-  width:min(100%,520px);
-  aspect-ratio:16 / 9;
-  min-height:0;
-  background:none;
-  border:0;
-  box-shadow:none;
-  filter:none;
-  overflow:visible;
-}
-.dr-royal-screen .dr-event-turn__video {
-  position:absolute;
-  inset:0;
-  z-index:0;
-  display:block;
-  width:100%;
-  height:100%;
-  object-fit:contain;
-  pointer-events:none;
-}
-.dr-royal-screen .dr-event-turn__ribbon--video strong {
-  position:relative;
-  z-index:1;
-  text-shadow:0 3px 6px #090613,0 0 12px #090613;
-}
-@media (prefers-reduced-motion:reduce) {
-  .dr-royal-screen .dr-event-turn__video {display:none;}
-  .dr-royal-screen .dr-event-turn__ribbon--video {
-    background:url('/Decreto-Real/interfaz/banner-tu-turno.webp') center/contain no-repeat;
-  }
-  .dr-royal-screen .dr-event-turn--opponent .dr-event-turn__ribbon--video {
-    background-image:url('/Decreto-Real/interfaz/banner-turno-rival.webp');
-  }
-}
+/* Los anuncios de turno ya no usan vídeo: una sola cinta ilustrada se anima.
+   El resto de los vídeos de decretos y el editor Studio no se modifican. */
 
 /* QA 13/11: estandartes actualizados (1000x747). Conservan la proporción
    del recurso y las zonas pulsables de Furia Real / Gracia Divina. */
@@ -600,58 +566,9 @@
   text-align:center;
 }
 
-/* Cambio de turno contra IA: 1,5 s de presencia centrada, con entrada/salida
-   cortas. Sólo modifica la transición; los indicadores fijos son independientes. */
-.dr-royal-screen .dr-event-turn--player:not(.dr-event-turn--studio-preview),
-.dr-royal-screen .dr-event-turn--opponent:not(.dr-event-turn--studio-preview) {
-  --dr-handoff-from:-14%;
-  --dr-handoff-to:9%;
-  animation-name:dr-turn-handoff;
-  animation-timing-function:cubic-bezier(.2,.76,.24,1);
-  isolation:isolate;
-}
-.dr-royal-screen .dr-event-turn--opponent:not(.dr-event-turn--studio-preview) {
-  --dr-handoff-from:14%;
-  --dr-handoff-to:-9%;
-}
-.dr-royal-screen .dr-event-turn--player:not(.dr-event-turn--studio-preview)::before,
-.dr-royal-screen .dr-event-turn--opponent:not(.dr-event-turn--studio-preview)::before {
-  content:"";
-  position:absolute;
-  z-index:0;
-  left:-12%;
-  top:35%;
-  width:124%;
-  height:30%;
-  background:radial-gradient(ellipse,#c34a3652 0%,transparent 71%);
-  filter:blur(16px);
-  pointer-events:none;
-}
-.dr-royal-screen .dr-event-turn--opponent:not(.dr-event-turn--studio-preview)::before {
-  background:radial-gradient(ellipse,#438bc752 0%,transparent 71%);
-}
-.dr-royal-screen .dr-event-turn--player:not(.dr-event-turn--studio-preview) .dr-event-turn__ribbon,
-.dr-royal-screen .dr-event-turn--opponent:not(.dr-event-turn--studio-preview) .dr-event-turn__ribbon {
-  z-index:1;
-}
-@keyframes dr-turn-handoff {
-  0%   {opacity:0;transform:translateX(var(--dr-handoff-from)) scale(.95);}
-  18%  {opacity:1;transform:translateX(0) scale(1);}
-  76%  {opacity:1;transform:translateX(0) scale(1);}
-  100% {opacity:0;transform:translateX(var(--dr-handoff-to)) scale(1.02);}
-}
-@media (prefers-reduced-motion:reduce) {
-  .dr-royal-screen .dr-event-turn--player:not(.dr-event-turn--studio-preview),
-  .dr-royal-screen .dr-event-turn--opponent:not(.dr-event-turn--studio-preview) {
-    animation-name:dr-event-cross-fade;
-    animation-timing-function:linear;
-  }
-  .dr-royal-screen .dr-event-turn--player:not(.dr-event-turn--studio-preview)::before,
-  .dr-royal-screen .dr-event-turn--opponent:not(.dr-event-turn--studio-preview)::before {display:none;}
-}
-
-/* IA · full-device turn handoff. The portal escapes the narrow 430px table
-   and its CSS containment, including on landscape mobile devices. */
+/* IA · transición de turno simplificada.
+   Un único listón por facción, sin vídeo, doble rótulo, destellos,
+   barras decorativas ni pantallas de color que tapen el tablero. */
 .dr-royal-screen.dr-turn-portal {
   position:fixed;
   inset:0;
@@ -661,100 +578,71 @@
   width:100vw;
   height:100dvh;
   max-width:none;
-  padding:0;
   margin:0;
+  padding:0;
   overflow:hidden;
   pointer-events:none;
   isolation:isolate;
-  background:
-    radial-gradient(ellipse 90% 55% at 50% 47%,#a34c465c,transparent 76%),
-    linear-gradient(120deg,#190b13f5,#742432f2 45%,#230e20f7);
+  background:rgba(8,11,20,.62);
 }
 .dr-royal-screen.dr-turn-portal--opponent {
-  background:
-    radial-gradient(ellipse 90% 55% at 50% 47%,#4b98db66,transparent 76%),
-    linear-gradient(120deg,#08152cf5,#174f8ef2 45%,#0c1c34f7);
+  background:rgba(8,11,20,.62);
 }
-.dr-turn-portal::before,
-.dr-turn-portal::after {
-  content:"";
-  position:absolute;
-  z-index:0;
-  left:-25%;
-  width:150%;
-  height:2px;
-  transform:rotate(-10deg);
-  background:linear-gradient(90deg,transparent,#f6c576c7,transparent);
-  box-shadow:0 0 25px #eabb6d72;
+.dr-royal-screen.dr-turn-portal::before,
+.dr-royal-screen.dr-turn-portal::after,
+.dr-royal-screen.dr-turn-portal .dr-event-turn::before,
+.dr-royal-screen.dr-turn-portal .dr-event-turn::after {
+  content:none;
+  display:none;
 }
-.dr-turn-portal::before {top:25%;}
-.dr-turn-portal::after {bottom:24%;}
 .dr-royal-screen.dr-turn-portal > .dr-event-turn {
+  --dr-handoff-from:-10%;
+  --dr-handoff-to:6%;
   position:absolute;
   inset:0;
   z-index:1;
   width:100%;
   height:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  pointer-events:none;
+  animation:dr-turn-clean-handoff 1.5s cubic-bezier(.22,.78,.28,1) both;
 }
-.dr-royal-screen.dr-turn-portal .dr-event-turn__ribbon--video {
-  width:min(100vw,900px);
-  max-width:none;
-  aspect-ratio:16/9;
-  height:auto;
-  min-height:0;
-  padding:0;
-  background:none;
-  filter:drop-shadow(0 14px 25px #000a);
+.dr-royal-screen.dr-turn-portal--opponent > .dr-event-turn {
+  --dr-handoff-from:10%;
+  --dr-handoff-to:-6%;
 }
-.dr-royal-screen.dr-turn-portal .dr-event-turn__video {
-  width:100%;
-  height:100%;
-  object-fit:contain;
-}
-@media(prefers-reduced-motion:reduce) {
-  .dr-royal-screen.dr-turn-portal .dr-event-turn__ribbon--video {
-    background:url('/Decreto-Real/interfaz/banner-tu-turno.webp') center/contain no-repeat;
-  }
-  .dr-royal-screen.dr-turn-portal--opponent .dr-event-turn__ribbon--video {
-    background-image:url('/Decreto-Real/interfaz/banner-turno-rival.webp');
-  }
-}
-
-/* DR-TURN-RELIABLE: full-screen transition ALWAYS has a visible approved
-   illustrated ribbon, even if WebM alpha/autoplay is unsupported on Android.
-   The video is an enhancement, never the only visible announcement. */
 .dr-royal-screen.dr-turn-portal .dr-event-turn__ribbon {
   box-sizing:border-box;
-  width:min(100vw,900px);
+  width:min(94vw,540px);
   max-width:none;
   height:auto;
-  aspect-ratio:16 / 9;
+  aspect-ratio:3.55 / 1;
   min-height:0;
-  background:url('/Decreto-Real/interfaz/banner-tu-turno.webp') center/contain no-repeat;
-  border:0;
   padding:0;
-  filter:drop-shadow(0 14px 25px #000a);
+  border:0;
+  box-shadow:none;
+  background:url('/Decreto-Real/interfaz/banner-tu-turno.webp') center/contain no-repeat;
+  filter:drop-shadow(0 6px 12px #0008);
+  transform:none;
 }
 .dr-royal-screen.dr-turn-portal--opponent .dr-event-turn__ribbon {
   background-image:url('/Decreto-Real/interfaz/banner-turno-rival.webp');
 }
-.dr-royal-screen.dr-turn-portal .dr-event-turn__ribbon--playing {
-  background-image:none;
-}
-.dr-royal-screen.dr-turn-portal .dr-event-turn__video {
-  opacity:0;
-}
-.dr-royal-screen.dr-turn-portal .dr-event-turn__ribbon--playing .dr-event-turn__video {
-  opacity:1;
+@keyframes dr-turn-clean-handoff {
+  0%   {opacity:0;transform:translateX(var(--dr-handoff-from));}
+  18%  {opacity:1;transform:translateX(0);}
+  76%  {opacity:1;transform:translateX(0);}
+  100% {opacity:0;transform:translateX(var(--dr-handoff-to));}
 }
 @media (prefers-reduced-motion:reduce) {
-  .dr-royal-screen.dr-turn-portal .dr-event-turn__ribbon,
-  .dr-royal-screen.dr-turn-portal .dr-event-turn__ribbon--playing {
-    background-image:url('/Decreto-Real/interfaz/banner-tu-turno.webp');
+  .dr-royal-screen.dr-turn-portal > .dr-event-turn {
+    animation-name:dr-turn-clean-fade;
+    animation-timing-function:linear;
   }
-  .dr-royal-screen.dr-turn-portal--opponent .dr-event-turn__ribbon,
-  .dr-royal-screen.dr-turn-portal--opponent .dr-event-turn__ribbon--playing {
-    background-image:url('/Decreto-Real/interfaz/banner-turno-rival.webp');
-  }
-  .dr-royal-screen.dr-turn-portal .dr-event-turn__video {opacity:0;}
+}
+@keyframes dr-turn-clean-fade {
+  0%,100% {opacity:0;transform:none;}
+  18%,76% {opacity:1;transform:none;}
 }

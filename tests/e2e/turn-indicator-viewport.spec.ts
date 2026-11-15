@@ -58,27 +58,30 @@ for (const [side, randomValue, imageName] of [
   ['player', 0.99, 'banner-tu-turno.webp'],
   ['opponent', 0.01, 'banner-turno-rival.webp'],
 ] as const) {
-  test(`el banner inicial ${side} cubre la pantalla y nunca queda vacío sin WebM`, async ({ page }) => {
-    // Emulate Android's blocked/unsupported autoplay. The illustrated banner
-    // must remain visible for the entire handoff even without decoded video.
+  test(`el relevo ${side} muestra una sola cinta 1,5 s, sin capas ni vídeo simultáneos`, async ({ page }) => {
     await page.addInitScript(value => { Math.random = () => value; }, randomValue);
-    await page.route('**/animaciones/banner-*.webm', route => route.abort('failed'));
     await page.goto('/Decreto-Real/#/game');
     await page.getByRole('button', { name: 'Lanzar Moneda' }).click();
     const portal = page.locator(`.dr-turn-portal--${side}`);
     await expect(portal).toBeVisible({ timeout: 6000 });
     await expect(portal.locator('.dr-event-turn')).toHaveCSS('animation-duration', '1.5s');
-    const ribbon = portal.locator('.dr-event-turn__ribbon');
-    await expect(ribbon).toHaveCSS('background-image', new RegExp(imageName.replace('.', '\\.')));
+    await expect(portal.locator('.dr-event-turn')).toHaveCSS('animation-name', 'dr-turn-clean-handoff');
+    await expect(portal.locator('.dr-event-turn__ribbon')).toHaveCSS('background-image',
+      new RegExp(imageName.replace('.', '[.]')));
+    await expect(portal.locator('.dr-event-turn__ribbon')).toHaveCount(1);
+    await expect(portal.locator('video, .dr-event-turn__video')).toHaveCount(0);
+    // No se superpone la etiqueta persistente mientras está la transición.
+    await expect(page.locator('.dr-event-indicator')).toHaveCount(0);
     const geometry = await portal.evaluate(layer => {
       const rect = layer.getBoundingClientRect();
       return {
         fullWidth: Math.abs(rect.width - innerWidth) <= 1,
         fullHeight: Math.abs(rect.height - innerHeight) <= 1,
         aligned: Math.abs(rect.top) <= 1 && Math.abs(rect.left) <= 1,
+        extraDecoration: getComputedStyle(layer, '::before').content !== 'none',
       };
     });
-    expect(geometry).toEqual({ fullWidth: true, fullHeight: true, aligned: true });
+    expect(geometry).toEqual({ fullWidth: true, fullHeight: true, aligned: true, extraDecoration: false });
     await expect(portal).toHaveCount(0, { timeout: 6000 });
     await expectRibbonInsideBoard(page, side);
   });
