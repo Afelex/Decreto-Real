@@ -31,6 +31,9 @@ export function TurnAnnouncement({ variant, turn, preview = false, fullscreen = 
   ribbonProps?: React.HTMLAttributes<HTMLDivElement>;
 }) {
   const [videoFailed, setVideoFailed] = React.useState(false);
+  // Android may block or stall autoplay without dispatching an error. Keep
+  // the static approved ribbon visible until an actual playing frame exists.
+  const [videoPlaying, setVideoPlaying] = React.useState(false);
   const opening = variant === 'opening';
   const showVideo = !opening && !preview && !videoFailed;
   const videoSrc = `${import.meta.env.BASE_URL}animaciones/banner-${variant === 'player' ? 'jugador-rojo' : 'rival-azul'}.webm`;
@@ -39,10 +42,13 @@ export function TurnAnnouncement({ variant, turn, preview = false, fullscreen = 
   const announcement = (
     <div className={`dr-event-turn dr-event-turn--${variant}${preview ? ' dr-event-turn--studio-preview' : ''}`} role="status"
       aria-live="polite" style={!opening && !preview ? { animationDuration: `${TURN_TRANSITION_DURATION_MS}ms` } : undefined} aria-label={`${title}. ${subtitle}${turn ? ` (turno ${turn})` : ''}`}>
-      <div {...ribbonProps} className={`dr-event-turn__ribbon${showVideo ? ' dr-event-turn__ribbon--video' : ''}${ribbonProps?.className ? ' ' + ribbonProps.className : ''}`}>
+      <div {...ribbonProps} className={`dr-event-turn__ribbon${showVideo ? ' dr-event-turn__ribbon--video' : ''}${videoPlaying ? ' dr-event-turn__ribbon--playing' : ''}${ribbonProps?.className ? ' ' + ribbonProps.className : ''}`}>
         {showVideo && <video className="dr-event-turn__video" autoPlay muted playsInline preload="auto"
           aria-hidden="true" onLoadedMetadata={event => syncCueVideoRate(event.currentTarget, TURN_TRANSITION_DURATION_MS)}
-          onError={() => setVideoFailed(true)}>
+          onPlaying={() => setVideoPlaying(true)}
+          onWaiting={() => setVideoPlaying(false)}
+          onStalled={() => setVideoPlaying(false)}
+          onError={() => { setVideoPlaying(false); setVideoFailed(true); }}>
           <source src={videoSrc} type="video/webm" />
         </video>}
         <strong>{title}</strong>
