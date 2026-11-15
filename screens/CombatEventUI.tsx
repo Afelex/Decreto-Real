@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { syncCueVideoRate } from '../game/effectCues';
 import './combat-events.css';
 
@@ -20,9 +21,11 @@ export function TurnIndicator({ side, className = '', ...props }: { side: Side }
 }
 
 /** Short centered cue on changing turns; the artwork remains separate from live text. */
-export function TurnAnnouncement({ variant, turn, preview = false, ribbonProps }: {
+export function TurnAnnouncement({ variant, turn, preview = false, fullscreen = false, ribbonProps }: {
   variant: 'opening' | 'player' | 'opponent';
   turn?: number;
+  /** Keep the live transition independent of the narrow, contained game table. */
+  fullscreen?: boolean;
   /** Vista fija del estandarte en Studio para poder arrastrarlo. */
   preview?: boolean;
   ribbonProps?: React.HTMLAttributes<HTMLDivElement>;
@@ -33,7 +36,7 @@ export function TurnAnnouncement({ variant, turn, preview = false, ribbonProps }
   const videoSrc = `${import.meta.env.BASE_URL}animaciones/banner-${variant === 'player' ? 'jugador-rojo' : 'rival-azul'}.webm`;
   const title = opening ? '¡INICIA EL COMBATE!' : variant === 'player' ? 'Tu Turno' : 'Turno del Rival';
   const subtitle = opening ? 'Prepárate para el duelo' : variant === 'player' ? 'Juega una carta' : 'El rival está actuando';
-  return (
+  const announcement = (
     <div className={`dr-event-turn dr-event-turn--${variant}${preview ? ' dr-event-turn--studio-preview' : ''}`} role="status"
       aria-live="polite" style={!opening && !preview ? { animationDuration: `${TURN_TRANSITION_DURATION_MS}ms` } : undefined} aria-label={`${title}. ${subtitle}${turn ? ` (turno ${turn})` : ''}`}>
       <div {...ribbonProps} className={`dr-event-turn__ribbon${showVideo ? ' dr-event-turn__ribbon--video' : ''}${ribbonProps?.className ? ' ' + ribbonProps.className : ''}`}>
@@ -47,6 +50,16 @@ export function TurnAnnouncement({ variant, turn, preview = false, ribbonProps }
       </div>
     </div>
   );
+  // The 430px battle frame has containment; positioning inside it cannot
+  // cover a landscape viewport. Portaling is only for live handoffs.
+  if (fullscreen && !preview && typeof document !== 'undefined') {
+    return createPortal(
+      <div className={`dr-royal-screen dr-turn-portal dr-turn-portal--${variant}`}>
+        {announcement}
+      </div>, document.body,
+    );
+  }
+  return announcement;
 }
 
 /** Combo x2 y x3 comparten el mismo arte; los efectos y botones siguen siendo texto real. */

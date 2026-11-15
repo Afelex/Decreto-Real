@@ -649,3 +649,73 @@
   .dr-royal-screen .dr-event-turn--player:not(.dr-event-turn--studio-preview)::before,
   .dr-royal-screen .dr-event-turn--opponent:not(.dr-event-turn--studio-preview)::before {display:none;}
 }
+
+/* IA · full-device turn handoff. The portal escapes the narrow 430px table
+   and its CSS containment, including on landscape mobile devices. */
+.dr-royal-screen.dr-turn-portal {
+  position:fixed;
+  inset:0;
+  z-index:2147483000;
+  box-sizing:border-box;
+  display:block;
+  width:100vw;
+  height:100dvh;
+  max-width:none;
+  padding:0;
+  margin:0;
+  overflow:hidden;
+  pointer-events:none;
+  isolation:isolate;
+  background:
+    radial-gradient(ellipse 90% 55% at 50% 47%,#a34c465c,transparent 76%),
+    linear-gradient(120deg,#190b13f5,#742432f2 45%,#230e20f7);
+}
+.dr-royal-screen.dr-turn-portal--opponent {
+  background:
+    radial-gradient(ellipse 90% 55% at 50% 47%,#4b98db66,transparent 76%),
+    linear-gradient(120deg,#08152cf5,#174f8ef2 45%,#0c1c34f7);
+}
+.dr-turn-portal::before,
+.dr-turn-portal::after {
+  content:"";
+  position:absolute;
+  z-index:0;
+  left:-25%;
+  width:150%;
+  height:2px;
+  transform:rotate(-10deg);
+  background:linear-gradient(90deg,transparent,#f6c576c7,transparent);
+  box-shadow:0 0 25px #eabb6d72;
+}
+.dr-turn-portal::before {top:25%;}
+.dr-turn-portal::after {bottom:24%;}
+.dr-royal-screen.dr-turn-portal > .dr-event-turn {
+  position:absolute;
+  inset:0;
+  z-index:1;
+  width:100%;
+  height:100%;
+}
+.dr-royal-screen.dr-turn-portal .dr-event-turn__ribbon--video {
+  width:min(100vw,900px);
+  max-width:none;
+  aspect-ratio:16/9;
+  height:auto;
+  min-height:0;
+  padding:0;
+  background:none;
+  filter:drop-shadow(0 14px 25px #000a);
+}
+.dr-royal-screen.dr-turn-portal .dr-event-turn__video {
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+@media(prefers-reduced-motion:reduce) {
+  .dr-royal-screen.dr-turn-portal .dr-event-turn__ribbon--video {
+    background:url('/Decreto-Real/interfaz/banner-tu-turno.webp') center/contain no-repeat;
+  }
+  .dr-royal-screen.dr-turn-portal--opponent .dr-event-turn__ribbon--video {
+    background-image:url('/Decreto-Real/interfaz/banner-turno-rival.webp');
+  }
+}

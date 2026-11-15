@@ -31,6 +31,9 @@ test('rival row follows a real AI Impact while player slots remain independent',
   expect(within(row).getByRole('img', { name: 'Impacto rival I, completado' })).toBeTruthy();
   expect(row.querySelectorAll('.completed')).toHaveLength(1);
   expect(screen.getByRole('status', { name: 'Último decreto del rival: Impacto' })).toBeTruthy();
+  const struckPlayer = screen.getByRole('img', { name: 'Retrato de tu personaje' });
+  expect(struckPlayer.classList.contains('dr-portrait-hit')).toBe(true);
+  expect(Number(struckPlayer.getAttribute('data-hit-count'))).toBeGreaterThan(0);
   const player = screen.getByRole('group', { name: 'Las cuatro posiciones de Impacto' });
   expect(within(player).getAllByRole('button')).toHaveLength(4);
   expect(player.querySelectorAll('.completed')).toHaveLength(0);
@@ -70,6 +73,7 @@ test('two Impacts across turns offer the one-point combo and preserve the streak
   expect((screen.getByRole('button', { name: 'Terminar turno' }) as HTMLButtonElement).disabled).toBe(true);
   await act(async () => { await vi.advanceTimersByTimeAsync(550); });
   expect(screen.getByLabelText('Vida del rival: 18 de 20')).toBeTruthy();
+  expect(screen.getByRole('img', { name: 'Retrato del rival' }).classList.contains('dr-portrait-hit')).toBe(true);
   expect(screen.getByText('de Impacto')).toBeTruthy();
 });
 
@@ -115,4 +119,32 @@ test('standard duel uses the two local portraits with the same frame component',
   expect(rival.getAttribute('src')).toContain('retratos/rival.webp');
   expect(player.closest('.dr-royal-character-frame')).toBeTruthy();
   expect(rival.closest('.dr-royal-character-frame')).toBeTruthy();
+});
+
+test('después de la moneda aparece directamente el turno del jugador vencedor', async () => {
+  vi.useFakeTimers();
+  vi.spyOn(Math, 'random').mockReturnValue(.999);
+  render(<MemoryRouter><GameBoard /></MemoryRouter>);
+  fireEvent.click(screen.getByRole('button', { name: 'Lanzar Moneda' }));
+  await act(async () => { await vi.advanceTimersByTimeAsync(500); });
+  expect(screen.getByText('Empiezas tú')).toBeTruthy();
+  await act(async () => { await vi.advanceTimersByTimeAsync(450); });
+  expect(document.querySelector('.dr-turn-portal--player .dr-event-turn--player')).toBeTruthy();
+  expect(screen.queryByText('¡INICIA EL COMBATE!')).toBeNull();
+  await act(async () => { await vi.advanceTimersByTimeAsync(1500); });
+  expect(document.querySelector('.dr-turn-portal')).toBeNull();
+  expect((screen.getByRole('button', { name: 'Terminar turno' }) as HTMLButtonElement).disabled).toBe(false);
+});
+
+test('si gana el rival la moneda, se anuncia en azul y antes de la primera acción', async () => {
+  vi.useFakeTimers();
+  vi.spyOn(Math, 'random').mockReturnValue(.01);
+  render(<MemoryRouter><GameBoard /></MemoryRouter>);
+  fireEvent.click(screen.getByRole('button', { name: 'Lanzar Moneda' }));
+  await act(async () => { await vi.advanceTimersByTimeAsync(500); });
+  expect(screen.getByText('Empieza el oponente')).toBeTruthy();
+  await act(async () => { await vi.advanceTimersByTimeAsync(450); });
+  expect(document.querySelector('.dr-turn-portal--opponent .dr-event-turn--opponent')).toBeTruthy();
+  expect(document.querySelector('.dr-turn-portal source')?.getAttribute('src')).toContain('banner-rival-azul.webm');
+  expect(screen.queryByText('¡INICIA EL COMBATE!')).toBeNull();
 });
