@@ -50,3 +50,34 @@ test('tras el turno del jugador, la etiqueta azul sustituye a la roja sin desapa
   await expectRibbonInsideBoard(page, 'opponent');
   await expect(page.locator('.dr-event-indicator.is-player')).toHaveCount(0);
 });
+
+
+for (const [side, randomValue, imageName] of [
+  ['player', 0.99, 'banner-tu-turno.webp'],
+  ['opponent', 0.01, 'banner-turno-rival.webp'],
+] as const) {
+  test(`el banner inicial ${side} cubre la pantalla y nunca queda vacío sin WebM`, async ({ page }) => {
+    // Emulate Android's blocked/unsupported autoplay. The illustrated banner
+    // must remain visible for the entire handoff even without decoded video.
+    await page.addInitScript(value => { Math.random = () => value; }, randomValue);
+    await page.route('**/animaciones/banner-*.webm', route => route.abort('failed'));
+    await page.goto('/Decreto-Real/#/game');
+    await page.getByRole('button', { name: 'Lanzar Moneda' }).click();
+    const portal = page.locator(`.dr-turn-portal--${side}`);
+    await expect(portal).toBeVisible({ timeout: 6000 });
+    await expect(portal.locator('.dr-event-turn')).toHaveCSS('animation-duration', '1.5s');
+    const ribbon = portal.locator('.dr-event-turn__ribbon');
+    await expect(ribbon).toHaveCSS('background-image', new RegExp(imageName.replace('.', '\\.')));
+    const geometry = await portal.evaluate(layer => {
+      const rect = layer.getBoundingClientRect();
+      return {
+        fullWidth: Math.abs(rect.width - innerWidth) <= 1,
+        fullHeight: Math.abs(rect.height - innerHeight) <= 1,
+        aligned: Math.abs(rect.top) <= 1 && Math.abs(rect.left) <= 1,
+      };
+    });
+    expect(geometry).toEqual({ fullWidth: true, fullHeight: true, aligned: true });
+    await expect(portal).toHaveCount(0, { timeout: 6000 });
+    await expectRibbonInsideBoard(page, side);
+  });
+}
