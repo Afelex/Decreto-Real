@@ -468,8 +468,8 @@
         {
           "id": "native-tablero-turno-jugador",
           "kind": "native",
-          "x": -12,
-          "y": -4.2,
+          "x": 0,
+          "y": 0,
           "scale": 1,
           "rotation": 0,
           "opacity": 1,
@@ -480,8 +480,8 @@
         {
           "id": "native-tablero-turno-rival",
           "kind": "native",
-          "x": 16.67,
-          "y": -26.83,
+          "x": 0,
+          "y": 0,
           "scale": 1,
           "rotation": 0,
           "opacity": 1,
