@@ -9,7 +9,7 @@ export function getHpMeterState(hp: number, maxHp: number): {
 } {
   const maximum = Number.isFinite(maxHp) && maxHp > 0 ? maxHp : 1;
   const current = Number.isFinite(hp) ? Math.min(maximum, Math.max(0, hp)) : 0;
-  const percent = (current / maximum) * 100;
+  const percent = Math.round((current / maximum) * 10000) / 100;
   const tone: HpMeterState = percent <= 20 ? 'critical' : percent <= 50 ? 'warning' : 'healthy';
   return { current, percent, tone };
 }
