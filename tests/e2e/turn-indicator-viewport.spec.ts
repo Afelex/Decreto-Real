@@ -29,8 +29,10 @@ async function expectRibbonInsideBoard(page: Page, side: 'player' | 'opponent') 
   expect(geometry.croppedAtCorrectEdge).toBe(true);
   // El título forma parte del arte azul y termina aprox. al 80% de su ancho.
   // Su extremo debe quedar dentro de pantalla; solamente se oculta la cola.
-  expect(geometry.visibleFraction).toBeGreaterThan(side === 'opponent' ? 0.86 : 0.60);
-  expect(geometry.visibleFraction).toBeLessThan(side === 'opponent' ? 0.97 : 0.99);
+  // El arte del rival sitúa la última letra cerca del 80% de la cinta.
+  // Aproximadamente 5 px después de «Rival» siguen visibles; la cola se recorta.
+  expect(geometry.visibleFraction).toBeGreaterThan(side === 'opponent' ? 0.81 : 0.60);
+  expect(geometry.visibleFraction).toBeLessThan(side === 'opponent' ? 0.90 : 0.99);
   expect(geometry.verticalInside).toBe(true);
   expect(geometry.nonzero).toBe(true);
 }
