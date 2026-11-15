@@ -36,7 +36,7 @@
 }
 .dr-royal-screen .dr-event-indicator.is-opponent {
   /* Mostrar el texto completo; solo la punta derecha del listón queda recortada. */
-  right:clamp(-13px,-2.6cqw,-9px);left:auto;bottom:auto;
+  right:calc(clamp(-13px,-2.6cqw,-9px) - 15px);left:auto;bottom:auto;
   top:clamp(92px,18.5dvh,225px);
   background-image:url('/Decreto-Real/interfaz/banner-turno-rival.webp');
 }
