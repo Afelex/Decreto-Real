@@ -67,7 +67,7 @@ for (const [side, randomValue, imageName] of [
     await expect(portal.locator('.dr-event-turn')).toHaveCSS('animation-duration', '1.5s');
     await expect(portal.locator('.dr-event-turn')).toHaveCSS('animation-name', 'dr-turn-clean-handoff');
     await expect(portal.locator('.dr-event-turn__ribbon')).toHaveCSS('background-image',
-      new RegExp(imageName.replace('.', '\\\\.')));
+      new RegExp(imageName.replace('.', '[.]')));
     await expect(portal.locator('.dr-event-turn__ribbon')).toHaveCount(1);
     await expect(portal.locator('video, .dr-event-turn__video')).toHaveCount(0);
     // No se superpone la etiqueta persistente mientras está la transición.
