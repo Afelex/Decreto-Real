@@ -1,3 +1,7 @@
+/* El tablero usa pan-x para las cartas; mientras hay pausa debemos
+   liberar pan-y para poder desplazar el diálogo en móviles bajos. */
+.dr-royal-screen.dr-royal-pause-open {touch-action:auto}
+
 /* Decreto Real — menú de pausa ceremonial integrado al HUD G3.
    Ningún recurso nuevo ni vídeo: sello original + filigrana CSS ligera. */
 .dr-royal-screen .dr-pause-backdrop {
