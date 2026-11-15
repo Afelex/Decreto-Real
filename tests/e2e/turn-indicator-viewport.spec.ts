@@ -27,8 +27,10 @@ async function expectRibbonInsideBoard(page: Page, side: 'player' | 'opponent') 
     };
   }, side);
   expect(geometry.croppedAtCorrectEdge).toBe(true);
-  expect(geometry.visibleFraction).toBeGreaterThan(0.60);
-  expect(geometry.visibleFraction).toBeLessThan(0.99);
+  // El título forma parte del arte azul y termina aprox. al 80% de su ancho.
+  // Su extremo debe quedar dentro de pantalla; solamente se oculta la cola.
+  expect(geometry.visibleFraction).toBeGreaterThan(side === 'opponent' ? 0.86 : 0.60);
+  expect(geometry.visibleFraction).toBeLessThan(side === 'opponent' ? 0.97 : 0.99);
   expect(geometry.verticalInside).toBe(true);
   expect(geometry.nonzero).toBe(true);
 }
