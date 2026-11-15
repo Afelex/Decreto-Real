@@ -261,6 +261,19 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const [mysticComboAnnouncement, setMysticComboAnnouncement] = useState<{ id: number; level: 2 | 3; name: string; effect: string; isPlayer: boolean } | null>(null);
 
   const [opponentHP, setOpponentHP] = useState(MAX_HP);
+  // Trigger a short portrait motion for every real HP loss, never for healing.
+  const previousPlayerHp = useRef(MAX_HP);
+  const previousOpponentHp = useRef(MAX_HP);
+  const [playerHitCount, setPlayerHitCount] = useState(0);
+  const [opponentHitCount, setOpponentHitCount] = useState(0);
+  useEffect(() => {
+    if (playerHP < previousPlayerHp.current) setPlayerHitCount(count => count + 1);
+    previousPlayerHp.current = playerHP;
+  }, [playerHP]);
+  useEffect(() => {
+    if (opponentHP < previousOpponentHp.current) setOpponentHitCount(count => count + 1);
+    previousOpponentHp.current = opponentHP;
+  }, [opponentHP]);
   const [opponentDeck, setOpponentDeck] = useState<CardData[]>([]);
   const opponentDeckRef = useRef<CardData[]>([]);
   const [opponentHand, setOpponentHand] = useState<CardData[]>([]);
@@ -345,22 +358,20 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
       setWhoStarted(isHeads ? 'PLAYER' : 'OPPONENT');
       setIsCoinFlipping(false);
       guideAdvance('coin');
-       setTimeout(() => { if (!gameOverRef.current) setPhase('START_BANNER'); }, 450);
+       // Show the coin winner, then immediately play their faction's full-screen
+       // turn banner. The old generic opening stage delayed this announcement.
+       setTimeout(() => {
+         if (gameOverRef.current) return;
+         drawCards('PLAYER', INITIAL_HAND_SIZE);
+         drawCards('OPPONENT', INITIAL_HAND_SIZE);
+         setTurnCount(1);
+         setPhase('TURN_BANNER');
+       }, 450);
     }, 500);
   };
 
   useEffect(() => {
     if (gameOverRef.current) return;
-    if (phase === 'START_BANNER') {
-      const timer = window.setTimeout(() => {
-        if (gameOverRef.current) return;
-        drawCards('PLAYER', INITIAL_HAND_SIZE);
-        drawCards('OPPONENT', INITIAL_HAND_SIZE);
-        setTurnCount(1);
-        setPhase('TURN_BANNER');
-      }, 1100);
-      return () => window.clearTimeout(timer);
-    }
     if (phase === 'TURN_BANNER') {
       const currentPlayer = ((whoStarted === 'PLAYER' && turnCount % 2 !== 0) || (whoStarted === 'OPPONENT' && turnCount % 2 === 0)) ? 'PLAYER' : 'OPPONENT';
       const timer = window.setTimeout(() => {
@@ -986,7 +997,9 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
           </div>
           <div {...board.attrs('native-tablero-retrato-rival', 'dr-royal-character')}>
             <div className="dr-royal-character-frame gold-leaf-frame">
-              <img src={rivalPortrait} alt="Retrato del rival"/>
+              <img key={opponentHitCount} src={rivalPortrait} alt="Retrato del rival"
+                className={opponentHitCount > 0 ? 'dr-portrait-hit' : undefined}
+                data-hit-count={opponentHitCount}/>
               <PortraitOrnament/>
               <div className="dr-royal-hp blue" aria-label={`Vida del rival: ${opponentHP} de ${MAX_HP}`}>HP: {opponentHP}/{MAX_HP}</div>
             </div>
@@ -1099,7 +1112,9 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
           </div>
           <div {...board.attrs('native-tablero-retrato-jugador', 'dr-royal-character player')}>
             <div className="dr-royal-character-frame gold-leaf-frame">
-              <img src={playerPortrait} alt="Retrato de tu personaje"/>
+              <img key={playerHitCount} src={playerPortrait} alt="Retrato de tu personaje"
+                className={playerHitCount > 0 ? 'dr-portrait-hit' : undefined}
+                data-hit-count={playerHitCount}/>
               <PortraitOrnament/>
               <div className="dr-royal-hp red" aria-label={`Tu vida: ${playerHP} de ${MAX_HP}`}>HP: {playerHP}/{MAX_HP}</div>
             </div>
@@ -1190,10 +1205,11 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
       {board.editing && (board.selected==='native-tablero-turno-jugador'||board.selected==='native-tablero-turno-rival') &&
         <TurnAnnouncement preview variant={board.selected==='native-tablero-turno-jugador'?'player':'opponent'}
           ribbonProps={board.attrs(board.selected,'')}/>}
-      {!board.editing && (phase === 'START_BANNER' || phase === 'TURN_BANNER') &&
-        <TurnAnnouncement
-          variant={phase === 'START_BANNER' ? 'opening' : turnOwner === 'PLAYER' ? 'player' : 'opponent'}
-          ribbonProps={phase === 'START_BANNER' ? undefined : board.attrs(turnOwner==='PLAYER'?'native-tablero-turno-jugador':'native-tablero-turno-rival','')}
+      {/* Both the initial coin-toss winner and later handoffs receive a
+          full-screen faction announcement, even on landscape devices. */}
+      {!board.editing && phase === 'TURN_BANNER' && turnOwner &&
+        <TurnAnnouncement fullscreen
+          variant={turnOwner === 'PLAYER' ? 'player' : 'opponent'}
           turn={turnCount} />}
       {((phase === 'COIN_TOSS' && !entranceActive && !storyMoment && !board.editing)||
         (board.editing&&(board.selected==='native-tablero-moneda'||previewNarrativeAction==='coin')))&&
