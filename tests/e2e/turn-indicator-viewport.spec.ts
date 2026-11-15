@@ -9,7 +9,7 @@ async function expectRibbonInsideBoard(page: Page, side: 'player' | 'opponent') 
   await expect(ribbon).toBeVisible({ timeout: 10000 });
   await expect(ribbon).toHaveCSS('visibility', 'visible');
   await expect(ribbon).toHaveCSS('background-image',
-    side === 'player' ? /banner-tu-turno\\.webp/ : /banner-turno-rival\\.webp/);
+    side === 'player' ? /banner-tu-turno\.webp/ : /banner-turno-rival\.webp/);
 
   const geometry = await ribbon.evaluate(element => {
     const box = element.getBoundingClientRect();
