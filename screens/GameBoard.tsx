@@ -13,6 +13,7 @@ import { CardActivationBanner } from './CardActivationBanner';
 import { LastDecreeIndicator } from './LastDecreeIndicator';
 import { nextDecreeStreak } from '../game/decreeStreak';
 import './hud-g3.css';
+import { RoyalHpMeter } from './RoyalHpMeter';
 import { ComboEffectOverlay } from './ComboEffectOverlay';
 import { cardEffectCue, DECREE_BANNER_DURATION_MS, DECREE_EFFECT_DURATION_MS } from '../game/effectCues';
 import { TurnIndicator, TurnAnnouncement, TURN_TRANSITION_DURATION_MS, ComboChoicePanel, CoinTossPanel } from './CombatEventUI';
@@ -1001,7 +1002,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
                 className={opponentHitCount > 0 ? 'dr-portrait-hit' : undefined}
                 data-hit-count={opponentHitCount}/>
               <PortraitOrnament/>
-              <div className="dr-royal-hp blue" aria-label={`Vida del rival: ${opponentHP} de ${MAX_HP}`}>HP: {opponentHP}/{MAX_HP}</div>
+              <RoyalHpMeter hp={opponentHP} maxHp={MAX_HP} side="opponent"/>
             </div>
 
           </div>
@@ -1116,7 +1117,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
                 className={playerHitCount > 0 ? 'dr-portrait-hit' : undefined}
                 data-hit-count={playerHitCount}/>
               <PortraitOrnament/>
-              <div className="dr-royal-hp red" aria-label={`Tu vida: ${playerHP} de ${MAX_HP}`}>HP: {playerHP}/{MAX_HP}</div>
+              <RoyalHpMeter hp={playerHP} maxHp={MAX_HP} side="player"/>
             </div>
 
           </div>
