@@ -1,5 +1,9 @@
 import React from 'react';
+import { syncCueVideoRate } from '../game/effectCues';
 import './combat-events.css';
+
+/** Duración exclusiva del aviso de cambio de turno en el duelo contra la IA. */
+export const TURN_TRANSITION_DURATION_MS = 1500;
 
 type Side = 'PLAYER' | 'OPPONENT';
 
@@ -31,10 +35,10 @@ export function TurnAnnouncement({ variant, turn, preview = false, ribbonProps }
   const subtitle = opening ? 'Prepárate para el duelo' : variant === 'player' ? 'Juega una carta' : 'El rival está actuando';
   return (
     <div className={`dr-event-turn dr-event-turn--${variant}${preview ? ' dr-event-turn--studio-preview' : ''}`} role="status"
-      aria-live="polite" aria-label={`${title}. ${subtitle}${turn ? ` (turno ${turn})` : ''}`}>
+      aria-live="polite" style={!opening && !preview ? { animationDuration: `${TURN_TRANSITION_DURATION_MS}ms` } : undefined} aria-label={`${title}. ${subtitle}${turn ? ` (turno ${turn})` : ''}`}>
       <div {...ribbonProps} className={`dr-event-turn__ribbon${showVideo ? ' dr-event-turn__ribbon--video' : ''}${ribbonProps?.className ? ' ' + ribbonProps.className : ''}`}>
         {showVideo && <video className="dr-event-turn__video" autoPlay muted playsInline preload="auto"
-          aria-hidden="true" onLoadedMetadata={event => { event.currentTarget.playbackRate = 4; }}
+          aria-hidden="true" onLoadedMetadata={event => syncCueVideoRate(event.currentTarget, TURN_TRANSITION_DURATION_MS)}
           onError={() => setVideoFailed(true)}>
           <source src={videoSrc} type="video/webm" />
         </video>}
