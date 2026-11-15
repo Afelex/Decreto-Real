@@ -1,7 +1,7 @@
 import React from 'react';
 import { afterEach, expect, test, vi } from 'vitest';
-import { act, cleanup, render } from '@testing-library/react';
-import { TurnAnnouncement } from '../../screens/CombatEventUI';
+import { act, cleanup, fireEvent, render } from '@testing-library/react';
+import { TurnAnnouncement, TurnIndicator, TURN_TRANSITION_DURATION_MS } from '../../screens/CombatEventUI';
 import { MultiplayerCinematicCue } from '../../screens/MultiplayerCinematicCue';
 
 afterEach(() => { cleanup(); vi.useRealTimers(); });
@@ -55,4 +55,25 @@ test('PvP primero presenta el banner y solo después la animación del decreto',
     expect(finished).toHaveBeenCalledTimes(1);
     unmount();
   }
+});
+
+test('el relevo visual de ambos turnos dura 1,5 s y acompasa el vídeo', () => {
+  expect(TURN_TRANSITION_DURATION_MS).toBe(1500);
+  for (const variant of ['player', 'opponent'] as const) {
+    const { container, unmount } = render(<TurnAnnouncement variant={variant} turn={2}/>);
+    const transition = container.querySelector('.dr-event-turn') as HTMLElement;
+    expect(transition.style.animationDuration).toBe('1500ms');
+    const video = transition.querySelector('video') as HTMLVideoElement;
+    Object.defineProperty(video, 'duration', { configurable: true, value: 3 });
+    fireEvent.loadedMetadata(video);
+    expect(video.playbackRate).toBe(2); // Tres segundos de metraje en 1,5 reales.
+    unmount();
+  }
+});
+
+test('el indicador permanente es independiente de la transición de 1,5 s', () => {
+  const { container } = render(<TurnIndicator side="PLAYER"/>);
+  expect(container.querySelector('.dr-event-indicator')).toBeTruthy();
+  expect(container.querySelector('.dr-event-turn')).toBeNull();
+  expect(container.querySelector('video')).toBeNull();
 });
