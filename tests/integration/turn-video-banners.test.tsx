@@ -77,3 +77,13 @@ test('el indicador permanente es independiente de la transición de 1,5 s', () =
   expect(container.querySelector('.dr-event-turn')).toBeNull();
   expect(container.querySelector('video')).toBeNull();
 });
+
+test('el anuncio en pantalla completa sale del tablero estrecho y se desmonta', () => {
+  const { unmount } = render(<TurnAnnouncement fullscreen variant="opponent" turn={1}/>);
+  const layer = document.querySelector('.dr-turn-portal--opponent');
+  expect(layer).toBeTruthy();
+  expect(layer?.querySelector('.dr-event-turn--opponent')).toBeTruthy();
+  expect(layer?.querySelector('source')?.getAttribute('src')).toContain('banner-rival-azul.webm');
+  unmount();
+  expect(document.querySelector('.dr-turn-portal')).toBeNull();
+});
