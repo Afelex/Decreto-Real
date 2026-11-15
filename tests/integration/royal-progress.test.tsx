@@ -133,7 +133,7 @@ test('después de la moneda aparece directamente el turno del jugador vencedor',
   expect(screen.queryByText('¡INICIA EL COMBATE!')).toBeNull();
   await act(async () => { await vi.advanceTimersByTimeAsync(1500); });
   expect(document.querySelector('.dr-turn-portal')).toBeNull();
-  expect(screen.getByRole('button', { name: 'Terminar turno' })).toBeEnabled();
+  expect((screen.getByRole('button', { name: 'Terminar turno' }) as HTMLButtonElement).disabled).toBe(false);
 });
 
 test('si gana el rival la moneda, se anuncia en azul y antes de la primera acción', async () => {
