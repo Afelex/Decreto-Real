@@ -178,7 +178,7 @@
 @keyframes dr-event-cross-fade {0%,100%{opacity:0}15%,75%{opacity:1}}
 
 /* DR-UX04: turn banners use the same source artwork as the persistent indicators. */
-.dr-royal-screen .dr-event-turn {animation-duration:1s;}
+.dr-royal-screen .dr-event-turn {animation-duration:1.5s;}
 .dr-royal-screen .dr-event-turn--opening {animation-duration:1.1s;}
 .dr-royal-screen .dr-event-turn__ribbon {
   display:grid;
@@ -238,7 +238,7 @@
 }
 .dr-royal-screen .dr-event-coin-panel__result {margin-top:5px;}
 @media(prefers-reduced-motion:reduce) {
-  .dr-royal-screen .dr-event-turn {animation:dr-event-cross-fade 1s linear both;}
+  .dr-royal-screen .dr-event-turn {animation:dr-event-cross-fade 1.5s linear both;}
   .dr-royal-screen .dr-event-turn--opening {animation-duration:1.1s;}
   .dr-royal-screen .dr-event-coin.is-flipping .dr-event-coin__face {animation:none;}
 }
@@ -598,4 +598,54 @@
   line-height:1.05;
   white-space:nowrap;
   text-align:center;
+}
+
+/* Cambio de turno contra IA: 1,5 s de presencia centrada, con entrada/salida
+   cortas. Sólo modifica la transición; los indicadores fijos son independientes. */
+.dr-royal-screen .dr-event-turn--player,
+.dr-royal-screen .dr-event-turn--opponent {
+  --dr-handoff-from:-14%;
+  --dr-handoff-to:9%;
+  animation-name:dr-turn-handoff;
+  animation-timing-function:cubic-bezier(.2,.76,.24,1);
+  isolation:isolate;
+}
+.dr-royal-screen .dr-event-turn--opponent {
+  --dr-handoff-from:14%;
+  --dr-handoff-to:-9%;
+}
+.dr-royal-screen .dr-event-turn--player::before,
+.dr-royal-screen .dr-event-turn--opponent::before {
+  content:"";
+  position:absolute;
+  z-index:0;
+  left:-12%;
+  top:35%;
+  width:124%;
+  height:30%;
+  background:radial-gradient(ellipse,#c34a3652 0%,transparent 71%);
+  filter:blur(16px);
+  pointer-events:none;
+}
+.dr-royal-screen .dr-event-turn--opponent::before {
+  background:radial-gradient(ellipse,#438bc752 0%,transparent 71%);
+}
+.dr-royal-screen .dr-event-turn--player .dr-event-turn__ribbon,
+.dr-royal-screen .dr-event-turn--opponent .dr-event-turn__ribbon {
+  z-index:1;
+}
+@keyframes dr-turn-handoff {
+  0%   {opacity:0;transform:translateX(var(--dr-handoff-from)) scale(.95);}
+  18%  {opacity:1;transform:translateX(0) scale(1);}
+  76%  {opacity:1;transform:translateX(0) scale(1);}
+  100% {opacity:0;transform:translateX(var(--dr-handoff-to)) scale(1.02);}
+}
+@media (prefers-reduced-motion:reduce) {
+  .dr-royal-screen .dr-event-turn--player,
+  .dr-royal-screen .dr-event-turn--opponent {
+    animation-name:dr-event-cross-fade;
+    animation-timing-function:linear;
+  }
+  .dr-royal-screen .dr-event-turn--player::before,
+  .dr-royal-screen .dr-event-turn--opponent::before {display:none;}
 }
