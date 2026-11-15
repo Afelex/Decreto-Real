@@ -1197,9 +1197,11 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
       })()}
       {/* Combat cues are brief overlays; the field remains visible. */}
       {/* Studio muestra ambos rótulos para ajustarlos por separado aunque no sea su turno. */}
-      {((board.editing && board.selected!=='native-tablero-turno-jugador') || (!board.editing && turnOwner === 'PLAYER' && (phase === 'PLAYER_TURN' || phase === 'OPPONENT_TURN'))) &&
+      {/* The permanent ribbon follows the actual combat phase, not the turn
+          counter that advances before the 1.5-second handoff ends. */}
+      {((board.editing && board.selected!=='native-tablero-turno-jugador') || (!board.editing && phase === 'PLAYER_TURN')) &&
         <TurnIndicator side="PLAYER" {...board.attrs('native-tablero-turno-jugador', '')}/>}
-      {((board.editing && board.selected!=='native-tablero-turno-rival') || (!board.editing && turnOwner === 'OPPONENT' && (phase === 'PLAYER_TURN' || phase === 'OPPONENT_TURN'))) &&
+      {((board.editing && board.selected!=='native-tablero-turno-rival') || (!board.editing && phase === 'OPPONENT_TURN')) &&
         <TurnIndicator side="OPPONENT" {...board.attrs('native-tablero-turno-rival', '')}/>}
       {/* En modo edición el estandarte seleccionado se muestra inmóvil para ajustarlo. */}
       {board.editing && (board.selected==='native-tablero-turno-jugador'||board.selected==='native-tablero-turno-rival') &&
