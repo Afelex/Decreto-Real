@@ -48,22 +48,28 @@ export class AiTurnController {
   }
 }
 
+/** Brief anticipation after the 1.5 s turn banner; the animation is already the main pacing. */
+export const AI_OPENING_DELAY_MS = 400;
+
 type AiCard = { id: string; type: 'ATTACK' | 'DEFENSE' | 'IMPACT' | 'ORDER' | 'MYSTIC'; rank?: number; mysticId?: string };
 type AiSnapshot<C extends AiCard> = { hand: C[]; health: number; impactLevel: number; impactPlayedThisTurn?: boolean };
 
-/** Keep the existing priority: one legal Impact, defenses below 5 HP, then attacks. */
+/** Keep the existing priority: one legal Impact, defenses below 5 HP, then attacks.
+ * The visual card cue is awaited by play(card); never add a second idle delay
+ * after it. This keeps the IA responsive without cutting approved animations. */
 export async function runOpponentTurn<C extends AiCard>(
   controller: AiTurnController,
   read: () => AiSnapshot<C>,
   play: (card: C) => void | Promise<void>,
   finish: () => void,
 ) {
-  if (!await controller.wait(1000)) return;
+  if (!await controller.wait(AI_OPENING_DELAY_MS)) return;
   const perform = async (card: C) => {
     if (!controller.active) return false;
     await play(card);
-    if (!controller.active) return false;
-    return controller.wait(1500);
+    // The gameplay callback resolves only after the card's banner/effect
+    // sequence finishes. An extra 1.5 s here was dead time on every card.
+    return controller.active;
   };
   let state = read();
   const impact = state.hand.find(card => card.type === 'IMPACT' && card.rank === state.impactLevel + 1);
