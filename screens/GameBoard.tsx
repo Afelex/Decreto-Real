@@ -15,7 +15,7 @@ import { nextDecreeStreak } from '../game/decreeStreak';
 import './hud-g3.css';
 import { ComboEffectOverlay } from './ComboEffectOverlay';
 import { cardEffectCue, DECREE_BANNER_DURATION_MS, DECREE_EFFECT_DURATION_MS } from '../game/effectCues';
-import { TurnIndicator, TurnAnnouncement, ComboChoicePanel, CoinTossPanel } from './CombatEventUI';
+import { TurnIndicator, TurnAnnouncement, TURN_TRANSITION_DURATION_MS, ComboChoicePanel, CoinTossPanel } from './CombatEventUI';
 import { resolveBattleScenery } from '../game/battleScenery';
 import { getRoyalCardText } from '../game/royalCardText';
 import { resolveBattleEnd, resolveSurrender, resolveDevelopmentVictory, type BattleEndResult } from '../game/battleEnd';
@@ -352,22 +352,25 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   useEffect(() => {
     if (gameOverRef.current) return;
     if (phase === 'START_BANNER') {
-      setTimeout(() => {
+      const timer = window.setTimeout(() => {
         if (gameOverRef.current) return;
         drawCards('PLAYER', INITIAL_HAND_SIZE);
         drawCards('OPPONENT', INITIAL_HAND_SIZE);
         setTurnCount(1);
         setPhase('TURN_BANNER');
       }, 1100);
-    } else if (phase === 'TURN_BANNER') {
+      return () => window.clearTimeout(timer);
+    }
+    if (phase === 'TURN_BANNER') {
       const currentPlayer = ((whoStarted === 'PLAYER' && turnCount % 2 !== 0) || (whoStarted === 'OPPONENT' && turnCount % 2 === 0)) ? 'PLAYER' : 'OPPONENT';
-      setTimeout(() => {
+      const timer = window.setTimeout(() => {
         if (gameOverRef.current) return;
         if (currentPlayer === 'PLAYER') startPlayerTurn();
         else startOpponentTurn();
-      }, 1500); // visible WebM transition for both turns
+      }, TURN_TRANSITION_DURATION_MS);
+      return () => window.clearTimeout(timer);
     }
-  }, [phase, turnCount]);
+  }, [phase, turnCount, whoStarted]);
 
   const startPlayerTurn = () => {
     if (gameOverRef.current) return;
