@@ -35,7 +35,8 @@
   background-image:url('/Decreto-Real/interfaz/banner-tu-turno.webp');
 }
 .dr-royal-screen .dr-event-indicator.is-opponent {
-  right:clamp(6px,2cqw,13px);left:auto;bottom:auto;
+  /* Mostrar el texto completo; solo la punta derecha del listón queda recortada. */
+  right:clamp(-13px,-2.6cqw,-9px);left:auto;bottom:auto;
   top:clamp(92px,18.5dvh,225px);
   background-image:url('/Decreto-Real/interfaz/banner-turno-rival.webp');
 }
