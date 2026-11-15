@@ -87,3 +87,17 @@ test('el anuncio en pantalla completa sale del tablero estrecho y se desmonta', 
   unmount();
   expect(document.querySelector('.dr-turn-portal')).toBeNull();
 });
+
+test('si Android bloquea el vídeo, el anuncio conserva el estandarte estático', () => {
+  const { container } = render(<TurnAnnouncement variant="opponent" fullscreen/>);
+  const video = document.querySelector<HTMLVideoElement>('.dr-turn-portal video');
+  expect(video).toBeTruthy();
+  expect(document.querySelector('.dr-event-turn__ribbon--playing')).toBeNull();
+  fireEvent.playing(video!);
+  expect(document.querySelector('.dr-event-turn__ribbon--playing')).toBeTruthy();
+  fireEvent.waiting(video!);
+  expect(document.querySelector('.dr-event-turn__ribbon--playing')).toBeNull();
+  fireEvent.error(video!);
+  expect(document.querySelector('.dr-turn-portal video')).toBeNull();
+  expect(document.querySelector('.dr-turn-portal .dr-event-turn__ribbon')).toBeTruthy();
+});
