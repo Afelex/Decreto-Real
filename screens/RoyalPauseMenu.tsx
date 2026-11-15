@@ -38,7 +38,7 @@ export const RoyalPauseMenu: React.FC<RoyalPauseMenuProps> = ({
         else onClose();
       }
       if (event.key !== 'Tab' || !modalRef.current) return;
-      const buttons = Array.from(modalRef.current.querySelectorAll<HTMLButtonElement>('button:not(:disabled)'));
+      const buttons = Array.from(modalRef.current.querySelectorAll('button:not(:disabled)')) as HTMLButtonElement[];
       if (!buttons.length) return;
       const first = buttons[0];
       const last = buttons[buttons.length - 1];
