@@ -21,6 +21,7 @@ import { getRoyalCardText } from '../game/royalCardText';
 import { resolveBattleEnd, resolveSurrender, resolveDevelopmentVictory, type BattleEndResult } from '../game/battleEnd';
 import { BattleSceneryLayer } from './BattleSceneryLayer';
 import { DuelEntrance } from './DuelEntrance';
+import { RoyalPauseMenu } from './RoyalPauseMenu';
 import StorySpeechPanel from './StorySpeechPanel';
 import type { CombatConversation } from '../campaign/combatDialogues.ts';
 import { GUIDED_STEPS, GUIDED_ACTION_CARDS, arrangeGuidedDeck, guidedActionForCard, type GuidedAction } from '../campaign/guidedOpeningDuel';
@@ -280,7 +281,6 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const [coinSide, setCoinSide] = useState<'CARA' | 'SELLO' | null>(null);
   const [isCoinFlipping, setIsCoinFlipping] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [showSurrenderConfirm, setShowSurrenderConfirm] = useState(false);
   const [visualEffect, setVisualEffect] = useState<{ type: EffectType, target: EffectTarget }>({ type: null, target: null });
   const [cardAnnouncement, setCardAnnouncement] = useState<{ id: number; card: CardData; isPlayer: boolean; stage: 'banner' | 'effect' } | null>(null);
   const announcementBusy = useRef(false);
@@ -805,8 +805,17 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
     setTurnCount(p => p + 1); setPhase('TURN_BANNER');
   };
 
-  const handleMenuToggle = () => { playSound('CLICK'); setIsMenuOpen(!isMenuOpen); setShowSurrenderConfirm(false); };
-  const handleSurrenderRequest = () => { playSound('CLICK'); setShowSurrenderConfirm(true); };
+  const handleMenuToggle = () => { playSound('CLICK'); setIsMenuOpen(value => !value); };
+  const handleClosePause = () => { playSound('CLICK'); setIsMenuOpen(false); };
+  // En modo libre la ruta /game se vuelve a montar con una clave nueva
+  // (App.tsx usa location.key). No se altera la campaña ni el tutorial.
+  const handleRestartConfirmed = () => {
+    if (guidedOpening || onOutcome || storyConversation) return;
+    playSound('CLICK');
+    aiController.current?.cancel();
+    announcementClock.current.cancel();
+    navigate('/game', { replace: true, state: { duelEntrance: false } });
+  };
   /** Use the normal battle-end banner and Continue action, never exit directly. */
   const finishManually = (result: BattleEndResult) => {
     if (gameOverRef.current) return;
@@ -823,7 +832,6 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
     setSelectedCardId(null);
     setDragAt(null);
     setIsMenuOpen(false);
-    setShowSurrenderConfirm(false);
     setStoryMoment(null);
     setBattleEnd(result);
     setPhase(result.phase);
@@ -834,7 +842,6 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
     playSound('CLICK');
     finishManually(resolveDevelopmentVictory());
   };
-  const handleSurrenderCancel = () => { playSound('CLICK'); setShowSurrenderConfirm(false); };
 
   const endTurnUnavailable = (guidedOpening && !expectedGuideAction?.startsWith('end')) || phase !== 'PLAYER_TURN' || !!storyMoment || showSpecialSelection || !!comboAnnouncement || !!mysticComboAnnouncement || isMenuOpen || !!cardAnnouncement || announcementBusy.current;
 
@@ -938,44 +945,17 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
       {guidedOpening && <button type="button" className="dr-royal-guided-pause" onClick={handleMenuToggle}
         aria-label="Abrir menú de pausa">☰</button>}
 
-      {/* --- MENU MODAL --- */}
+      {/* Menú de pausa reutilizable con confirmaciones reales. */}
       {isMenuOpen && (
-        <div className="absolute inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-[#0B0C10] border-2 border-gold-dark p-6 rounded-lg w-full max-w-sm shadow-[0_0_20px_rgba(212,175,55,0.2)] relative">
-            <button onClick={handleMenuToggle} className="absolute top-2 right-2 text-gray-500 hover:text-white"><span className="material-icons">close</span></button>
-            <h2 className="text-xl font-decorative text-gold-main text-center mb-6 uppercase tracking-widest border-b border-gold-dark/30 pb-2">Pausa</h2>
-            <div className="space-y-4 mb-8">
-              <div className="flex justify-between items-center p-3 bg-white/5 rounded border border-white/10">
-                <div className="flex items-center gap-2"><span className="material-icons text-gray-400 text-sm">music_note</span><span className="text-gray-300 text-sm">Música</span></div>
-                <button onClick={() => { toggleMusic(); playSound('CLICK'); }} className={`text-xs font-bold px-3 py-1 rounded border ${musicEnabled ? 'bg-green-900/30 text-green-400 border-green-800' : 'bg-red-900/30 text-red-400 border-red-800'}`}>{musicEnabled ? 'ENCENDIDO' : 'APAGADO'}</button>
-              </div>
-              <div className="flex justify-between items-center p-3 bg-white/5 rounded border border-white/10">
-                <div className="flex items-center gap-2"><span className="material-icons text-gray-400 text-sm">volume_up</span><span className="text-gray-300 text-sm">Efectos</span></div>
-                <button onClick={() => { toggleSfx(); playSound('CLICK'); }} className={`text-xs font-bold px-3 py-1 rounded border ${sfxEnabled ? 'bg-green-900/30 text-green-400 border-green-800' : 'bg-red-900/30 text-red-400 border-red-800'}`}>{sfxEnabled ? 'ENCENDIDO' : 'APAGADO'}</button>
-              </div>
-            </div>
-            <div className="flex flex-col gap-3">
-              {!showSurrenderConfirm ? (
-                <>
-                  <button onClick={handleMenuToggle} className="w-full py-3 bg-gold-dark text-black font-bold uppercase text-sm rounded">Continuar Batalla</button>
-                  {!guidedOpening && <button onClick={handleSurrenderRequest} className="w-full py-3 border border-red-900/50 text-red-500 uppercase text-sm rounded">Rendirse</button>}
-                  {guidedOpening && onReturn && <button type="button" onClick={onReturn} className="w-full py-3 border border-gold-dark/50 text-amber-200 uppercase text-sm rounded">Volver al menú principal</button>}
-                  {SHOW_DEV_WIN && !guidedOpening && <button type="button" data-testid="dev-auto-win"
-                    onClick={handleDevelopmentWin} className="w-full py-2 border border-amber-600/50 text-amber-300 uppercase text-xs rounded"
-                    title="Temporal: eliminar antes del lanzamiento">⚙ Victoria automática · DEV</button>}
-                </>
-              ) : (
-                <div className="text-center bg-red-900/10 p-4 rounded border border-red-900/30">
-                  <p className="text-red-400 text-sm font-bold mb-4">¿Aceptar derrota?</p>
-                  <div className="flex gap-3">
-                    <button onClick={handleSurrenderConfirm} className="flex-1 py-2 bg-red-800 text-white uppercase text-xs rounded">Sí</button>
-                    <button onClick={handleSurrenderCancel} className="flex-1 py-2 border border-gray-600 text-gray-300 uppercase text-xs rounded">Cancelar</button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+        <RoyalPauseMenu musicEnabled={musicEnabled} sfxEnabled={sfxEnabled}
+          onToggleMusic={() => { playSound('CLICK'); toggleMusic(); }}
+          onToggleSfx={() => { playSound('CLICK'); toggleSfx(); }}
+          onClose={handleClosePause}
+          onRestart={!guidedOpening && !onOutcome && !storyConversation ? handleRestartConfirmed : undefined}
+          onSurrender={!guidedOpening ? handleSurrenderConfirm : undefined}
+          onReturn={guidedOpening ? onReturn : undefined}
+          onDevWin={SHOW_DEV_WIN && !guidedOpening ? handleDevelopmentWin : undefined}
+        />
       )}
 
       {(showSpecialSelection || board.editing && (board.selected==='native-tablero-combo-menu'||previewNarrativeAction?.startsWith('combo'))) && (
