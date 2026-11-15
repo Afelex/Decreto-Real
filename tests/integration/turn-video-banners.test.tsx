@@ -1,29 +1,35 @@
 import React from 'react';
 import { afterEach, expect, test, vi } from 'vitest';
-import { act, cleanup, fireEvent, render } from '@testing-library/react';
+import { act, cleanup, render } from '@testing-library/react';
 import { TurnAnnouncement, TurnIndicator, TURN_TRANSITION_DURATION_MS } from '../../screens/CombatEventUI';
 import { MultiplayerCinematicCue } from '../../screens/MultiplayerCinematicCue';
 
 afterEach(() => { cleanup(); vi.useRealTimers(); });
 
-test('la IA utiliza el clip transparente rojo en el turno propio', () => {
-  const { container } = render(<TurnAnnouncement variant="player" turn={2}/>);
-  expect(container.querySelector('source')?.getAttribute('src')).toContain('animaciones/banner-jugador-rojo.webm');
-  expect(container.querySelector('video')).toBeTruthy();
+test.each([
+  ['player', 'banner-tu-turno.webp', 'Tu Turno'],
+  ['opponent', 'banner-turno-rival.webp', 'Turno del Rival'],
+] as const)('la transición %s usa una sola cinta, sin vídeo ni texto adicional', (variant, artwork, title) => {
+  const { container } = render(<TurnAnnouncement variant={variant} turn={2}/>);
+  const layer = container.querySelector('.dr-event-turn') as HTMLElement;
+  const ribbon = layer.querySelector('.dr-event-turn__ribbon');
+  expect(layer.getAttribute('aria-label')).toContain(title);
+  expect(layer.style.animationDuration).toBe('1500ms');
+  expect(ribbon).toBeTruthy();
+  expect(ribbon?.className).not.toContain('--video');
+  expect(layer.querySelector('video')).toBeNull();
+  expect(layer.querySelectorAll('.dr-event-turn__ribbon')).toHaveLength(1);
+  // Cada facción conserva su arte aprobado, sin una segunda capa WebM.
+  expect(artwork).toContain(variant === 'player' ? 'tu-turno' : 'turno-rival');
 });
 
-test('la IA utiliza el clip transparente azul en el turno del rival', () => {
-  const { container } = render(<TurnAnnouncement variant="opponent" turn={3}/>);
-  expect(container.querySelector('source')?.getAttribute('src')).toContain('animaciones/banner-rival-azul.webm');
-});
-
-test('Studio conserva el avance estático editable del estandarte', () => {
+test('Studio conserva la cinta estática editable', () => {
   const { container } = render(<TurnAnnouncement variant="player" preview/>);
   expect(container.querySelector('video')).toBeNull();
-  expect(container.querySelector('.dr-event-turn__ribbon')).toBeTruthy();
+  expect(container.querySelector('.dr-event-turn--studio-preview .dr-event-turn__ribbon')).toBeTruthy();
 });
 
-test('PvP utiliza el mismo WebM para los cambios de turno', () => {
+test('PvP conserva su propio WebM para los cambios de turno', () => {
   const { container } = render(<MultiplayerCinematicCue
     cue={{ kind: 'turn', id: 1, isPlayer: false }} onEnded={() => {}}/>);
   expect(container.querySelector('source')?.getAttribute('src')).toContain('animaciones/banner-rival-azul.webm');
@@ -57,47 +63,30 @@ test('PvP primero presenta el banner y solo después la animación del decreto',
   }
 });
 
-test('el relevo visual de ambos turnos dura 1,5 s y acompasa el vídeo', () => {
+test('el aviso de ambos turnos dura 1,5 s y es independiente de la cinta persistente', () => {
   expect(TURN_TRANSITION_DURATION_MS).toBe(1500);
   for (const variant of ['player', 'opponent'] as const) {
     const { container, unmount } = render(<TurnAnnouncement variant={variant} turn={2}/>);
-    const transition = container.querySelector('.dr-event-turn') as HTMLElement;
-    expect(transition.style.animationDuration).toBe('1500ms');
-    const video = transition.querySelector('video') as HTMLVideoElement;
-    Object.defineProperty(video, 'duration', { configurable: true, value: 3 });
-    fireEvent.loadedMetadata(video);
-    expect(video.playbackRate).toBe(2); // Tres segundos de metraje en 1,5 reales.
+    expect((container.querySelector('.dr-event-turn') as HTMLElement).style.animationDuration).toBe('1500ms');
+    expect(container.querySelector('video')).toBeNull();
     unmount();
   }
 });
 
-test('el indicador permanente es independiente de la transición de 1,5 s', () => {
+test('el indicador permanente no activa ninguna transición', () => {
   const { container } = render(<TurnIndicator side="PLAYER"/>);
   expect(container.querySelector('.dr-event-indicator')).toBeTruthy();
   expect(container.querySelector('.dr-event-turn')).toBeNull();
   expect(container.querySelector('video')).toBeNull();
 });
 
-test('el anuncio en pantalla completa sale del tablero estrecho y se desmonta', () => {
+test('el anuncio ocupa la pantalla completa con una única cinta y se desmonta', () => {
   const { unmount } = render(<TurnAnnouncement fullscreen variant="opponent" turn={1}/>);
   const layer = document.querySelector('.dr-turn-portal--opponent');
   expect(layer).toBeTruthy();
   expect(layer?.querySelector('.dr-event-turn--opponent')).toBeTruthy();
-  expect(layer?.querySelector('source')?.getAttribute('src')).toContain('banner-rival-azul.webm');
+  expect(layer?.querySelectorAll('.dr-event-turn__ribbon')).toHaveLength(1);
+  expect(layer?.querySelector('video')).toBeNull();
   unmount();
   expect(document.querySelector('.dr-turn-portal')).toBeNull();
-});
-
-test('si Android bloquea el vídeo, el anuncio conserva el estandarte estático', () => {
-  const { container } = render(<TurnAnnouncement variant="opponent" fullscreen/>);
-  const video = document.querySelector<HTMLVideoElement>('.dr-turn-portal video');
-  expect(video).toBeTruthy();
-  expect(document.querySelector('.dr-event-turn__ribbon--playing')).toBeNull();
-  fireEvent.playing(video!);
-  expect(document.querySelector('.dr-event-turn__ribbon--playing')).toBeTruthy();
-  fireEvent.waiting(video!);
-  expect(document.querySelector('.dr-event-turn__ribbon--playing')).toBeNull();
-  fireEvent.error(video!);
-  expect(document.querySelector('.dr-turn-portal video')).toBeNull();
-  expect(document.querySelector('.dr-turn-portal .dr-event-turn__ribbon')).toBeTruthy();
 });
