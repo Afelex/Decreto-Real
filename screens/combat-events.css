@@ -602,20 +602,20 @@
 
 /* Cambio de turno contra IA: 1,5 s de presencia centrada, con entrada/salida
    cortas. Sólo modifica la transición; los indicadores fijos son independientes. */
-.dr-royal-screen .dr-event-turn--player,
-.dr-royal-screen .dr-event-turn--opponent {
+.dr-royal-screen .dr-event-turn--player:not(.dr-event-turn--studio-preview),
+.dr-royal-screen .dr-event-turn--opponent:not(.dr-event-turn--studio-preview) {
   --dr-handoff-from:-14%;
   --dr-handoff-to:9%;
   animation-name:dr-turn-handoff;
   animation-timing-function:cubic-bezier(.2,.76,.24,1);
   isolation:isolate;
 }
-.dr-royal-screen .dr-event-turn--opponent {
+.dr-royal-screen .dr-event-turn--opponent:not(.dr-event-turn--studio-preview) {
   --dr-handoff-from:14%;
   --dr-handoff-to:-9%;
 }
-.dr-royal-screen .dr-event-turn--player::before,
-.dr-royal-screen .dr-event-turn--opponent::before {
+.dr-royal-screen .dr-event-turn--player:not(.dr-event-turn--studio-preview)::before,
+.dr-royal-screen .dr-event-turn--opponent:not(.dr-event-turn--studio-preview)::before {
   content:"";
   position:absolute;
   z-index:0;
@@ -627,11 +627,11 @@
   filter:blur(16px);
   pointer-events:none;
 }
-.dr-royal-screen .dr-event-turn--opponent::before {
+.dr-royal-screen .dr-event-turn--opponent:not(.dr-event-turn--studio-preview)::before {
   background:radial-gradient(ellipse,#438bc752 0%,transparent 71%);
 }
-.dr-royal-screen .dr-event-turn--player .dr-event-turn__ribbon,
-.dr-royal-screen .dr-event-turn--opponent .dr-event-turn__ribbon {
+.dr-royal-screen .dr-event-turn--player:not(.dr-event-turn--studio-preview) .dr-event-turn__ribbon,
+.dr-royal-screen .dr-event-turn--opponent:not(.dr-event-turn--studio-preview) .dr-event-turn__ribbon {
   z-index:1;
 }
 @keyframes dr-turn-handoff {
@@ -641,11 +641,11 @@
   100% {opacity:0;transform:translateX(var(--dr-handoff-to)) scale(1.02);}
 }
 @media (prefers-reduced-motion:reduce) {
-  .dr-royal-screen .dr-event-turn--player,
-  .dr-royal-screen .dr-event-turn--opponent {
+  .dr-royal-screen .dr-event-turn--player:not(.dr-event-turn--studio-preview),
+  .dr-royal-screen .dr-event-turn--opponent:not(.dr-event-turn--studio-preview) {
     animation-name:dr-event-cross-fade;
     animation-timing-function:linear;
   }
-  .dr-royal-screen .dr-event-turn--player::before,
-  .dr-royal-screen .dr-event-turn--opponent::before {display:none;}
+  .dr-royal-screen .dr-event-turn--player:not(.dr-event-turn--studio-preview)::before,
+  .dr-royal-screen .dr-event-turn--opponent:not(.dr-event-turn--studio-preview)::before {display:none;}
 }
