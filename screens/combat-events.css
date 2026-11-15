@@ -719,3 +719,42 @@
     background-image:url('/Decreto-Real/interfaz/banner-turno-rival.webp');
   }
 }
+
+/* DR-TURN-RELIABLE: full-screen transition ALWAYS has a visible approved
+   illustrated ribbon, even if WebM alpha/autoplay is unsupported on Android.
+   The video is an enhancement, never the only visible announcement. */
+.dr-royal-screen.dr-turn-portal .dr-event-turn__ribbon {
+  box-sizing:border-box;
+  width:min(100vw,900px);
+  max-width:none;
+  height:auto;
+  aspect-ratio:16 / 9;
+  min-height:0;
+  background:url('/Decreto-Real/interfaz/banner-tu-turno.webp') center/contain no-repeat;
+  border:0;
+  padding:0;
+  filter:drop-shadow(0 14px 25px #000a);
+}
+.dr-royal-screen.dr-turn-portal--opponent .dr-event-turn__ribbon {
+  background-image:url('/Decreto-Real/interfaz/banner-turno-rival.webp');
+}
+.dr-royal-screen.dr-turn-portal .dr-event-turn__ribbon--playing {
+  background-image:none;
+}
+.dr-royal-screen.dr-turn-portal .dr-event-turn__video {
+  opacity:0;
+}
+.dr-royal-screen.dr-turn-portal .dr-event-turn__ribbon--playing .dr-event-turn__video {
+  opacity:1;
+}
+@media (prefers-reduced-motion:reduce) {
+  .dr-royal-screen.dr-turn-portal .dr-event-turn__ribbon,
+  .dr-royal-screen.dr-turn-portal .dr-event-turn__ribbon--playing {
+    background-image:url('/Decreto-Real/interfaz/banner-tu-turno.webp');
+  }
+  .dr-royal-screen.dr-turn-portal--opponent .dr-event-turn__ribbon,
+  .dr-royal-screen.dr-turn-portal--opponent .dr-event-turn__ribbon--playing {
+    background-image:url('/Decreto-Real/interfaz/banner-turno-rival.webp');
+  }
+  .dr-royal-screen.dr-turn-portal .dr-event-turn__video {opacity:0;}
+}
