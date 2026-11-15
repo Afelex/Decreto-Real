@@ -48,6 +48,7 @@ export function TurnAnnouncement({ variant, turn, preview = false, fullscreen = 
           onPlaying={() => setVideoPlaying(true)}
           onWaiting={() => setVideoPlaying(false)}
           onStalled={() => setVideoPlaying(false)}
+          onEnded={() => setVideoPlaying(false)}
           onError={() => { setVideoPlaying(false); setVideoFailed(true); }}>
           <source src={videoSrc} type="video/webm" />
         </video>}
