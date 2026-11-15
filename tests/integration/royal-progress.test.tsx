@@ -31,6 +31,12 @@ test('rival row follows a real AI Impact while player slots remain independent',
   expect(within(row).getByRole('img', { name: 'Impacto rival I, completado' })).toBeTruthy();
   expect(row.querySelectorAll('.completed')).toHaveLength(1);
   expect(screen.getByRole('status', { name: 'Último decreto del rival: Impacto' })).toBeTruthy();
+  // El daño real de la IA reduce el relleno en la misma proporción que los HP.
+  const playerLife = screen.getByRole('progressbar', { name: /Tu vida:/ }) as HTMLElement;
+  const remaining = Number(playerLife.getAttribute('aria-valuenow'));
+  expect(remaining).toBeLessThan(20);
+  expect((playerLife.querySelector('.dr-royal-hp__fill') as HTMLElement).style.width)
+    .toBe(`${remaining / 20 * 100}%`);
   const struckPlayer = screen.getByRole('img', { name: 'Retrato de tu personaje' });
   expect(struckPlayer.classList.contains('dr-portrait-hit')).toBe(true);
   expect(Number(struckPlayer.getAttribute('data-hit-count'))).toBeGreaterThan(0);
@@ -73,6 +79,9 @@ test('two Impacts across turns offer the one-point combo and preserve the streak
   expect((screen.getByRole('button', { name: 'Terminar turno' }) as HTMLButtonElement).disabled).toBe(true);
   await act(async () => { await vi.advanceTimersByTimeAsync(550); });
   expect(screen.getByLabelText('Vida del rival: 18 de 20')).toBeTruthy();
+  const rivalLife = screen.getByRole('progressbar', { name: 'Vida del rival: 18 de 20' });
+  expect((rivalLife.querySelector('.dr-royal-hp__fill') as HTMLElement).style.width).toBe('90%');
+  expect(rivalLife.getAttribute('data-hp-state')).toBe('healthy');
   expect(screen.getByRole('img', { name: 'Retrato del rival' }).classList.contains('dr-portrait-hit')).toBe(true);
   expect(screen.getByText('de Impacto')).toBeTruthy();
 });
