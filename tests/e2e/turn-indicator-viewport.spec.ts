@@ -11,21 +11,29 @@ async function expectRibbonInsideBoard(page: Page, side: 'player' | 'opponent') 
   await expect(ribbon).toHaveCSS('background-image',
     side === 'player' ? /banner-tu-turno\.webp/ : /banner-turno-rival\.webp/);
 
-  const geometry = await ribbon.evaluate(element => {
+  const geometry = await ribbon.evaluate((element, intendedSide) => {
     const box = element.getBoundingClientRect();
     const board = element.closest('.dr-royal-screen')!.getBoundingClientRect();
+    const visibleLeft = Math.max(box.left, board.left, 0);
+    const visibleRight = Math.min(box.right, board.right, innerWidth);
+    const visibleWidth = Math.max(0, visibleRight - visibleLeft);
     return {
-      inViewport: box.left >= -1 && box.top >= -1 &&
-        box.right <= innerWidth + 1 && box.bottom <= innerHeight + 1,
-      inBoard: box.left >= board.left - 1 && box.top >= board.top - 1 &&
-        box.right <= board.right + 1 && box.bottom <= board.bottom + 1,
+      // Deliberately clipped at the frame edge, as approved by the user.
+      croppedAtCorrectEdge: intendedSide === 'player'
+        ? box.left < board.left : box.right > board.right,
+      visibleFraction: visibleWidth / box.width,
+      verticalInside: box.top >= board.top - 1 && box.bottom <= board.bottom + 1,
       nonzero: box.width >= 100 && box.height >= 20,
     };
-  });
-  expect(geometry).toEqual({ inViewport: true, inBoard: true, nonzero: true });
+  }, side);
+  expect(geometry.croppedAtCorrectEdge).toBe(true);
+  expect(geometry.visibleFraction).toBeGreaterThan(0.60);
+  expect(geometry.visibleFraction).toBeLessThan(0.99);
+  expect(geometry.verticalInside).toBe(true);
+  expect(geometry.nonzero).toBe(true);
 }
 
-test('el rótulo azul permanece dentro del móvil cuando la IA gana la moneda', async ({ page }) => {
+test('el rótulo azul aparece recortado a la derecha cuando la IA gana la moneda', async ({ page }) => {
   await page.addInitScript(() => { Math.random = () => 0.01; });
   await page.goto('/Decreto-Real/#/game');
   await page.getByRole('button', { name: 'Lanzar Moneda' }).click();
@@ -33,7 +41,7 @@ test('el rótulo azul permanece dentro del móvil cuando la IA gana la moneda', 
   await expect(page.locator('.dr-event-indicator.is-player')).toHaveCount(0);
 });
 
-test('tras el turno del jugador, la etiqueta azul sustituye a la roja sin recorte', async ({ page }) => {
+test('tras el turno del jugador, la etiqueta azul sustituye a la roja sin desaparecer', async ({ page }) => {
   await page.addInitScript(() => { Math.random = () => 0.99; });
   await page.goto('/Decreto-Real/#/game');
   await page.getByRole('button', { name: 'Lanzar Moneda' }).click();
@@ -42,3 +50,34 @@ test('tras el turno del jugador, la etiqueta azul sustituye a la roja sin recort
   await expectRibbonInsideBoard(page, 'opponent');
   await expect(page.locator('.dr-event-indicator.is-player')).toHaveCount(0);
 });
+
+
+for (const [side, randomValue, imageName] of [
+  ['player', 0.99, 'banner-tu-turno.webp'],
+  ['opponent', 0.01, 'banner-turno-rival.webp'],
+] as const) {
+  test(`el banner inicial ${side} cubre la pantalla y nunca queda vacío sin WebM`, async ({ page }) => {
+    // Emulate Android's blocked/unsupported autoplay. The illustrated banner
+    // must remain visible for the entire handoff even without decoded video.
+    await page.addInitScript(value => { Math.random = () => value; }, randomValue);
+    await page.route('**/animaciones/banner-*.webm', route => route.abort('failed'));
+    await page.goto('/Decreto-Real/#/game');
+    await page.getByRole('button', { name: 'Lanzar Moneda' }).click();
+    const portal = page.locator(`.dr-turn-portal--${side}`);
+    await expect(portal).toBeVisible({ timeout: 6000 });
+    await expect(portal.locator('.dr-event-turn')).toHaveCSS('animation-duration', '1.5s');
+    const ribbon = portal.locator('.dr-event-turn__ribbon');
+    await expect(ribbon).toHaveCSS('background-image', new RegExp(imageName.replace('.', '\\.')));
+    const geometry = await portal.evaluate(layer => {
+      const rect = layer.getBoundingClientRect();
+      return {
+        fullWidth: Math.abs(rect.width - innerWidth) <= 1,
+        fullHeight: Math.abs(rect.height - innerHeight) <= 1,
+        aligned: Math.abs(rect.top) <= 1 && Math.abs(rect.left) <= 1,
+      };
+    });
+    expect(geometry).toEqual({ fullWidth: true, fullHeight: true, aligned: true });
+    await expect(portal).toHaveCount(0, { timeout: 6000 });
+    await expectRibbonInsideBoard(page, side);
+  });
+}
