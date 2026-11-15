@@ -1,0 +1,276 @@
+/* Decreto Real — menú de pausa ceremonial integrado al HUD G3.
+   Ningún recurso nuevo ni vídeo: sello original + filigrana CSS ligera. */
+.dr-royal-screen .dr-pause-backdrop {
+  position:absolute;
+  inset:0;
+  z-index:160;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-sizing:border-box;
+  padding:max(10px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right))
+          max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));
+  background:rgba(6,8,17,.79);
+  overscroll-behavior:contain;
+  touch-action:manipulation;
+  animation:dr-pause-fade .2s ease-out both;
+}
+.dr-royal-screen .dr-pause-panel {
+  position:relative;
+  box-sizing:border-box;
+  width:min(100%,370px);
+  max-height:calc(100dvh - 20px);
+  max-height:calc(100dvh - max(20px,env(safe-area-inset-top)) - max(20px,env(safe-area-inset-bottom)));
+  overflow:auto;
+  overscroll-behavior:contain;
+  border:2px solid #e2bd7c;
+  border-radius:15px;
+  background:
+    radial-gradient(ellipse at 50% 4%,rgba(161,109,43,.25),transparent 42%),
+    linear-gradient(155deg,#26364a 0%,#161f30 40%,#141521 75%,#291823 100%);
+  color:#f8edd5;
+  box-shadow:inset 0 0 0 2px #392519,inset 0 0 0 5px #e1b97825,
+             0 12px 28px #000b,0 0 18px #c49a4c45;
+  -webkit-overflow-scrolling:touch;
+  animation:dr-pause-rise .24s ease-out both;
+}
+.dr-royal-screen .dr-pause-panel::before,
+.dr-royal-screen .dr-pause-panel::after {
+  content:'❖';
+  position:absolute;
+  top:8px;
+  z-index:1;
+  color:#eac67e;
+  font:900 23px/1 Georgia,serif;
+  text-shadow:0 1px 4px #080710;
+  pointer-events:none;
+}
+.dr-royal-screen .dr-pause-panel::before {left:12px}
+.dr-royal-screen .dr-pause-panel::after {right:12px}
+.dr-royal-screen .dr-pause-panel__inner {
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  gap:clamp(12px,2.1dvh,20px);
+  padding:clamp(12px,2.5dvh,24px) clamp(15px,4vw,26px) clamp(17px,3dvh,26px);
+}
+.dr-royal-screen .dr-pause-close {
+  position:absolute;
+  top:7px;
+  right:7px;
+  z-index:3;
+  display:grid;
+  place-items:center;
+  width:44px;
+  height:44px;
+  border:1px solid #cba66894;
+  border-radius:50%;
+  background:radial-gradient(circle at 42% 32%,#5b4551,#241f30 68%,#121322);
+  color:#fbe9c0;
+  box-shadow:inset 0 1px 2px #fff5,0 3px 7px #0007;
+  cursor:pointer;
+}
+.dr-royal-screen .dr-pause-close .material-icons {font-size:23px}
+.dr-royal-screen .dr-pause-header {
+  display:grid;
+  justify-items:center;
+  text-align:center;
+  gap:3px;
+  padding:0 30px;
+  min-width:0;
+}
+.dr-royal-screen .dr-pause-emblem {
+  width:clamp(32px,5.5dvh,47px);
+  height:clamp(32px,5.5dvh,47px);
+  max-width:100%;
+  object-fit:contain;
+  filter:drop-shadow(0 2px 5px #0009);
+}
+.dr-royal-screen .dr-pause-eyebrow {
+  color:#d5ae72;
+  font:700 clamp(9px,2.7vw,11px)/1.2 Georgia,serif;
+  letter-spacing:.20em;
+  white-space:nowrap;
+}
+.dr-royal-screen .dr-pause-header h2 {
+  margin:0;
+  color:#ffdf9a;
+  font:800 clamp(23px,6.1vw,29px)/1.15 Cinzel,Georgia,serif;
+  letter-spacing:.065em;
+  text-shadow:0 2px 6px #09060e;
+}
+.dr-royal-screen .dr-pause-panel--confirm .dr-pause-header h2 {
+  font-size:clamp(20px,5.4vw,26px);
+  line-height:1.23;
+  letter-spacing:.015em;
+}
+.dr-royal-screen .dr-pause-divider {
+  display:flex;
+  align-items:center;
+  gap:9px;
+  width:100%;
+  color:#d8b47a;
+  font:17px/1 Georgia,serif;
+}
+.dr-royal-screen .dr-pause-divider::before,
+.dr-royal-screen .dr-pause-divider::after {
+  content:'';
+  flex:1;
+  height:1px;
+  background:linear-gradient(90deg,transparent,#d4b176 70%,#e8cb8d);
+}
+.dr-royal-screen .dr-pause-divider::after {
+  transform:scaleX(-1);
+}
+.dr-royal-screen .dr-pause-subtitle {
+  margin:0;
+  color:#ceb996;
+  font:italic 12px/1.25 Georgia,serif;
+}
+.dr-royal-screen .dr-pause-settings {
+  display:grid;
+  gap:9px;
+}
+.dr-royal-screen .dr-pause-setting {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:9px;
+  min-height:clamp(49px,7dvh,57px);
+  padding:6px 10px;
+  border:1px solid #9d845aa3;
+  border-radius:8px;
+  background:linear-gradient(115deg,#39404b9c,#1e2536e3);
+  box-shadow:inset 0 1px #ffffff1d,0 3px 8px #0004;
+}
+.dr-royal-screen .dr-pause-setting__name {
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  min-width:0;
+  color:#f7e9ce;
+  font:600 clamp(13px,3.6vw,15px)/1.2 system-ui,sans-serif;
+}
+.dr-royal-screen .dr-pause-setting__name .material-icons {
+  font-size:21px;
+  color:#dfbf87;
+}
+.dr-royal-screen .dr-pause-toggle {
+  flex:0 0 auto;
+  min-height:38px;
+  min-width:105px;
+  padding:8px 9px;
+  border:1px solid #8d7873;
+  border-radius:6px;
+  background:#2d2a34;
+  color:#d6c7c8;
+  font:800 clamp(11px,2.9vw,13px)/1 system-ui,sans-serif;
+  letter-spacing:.01em;
+}
+.dr-royal-screen .dr-pause-toggle[data-enabled="true"] {
+  border-color:#d8b06b;
+  background:linear-gradient(130deg,#5c4223,#42341f);
+  color:#ffe2a3;
+  box-shadow:inset 0 1px #ffe49f22;
+}
+.dr-royal-screen .dr-pause-actions {
+  display:grid;
+  gap:9px;
+}
+.dr-royal-screen .dr-pause-action {
+  display:grid;
+  place-items:center;
+  min-height:clamp(44px,6dvh,53px);
+  width:100%;
+  padding:8px 11px;
+  border:1px solid #b49a74;
+  border-radius:8px;
+  background:linear-gradient(180deg,#3b4657,#202734);
+  color:#f5e8cf;
+  text-align:center;
+  font:800 clamp(11px,3vw,13px)/1.15 system-ui,sans-serif;
+  letter-spacing:.055em;
+  text-shadow:0 1px 2px #0008;
+  cursor:pointer;
+  box-shadow:inset 0 1px #fff3,0 3px 7px #0007;
+}
+.dr-royal-screen .dr-pause-action--continue {
+  border:1px solid #f7d697;
+  background:linear-gradient(180deg,#ffecae 0%,#e0b86d 43%,#b78540 100%);
+  color:#23150d;
+  text-shadow:0 1px #ffe4a6;
+  box-shadow:inset 0 1px #fffa,0 4px 10px #07050e8c,0 0 8px #d3ad5970;
+}
+.dr-royal-screen .dr-pause-action--restart {
+  border-color:#9db1bc;
+  background:linear-gradient(180deg,#52657a,#29384b);
+}
+.dr-royal-screen .dr-pause-action--surrender {
+  border-color:#ab5360;
+  background:linear-gradient(180deg,#42202f,#271625);
+  color:#ffc2c4;
+}
+.dr-royal-screen .dr-pause-action--return {border-color:#bc9d72}
+.dr-royal-screen .dr-pause-action--dev {
+  min-height:34px;
+  font-size:10px;
+  color:#e7c67c;
+  border-color:#6e5838;
+  background:#221c24;
+}
+.dr-royal-screen .dr-pause-confirm {
+  display:grid;
+  gap:clamp(15px,3dvh,23px);
+  text-align:center;
+  padding:3px 0 4px;
+}
+.dr-royal-screen .dr-pause-confirm p {
+  margin:0;
+  color:#e9dccc;
+  font:500 clamp(13px,3.6vw,16px)/1.48 system-ui,sans-serif;
+}
+.dr-royal-screen .dr-pause-confirm__actions {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:8px;
+}
+.dr-royal-screen .dr-pause-action--cancel {
+  border-color:#b49b74;
+  background:linear-gradient(180deg,#414353,#252734);
+}
+.dr-royal-screen .dr-pause-action--restart-confirm {
+  border-color:#dfba78;
+  background:linear-gradient(180deg,#9d7041,#604223);
+  color:#fff1d3;
+}
+.dr-royal-screen .dr-pause-action--surrender-confirm {
+  border-color:#e78c91;
+  background:linear-gradient(180deg,#a33d46,#70202e);
+  color:#fff3ef;
+}
+.dr-royal-screen .dr-pause-action:focus-visible,
+.dr-royal-screen .dr-pause-toggle:focus-visible,
+.dr-royal-screen .dr-pause-close:focus-visible {
+  outline:3px solid #ffe3a3;
+  outline-offset:2px;
+}
+.dr-royal-screen .dr-pause-action:active,
+.dr-royal-screen .dr-pause-toggle:active,
+.dr-royal-screen .dr-pause-close:active {transform:translateY(1px)}
+@keyframes dr-pause-fade {from{opacity:0}to{opacity:1}}
+@keyframes dr-pause-rise {
+  from{opacity:.4;transform:translateY(9px) scale(.985)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+@media(max-height:600px){
+  .dr-royal-screen .dr-pause-panel__inner {gap:10px;padding:12px 15px 14px}
+  .dr-royal-screen .dr-pause-emblem {width:29px;height:29px}
+  .dr-royal-screen .dr-pause-setting {min-height:45px;padding:4px 9px}
+  .dr-royal-screen .dr-pause-settings,.dr-royal-screen .dr-pause-actions {gap:6px}
+  .dr-royal-screen .dr-pause-action {min-height:44px}
+  .dr-royal-screen .dr-pause-header {gap:2px}
+}
+@media(prefers-reduced-motion:reduce) {
+  .dr-royal-screen .dr-pause-backdrop,
+  .dr-royal-screen .dr-pause-panel {animation:none}
+}
