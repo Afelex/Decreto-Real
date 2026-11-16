@@ -1,0 +1,1282 @@
+{
+  "name": "Decreto Real FX Studio G3",
+  "version": "3.0.0",
+  "api": "DecretoFX.playFX(effectId, options)",
+  "files": [
+    "index.html",
+    "styles.css",
+    "studio.js",
+    "fx-core.js",
+    "fx-combat.js",
+    "fx-health-combos.js",
+    "fx-ui.js",
+    "fx-mystic.js",
+    "fx-manifest.json",
+    "README.md"
+  ],
+  "options": {
+    "container": "Elemento anfitrión (por defecto document.body, a pantalla completa).",
+    "faction": "'carmesi' | 'azul' (efectos con usesFaction).",
+    "palette": "Nombre de paleta u objeto {a,b,c,core,dark}.",
+    "color": "Color hex del que se deriva una paleta.",
+    "side": "'player' | 'rival': quién actúa.",
+    "at / from / to": "Ancla: nombre, {x,y} normalizado (0..1) o Element.",
+    "anchors": "Mapa de anclas solo para esta llamada.",
+    "target": "Elemento a sacudir (B01/B02).",
+    "scale": "Escala (1).",
+    "duration": "Duración en ms.",
+    "speed": "Multiplicador de velocidad (1).",
+    "intensity": "Densidad de partículas 0..2 (1).",
+    "params": "Parámetros propios del efecto.",
+    "hold": "Mantener en pantalla hasta release() (efectos holdable).",
+    "layer": "Capa exclusiva: un efecto nuevo reemplaza al anterior de la misma capa.",
+    "silent": "No dispara audio enlazado.",
+    "shake": "false desactiva sacudidas.",
+    "seed": "Semilla determinista.",
+    "signal": "AbortSignal para cancelar.",
+    "onComplete": "Callback ({id, completed})."
+  },
+  "palettes": [
+    "carmesi",
+    "azul",
+    "defensa",
+    "orden",
+    "vida",
+    "oro",
+    "impacto",
+    "hierro",
+    "sangre",
+    "azogue",
+    "legado",
+    "ceniza",
+    "tormenta",
+    "selva",
+    "sombra",
+    "celeste"
+  ],
+  "categories": {
+    "A": "Combate y cartas",
+    "B": "Daño, vida y combos",
+    "C": "Interfaz y transiciones",
+    "D": "Cartas místicas y habilidades"
+  },
+  "summary": {
+    "total": 34,
+    "completo": 34
+  },
+  "effects": [
+    {
+      "id": "A01",
+      "name": "Ataque carmesí",
+      "category": "A",
+      "status": "completo",
+      "durationMs": 900,
+      "persistent": false,
+      "holdable": false,
+      "palette": "carmesi",
+      "usesFaction": false,
+      "layer": null,
+      "anchors": [
+        "from",
+        "to"
+      ],
+      "cues": [
+        "whoosh",
+        "slash",
+        "impact"
+      ],
+      "params": {
+        "angle": "Ángulo del tajo en grados (38 = diagonal descendente)."
+      },
+      "options": {},
+      "presets": null,
+      "defaults": {
+        "angle": 38
+      },
+      "description": "Tajo diagonal rojo con núcleo blanco, chispas, estela y explosión al contacto."
+    },
+    {
+      "id": "A02",
+      "name": "Ataque de facción azul",
+      "category": "A",
+      "status": "completo",
+      "durationMs": 900,
+      "persistent": false,
+      "holdable": false,
+      "palette": "azul",
+      "usesFaction": false,
+      "layer": null,
+      "anchors": [
+        "from",
+        "to"
+      ],
+      "cues": [
+        "whoosh",
+        "slash",
+        "impact"
+      ],
+      "params": {
+        "angle": "Ángulo del tajo en grados (38 = diagonal descendente)."
+      },
+      "options": {},
+      "presets": null,
+      "defaults": {
+        "angle": 38
+      },
+      "description": "Variante azul del tajo; misma dirección visual y calidad."
+    },
+    {
+      "id": "A03",
+      "name": "Decreto de Defensa",
+      "category": "A",
+      "status": "completo",
+      "durationMs": 1100,
+      "persistent": false,
+      "holdable": false,
+      "palette": "defensa",
+      "usesFaction": false,
+      "layer": null,
+      "anchors": [
+        "at"
+      ],
+      "cues": [
+        "charge",
+        "shield",
+        "chime"
+      ],
+      "params": {},
+      "options": {},
+      "presets": null,
+      "defaults": {},
+      "description": "Escudo energético azul que se invoca, se expande, brilla y se desvanece."
+    },
+    {
+      "id": "A04",
+      "name": "Recuperación de vida",
+      "category": "A",
+      "status": "completo",
+      "durationMs": 1100,
+      "persistent": false,
+      "holdable": false,
+      "palette": "vida",
+      "usesFaction": false,
+      "layer": null,
+      "anchors": [
+        "at"
+      ],
+      "cues": [
+        "heal",
+        "chime"
+      ],
+      "params": {
+        "amount": "Valor a mostrar (lo entrega el motor). null = sin número."
+      },
+      "options": {},
+      "presets": null,
+      "defaults": {
+        "amount": null
+      },
+      "description": "Luz verde y dorada ascendente, partículas suaves y pulso de curación."
+    },
+    {
+      "id": "A05",
+      "name": "Impacto I",
+      "category": "A",
+      "status": "completo",
+      "durationMs": 800,
+      "persistent": false,
+      "holdable": false,
+      "palette": "impacto",
+      "usesFaction": false,
+      "layer": null,
+      "anchors": [
+        "at"
+      ],
+      "cues": [
+        "charge",
+        "impact"
+      ],
+      "params": {},
+      "options": {},
+      "presets": null,
+      "defaults": {},
+      "description": "Cristal multicolor que concentra energía y libera una explosión pequeña."
+    },
+    {
+      "id": "A06",
+      "name": "Impacto II",
+      "category": "A",
+      "status": "completo",
+      "durationMs": 1000,
+      "persistent": false,
+      "holdable": false,
+      "palette": "impacto",
+      "usesFaction": false,
+      "layer": null,
+      "anchors": [
+        "at"
+      ],
+      "cues": [
+        "charge",
+        "impact"
+      ],
+      "params": {},
+      "options": {},
+      "presets": null,
+      "defaults": {},
+      "description": "Cristal con mayor intensidad, ondas expansivas y fragmentos."
+    },
+    {
+      "id": "A07",
+      "name": "Impacto III",
+      "category": "A",
+      "status": "completo",
+      "durationMs": 1200,
+      "persistent": false,
+      "holdable": false,
+      "palette": "impacto",
+      "usesFaction": false,
+      "layer": null,
+      "anchors": [
+        "at"
+      ],
+      "cues": [
+        "charge",
+        "impact"
+      ],
+      "params": {},
+      "options": {},
+      "presets": null,
+      "defaults": {},
+      "description": "Explosión mística de alta intensidad y varios anillos luminosos."
+    },
+    {
+      "id": "A08",
+      "name": "Impacto Final",
+      "category": "A",
+      "status": "completo",
+      "durationMs": 2400,
+      "persistent": false,
+      "holdable": false,
+      "palette": "impacto",
+      "usesFaction": false,
+      "layer": null,
+      "anchors": [
+        "at"
+      ],
+      "cues": [
+        "charge",
+        "hum",
+        "boom"
+      ],
+      "params": {},
+      "options": {},
+      "presets": null,
+      "defaults": {},
+      "description": "Gran cristal multicolor, descarga energética y explosión cinematográfica."
+    },
+    {
+      "id": "A09",
+      "name": "Decreto de Orden",
+      "category": "A",
+      "status": "completo",
+      "durationMs": 1200,
+      "persistent": false,
+      "holdable": false,
+      "palette": "orden",
+      "usesFaction": false,
+      "layer": null,
+      "anchors": [
+        "at"
+      ],
+      "cues": [
+        "paper",
+        "chime"
+      ],
+      "params": {},
+      "options": {},
+      "presets": null,
+      "defaults": {},
+      "description": "Pergamino violeta y dorado que aparece, se despliega e ilumina."
+    },
+    {
+      "id": "A10",
+      "name": "Robar carta",
+      "category": "A",
+      "status": "completo",
+      "durationMs": 800,
+      "persistent": false,
+      "holdable": false,
+      "palette": "orden",
+      "usesFaction": true,
+      "layer": null,
+      "anchors": [
+        "from",
+        "to"
+      ],
+      "cues": [
+        "card"
+      ],
+      "params": {
+        "count": "Cantidad de cartas a mostrar (la decide el motor; «Roba 1 carta» = 1)."
+      },
+      "options": {},
+      "presets": null,
+      "defaults": {
+        "count": 1
+      },
+      "description": "Destello en el mazo y viaje visual de una carta hacia la mano."
+    },
+    {
+      "id": "A11",
+      "name": "Activación mística genérica",
+      "category": "A",
+      "status": "completo",
+      "durationMs": 1200,
+      "persistent": false,
+      "holdable": false,
+      "palette": "orden",
+      "usesFaction": false,
+      "layer": null,
+      "anchors": [
+        "at"
+      ],
+      "cues": [
+        "hum",
+        "reveal"
+      ],
+      "params": {
+        "label": "Nombre de la habilidad a revelar (texto entregado por el juego)."
+      },
+      "options": {},
+      "presets": null,
+      "defaults": {
+        "label": ""
+      },
+      "description": "Sello mágico, círculo de energía y revelación de habilidad."
+    },
+    {
+      "id": "A12",
+      "name": "Colisión de efectos",
+      "category": "A",
+      "status": "completo",
+      "durationMs": 1200,
+      "persistent": false,
+      "holdable": false,
+      "palette": "oro",
+      "usesFaction": false,
+      "layer": null,
+      "anchors": [
+        "from",
+        "to",
+        "at"
+      ],
+      "cues": [
+        "whoosh",
+        "impact",
+        "boom"
+      ],
+      "params": {
+        "attack": "Paleta de la energía atacante (nombre o color hex).",
+        "defense": "Paleta de la energía defensora.",
+        "winner": "Quién prevalece visualmente: 'attack' | 'defense' | 'draw' (lo decide el motor)."
+      },
+      "options": {
+        "winner": [
+          "draw",
+          "attack",
+          "defense"
+        ],
+        "attack": [
+          "carmesi",
+          "azul",
+          "oro",
+          "orden",
+          "sangre",
+          "tormenta"
+        ],
+        "defense": [
+          "defensa",
+          "azul",
+          "carmesi",
+          "oro",
+          "hierro",
+          "selva"
+        ]
+      },
+      "presets": null,
+      "defaults": {
+        "attack": "carmesi",
+        "defense": "defensa",
+        "winner": "draw"
+      },
+      "description": "Dos energías chocan y generan una onda expansiva; configurable según ataque y defensa."
+    },
+    {
+      "id": "B01",
+      "name": "Daño recibido por jugador",
+      "category": "B",
+      "status": "completo",
+      "durationMs": 800,
+      "persistent": false,
+      "holdable": false,
+      "palette": "sangre",
+      "usesFaction": false,
+      "layer": null,
+      "anchors": [
+        "at",
+        "target"
+      ],
+      "cues": [
+        "impact"
+      ],
+      "params": {
+        "amount": "Daño a mostrar (lo entrega el motor). null = sin número."
+      },
+      "options": {},
+      "presets": null,
+      "defaults": {
+        "amount": null
+      },
+      "description": "Destello, sacudida pequeña del retrato, viñeta y partículas."
+    },
+    {
+      "id": "B02",
+      "name": "Daño recibido por rival",
+      "category": "B",
+      "status": "completo",
+      "durationMs": 800,
+      "persistent": false,
+      "holdable": false,
+      "palette": "sangre",
+      "usesFaction": false,
+      "layer": null,
+      "anchors": [
+        "at",
+        "target"
+      ],
+      "cues": [
+        "impact"
+      ],
+      "params": {
+        "amount": "Daño a mostrar (lo entrega el motor). null = sin número."
+      },
+      "options": {},
+      "presets": null,
+      "defaults": {
+        "amount": null
+      },
+      "description": "Equivalente adaptado a la posición contraria (sin viñeta de pantalla)."
+    },
+    {
+      "id": "B03",
+      "name": "Recuperación de puntos de vida",
+      "category": "B",
+      "status": "completo",
+      "durationMs": 1100,
+      "persistent": false,
+      "holdable": false,
+      "palette": "vida",
+      "usesFaction": false,
+      "layer": null,
+      "anchors": [
+        "bar",
+        "at"
+      ],
+      "cues": [
+        "heal",
+        "chime"
+      ],
+      "params": {
+        "from": "PV antes (motor).",
+        "to": "PV después (motor).",
+        "max": "PV máximos."
+      },
+      "options": {},
+      "presets": null,
+      "defaults": {
+        "from": 8,
+        "to": 12,
+        "max": 20
+      },
+      "description": "Pulso luminoso y transición visible de la barra."
+    },
+    {
+      "id": "B04",
+      "name": "Vida crítica",
+      "category": "B",
+      "status": "completo",
+      "durationMs": 2000,
+      "persistent": false,
+      "holdable": true,
+      "palette": "sangre",
+      "usesFaction": false,
+      "layer": null,
+      "anchors": [
+        "bar"
+      ],
+      "cues": [
+        "fall",
+        "tick"
+      ],
+      "params": {
+        "from": "PV antes (motor).",
+        "to": "PV después (motor).",
+        "max": "PV máximos.",
+        "threshold": "Fracción bajo la cual hay parpadeo blanco (≤ 2,5 destellos/s)."
+      },
+      "options": {},
+      "presets": null,
+      "defaults": {
+        "from": 14,
+        "to": 3,
+        "max": 20,
+        "threshold": 0.25
+      },
+      "description": "Transición verde → ámbar → rojo con parpadeo blanco controlado. Con hold:true queda latente."
+    },
+    {
+      "id": "B05",
+      "name": "Combo ×2",
+      "category": "B",
+      "status": "completo",
+      "durationMs": 1000,
+      "persistent": false,
+      "holdable": false,
+      "palette": "oro",
+      "usesFaction": false,
+      "layer": null,
+      "anchors": [
+        "at"
+      ],
+      "cues": [
+        "whoosh",
+        "chime",
+        "impact"
+      ],
+      "params": {
+        "kind": "'damage' | 'heal' | null: tinte de acento según lo que determine el motor.",
+        "label": "Texto de la placa (por defecto «COMBO»).",
+        "detail": "Línea secundaria opcional (p. ej. el efecto que el motor aplicó)."
+      },
+      "options": {
+        "kind": [
+          "",
+          "damage",
+          "heal"
+        ]
+      },
+      "presets": null,
+      "defaults": {
+        "kind": null,
+        "label": "COMBO",
+        "detail": ""
+      },
+      "description": "Activación breve, elegante y legible con indicador dorado."
+    },
+    {
+      "id": "B06",
+      "name": "Combo ×3",
+      "category": "B",
+      "status": "completo",
+      "durationMs": 1300,
+      "persistent": false,
+      "holdable": false,
+      "palette": "oro",
+      "usesFaction": false,
+      "layer": null,
+      "anchors": [
+        "at"
+      ],
+      "cues": [
+        "charge",
+        "fanfare",
+        "impact"
+      ],
+      "params": {
+        "kind": "'damage' | 'heal' | null: tinte de acento según lo que determine el motor.",
+        "label": "Texto de la placa (por defecto «COMBO»).",
+        "detail": "Línea secundaria opcional (p. ej. el efecto que el motor aplicó)."
+      },
+      "options": {
+        "kind": [
+          "",
+          "damage",
+          "heal"
+        ]
+      },
+      "presets": null,
+      "defaults": {
+        "kind": null,
+        "label": "COMBO",
+        "detail": ""
+      },
+      "description": "Versión más intensa y espectacular."
+    },
+    {
+      "id": "B07",
+      "name": "Agotamiento de mazo",
+      "category": "B",
+      "status": "completo",
+      "durationMs": 2800,
+      "persistent": false,
+      "holdable": true,
+      "palette": "ceniza",
+      "usesFaction": false,
+      "layer": "screen",
+      "anchors": [
+        "deck",
+        "rivalDeck",
+        "at"
+      ],
+      "cues": [
+        "paper",
+        "fall",
+        "door"
+      ],
+      "params": {
+        "sides": "'both' | 'player' | 'rival': mazos que se consumen.",
+        "title": "Título.",
+        "subtitle": "Resolución simétrica definida por el motor (texto libre)."
+      },
+      "options": {
+        "sides": [
+          "both",
+          "player",
+          "rival"
+        ]
+      },
+      "presets": null,
+      "defaults": {
+        "sides": "both",
+        "title": "MAZO AGOTADO",
+        "subtitle": ""
+      },
+      "description": "Los mazos se deshacen en ceniza dorada, sello de balanza y cierre de partida."
+    },
+    {
+      "id": "C01",
+      "name": "Lanzamiento de moneda",
+      "category": "C",
+      "status": "completo",
+      "durationMs": 2000,
+      "persistent": false,
+      "holdable": true,
+      "palette": "oro",
+      "usesFaction": false,
+      "layer": "screen",
+      "anchors": [
+        "at"
+      ],
+      "cues": [
+        "coin",
+        "whoosh",
+        "impact",
+        "reveal"
+      ],
+      "params": {
+        "result": "'player' | 'rival': resultado decidido por el motor.",
+        "labelPlayer": "Texto si gana el jugador.",
+        "labelRival": "Texto si gana el rival.",
+        "playerPalette": "Paleta del jugador.",
+        "rivalPalette": "Paleta del rival."
+      },
+      "options": {
+        "result": [
+          "player",
+          "rival"
+        ]
+      },
+      "presets": null,
+      "defaults": {
+        "result": "player",
+        "labelPlayer": "COMIENZAS TÚ",
+        "labelRival": "COMIENZA EL RIVAL",
+        "playerPalette": "azul",
+        "rivalPalette": "carmesi"
+      },
+      "description": "Moneda dorada giratoria, destello y revelación del resultado."
+    },
+    {
+      "id": "C02",
+      "name": "Inicio de turno del jugador",
+      "category": "C",
+      "status": "completo",
+      "durationMs": 1500,
+      "persistent": false,
+      "holdable": false,
+      "palette": "azul",
+      "usesFaction": false,
+      "layer": "screen",
+      "anchors": [],
+      "cues": [
+        "whoosh",
+        "impact"
+      ],
+      "params": {
+        "text": "Texto principal.",
+        "subtitle": "Texto secundario opcional."
+      },
+      "options": {},
+      "presets": null,
+      "defaults": {
+        "text": "TU TURNO",
+        "subtitle": ""
+      },
+      "description": "Transición cinematográfica a pantalla completa con cinta azul y texto «TU TURNO»."
+    },
+    {
+      "id": "C03",
+      "name": "Inicio de turno del rival",
+      "category": "C",
+      "status": "completo",
+      "durationMs": 1500,
+      "persistent": false,
+      "holdable": false,
+      "palette": "carmesi",
+      "usesFaction": false,
+      "layer": "screen",
+      "anchors": [],
+      "cues": [
+        "whoosh",
+        "impact"
+      ],
+      "params": {
+        "text": "Texto principal.",
+        "subtitle": "Texto secundario opcional."
+      },
+      "options": {},
+      "presets": null,
+      "defaults": {
+        "text": "TURNO DEL RIVAL",
+        "subtitle": ""
+      },
+      "description": "Transición equivalente con cinta roja y texto «TURNO DEL RIVAL»."
+    },
+    {
+      "id": "C04",
+      "name": "Indicadores persistentes de turno",
+      "category": "C",
+      "status": "completo",
+      "durationMs": null,
+      "persistent": true,
+      "holdable": false,
+      "palette": "azul",
+      "usesFaction": false,
+      "layer": "turn-tags",
+      "anchors": [],
+      "cues": [
+        "tick"
+      ],
+      "params": {
+        "active": "'player' | 'rival' | 'none': indicador visible (lo decide el motor).",
+        "player": "Posición CSS exacta: { edge:\"left\"|\"right\", top|bottom|left|right:\"…\" }.",
+        "rival": "Ídem para el rival.",
+        "labelPlayer": "Texto del jugador.",
+        "labelRival": "Texto del rival.",
+        "playerPalette": "Paleta del jugador.",
+        "rivalPalette": "Paleta del rival."
+      },
+      "options": {
+        "active": [
+          "player",
+          "rival",
+          "none"
+        ]
+      },
+      "presets": null,
+      "defaults": {
+        "active": "player",
+        "labelPlayer": "TU TURNO",
+        "labelRival": "TURNO DEL RIVAL",
+        "playerPalette": "azul",
+        "rivalPalette": "carmesi",
+        "player": {
+          "edge": "left",
+          "bottom": "24%"
+        },
+        "rival": {
+          "edge": "right",
+          "top": "24%"
+        }
+      },
+      "description": "Etiquetas laterales recortadas con aparición suave. Persisten hasta stop() o update({active})."
+    },
+    {
+      "id": "C05",
+      "name": "Entrada a Versus IA",
+      "category": "C",
+      "status": "completo",
+      "durationMs": 2600,
+      "persistent": false,
+      "holdable": false,
+      "palette": "oro",
+      "usesFaction": false,
+      "layer": "screen",
+      "anchors": [],
+      "cues": [
+        "whoosh",
+        "door",
+        "covered",
+        "reveal"
+      ],
+      "params": {
+        "title": "Título central.",
+        "subtitle": "Línea secundaria."
+      },
+      "options": {},
+      "presets": null,
+      "defaults": {
+        "title": "VERSUS IA",
+        "subtitle": "LOS REINOS DEL PERÚ"
+      },
+      "description": "Puertas reales que se cierran sobre el menú, sello luminoso y apertura al campo. El cue 'covered' indica cuándo cambiar de pantalla."
+    },
+    {
+      "id": "C06",
+      "name": "Victoria",
+      "category": "C",
+      "status": "completo",
+      "durationMs": 3600,
+      "persistent": false,
+      "holdable": true,
+      "palette": "oro",
+      "usesFaction": false,
+      "layer": "screen",
+      "anchors": [],
+      "cues": [
+        "charge",
+        "fanfare",
+        "chime"
+      ],
+      "params": {
+        "title": "Título.",
+        "subtitle": "Línea secundaria (la entrega el juego)."
+      },
+      "options": {},
+      "presets": null,
+      "defaults": {
+        "title": "VICTORIA",
+        "subtitle": ""
+      },
+      "description": "Revelación dorada, partículas y título cinematográfico. Con hold:true permanece hasta release()."
+    },
+    {
+      "id": "C07",
+      "name": "Derrota",
+      "category": "C",
+      "status": "completo",
+      "durationMs": 3600,
+      "persistent": false,
+      "holdable": true,
+      "palette": "ceniza",
+      "usesFaction": false,
+      "layer": "screen",
+      "anchors": [],
+      "cues": [
+        "fall",
+        "door"
+      ],
+      "params": {
+        "title": "Título.",
+        "subtitle": "Línea secundaria (la entrega el juego)."
+      },
+      "options": {},
+      "presets": null,
+      "defaults": {
+        "title": "DERROTA",
+        "subtitle": ""
+      },
+      "description": "Disminución de iluminación, partículas descendentes y presentación del resultado."
+    },
+    {
+      "id": "C08",
+      "name": "Pantalla de carga",
+      "category": "C",
+      "status": "completo",
+      "durationMs": null,
+      "persistent": true,
+      "holdable": false,
+      "palette": "oro",
+      "usesFaction": false,
+      "layer": "screen",
+      "anchors": [],
+      "cues": [
+        "tick",
+        "reveal"
+      ],
+      "params": {
+        "assets": "Lista de URL que el motor precarga de verdad; el porcentaje es cargados/total.",
+        "progress": "Alternativa: progreso real 0..1 que entrega el anfitrión con handle.update({progress}).",
+        "logo": "URL o HTMLImageElement del logo oficial (opcional).",
+        "title": "Título si no hay logo.",
+        "subtitle": "Subtítulo.",
+        "loadingText": "Texto de estado.",
+        "backdrop": "Opacidad del fondo (0 = transparente)."
+      },
+      "options": {},
+      "presets": null,
+      "defaults": {
+        "assets": null,
+        "progress": null,
+        "logo": null,
+        "title": "DECRETO REAL",
+        "subtitle": "Los Reinos del Perú",
+        "loadingText": "Cargando recursos",
+        "backdrop": 1
+      },
+      "description": "Logo y barra de progreso. Sin temporizadores simulados: la salida solo ocurre al completar la precarga."
+    },
+    {
+      "id": "D01",
+      "name": "Marea de Hierro",
+      "category": "D",
+      "status": "completo",
+      "durationMs": 1600,
+      "persistent": false,
+      "holdable": false,
+      "palette": "hierro",
+      "usesFaction": false,
+      "layer": null,
+      "anchors": [
+        "at"
+      ],
+      "cues": [
+        "whoosh",
+        "shield",
+        "impact",
+        "heal"
+      ],
+      "params": {
+        "heal": "PV recuperados a mostrar (motor). null = sin número."
+      },
+      "options": {},
+      "presets": null,
+      "defaults": {
+        "heal": 2
+      },
+      "description": "Baltasar de Fierro · energía metálica y acuática que recupera PV al jugador."
+    },
+    {
+      "id": "D02",
+      "name": "Carga Sangrante",
+      "category": "D",
+      "status": "completo",
+      "durationMs": 1500,
+      "persistent": false,
+      "holdable": false,
+      "palette": "sangre",
+      "usesFaction": false,
+      "layer": null,
+      "anchors": [
+        "from",
+        "to"
+      ],
+      "cues": [
+        "charge",
+        "whoosh",
+        "impact"
+      ],
+      "params": {
+        "damage": "Daño al rival a mostrar (motor).",
+        "selfDamage": "PV propios sacrificados a mostrar (motor)."
+      },
+      "options": {},
+      "presets": null,
+      "defaults": {
+        "damage": 3,
+        "selfDamage": 1
+      },
+      "description": "Leandro Valcázar · embestida de energía roja con sacrificio propio."
+    },
+    {
+      "id": "D03",
+      "name": "Pacto de Azogue",
+      "category": "D",
+      "status": "completo",
+      "durationMs": 1900,
+      "persistent": false,
+      "holdable": false,
+      "palette": "azogue",
+      "usesFaction": false,
+      "layer": null,
+      "anchors": [
+        "from",
+        "to",
+        "at"
+      ],
+      "cues": [
+        "hum",
+        "chime",
+        "whoosh",
+        "heal"
+      ],
+      "params": {
+        "heal": "PV propios recuperados a mostrar (motor).",
+        "healEnemy": "PV del rival recuperados a mostrar (motor)."
+      },
+      "options": {},
+      "presets": null,
+      "defaults": {
+        "heal": 4,
+        "healEnemy": 1
+      },
+      "description": "Octavio Argento · energía mercurial plateada y dorada: cura al jugador y concede vida al rival."
+    },
+    {
+      "id": "D04",
+      "name": "Decreto del Legado",
+      "category": "D",
+      "status": "completo",
+      "durationMs": 3000,
+      "persistent": false,
+      "holdable": true,
+      "palette": "legado",
+      "usesFaction": false,
+      "layer": null,
+      "anchors": [
+        "from",
+        "to"
+      ],
+      "cues": [
+        "hum",
+        "chime",
+        "charge",
+        "boom",
+        "fanfare"
+      ],
+      "params": {
+        "label": "Texto opcional bajo el sello (lo entrega el juego)."
+      },
+      "options": {},
+      "presets": null,
+      "defaults": {
+        "label": ""
+      },
+      "description": "Zhinchi · transferencia de poder al Sello de Mando de Xervias; energía dorada y manifestación solemne."
+    },
+    {
+      "id": "D05",
+      "name": "Invocación del León del Edicto",
+      "category": "D",
+      "status": "completo",
+      "durationMs": 2200,
+      "persistent": false,
+      "holdable": true,
+      "palette": "oro",
+      "usesFaction": false,
+      "layer": null,
+      "anchors": [
+        "at"
+      ],
+      "cues": [
+        "hum",
+        "charge",
+        "roar",
+        "impact"
+      ],
+      "params": {
+        "hp": "PV de la invocación a mostrar (motor).",
+        "attack": "Ataque de la invocación a mostrar (motor).",
+        "label": "Nombre a mostrar."
+      },
+      "options": {},
+      "presets": null,
+      "defaults": {
+        "hp": 4,
+        "attack": 2,
+        "label": "LEÓN DEL EDICTO"
+      },
+      "description": "Círculo mágico, sello y aparición luminosa de la invocación (4 PV · 2 ATQ)."
+    },
+    {
+      "id": "D06",
+      "name": "León del Edicto, combate",
+      "category": "D",
+      "status": "completo",
+      "durationMs": 1300,
+      "persistent": false,
+      "holdable": false,
+      "palette": "oro",
+      "usesFaction": false,
+      "layer": null,
+      "anchors": [
+        "from",
+        "to"
+      ],
+      "cues": [
+        "roar",
+        "slash",
+        "impact",
+        "shatter"
+      ],
+      "params": {
+        "mode": "'attack' (ataque de la invocación) | 'hit' (daño recibido) | 'destroy' (disipación al ser destruida).",
+        "amount": "Daño a mostrar (motor). null = sin número."
+      },
+      "options": {
+        "mode": [
+          "attack",
+          "hit",
+          "destroy"
+        ]
+      },
+      "presets": null,
+      "defaults": {
+        "mode": "attack",
+        "amount": 2
+      },
+      "description": "Ataque de la invocación, daño recibido y disipación cuando es destruida (param mode)."
+    },
+    {
+      "id": "D07",
+      "name": "Plantilla de habilidad mística",
+      "category": "D",
+      "status": "completo",
+      "durationMs": 1500,
+      "persistent": false,
+      "holdable": false,
+      "palette": "orden",
+      "usesFaction": false,
+      "layer": null,
+      "anchors": [
+        "from",
+        "to",
+        "at"
+      ],
+      "cues": [
+        "hum",
+        "whoosh",
+        "impact"
+      ],
+      "params": {
+        "palette": "Nombre de paleta, color hex u objeto {a,b,c,core,dark}.",
+        "symbol": "sol | luna | rayo | hoja | ala | espada | ojo | gota | estrella | corona | torre",
+        "particles": "chispas | brasas | motas | fragmentos | plumas | ceniza",
+        "activation": "'sello' | 'columna' | 'onda' | 'proyectil' | 'lluvia'",
+        "direction": "'self' (sobre el lanzador) | 'target' (hacia el contrario)",
+        "special": "Lista: 'rings', 'lightning', 'shake', 'flash', 'dim', 'runes'",
+        "label": "Nombre de la habilidad (lo entrega el juego).",
+        "valueSelf": "Texto flotante sobre el lanzador (p. ej. «+2»).",
+        "valueTarget": "Texto flotante sobre el objetivo (p. ej. «−3»)."
+      },
+      "options": {
+        "symbol": [
+          "sol",
+          "luna",
+          "rayo",
+          "hoja",
+          "ala",
+          "espada",
+          "ojo",
+          "gota",
+          "estrella",
+          "corona",
+          "torre"
+        ],
+        "particles": [
+          "chispas",
+          "brasas",
+          "motas",
+          "fragmentos",
+          "plumas",
+          "ceniza"
+        ],
+        "activation": [
+          "sello",
+          "columna",
+          "onda",
+          "proyectil",
+          "lluvia"
+        ],
+        "direction": [
+          "self",
+          "target"
+        ]
+      },
+      "presets": {
+        "Solar · sello": {
+          "palette": "legado",
+          "symbol": "sol",
+          "particles": "motas",
+          "activation": "sello",
+          "direction": "self",
+          "special": [
+            "rings",
+            "runes"
+          ]
+        },
+        "Tormenta · proyectil": {
+          "palette": "tormenta",
+          "symbol": "rayo",
+          "particles": "chispas",
+          "activation": "proyectil",
+          "direction": "target",
+          "special": [
+            "lightning",
+            "shake",
+            "flash"
+          ]
+        },
+        "Selva · lluvia": {
+          "palette": "selva",
+          "symbol": "hoja",
+          "particles": "plumas",
+          "activation": "lluvia",
+          "direction": "target",
+          "special": [
+            "rings"
+          ]
+        },
+        "Sombra · onda": {
+          "palette": "sombra",
+          "symbol": "ojo",
+          "particles": "ceniza",
+          "activation": "onda",
+          "direction": "target",
+          "special": [
+            "dim",
+            "rings",
+            "runes"
+          ]
+        },
+        "Celeste · columna": {
+          "palette": "celeste",
+          "symbol": "ala",
+          "particles": "plumas",
+          "activation": "columna",
+          "direction": "self",
+          "special": [
+            "rings",
+            "flash"
+          ]
+        },
+        "Acero · proyectil": {
+          "palette": "hierro",
+          "symbol": "espada",
+          "particles": "fragmentos",
+          "activation": "proyectil",
+          "direction": "target",
+          "special": [
+            "shake",
+            "rings"
+          ]
+        }
+      },
+      "defaults": {
+        "palette": null,
+        "symbol": "sol",
+        "particles": "chispas",
+        "activation": "sello",
+        "direction": "self",
+        "special": [
+          "rings"
+        ],
+        "label": "",
+        "valueSelf": null,
+        "valueTarget": null
+      },
+      "description": "Sistema configurable (paleta, símbolo, partículas, activación, dirección y especiales) para las habilidades de los generales restantes."
+    }
+  ]
+}

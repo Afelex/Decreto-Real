@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!--BODY-START-->
+<title>Decreto Real FX Studio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Alegreya+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="styles.css">
+<!--HEAD-END-->
+</head>
+<body>
+<!--CONTENT-START-->
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <svg class="brand__seal" viewBox="-24 -24 48 48" aria-hidden="true">
+        <circle r="22" fill="none" stroke="currentColor" stroke-width="1.4"/>
+        <circle r="17.5" fill="none" stroke="currentColor" stroke-width=".7" stroke-dasharray="1.6 2.2"/>
+        <g fill="currentColor"><circle r="6"/><g id="ray"><path d="M-2 -8 L0 -15 L2 -8Z"/></g>
+          <use href="#ray" transform="rotate(45)"/><use href="#ray" transform="rotate(90)"/><use href="#ray" transform="rotate(135)"/><use href="#ray" transform="rotate(180)"/><use href="#ray" transform="rotate(225)"/><use href="#ray" transform="rotate(270)"/><use href="#ray" transform="rotate(315)"/></g>
+      </svg>
+      <div>
+        <h1>Decreto Real <span>FX Studio</span></h1>
+        <p class="brand__sub">Biblioteca de efectos G3 · Los Reinos del Perú</p>
+      </div>
+    </div>
+    <div class="meters" aria-live="off">
+      <div class="meter"><span class="meter__k">FPS</span><span class="meter__v" id="mFps">–</span></div>
+      <div class="meter"><span class="meter__k">Efectos</span><span class="meter__v" id="mAct">0</span></div>
+      <div class="meter"><span class="meter__k">Partículas</span><span class="meter__v" id="mPar">0</span></div>
+      <div class="meter"><span class="meter__k">Calidad</span><span class="meter__v" id="mTier">alta</span></div>
+      <div class="meter meter--ok"><span class="meter__k">Completos</span><span class="meter__v" id="mDone">–</span></div>
+    </div>
+  </header>
+
+  <main class="grid">
+    <nav class="catalog panel" aria-label="Catálogo de efectos">
+      <div class="panel__head"><h2>Catálogo</h2><span class="hint" id="catHint"></span></div>
+      <div id="catalog"></div>
+    </nav>
+
+    <section class="center">
+      <div class="panel stagewrap">
+        <div class="fxhead">
+          <span class="fxhead__id" id="fxId">A01</span>
+          <div class="fxhead__txt"><h2 id="fxName">—</h2><p id="fxDesc"></p></div>
+          <span class="chip" id="fxStatus">—</span>
+        </div>
+        <div class="stageframe" id="stageFrame">
+          <div class="stage" id="stage" data-bg="oscuro">
+            <div class="stage__bg" aria-hidden="true"></div>
+            <div class="hud" id="hud" aria-hidden="true">
+              <div class="hud__unit hud__unit--rival"><div class="hud__info"><b>Rival</b><div class="hpbar" id="barRival"><i></i></div><span class="hptxt" id="hpRival">20 / 20</span></div><img class="portrait" id="pRival" src="assets/rival.webp" alt=""></div>
+              <div class="hud__unit hud__unit--player"><img class="portrait" id="pPlayer" src="assets/jugador.webp" alt=""><div class="hud__info"><b>Jugador</b><div class="hpbar" id="barPlayer"><i></i></div><span class="hptxt" id="hpPlayer">20 / 20</span></div></div>
+              <div class="hud__hand hud__hand--rival" id="handRival"><span class="cardback"></span><span class="cardback"></span><span class="cardback"></span></div>
+              <div class="hud__hand" id="handPlayer"><img src="assets/carta-ataque.webp" alt=""><img src="assets/carta-defensa.webp" alt=""><img src="assets/carta-orden.webp" alt=""><img src="assets/carta-impacto.webp" alt=""></div>
+              <img class="hud__deck" id="deckPlayer" src="assets/mazo.webp" alt="">
+              <span class="hud__deck hud__deck--rival cardback" id="deckRival"></span>
+              <span class="hud__seal" id="sealAnchor"></span>
+            </div>
+          </div>
+        </div>
+        <div class="transport">
+          <button class="btn btn--primary" id="btnPlay" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z"/></svg>Reproducir</button>
+          <button class="btn" id="btnStop" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="3.5" width="9" height="9" rx="1"/></svg>Detener</button>
+          <button class="btn btn--toggle" id="btnLoop" type="button" aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8a5 5 0 0 1 8.5-3.5L13 3v4.5H8.5L10.3 5.7A3.3 3.3 0 0 0 4.7 8zm10 0a5 5 0 0 1-8.5 3.5L3 13V8.5h4.5L5.7 10.3A3.3 3.3 0 0 0 11.3 8z"/></svg>Repetir</button>
+          <button class="btn" id="btnDuel" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2l5 5-1.5 1.5L2 5zm12 0v3l-8 8-2 1 1-2 8-8zM9.5 10.5L11 9l3 3v2h-2z"/></svg>Simular duelo</button>
+          <div class="seg" role="group" aria-label="Fondo de vista previa" id="segBg">
+            <button type="button" data-bg="oscuro" aria-pressed="true">Oscuro</button>
+            <button type="button" data-bg="escenario" aria-pressed="false">Escenario</button>
+            <button type="button" data-bg="combate" aria-pressed="false">Combate</button>
+            <button type="button" data-bg="alfa" aria-pressed="false">Alfa</button>
+          </div>
+          <div class="seg" role="group" aria-label="Formato" id="segAspect">
+            <button type="button" data-aspect="wide" aria-pressed="true">16:9</button>
+            <button type="button" data-aspect="tall" aria-pressed="false">9:16</button>
+          </div>
+        </div>
+        <div class="log" id="log" aria-live="off"><span class="log__empty">Los eventos de sincronización de audio (cues) aparecen aquí.</span></div>
+      </div>
+    </section>
+
+    <aside class="inspector panel" aria-label="Controles">
+      <div class="panel__head"><h2>Controles</h2><button class="link" id="btnReset" type="button">Restablecer</button></div>
+      <div class="field"><label for="cDur">Duración <output id="oDur"></output></label><input id="cDur" type="range" min="300" max="6000" step="50"></div>
+      <div class="field"><label for="cSpeed">Velocidad <output id="oSpeed"></output></label><input id="cSpeed" type="range" min="0.25" max="2" step="0.05" value="1"></div>
+      <div class="field"><label for="cInt">Intensidad de partículas <output id="oInt"></output></label><input id="cInt" type="range" min="0" max="2" step="0.05" value="1"></div>
+      <div class="field"><label for="cScale">Escala <output id="oScale"></output></label><input id="cScale" type="range" min="0.5" max="1.6" step="0.05" value="1"></div>
+      <div class="row2">
+        <div class="field"><label for="cPal">Facción / paleta</label><select id="cPal"></select></div>
+        <div class="field"><label for="cSide">Lado que actúa</label><select id="cSide"><option value="player">Jugador</option><option value="rival">Rival</option></select></div>
+      </div>
+      <div class="field field--inline"><label class="check"><input id="cUseColor" type="checkbox"> Color propio</label><input id="cColor" type="color" value="#ff2b45" aria-label="Color propio"></div>
+      <div class="row2">
+        <div class="field"><label for="cMotion">Movimiento</label><select id="cMotion"><option value="auto">Según el sistema</option><option value="false">Completo</option><option value="true">Reducido</option></select></div>
+        <div class="field"><label for="cQuality">Calidad</label><select id="cQuality"><option value="auto">Automática</option><option value="high">Alta</option><option value="medium">Media</option><option value="low">Baja</option></select></div>
+      </div>
+      <div class="toggles">
+        <label class="check"><input id="cSound" type="checkbox"> Sonido</label>
+        <label class="check"><input id="cHold" type="checkbox"> Mantener en pantalla</label>
+      </div>
+      <div class="params">
+        <h3>Parámetros del efecto</h3>
+        <div id="params"></div>
+      </div>
+      <div class="snippet">
+        <h3>Llamada</h3>
+        <pre id="code"></pre>
+        <button class="btn btn--small" id="btnCopy" type="button">Copiar</button>
+      </div>
+    </aside>
+  </main>
+</div>
+<script src="fx-core.js"></script>
+<script src="fx-combat.js"></script>
+<script src="fx-health-combos.js"></script>
+<script src="fx-ui.js"></script>
+<script src="fx-mystic.js"></script>
+<script src="studio.js"></script>
+<!--CONTENT-END-->
+</body>
+</html>
