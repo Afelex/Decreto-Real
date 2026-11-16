@@ -6,7 +6,7 @@ import { CAMPAIGN_INTRO_KEY } from '../campaign/campaignKeys';
 import { PROLOGUE_COMPLETE_KEY } from '../campaign/prologueArt';
 import { isCampaignQaActive } from '../campaign/campaignQA';
 import { campaignOverview } from '../campaign/progressView.ts';
-import { STANDARD_BATTLE_VIDEO } from '../game/battleScenery';
+import { useAmbientVideo } from './useAmbientVideo';
 import './main-menu-cinematic.css';
 
 /**
@@ -82,19 +82,13 @@ const MenuButton: React.FC<MenuButtonProps> = ({
 
 const MainMenu: React.FC = () => {
   const navigate = useNavigate();
-  // Keep first paint of the menu ahead of the battle video network request.
-  // The game chunk is warmed on explicit player intent (pointer, touch, keyboard).
-  // No assets or gameplay are changed: only the fetch scheduling.
+  // Warm the IA code only after explicit interest. The background MP4 of the
+  // battle should NEVER compete with the menu's visible cinematic resources.
   const warmDuel = React.useCallback(() => {
     void import('./GameBoard').catch(() => { /* normal navigation can retry */ });
   }, []);
-  React.useEffect(() => {
-    const hint = document.createElement('link');
-    hint.rel = 'prefetch';
-    hint.href = STANDARD_BATTLE_VIDEO;
-    const timer = window.setTimeout(() => document.head.appendChild(hint), 1500);
-    return () => { window.clearTimeout(timer); hint.remove(); };
-  }, []);
+  const coverVideoRef = React.useRef<HTMLVideoElement>(null);
+  useAmbientVideo(coverVideoRef);
   const progress = React.useMemo(() => {
     try { return loadCampaignProgress(getCampaignStorage()); }
     catch { return loadCampaignProgress(null); }
@@ -140,6 +134,7 @@ const MainMenu: React.FC = () => {
         draggable={false}
       />
       <video
+        ref={coverVideoRef}
         className="dr-cinematic-background dr-cinematic-video"
         autoPlay muted loop playsInline
         preload="metadata"

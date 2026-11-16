@@ -879,7 +879,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
       `}</style>
 
       {/* Scene only: all cards, controls and overlays remain live above the animation. */}
-      <BattleSceneryLayer {...scenery} />
+      <BattleSceneryLayer {...scenery} paused={isMenuOpen || Boolean(storyMoment)} />
 
       {/* --- VISUAL EFFECTS LAYER --- */}
       {visualEffect.type && (
