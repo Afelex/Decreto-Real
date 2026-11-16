@@ -24,10 +24,10 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build project
         env:
@@ -72,6 +72,13 @@ jobs:
           rm -f dist/escenarios/gemini_generated_video_b8059a5c.mp4
           ls -lh "$optimized_video"
 
+      - name: Auditar recursos reales del duelo antes de publicar
+        run: node tools/release-audit.mjs dist
+
+      - name: Registrar revisión exacta de la publicación
+        run: |
+          node -e "require('node:fs').writeFileSync('dist/release.json', JSON.stringify({commit:process.env.GITHUB_SHA,builtAt:new Date().toISOString(),base:'/Decreto-Real/'})+'\\n')"
+
       - name: Upload build
         uses: actions/upload-pages-artifact@v3
         with:
@@ -83,5 +90,12 @@ jobs:
     environment:
       name: github-pages
     steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
       - name: Deploy to Pages
         uses: actions/deploy-pages@v4
+
+      - name: Verificar sitio público, versión y recursos tras desplegar
+        run: node tools/live-pages-smoke.mjs
