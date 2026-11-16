@@ -41,12 +41,16 @@ type MenuButtonProps = {
   className?: string;
   ariaLabel: string;
   onClick?: () => void;
+  onPointerEnter?: () => void;
+  onTouchStart?: () => void;
+  onFocus?: () => void;
   disabled?: boolean;
   children: React.ReactNode;
 };
 
 const MenuButton: React.FC<MenuButtonProps> = ({
-  artKey, className = '', ariaLabel, onClick, disabled = false, children,
+  artKey, className = '', ariaLabel, onClick, onPointerEnter, onTouchStart, onFocus,
+  disabled = false, children,
 }) => {
   const art = BUTTON_PNG[artKey];
   const fullArt = Boolean(art.src && art.includesText);
@@ -56,6 +60,9 @@ const MenuButton: React.FC<MenuButtonProps> = ({
       type="button"
       aria-label={ariaLabel}
       onClick={onClick}
+      onPointerEnter={onPointerEnter}
+      onTouchStart={onTouchStart}
+      onFocus={onFocus}
       disabled={disabled}
       className={`dr-cinematic-button ${className} ${art.src ? 'dr-cinematic-button-has-png' : ''}`}
     >
@@ -75,14 +82,18 @@ const MenuButton: React.FC<MenuButtonProps> = ({
 
 const MainMenu: React.FC = () => {
   const navigate = useNavigate();
-  // Start fetching the real battle MP4 while the player is still on the menu.
-  // A resource hint warms the browser cache without displaying a second scene.
+  // Keep first paint of the menu ahead of the battle video network request.
+  // The game chunk is warmed on explicit player intent (pointer, touch, keyboard).
+  // No assets or gameplay are changed: only the fetch scheduling.
+  const warmDuel = React.useCallback(() => {
+    void import('./GameBoard').catch(() => { /* normal navigation can retry */ });
+  }, []);
   React.useEffect(() => {
     const hint = document.createElement('link');
     hint.rel = 'prefetch';
     hint.href = STANDARD_BATTLE_VIDEO;
-    document.head.appendChild(hint);
-    return () => hint.remove();
+    const timer = window.setTimeout(() => document.head.appendChild(hint), 1500);
+    return () => { window.clearTimeout(timer); hint.remove(); };
   }, []);
   const progress = React.useMemo(() => {
     try { return loadCampaignProgress(getCampaignStorage()); }
@@ -177,6 +188,9 @@ const MainMenu: React.FC = () => {
           artKey="duel"
           className="dr-cinematic-button-secondary"
           ariaLabel="Jugar con la IA"
+          onPointerEnter={warmDuel}
+          onTouchStart={warmDuel}
+          onFocus={warmDuel}
           onClick={() => navigate('/game', { state: { duelEntrance: true } })}
         >
           <span className="dr-cinematic-button-icon" aria-hidden="true">⚔️</span>
