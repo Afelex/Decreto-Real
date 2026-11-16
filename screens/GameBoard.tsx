@@ -595,7 +595,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
       else if (card.type === 'IMPACT') playSound('IMPACT');
       const played = await waitForCue(DECREE_EFFECT_DURATION_MS);
       if (!played) return;
-    } else if (card.type === 'ATTACK' || card.type === 'MYSTIC') playSound('ATTACK');
+    } else if (card.type === 'ATTACK') playSound('ATTACK');
     setCardAnnouncement(null);
     announcementBusy.current = false;
     if (gameOverRef.current) return;
