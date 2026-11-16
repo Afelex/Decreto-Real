@@ -209,7 +209,8 @@
   border-color:#9db1bc;
   background:linear-gradient(180deg,#52657a,#29384b);
 }
-.dr-royal-screen .dr-pause-action--surrender {
+.dr-royal-screen .dr-pause-action--surrender,
+.dr-royal-screen .dr-pause-action--exit {
   border-color:#ab5360;
   background:linear-gradient(180deg,#42202f,#271625);
   color:#ffc2c4;
@@ -247,7 +248,8 @@
   background:linear-gradient(180deg,#9d7041,#604223);
   color:#fff1d3;
 }
-.dr-royal-screen .dr-pause-action--surrender-confirm {
+.dr-royal-screen .dr-pause-action--surrender-confirm,
+.dr-royal-screen .dr-pause-action--exit-confirm {
   border-color:#e78c91;
   background:linear-gradient(180deg,#a33d46,#70202e);
   color:#fff3ef;

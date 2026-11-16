@@ -16,7 +16,8 @@ test('pausa G3: música, efectos, continuar y acciones visibles', async ({ page 
   const dialog = page.getByRole('dialog', { name: 'PAUSA' });
   await expect(dialog.getByRole('button', { name: 'CONTINUAR BATALLA' })).toBeVisible();
   await expect(dialog.getByRole('button', { name: 'REINICIAR PARTIDA' })).toBeVisible();
-  await expect(dialog.getByRole('button', { name: 'RENDIRSE' })).toBeVisible();
+  await expect(dialog.getByRole('button', { name: 'VOLVER AL MENÚ PRINCIPAL' })).toBeVisible();
+  await expect(dialog.getByRole('button', { name: 'RENDIRSE' })).toHaveCount(0);
   await expect(dialog.locator('img.dr-pause-emblem')).toHaveAttribute('src', /moneda\/sol\.webp/);
   const music = dialog.getByRole('button', { name: 'Música' });
   const before = await music.getAttribute('aria-pressed');
@@ -50,19 +51,22 @@ test('reinicio: confirmar o cancelar y comenzar con una moneda nueva', async ({ 
   await expect(page.locator('.dr-royal-deck-back').last()).toContainText('28');
 });
 
-test('rendición: cancelar conserva el duelo y confirmar declara derrota', async ({ page }) => {
+test('salir al menú principal: cancelar conserva el duelo y confirmar no cuenta derrota', async ({ page }) => {
   await openPause(page);
-  await page.getByRole('button', { name: 'RENDIRSE' }).click();
-  let confirm = page.getByRole('alertdialog', { name: '¿Deseas rendirte?' });
-  await expect(confirm).toContainText('se contará como derrota');
-  await confirm.getByRole('button', { name: 'CANCELAR' }).click();
+  const exit = page.getByRole('button', { name: 'VOLVER AL MENÚ PRINCIPAL' });
+  await exit.click();
+  let confirmation = page.getByRole('alertdialog', { name: '¿Deseas salir de la partida?' });
+  await expect(confirmation).toContainText('volverás al menú principal');
+  await expect(confirmation.getByRole('button', { name: 'CANCELAR' })).toBeFocused();
+  await confirmation.getByRole('button', { name: 'CANCELAR' }).click();
   await expect(page.getByRole('dialog', { name: 'PAUSA' })).toBeVisible();
-  await page.getByRole('button', { name: 'RENDIRSE' }).click();
-  confirm = page.getByRole('alertdialog', { name: '¿Deseas rendirte?' });
-  await confirm.getByRole('button', { name: 'SÍ, RENDIRME' }).click();
+  await expect(page.getByRole('alertdialog')).toHaveCount(0);
+  await exit.click();
+  confirmation = page.getByRole('alertdialog', { name: '¿Deseas salir de la partida?' });
+  await confirmation.getByRole('button', { name: 'SÍ', exact: true }).click();
   await expect(page.getByTestId('royal-pause-menu')).toHaveCount(0);
-  await expect(page.getByRole('heading', { name: 'Derrota' })).toBeVisible();
-  await expect(page.getByText('Te has rendido.')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Jugar con la IA' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Derrota' })).toHaveCount(0);
 });
 
 test('pausa ocupa un solo viewport y la confirmación mantiene botones accesibles', async ({ page }) => {

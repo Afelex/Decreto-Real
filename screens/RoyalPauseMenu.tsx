@@ -1,7 +1,7 @@
 import React from 'react';
 import './royal-pause-menu.css';
 
-type Confirmation = 'restart' | 'surrender' | null;
+type Confirmation = 'restart' | 'surrender' | 'exit' | null;
 
 export type RoyalPauseMenuProps = {
   musicEnabled: boolean;
@@ -11,6 +11,7 @@ export type RoyalPauseMenuProps = {
   onClose: () => void;
   onRestart?: () => void;
   onSurrender?: () => void;
+  onExitToMainMenu?: () => void;
   onReturn?: () => void;
   onDevWin?: () => void;
 };
@@ -18,7 +19,7 @@ export type RoyalPauseMenuProps = {
 /** Pausa del tablero clásico. Solo confirma acciones destructivas; no cambia el motor. */
 export const RoyalPauseMenu: React.FC<RoyalPauseMenuProps> = ({
   musicEnabled, sfxEnabled, onToggleMusic, onToggleSfx, onClose,
-  onRestart, onSurrender, onReturn, onDevWin,
+  onRestart, onSurrender, onExitToMainMenu, onReturn, onDevWin,
 }) => {
   const [confirmation, setConfirmation] = React.useState<Confirmation>(null);
   const modalRef = React.useRef<HTMLElement>(null);
@@ -56,10 +57,14 @@ export const RoyalPauseMenu: React.FC<RoyalPauseMenuProps> = ({
 
   const confirmRestart = () => { if (onRestart) onRestart(); };
   const confirmSurrender = () => { if (onSurrender) onSurrender(); };
-  const confirmationTitle = confirmation === 'restart' ? '¿Reiniciar partida?' : '¿Deseas rendirte?';
+  const confirmExit = () => { if (onExitToMainMenu) onExitToMainMenu(); };
+  const confirmationTitle = confirmation === 'restart' ? '¿Reiniciar partida?'
+    : confirmation === 'surrender' ? '¿Deseas rendirte?' : '¿Deseas salir de la partida?';
   const confirmationText = confirmation === 'restart'
     ? 'Perderás el progreso actual del duelo y comenzarás una partida nueva desde el sorteo.'
-    : 'La batalla terminará y se contará como derrota.';
+    : confirmation === 'surrender'
+      ? 'La batalla terminará y se contará como derrota.'
+      : 'Saldrás del duelo actual y volverás al menú principal.';
 
   return (
     <div className="dr-pause-backdrop" data-testid="royal-pause-menu">
@@ -92,9 +97,9 @@ export const RoyalPauseMenu: React.FC<RoyalPauseMenuProps> = ({
                   className="dr-pause-action dr-pause-action--cancel"
                   onClick={() => setConfirmation(null)}>CANCELAR</button>
                 <button type="button"
-                  className={`dr-pause-action ${confirmation === 'restart' ? 'dr-pause-action--restart-confirm' : 'dr-pause-action--surrender-confirm'}`}
-                  onClick={confirmation === 'restart' ? confirmRestart : confirmSurrender}>
-                  {confirmation === 'restart' ? 'SÍ, REINICIAR' : 'SÍ, RENDIRME'}
+                  className={`dr-pause-action ${confirmation === 'restart' ? 'dr-pause-action--restart-confirm' : confirmation === 'exit' ? 'dr-pause-action--exit-confirm' : 'dr-pause-action--surrender-confirm'}`}
+                  onClick={confirmation === 'restart' ? confirmRestart : confirmation === 'exit' ? confirmExit : confirmSurrender}>
+                  {confirmation === 'restart' ? 'SÍ, REINICIAR' : confirmation === 'exit' ? 'SÍ' : 'SÍ, RENDIRME'}
                 </button>
               </div>
             </div>
@@ -126,6 +131,8 @@ export const RoyalPauseMenu: React.FC<RoyalPauseMenuProps> = ({
                   onClick={() => setConfirmation('restart')}>REINICIAR PARTIDA</button>}
                 {onSurrender && <button type="button" className="dr-pause-action dr-pause-action--surrender"
                   onClick={() => setConfirmation('surrender')}>RENDIRSE</button>}
+                {onExitToMainMenu && <button type="button" className="dr-pause-action dr-pause-action--exit"
+                  onClick={() => setConfirmation('exit')}>VOLVER AL MENÚ PRINCIPAL</button>}
                 {onReturn && <button type="button" className="dr-pause-action dr-pause-action--return"
                   onClick={onReturn}>VOLVER AL MENÚ PRINCIPAL</button>}
                 {onDevWin && <button type="button" className="dr-pause-action dr-pause-action--dev"
