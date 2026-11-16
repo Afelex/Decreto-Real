@@ -137,11 +137,11 @@
   background:linear-gradient(140deg,#553038,#181a30);
   box-shadow:0 8px 20px #000c;
 }
-.dr-duel-entrance__fighter--player img {
+.dr-duel-entrance__fighter--player .dr-duel-entrance__portrait {
   border-color:#e7a18e;
   background:linear-gradient(140deg,#8e2b36,#271426);
 }
-.dr-duel-entrance__fighter--rival img {
+.dr-duel-entrance__fighter--rival .dr-duel-entrance__portrait {
   border-color:#94b9e6;
   background:linear-gradient(140deg,#244979,#101d35);
 }
