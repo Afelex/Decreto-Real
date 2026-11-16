@@ -1,22 +1,11 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react';
 import {NarrativeMusicDirector} from '../campaign/studio/musicDirector.ts';
 import type {StudioNarrativeMusicMode} from '../campaign/studio/narrativeAudio.ts';
+import { musicAssetUrl, type SoundType } from '../game/audioAssets.ts';
+import { SoundEffectPool } from '../game/soundPool.ts';
 
-// --- SOUND ASSETS ---
-const SOUNDS = {
-    CLICK: 'https://assets.mixkit.co/active_storage/sfx/1109/1109-preview.mp3', // Click
-    FLIP: 'https://assets.mixkit.co/active_storage/sfx/881/881-preview.mp3', // Quick Card Slide/Shuffle
-    ATTACK: 'https://assets.mixkit.co/active_storage/sfx/1476/1476-preview.mp3', // Crisp Sword Slash
-    DEFENSE: 'https://assets.mixkit.co/active_storage/sfx/878/878-preview.mp3', // Nature/Healing sound
-    IMPACT: 'https://assets.mixkit.co/active_storage/sfx/880/880-preview.mp3', // Cinematic Deep Boom
-    VICTORY: '', // Removed (Final Screen silenced)
-    DEFEAT: '', // Removed (Final Screen silenced)
-};
-
-// War Drums Background Music
-const BG_MUSIC_URL = 'https://assets.mixkit.co/music/80/80.mp3';
-
-export type SoundType = keyof typeof SOUNDS;
+// Keep the existing published music until Suno tracks are explicitly approved.
+const BG_MUSIC_URL = musicAssetUrl('DEFAULT', import.meta.env.BASE_URL)!;
 
 interface AudioContextType {
     sfxEnabled: boolean;
@@ -46,6 +35,13 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     });
 
     const directorRef = useRef<NarrativeMusicDirector|null>(null);
+    // A single lazy pool reuses small SFX players; it is not downloaded at mount.
+    const soundPoolRef = useRef<SoundEffectPool|null>(null);
+
+    useEffect(() => () => {
+        soundPoolRef.current?.dispose();
+        soundPoolRef.current = null;
+    }, []);
     const [narrativeMusicMode,setNarrativeMusicMode]=useState<StudioNarrativeMusicMode>('normal');
     const [narrativeMusicTrack,setNarrativeMusicTrack]=useState<string|null>(null);
 
@@ -71,31 +67,23 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         localStorage.setItem('decreto_music', JSON.stringify(musicEnabled));
     },[musicEnabled,narrativeMusicMode,narrativeMusicTrack]);
 
-    // Persistence for SFX
+    // Silence outstanding effects immediately when the SFX switch is disabled.
     useEffect(() => {
+        if (!sfxEnabled) soundPoolRef.current?.stopAll();
         localStorage.setItem('decreto_sfx', JSON.stringify(sfxEnabled));
     }, [sfxEnabled]);
 
     const toggleSfx = () => setSfxEnabled((prev: boolean) => !prev);
     const toggleMusic = () => setMusicEnabled((prev: boolean) => !prev);
 
-    const playSound = (type: SoundType):void|(()=>void) => {
+    const playSound = (type: SoundType): void|(()=>void) => {
         if (!sfxEnabled) return;
-
-        const url = SOUNDS[type];
-        if (url) {
-            const audio = new Audio(url);
-            
-            // Logic: Volume Control
-            if (type === 'IMPACT') {
-                audio.volume = 0.6; 
-            } else {
-                audio.volume = 0.4;
-            }
-
-            audio.play().catch(e => console.warn("Audio play blocked", e));
-            return ()=>{ audio.pause();audio.currentTime=0; };
+        if (!soundPoolRef.current) {
+            soundPoolRef.current = new SoundEffectPool(
+                url => new Audio(url), import.meta.env.BASE_URL,
+            );
         }
+        return soundPoolRef.current.play(type);
     };
 
     return (

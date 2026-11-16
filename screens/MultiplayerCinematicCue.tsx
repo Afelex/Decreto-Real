@@ -1,6 +1,6 @@
 import React from 'react';
 import { cardActivationCopy } from '../game/cardActivationText';
-import { cardEffectCue, DECREE_BANNER_DURATION_MS, DECREE_EFFECT_DURATION_MS, syncCueVideoRate } from '../game/effectCues';
+import { bannerCueFile, cardEffectCue, DECREE_BANNER_DURATION_MS, DECREE_EFFECT_DURATION_MS, syncCueVideoRate } from '../game/effectCues';
 import type { MultiplayerCue } from '../game/multiplayerPresentation';
 import type { CardType } from '../types';
 
@@ -23,7 +23,7 @@ export function MultiplayerCinematicCue({ cue, onEnded }: {
   const isEnergy = stage === 'effect' && Boolean(cueFile);
   const file = isEnergy && cueFile
     ? cueFile
-    : `animaciones/banner-${cue.isPlayer ? 'jugador-rojo' : 'rival-azul'}.webm`;
+    : bannerCueFile(cue.isPlayer);
   const finish = () => {
     if (completed.current) return;
     completed.current = true;
