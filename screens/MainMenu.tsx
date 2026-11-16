@@ -218,10 +218,21 @@ const MainMenu: React.FC = () => {
         <source src={menuLoopSource()} type="video/mp4" />
       </video>
       <div className="dr-cinematic-shade" aria-hidden="true" />
-      {audio?.musicEnabled && audio.musicGestureRequired && (
-        <button className="dr-cinematic-music-unlock" type="button"
-          aria-label="Activar música del menú" onClick={audio.unlockMusic}>
-          Activar música
+      {audio && (
+        <button className="dr-cinematic-music-toggle" type="button"
+          aria-label={audio.musicGestureRequired && audio.musicEnabled ? 'Reproducir música'
+            : audio.musicEnabled ? 'Silenciar música' : 'Encender música'}
+          title={audio.musicGestureRequired && audio.musicEnabled ? 'Reproducir música'
+            : audio.musicEnabled ? 'Silenciar música' : 'Encender música'}
+          aria-pressed={audio.musicEnabled && !audio.musicGestureRequired}
+          onClick={() => {
+            if (audio.musicEnabled && audio.musicGestureRequired) audio.unlockMusic();
+            else audio.toggleMusic();
+          }}>
+          <img className="dr-cinematic-music-toggle__icon"
+            src={`${import.meta.env.BASE_URL}interfaz/hud-g3/${audio.musicEnabled && !audio.musicGestureRequired
+              ? 'sonido_activado.webp' : 'sonido_silenciado.webp'}`}
+            alt="" aria-hidden="true" draggable={false}/>
         </button>
       )}
 
