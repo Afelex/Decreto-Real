@@ -193,3 +193,26 @@
   .dr-result-screen__obtained strong {font-size:15px;}
   .dr-result-screen__controls.has-reward-showcase {max-height:62dvh;}
 }
+
+/* G3 cartela stays clear of gameplay statistics and campaign reward artwork. */
+.dr-result-screen__g3-heading {
+  position:absolute; z-index:0; top:clamp(8px,3dvh,24px); left:3%; right:3%;
+  height:min(25dvh,180px); display:grid; place-items:center;
+  pointer-events:none;
+}
+.dr-result-screen__g3-heading.is-missing { display:none; }
+.dr-result-screen__g3-heading img {
+  position:absolute; inset:0; width:100%; height:100%; display:block; object-fit:contain;
+}
+.dr-result-screen__g3-heading strong {
+  z-index:1; color:#4b211d; padding-top:12px;
+  text-align:center; font:900 clamp(20px,6vw,32px)/1.1 Cinzel,Georgia,serif;
+  letter-spacing:.10em; text-shadow:0 1px 1px #fff6d1;
+}
+.dr-result-screen.is-defeat .dr-result-screen__g3-heading strong { color:#1e2d4c; }
+.dr-result-screen__action { position:relative; isolation:isolate; overflow:hidden; }
+.dr-result-screen__action-art {
+  position:absolute; z-index:-1; inset:0; width:100%; height:100%;
+  display:block; object-fit:fill; pointer-events:none;
+}
+.dr-result-screen__action span { position:relative; z-index:1; }
