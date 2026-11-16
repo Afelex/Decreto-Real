@@ -7,7 +7,7 @@ import { ComboEffectOverlay } from '../../screens/ComboEffectOverlay';
 import { LastDecreeIndicator } from '../../screens/LastDecreeIndicator';
 import type { CardData, CardType } from '../../types';
 
-afterEach(() => { cleanup(); vi.restoreAllMocks(); });
+afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
 test('duelo estándar: muestra fotograma del MISMO vídeo sin imagen clay ni viñeta', () => {
   const { container } = render(<BattleSceneryLayer
@@ -176,4 +176,53 @@ test('un combo interrumpido por pausa tampoco elimina su clip', async () => {
   await act(async () => { await Promise.resolve(); });
   expect(container.querySelector('video')).toBeTruthy();
   expect(container.querySelector('video')?.hasAttribute('loop')).toBe(false);
+});
+
+
+test('video ambiental del duelo se pausa y reanuda sin cambiar su póster', () => {
+  vi.spyOn(document, 'hidden', 'get').mockReturnValue(false);
+  vi.stubGlobal('matchMedia', () => ({
+    matches:false, addEventListener: vi.fn(), removeEventListener: vi.fn(),
+  }));
+  const play = vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue(undefined);
+  const pause = vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => {});
+  const scenery = { poster:'/Decreto-Real/escenarios/plaza-arcilla-estandar.webp',
+    video:'/Decreto-Real/escenarios/partida-inicial-loop.mp4' };
+  const { container, rerender }=render(<BattleSceneryLayer {...scenery} paused={false}/>);
+  expect(play).toHaveBeenCalled();
+  const source=container.querySelector('video source')?.getAttribute('src');
+  const poster=container.querySelector('img.dr-battle-video-poster')?.getAttribute('src');
+  const played=play.mock.calls.length;
+  rerender(<BattleSceneryLayer {...scenery} paused/>);
+  expect(pause).toHaveBeenCalled();
+  expect(play.mock.calls.length).toBe(played);
+  rerender(<BattleSceneryLayer {...scenery} paused={false}/>);
+  expect(play.mock.calls.length).toBeGreaterThan(played);
+  expect(container.querySelector('video source')?.getAttribute('src')).toEqual(source);
+  expect(container.querySelector('img.dr-battle-video-poster')?.getAttribute('src')).toEqual(poster);
+});
+
+test('pestaña oculta y reducir movimiento suspenden el vídeo sin desmontarlo', () => {
+  let hidden=false;
+  let reduced=true;
+  const mediaChange: Array<() => void>=[];
+  vi.spyOn(document, 'hidden', 'get').mockImplementation(() => hidden);
+  vi.stubGlobal('matchMedia', () => ({
+    get matches(){ return reduced; },
+    addEventListener: (_event: string, callback: () => void) => mediaChange.push(callback),
+    removeEventListener: vi.fn(),
+  }));
+  const play=vi.spyOn(HTMLMediaElement.prototype,'play').mockResolvedValue(undefined);
+  const pause=vi.spyOn(HTMLMediaElement.prototype,'pause').mockImplementation(()=>{});
+  const {container}=render(<BattleSceneryLayer poster="scene.webp" video="scene.mp4" />);
+  expect(pause).toHaveBeenCalled();
+  expect(play).not.toHaveBeenCalled();
+  reduced=false;
+  act(()=>mediaChange.forEach(callback=>callback()));
+  expect(play).toHaveBeenCalled();
+  hidden=true;
+  const stopCount=pause.mock.calls.length;
+  act(()=>document.dispatchEvent(new Event('visibilitychange')));
+  expect(pause.mock.calls.length).toBeGreaterThan(stopCount);
+  expect(container.querySelector('video source')?.getAttribute('src')).toBe('scene.mp4');
 });
