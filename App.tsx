@@ -106,9 +106,11 @@ const CampaignRoutes: React.FC = () => {
 
 const App: React.FC = () => (
   <HashRouter>
-    <InitialLoadingGate>
-      <AudioProvider><CampaignRoutes /></AudioProvider>
-    </InitialLoadingGate>
+    {/* Mount the music player while the first 0–100% resource splash is visible.
+        Otherwise playback cannot begin until after the loading screen closes. */}
+    <AudioProvider>
+      <InitialLoadingGate><CampaignRoutes /></InitialLoadingGate>
+    </AudioProvider>
   </HashRouter>
 );
 
