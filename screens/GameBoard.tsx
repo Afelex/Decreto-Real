@@ -10,6 +10,7 @@ import {scheduleNarrativeMusic,scheduleNarrativeSound,
 import { AiTurnController, runOpponentTurn } from '../game/aiTurn';
 import { cardPlacementPrompt, checkCardPlacement, resolveVisualDropZone, type CardDropZone } from '../game/cardPlacement.ts';
 import { CardActivationBanner } from './CardActivationBanner';
+import { preloadDecretoFX } from './DecretoFXOverlay';
 import { LastDecreeIndicator } from './LastDecreeIndicator';
 import { nextDecreeStreak } from '../game/decreeStreak';
 import './hud-g3.css';
@@ -308,6 +309,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const [coinSide, setCoinSide] = useState<'CARA' | 'SELLO' | null>(null);
   const [isCoinFlipping, setIsCoinFlipping] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  useEffect(() => { void preloadDecretoFX().catch(() => { /* El WebM existente queda como respaldo. */ }); }, []);
   const [visualEffect, setVisualEffect] = useState<{ type: EffectType, target: EffectTarget }>({ type: null, target: null });
   const [cardAnnouncement, setCardAnnouncement] = useState<{ id: number; card: CardData; isPlayer: boolean; stage: 'banner' | 'effect' } | null>(null);
   const announcementBusy = useRef(false);
@@ -585,11 +587,12 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
     const announced = await waitForCue(DECREE_BANNER_DURATION_MS);
     if (!announced) return; // Unmounted/cancelled: do not mutate the match.
     const energyCue = cardEffectCue(card.type);
-    if (energyCue.file) {
+    if (energyCue.file || card.type === 'IMPACT' || card.type === 'MYSTIC') {
       setCardAnnouncement({ id: ++announcementCount.current, card, isPlayer, stage: 'effect' });
       if (card.type === 'ATTACK' || card.type === 'MYSTIC') playSound('ATTACK');
       else if (card.type === 'DEFENSE') playSound('DEFENSE');
       else if (card.type === 'ORDER') playSound('FLIP');
+      else if (card.type === 'IMPACT') playSound('IMPACT');
       const played = await waitForCue(DECREE_EFFECT_DURATION_MS);
       if (!played) return;
     } else if (card.type === 'ATTACK' || card.type === 'MYSTIC') playSound('ATTACK');
@@ -612,7 +615,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
     } else if (card.type === 'ORDER') {
       drawCards(isPlayer ? 'PLAYER' : 'OPPONENT', 1);
     } else if (card.type === 'IMPACT') {
-      playSound('IMPACT'); triggerVisualEffect('IMPACT', 'GLOBAL');
+      // Impacto G3 se reproduce en la fase visual anterior, sin duplicar animaciones.
       if (isPlayer) { setPlayerImpactLevel(p => p + 1); setPlayerImpactPlayedThisTurn(true); setOpponentHP(p => Math.max(0, p - 1)); setPlayerHP(p => Math.min(MAX_HP, p + 1)); }
       else { setOpponentImpactLevel(p => p + 1); setOpponentImpactPlayedThisTurn(true); setPlayerHP(p => Math.max(0, p - 1)); setOpponentHP(p => Math.min(MAX_HP, p + 1)); }
     }
