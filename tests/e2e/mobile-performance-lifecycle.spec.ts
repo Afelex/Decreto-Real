@@ -46,7 +46,7 @@ test('producción: la portada no descarga el MP4 del duelo antes de entrar', asy
   expect(errors).toEqual([]);
 });
 
-test('ciclo del duelo: pausa, cancelación, reinicio y rendición sin errores', async ({ page }) => {
+test('ciclo del duelo: pausa, cancelación, reinicio y salida al menú sin errores', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror',error=>errors.push(error.message));
   // The player wins the coin toss; no randomness-dependent strategy is needed.
@@ -70,13 +70,16 @@ test('ciclo del duelo: pausa, cancelación, reinicio y rendición sin errores', 
   await page.getByRole('button',{name:'Lanzar Moneda'}).click();
   await expect(page.locator('.dr-event-indicator.is-player')).toBeVisible({timeout:12000});
   await page.getByRole('button',{name:'Abrir menú de pausa'}).click();
-  await page.getByRole('button',{name:/RENDIRSE/i}).click();
-  await expect(page.getByRole('alertdialog')).toBeVisible();
-  await page.getByRole('button',{name:/SÍ, RENDIRME/i}).click();
-  await expect(page.locator('.dr-royal-end-banner-stage.is-defeat')).toBeVisible();
-  await page.getByRole('button',{name:'Continuar',exact:true}).click();
-  await expect(page.getByRole('button',{name:'Jugar de nuevo'})).toBeVisible();
-  await page.getByRole('button',{name:'Menú principal'}).click();
+  await page.getByRole('button',{name:'VOLVER AL MENÚ PRINCIPAL'}).click();
+  let exitConfirmation = page.getByRole('alertdialog',{name:'¿Deseas salir de la partida?'});
+  await expect(exitConfirmation).toBeVisible();
+  await exitConfirmation.getByRole('button',{name:'CANCELAR'}).click();
+  await expect(page.getByRole('dialog',{name:'PAUSA'})).toBeVisible();
+  await page.getByRole('button',{name:'VOLVER AL MENÚ PRINCIPAL'}).click();
+  exitConfirmation = page.getByRole('alertdialog',{name:'¿Deseas salir de la partida?'});
+  await exitConfirmation.getByRole('button',{name:'SÍ',exact:true}).click();
+  await expect(page.getByTestId('royal-pause-menu')).toHaveCount(0);
   await expect(page.getByRole('button',{name:'Jugar con la IA'})).toBeVisible();
+  await expect(page.locator('.dr-royal-end-banner-stage.is-defeat')).toHaveCount(0);
   expect(errors).toEqual([]);
 });
