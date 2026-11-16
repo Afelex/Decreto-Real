@@ -91,3 +91,21 @@ Para publicar los binarios exactos, seguir el flujo de carga única en `incoming
 ### Estado de publicación gráfica G3 · 16/11/2026
 
 Lote G3 importado y validado por GitHub Actions (ejecución #43908956128): 9 PNG maestros conservados en `art-reference/g3-ui/maestros_png/` y 10 WebP en `public/interfaz/g3/`, incluidas las dos hojas separadas de las puertas. Se verificaron hashes, pruebas automatizadas y compilación. El archivo ZIP temporal se retiró de `incoming/` tras instalarse correctamente. Se mantiene el arte anterior como respaldo y se conserva la lógica del duelo.
+
+## Pantalla de precarga para Versus IA
+
+Al tocar **Versus IA**, el menú presenta una barra que avanza por tareas **verificadas**
+(no es un cronómetro ni un porcentaje ficticio): carga el módulo del tablero y
+descarga/decodifica las imágenes imprescindibles para el primer duelo (escenario,
+marcos y puertas G3, retratos, cartas, moneda, HUD y cintas). El avance solo llega
+a 100% cuando todas esas operaciones han terminado correctamente; entonces
+empieza la presentación existente y después el sorteo de moneda.
+
+La precarga usa un máximo de cuatro imágenes simultáneas para evitar saturar el
+móvil. Se puede cancelar o reintentar sin iniciar una partida incompleta.
+Si falta un recurso obligatorio, permanece en el menú e indica cuál falló.
+Los fondos de campaña, pantallas futuras, música externa y vídeos de combate
+**no se descargan por completo por adelantado**: siguen usando carga progresiva
+o reproducción por streaming, para no penalizar datos ni memoria. El fotograma
+de póster garantiza el inicio visual inmediato mientras el vídeo se prepara.
+La precarga no altera motor, cartas, sorteo, IA ni duración de banners.
