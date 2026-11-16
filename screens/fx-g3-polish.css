@@ -35,3 +35,35 @@
 @media(prefers-reduced-motion:reduce) {
   .dr-royal-screen .dr-g3-draw-card { animation:none; opacity:0; }
 }
+
+/* El Canvas de combos ocupa TODA la mesa: B01/B02 y A04 usan el retablo
+   verdadero como objetivo y dejan B05/B06 centrados sin recortar sus trazos. */
+.dr-royal-screen .dr-energy-overlay--combo .dr-g3-combo-stage {
+  position:absolute; inset:0; width:100%; height:100%;
+  overflow:hidden; pointer-events:none; z-index:1;
+}
+.dr-royal-screen .dr-energy-overlay--combo .dr-energy-overlay__media { z-index:0; }
+.dr-royal-screen .dr-energy-overlay--combo > .dr-energy-overlay__label { z-index:2; }
+
+/* C06/C07 tienen su presentación completa antes de mostrar las acciones.
+   La cartela final no puede cubrir la animación mientras se revela. */
+.dr-royal-screen .dr-royal-end-banner-stage .dr-g3-result-fx {
+  z-index:3; pointer-events:none;
+}
+.dr-royal-screen .dr-royal-end-banner-stage .dr-royal-end-banner {
+  position:absolute; left:5%; right:5%; top:auto;
+  bottom:max(4%,env(safe-area-inset-bottom));
+  margin:0 auto; width:90%; box-sizing:border-box;
+  max-width:390px;
+  z-index:4;
+  animation:dr-g3-final-actions-arrive .42s ease-out 3.25s both;
+}
+@keyframes dr-g3-final-actions-arrive {
+  0% {opacity:0; visibility:hidden; transform:translateY(22px);}
+  100% {opacity:1; visibility:visible; transform:translateY(0);}
+}
+@media(prefers-reduced-motion:reduce) {
+  .dr-royal-screen .dr-royal-end-banner-stage .dr-royal-end-banner {
+    animation:none; visibility:visible; opacity:1;
+  }
+}
