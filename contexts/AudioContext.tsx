@@ -47,7 +47,12 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         soundPoolRef.current?.dispose();
         soundPoolRef.current = null;
     }, []);
-    const [musicScene,setMusicScene]=useState<Exclude<MusicSlot,'DEFAULT'>|null>(null);
+    const [musicScene,setMusicScene]=useState<Exclude<MusicSlot,'DEFAULT'>|null>(() => {
+        // After the splash the MENU theme was already downloaded. Select it on
+        // the very first render to avoid briefly starting the default theme.
+        const initialRoute=window.location.hash.slice(1).split('?')[0]||'/';
+        return initialRoute==='/' ? 'MENU' : null;
+    });
     const [musicGestureRequired,setMusicGestureRequired]=useState(false);
     const [narrativeMusicMode,setNarrativeMusicMode]=useState<StudioNarrativeMusicMode>('normal');
     const [narrativeMusicTrack,setNarrativeMusicTrack]=useState<string|null>(null);
