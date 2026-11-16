@@ -481,7 +481,8 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
       setPlayerDeck(playerDeckRef.current);
       if (drawn.length) {
         setPlayerHand(hand => [...hand, ...drawn]);
-        setDrawCues(prev => [...prev, { id: ++drawCueCounter.current, side: 'PLAYER', count: drawn.length }]);
+        const cueId = ++drawCueCounter.current;
+        setDrawCues(prev => [...prev, { id: cueId, side: 'PLAYER', count: drawn.length }]);
       }
     } else {
       const drawn = opponentDeckRef.current.slice(0, amount);
@@ -489,7 +490,8 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
       setOpponentDeck(opponentDeckRef.current);
       if (drawn.length) {
         setOpponentHand(hand => [...hand, ...drawn]);
-        setDrawCues(prev => [...prev, { id: ++drawCueCounter.current, side: 'OPPONENT', count: drawn.length }]);
+        const cueId = ++drawCueCounter.current;
+        setDrawCues(prev => [...prev, { id: cueId, side: 'OPPONENT', count: drawn.length }]);
       }
     }
   };
