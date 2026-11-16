@@ -3,6 +3,7 @@ import {NarrativeMusicDirector} from '../campaign/studio/musicDirector.ts';
 import type {StudioNarrativeMusicMode} from '../campaign/studio/narrativeAudio.ts';
 import { musicSceneUrl, type MusicSlot, type SoundType } from '../game/audioAssets.ts';
 import { SoundEffectPool } from '../game/soundPool.ts';
+import { menuMusicSource } from '../game/menuMusicPreload.ts';
 
 // The selected scene always falls back to the currently published soundtrack.
 
@@ -19,6 +20,9 @@ interface AudioContextType {
     setNarrativeMusicTrack: (url: string | null) => void;
     /** Canciones por escena; no afecta a los efectos ni a la edición de narrativa. */
     setMusicScene: (scene: Exclude<MusicSlot,'DEFAULT'> | null) => void;
+    /** Autoplay can be blocked in Android; offer an explicit unlock gesture. */
+    musicGestureRequired: boolean;
+    unlockMusic: () => void;
 }
 
 const AudioContext = createContext<AudioContextType | undefined>(undefined);
@@ -43,7 +47,13 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         soundPoolRef.current?.dispose();
         soundPoolRef.current = null;
     }, []);
-    const [musicScene,setMusicScene]=useState<Exclude<MusicSlot,'DEFAULT'>|null>(null);
+    const [musicScene,setMusicScene]=useState<Exclude<MusicSlot,'DEFAULT'>|null>(() => {
+        // After the splash the MENU theme was already downloaded. Select it on
+        // the very first render to avoid briefly starting the default theme.
+        const initialRoute=window.location.hash.slice(1).split('?')[0]||'/';
+        return initialRoute==='/' ? 'MENU' : null;
+    });
+    const [musicGestureRequired,setMusicGestureRequired]=useState(false);
     const [narrativeMusicMode,setNarrativeMusicMode]=useState<StudioNarrativeMusicMode>('normal');
     const [narrativeMusicTrack,setNarrativeMusicTrack]=useState<string|null>(null);
 
@@ -55,6 +65,7 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
             requestFrame:callback=>window.requestAnimationFrame(callback),
             cancelFrame:id=>window.cancelAnimationFrame(id),
             now:()=>performance.now(),
+            onPlaybackPermissionChange:setMusicGestureRequired,
         });
         directorRef.current=director;
         return ()=>{
@@ -63,7 +74,18 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         };
     },[]);
 
-    const soundtrackUrl = narrativeMusicTrack ?? musicSceneUrl(musicScene,import.meta.env.BASE_URL);
+    const soundtrackUrl = narrativeMusicTrack ?? (
+        musicScene==='MENU' ? menuMusicSource() ?? musicSceneUrl('MENU',import.meta.env.BASE_URL)
+            : musicSceneUrl(musicScene,import.meta.env.BASE_URL)
+    );
+    const unlockMusic=()=>{
+        if(musicEnabled && soundtrackUrl)
+            directorRef.current?.setSoundtrack(soundtrackUrl,true,narrativeMusicMode);
+    };
+
+    useEffect(()=>{
+        if(!musicEnabled) setMusicGestureRequired(false);
+    },[musicEnabled]);
 
     useEffect(()=>{
         if(soundtrackUrl)directorRef.current?.setSoundtrack(
@@ -76,8 +98,7 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     // while disabled music stays muted. No song is downloaded during preload.
     useEffect(()=>{
         const unlock=()=>{
-            if(soundtrackUrl)directorRef.current?.setSoundtrack(
-                soundtrackUrl,musicEnabled,narrativeMusicMode);
+            if(musicEnabled)unlockMusic();
         };
         document.addEventListener('pointerdown',unlock,{capture:true,passive:true});
         document.addEventListener('keydown',unlock,true);
@@ -107,7 +128,7 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     };
 
     return (
-        <AudioContext.Provider value={{ sfxEnabled, musicEnabled, toggleSfx, toggleMusic, playSound, setNarrativeMusicMode, setNarrativeMusicTrack, setMusicScene }}>
+        <AudioContext.Provider value={{ sfxEnabled, musicEnabled, toggleSfx, toggleMusic, playSound, setNarrativeMusicMode, setNarrativeMusicTrack, setMusicScene, musicGestureRequired, unlockMusic }}>
             {children}
         </AudioContext.Provider>
     );

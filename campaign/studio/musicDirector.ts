@@ -20,6 +20,8 @@ export type MusicDirectorDependencies={
   requestFrame:(callback:(timestamp:number)=>void)=>number;
   cancelFrame:(id:number)=>void;
   now:()=>number;
+  /** Browser permission state for the current soundtrack, if provided. */
+  onPlaybackPermissionChange?:(needsGesture:boolean)=>void;
 };
 type Track={url:string;audio:MusicAudioLike};
 type Fade={from:Track|null;fromVolume:number;fromActiveVolume:number;
@@ -42,12 +44,28 @@ export class NarrativeMusicDirector {
 
   constructor(deps:MusicDirectorDependencies){this.deps=deps;}
 
+  private reportPlayback(audio:MusicAudioLike,needsGesture:boolean){
+    if(this.current?.audio!==audio)return; // Ignore outdated songs during crossfade.
+    this.deps.onPlaybackPermissionChange?.(needsGesture);
+  }
   private play(audio:MusicAudioLike){
     try{
       const result=audio.play();
-      if(result&&typeof result.catch==='function')
-        result.catch(()=>{/* El navegador puede exigir una interacción del jugador. */});
-    }catch{/* El navegador puede impedir el audio automático. */}
+      if(result&&typeof result.then==='function'){
+        void Promise.resolve(result).then(
+          ()=>this.reportPlayback(audio,false),
+          (error:unknown)=>{
+            // On Android, NotAllowedError means the user must touch the page
+            // before sound can start. Report this instead of swallowing it.
+            if(error instanceof Error && error.name==='NotAllowedError')
+              this.reportPlayback(audio,true);
+          },
+        );
+      }else this.reportPlayback(audio,false);
+    }catch(error){
+      if(error instanceof Error && error.name==='NotAllowedError')
+        this.reportPlayback(audio,true);
+    }
   }
   private cancelAnimation(){
     if(this.frame!==null)this.deps.cancelFrame(this.frame);

@@ -25,6 +25,7 @@ test('the QA home menu exposes exactly the two duel modes', () => {
   const menu = screen.getByRole('navigation', { name: 'Menú principal' });
   expect(menu.getAttribute('data-menu-mode')).toBe('qa-duelos');
   expect(menu.querySelectorAll('button')).toHaveLength(2);
+  expect(menu.querySelectorAll('.dr-cinematic-button-icon')).toHaveLength(0);
   expect(screen.getByRole('button', { name: 'Versus IA' })).toBeTruthy();
   expect(screen.getByRole('button', { name: 'Multijugador' })).toBeTruthy();
   for (const hidden of ['Empezar campaña', 'Creación de baraja - No disponible', 'Reglas', 'Opciones']) {
