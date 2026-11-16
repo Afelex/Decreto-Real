@@ -9,7 +9,7 @@ import './battle-scenery.css';
  * Never flash the old clay scene or a second visual background. */
 export const BattleSceneryLayer: React.FC<BattleScenery & { paused?: boolean }> = ({ poster, video, paused = false }) => {
   const videoRef = React.useRef<HTMLVideoElement>(null);
-  useAmbientVideo(videoRef, paused);
+  useAmbientVideo(videoRef, paused, video);
   const [failed, setFailed] = React.useState(false);
   const [playing, setPlaying] = React.useState(false);
   React.useEffect(() => { setFailed(false); setPlaying(false); }, [video]);
