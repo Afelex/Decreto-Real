@@ -6,10 +6,23 @@
     <title>Decreto Real — Duelo de cartas</title>
     <meta name="description" content="Un duelo táctico de cartas inspirado en la historia del Perú."/>
     <meta name="theme-color" content="#101c2d"/>
-    <!-- The first arena frame is available before React/coin toss is mounted.
-         Prefetch the small loop without competing with the JPG's high priority. -->
-    <link rel="preload" as="image" href="/Decreto-Real/escenarios/partida-inicial-poster.jpg" fetchpriority="high"/>
-    <link rel="prefetch" as="video" href="/Decreto-Real/escenarios/partida-inicial-loop.mp4" type="video/mp4"/>
+    <!-- No battle video on every route: only preload the visible first frame.
+         Hash routes work on GitHub Pages; keep QA/Studio from downloading duel art. -->
+    <script>
+      (() => {
+        const route = location.hash.slice(1).split('?')[0] || '/';
+        const poster = route === '/game'
+          ? '/Decreto-Real/escenarios/partida-inicial-poster.jpg'
+          : route === '/' ? '/Decreto-Real/portada/portada-poster.jpg' : null;
+        if (!poster) return;
+        const link = document.createElement('link');
+        link.rel = 'preload';
+        link.as = 'image';
+        link.href = poster;
+        link.fetchPriority = 'high';
+        document.head.appendChild(link);
+      })();
+    </script>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
