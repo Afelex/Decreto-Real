@@ -162,3 +162,30 @@ de motor, tablero y cartas. Las rutas directas de combate/Studio y los
 regresos al menú conservan su navegación actual y no repiten el splash.
 Pruebas: `tests/integration/main-menu-startup.test.tsx` y
 `tests/e2e/initial-loading-screen.spec.ts`.
+
+## Ajuste del menú G3 · música original y botones (16/11/2026)
+
+**Carga inicial:** ahora se descarga y verifica `mus_menu_reinos_del_peru_v01.mp3`
+junto con el logo, póster, botones G3 y vídeo de portada. Si la música está
+habilitada y su descarga falla, el porcentaje no alcanza el 100 % y ofrece
+**Reintentar**. El reproductor reutiliza el archivo ya descargado, sin repetir
+la petición de 3,7 MB al abrir el menú. Si el usuario desactivó Música, respeta
+esa preferencia y omite la descarga.
+
+**Permiso del navegador:** Android/iOS pueden rechazar la reproducción sonora
+sin interacción previa, incluso con el audio descargado al 100 %. En tal caso,
+el menú sigue entrando automáticamente y aparece un pequeño botón
+**Activar música**. Al tocarlo (o dar otro gesto permitido) se reintenta la
+reproducción de la pista preparada; el botón desaparece tras confirmarse
+el permiso. No se añaden pantallas obligatorias ni se altera la segunda
+precarga de Versus IA.
+
+**Botones:** los dos botones públicos Versus IA y Multijugador no incluyen
+emojis. Se hicieron aproximadamente un 12 % más angostos y un poco más altos,
+con tipografía algo mayor, para evitar el aspecto excesivamente alargado.
+El arte PNG G3 y sus estados pulsados permanecen intactos; solo cambia el
+tamaño de presentación responsive.
+
+**Pruebas:** `game/mainMenuStartup.ts`, `game/menuMusicPreload.ts`,
+`campaign/studio/musicDirector.ts`, y
+`tests/e2e/menu-audio-and-buttons.spec.ts`.
