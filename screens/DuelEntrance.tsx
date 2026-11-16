@@ -65,8 +65,8 @@ export const DuelEntrance: React.FC<DuelEntranceProps> = ({
             <img className="dr-duel-entrance__portrait" src={playerPortrait} alt="" draggable={false} />
             <img className="dr-duel-entrance__portrait-ornament" src={G3_UI_ASSETS.playerFrame} alt="" aria-hidden="true" draggable={false}
               onError={event => { event.currentTarget.style.display = 'none'; }}/>
+            <figcaption>XERVIAS</figcaption>
           </div>
-          <figcaption>XERVIAS</figcaption>
         </figure>
         <div className="dr-duel-entrance__versus" aria-hidden="true">VS</div>
         <figure className="dr-duel-entrance__fighter dr-duel-entrance__fighter--rival">
@@ -74,8 +74,8 @@ export const DuelEntrance: React.FC<DuelEntranceProps> = ({
             <img className="dr-duel-entrance__portrait" src={rivalPortrait} alt="" draggable={false} />
             <img className="dr-duel-entrance__portrait-ornament" src={G3_UI_ASSETS.rivalFrame} alt="" aria-hidden="true" draggable={false}
               onError={event => { event.currentTarget.style.display = 'none'; }}/>
+            <figcaption>RIVAL IA</figcaption>
           </div>
-          <figcaption>RIVAL IA</figcaption>
         </figure>
         <h2>QUE COMIENCE EL DUELO</h2>
       </section>
