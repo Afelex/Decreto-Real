@@ -56,7 +56,7 @@
   margin:0 auto; width:90%; box-sizing:border-box;
   max-width:390px;
   z-index:4;
-  animation:dr-g3-final-actions-arrive .42s ease-out 2.65s both;
+  animation:dr-g3-final-actions-arrive .42s ease-out 3.25s both;
 }
 @keyframes dr-g3-final-actions-arrive {
   0% {opacity:0; visibility:hidden; transform:translateY(22px);}
