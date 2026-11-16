@@ -1,6 +1,6 @@
 import React from 'react';
 import { afterEach, expect, test } from 'vitest';
-import { cleanup, render } from '@testing-library/react';
+import { cleanup, fireEvent, render } from '@testing-library/react';
 import { BattleSceneryLayer } from '../../screens/BattleSceneryLayer';
 import { CardActivationBanner } from '../../screens/CardActivationBanner';
 import { LastDecreeIndicator } from '../../screens/LastDecreeIndicator';
@@ -91,4 +91,38 @@ test('indicador ×2/×3 comunica la racha real en ambos lados con su icono', () 
   expect(container.querySelector('[aria-label="Último decreto del rival: Defensa ×3"]')).toBeTruthy();
   expect(Array.from(container.querySelectorAll('.dr-last-decree-combo')).map(x=>x.textContent)).toEqual(['×2','×3']);
   expect(container.querySelectorAll('.dr-g3-decree-visual')).toHaveLength(2);
+});
+
+
+test('decreto: fallback until video plays, restores fallback on buffering or failure', () => {
+  const card: CardData = { id:'attack', type:'ATTACK', name:'Decreto de Ataque',
+    description:'Inflige 2 daño', cost:0, img:'' };
+  const { container }=render(<CardActivationBanner card={card} isPlayer paused={false} />);
+  const video=container.querySelector('video')!;
+  expect(video).toBeTruthy();
+  expect(video.hasAttribute('loop')).toBe(false);
+  expect(container.querySelector('.dr-cinematic-fallback')).toBeTruthy();
+  expect(video.classList.contains('is-playing')).toBe(false);
+  fireEvent.playing(video);
+  expect(container.querySelector('.dr-cinematic-fallback')).toBeNull();
+  expect(video.classList.contains('is-playing')).toBe(true);
+  fireEvent.waiting(video);
+  expect(container.querySelector('.dr-cinematic-fallback')).toBeTruthy();
+  fireEvent.error(video);
+  expect(container.querySelector('video')).toBeNull();
+  expect(container.querySelector('.dr-cinematic-fallback')).toBeTruthy();
+});
+
+test('decreto: effect phase has a fallback and never shows the banner simultaneously', () => {
+  const card: CardData = { id:'defense', type:'DEFENSE', name:'Decreto de Defensa',
+    description:'Cura 1', cost:0, img:'' };
+  const { container }=render(<CardActivationBanner card={card} isPlayer={false} paused={false} stage="effect"/>);
+  const video=container.querySelector('video')!;
+  expect(video.querySelector('source')?.getAttribute('src')).toContain('efectos/defensa.webm');
+  expect(video.hasAttribute('loop')).toBe(false);
+  expect(container.querySelector('.dr-cinematic-effect-fallback')).toBeTruthy();
+  expect(container.querySelector('.dr-cinematic-copy')).toBeNull();
+  expect(container.querySelectorAll('video')).toHaveLength(1);
+  fireEvent.playing(video);
+  expect(container.querySelector('.dr-cinematic-effect-fallback')).toBeNull();
 });
