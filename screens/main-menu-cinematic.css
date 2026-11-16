@@ -392,3 +392,13 @@
 @media (prefers-reduced-motion:reduce) {
   .dr-cinematic-button-png--pressed { transition:none; }
 }
+
+/* Final cascade override: preserve true transparency when the image has loaded. */
+.dr-cinematic-button.dr-cinematic-button-has-png {
+  background:transparent;
+  border:0;
+  box-shadow:none;
+}
+.dr-cinematic-button.dr-cinematic-button-has-png::before,
+.dr-cinematic-button.dr-cinematic-button-has-png::after { display:none; }
+.dr-cinematic-button-has-png .dr-cinematic-button-png { object-fit:fill; }
