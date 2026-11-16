@@ -1,0 +1,82 @@
+name: G3 - Importar musica Suno aprobada
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'incoming/DecretoReal_G3_Audio_Integracion.zip*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: decreto-real-g3-audio-import
+  cancel-in-progress: false
+
+jobs:
+  importar-audio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Detectar y verificar el ZIP aprobado
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          files=(incoming/DecretoReal_G3_Audio_Integracion.zip*)
+          if [ "${#files[@]}" -ne 1 ]; then
+            echo 'Se requiere exactamente un ZIP del lote musical G3.' >&2
+            exit 1
+          fi
+          case "${files[0]}" in
+            incoming/DecretoReal_G3_Audio_Integracion.zip|incoming/DecretoReal_G3_Audio_Integracion.zip.zip) ;;
+            *) echo 'Nombre de ZIP no admitido' >&2; exit 1 ;;
+          esac
+          zip="${files[0]}"
+          echo "AUDIO_G3_ZIP=$zip" >> "$GITHUB_ENV"
+          echo "6f1897fd7a1e73ef32cc0bd4d48f9bdb8b0ceb38adf1949728ce999582bdb375  $zip" | sha256sum -c
+          unzip -t "$zip" | tail -2
+
+      - name: Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Verificar los seis archivos y activar sus rutas
+        run: node tools/importar-suno-g3.mjs "$AUDIO_G3_ZIP"
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Ejecutar todas las pruebas y compilar antes de publicar
+        run: |
+          npm test
+          npm run test:ui
+          npx tsc --noEmit
+          npm run build
+
+      - name: Publicar solamente MP3 y limpiar el ZIP temporal
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add game/audioAssets.ts public/audio/suno-g3/
+          git rm -- "$AUDIO_G3_ZIP"
+          git diff --cached --quiet || {
+            git commit -m 'assets(audio): publicar seis composiciones Suno G3 verificadas'
+            git push origin HEAD:main
+          }
+
+      - name: Solicitar publicacion de GitHub Pages con la musica nueva
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run deploy.yml --ref main
