@@ -20,7 +20,7 @@ interface AudioContextType {
     setNarrativeMusicTrack: (url: string | null) => void;
     /** Canciones por escena; no afecta a los efectos ni a la edición de narrativa. */
     setMusicScene: (scene: Exclude<MusicSlot,'DEFAULT'> | null) => void;
-    /** Autoplay can be blocked in Android; offer an explicit unlock gesture. */
+    /** True only when the browser blocks autoplay until the first gesture. */
     musicGestureRequired: boolean;
     unlockMusic: () => void;
 }
@@ -93,20 +93,19 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         localStorage.setItem('decreto_music', JSON.stringify(musicEnabled));
     },[musicEnabled,narrativeMusicMode,soundtrackUrl]);
 
-    // Android/iOS may reject autoplay on initial load. Retrying the same track
-    // during the first real user gesture unlocks audio without extra controls,
-    // while disabled music stays muted. No song is downloaded during preload.
+    // Always attempt playback on mount, including the opening loading screen.
+    // If the browser blocked autoplay, the NEXT ordinary touch/key starts music
+    // without requiring a dedicated "Activar música" button.
     useEffect(()=>{
-        const unlock=()=>{
-            if(musicEnabled)unlockMusic();
-        };
+        if (!musicEnabled || !musicGestureRequired) return;
+        const unlock=()=>unlockMusic();
         document.addEventListener('pointerdown',unlock,{capture:true,passive:true});
         document.addEventListener('keydown',unlock,true);
         return ()=>{
             document.removeEventListener('pointerdown',unlock,true);
             document.removeEventListener('keydown',unlock,true);
         };
-    },[soundtrackUrl,musicEnabled,narrativeMusicMode]);
+    },[soundtrackUrl,musicEnabled,musicGestureRequired,narrativeMusicMode]);
 
     // Silence outstanding effects immediately when the SFX switch is disabled.
     useEffect(() => {
@@ -115,7 +114,14 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }, [sfxEnabled]);
 
     const toggleSfx = () => setSfxEnabled((prev: boolean) => !prev);
-    const toggleMusic = () => setMusicEnabled((prev: boolean) => !prev);
+    const toggleMusic = () => {
+        // Resume synchronously from the click that enables music. Deferring
+        // play() to React's effect alone can be blocked by mobile browsers.
+        if (!musicEnabled && soundtrackUrl) {
+            directorRef.current?.setSoundtrack(soundtrackUrl,true,narrativeMusicMode);
+        }
+        setMusicEnabled((prev: boolean) => !prev);
+    };
 
     const playSound = (type: SoundType): void|(()=>void) => {
         if (!sfxEnabled) return;
