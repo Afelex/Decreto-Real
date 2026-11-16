@@ -53,7 +53,7 @@ test('battle video URL matches the deployment output, not its removed source MP4
     'The source film for optimization must remain in source control');
 });
 
-test('the poster is made from the SAME loop and loaded before React mounts', () => {
+test('the poster is made from the SAME loop and preloaded only for a direct IA duel', () => {
   const workflow=readFileSync('.github/workflows/deploy.yml','utf8');
   const document=readFileSync('index.html','utf8');
   const component=readFileSync('screens/BattleSceneryLayer.tsx','utf8');
@@ -61,7 +61,13 @@ test('the poster is made from the SAME loop and loaded before React mounts', () 
   assert.ok(workflow.includes('poster_image="dist/escenarios/partida-inicial-poster.jpg"'));
   assert.ok(workflow.includes('test -s "$poster_image"'));
   assert.ok(workflow.includes('-ss 0.6 -i "$optimized_video"'));
-  assert.ok(document.includes('rel="preload" as="image" href="' + STANDARD_BATTLE_VIDEO_POSTER + '"'));
+  assert.ok(document.includes("const poster = route === '/game'"),
+    'The direct battle route must preload its real video poster before React mounts');
+  assert.ok(document.includes("'" + STANDARD_BATTLE_VIDEO_POSTER + "'"));
+  assert.ok(document.includes("route === '/' ? '/Decreto-Real/portada/portada-poster.jpg' : null"),
+    'The menu must prioritize its own poster');
+  assert.ok(!document.includes('<link rel="prefetch" as="video"'),
+    'All routes must not fetch the heavyweight battle movie');
   assert.ok(component.includes('onPlaying={() => setPlaying(true)}'));
   assert.ok(!component.includes('plaza-arcilla-estandar.webp'));
 });

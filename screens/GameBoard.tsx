@@ -30,6 +30,8 @@ import {
   insertMystics, mysticPower, mysticPowerText, mysticDisplayName, resolveMysticPower,
   canActivateMystic, type MysticId, type MysticSlot, type MysticPower,
 } from '../game/mysticCards.ts';
+// Approved indicator crop must load with the board, after the generic cue CSS.
+import './royal-battle-status.css';
 
 // --- GAME CONFIGURATION ---
 const MAX_HP = 20;

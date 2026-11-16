@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { awardMissionStars, loadCampaignProgress, saveCampaignProgress } from '../campaign/campaign';
 import { getCampaignStorage, isCampaignQaAvailable } from '../campaign/campaignQA';
+import { PROLOGUE_CHECKPOINT_KEY } from '../campaign/campaignKeys';
 import GameBoard from './GameBoard';
 import { GUIDED_STEPS } from '../campaign/guidedOpeningDuel';
 import { useAudio } from '../contexts/AudioContext';
@@ -26,7 +27,7 @@ import './story-dialogue.css';
 import './prologue-v2.css';
 import './prologue-v3.css';
 
-export const PROLOGUE_CHECKPOINT_KEY = 'decreto-real.campania.prologo-cinematico.v1';
+export { PROLOGUE_CHECKPOINT_KEY } from '../campaign/campaignKeys';
 
 export { OPENING_BEATS, AFTER_DUEL_BEATS };
 
