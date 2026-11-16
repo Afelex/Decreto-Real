@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { cardEffectCue, comboEffectCue, DECREE_BANNER_DURATION_MS, DECREE_EFFECT_DURATION_MS, syncCueVideoRate } from './effectCues.ts';
+import { bannerCueFile, cardEffectCue, comboEffectCue, DECREE_BANNER_DURATION_MS, DECREE_EFFECT_DURATION_MS, isInterruptedMediaPlay, syncCueVideoRate } from './effectCues.ts';
 
 test('card activation clips map to correct art; Impact keeps its existing sequence', () => {
   assert.equal(cardEffectCue('ATTACK').file, 'efectos/ataque.webm');
@@ -34,4 +34,13 @@ test('cada fase de anuncio, efecto y combo tiene 1500 ms sin alterar clips origi
   const longerVideo = { duration: 1.68, playbackRate: 1 } as HTMLVideoElement;
   syncCueVideoRate(longerVideo, DECREE_EFFECT_DURATION_MS);
   assert.ok(Math.abs(longerVideo.playbackRate - 1.12) < 0.001);
+});
+
+test('los banners de ambos bandos conservan rutas y la pausa no se considera un error de vídeo', () => {
+  assert.equal(bannerCueFile(true),'animaciones/banner-jugador-rojo.webm');
+  assert.equal(bannerCueFile(false),'animaciones/banner-rival-azul.webm');
+  assert.equal(isInterruptedMediaPlay({name:'AbortError'}),true);
+  assert.equal(isInterruptedMediaPlay({name:'NotAllowedError'}),false);
+  assert.equal(isInterruptedMediaPlay({name:'NotSupportedError'}),false);
+  assert.equal(isInterruptedMediaPlay(null),false);
 });
