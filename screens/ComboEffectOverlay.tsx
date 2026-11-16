@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { comboEffectCue, DECREE_EFFECT_DURATION_MS, syncCueVideoRate } from '../game/effectCues';
+import { comboEffectCue, DECREE_EFFECT_DURATION_MS, isInterruptedMediaPlay, syncCueVideoRate } from '../game/effectCues';
 import './card-activation-banner.css';
 
 type Props = {
@@ -24,7 +24,12 @@ export const ComboEffectOverlay: React.FC<Props> = ({ level, ability, paused }) 
     else {
       const playback = video.play();
       if (playback && typeof playback.catch === 'function') {
-        void playback.catch(() => { if (!disposed) { setFailed(true); setPlaying(false); } });
+        void playback.catch(error => {
+          if (!disposed && !paused && !isInterruptedMediaPlay(error)) {
+            setFailed(true);
+            setPlaying(false);
+          }
+        });
       }
     }
     return () => { disposed = true; };
