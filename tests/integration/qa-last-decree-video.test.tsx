@@ -1,13 +1,13 @@
 import React from 'react';
-import { afterEach, expect, test } from 'vitest';
-import { cleanup, fireEvent, render } from '@testing-library/react';
+import { afterEach, expect, test, vi } from 'vitest';
+import { act, cleanup, fireEvent, render } from '@testing-library/react';
 import { BattleSceneryLayer } from '../../screens/BattleSceneryLayer';
 import { CardActivationBanner } from '../../screens/CardActivationBanner';
 import { ComboEffectOverlay } from '../../screens/ComboEffectOverlay';
 import { LastDecreeIndicator } from '../../screens/LastDecreeIndicator';
 import type { CardData, CardType } from '../../types';
 
-afterEach(cleanup);
+afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 
 test('duelo estándar: muestra fotograma del MISMO vídeo sin imagen clay ni viñeta', () => {
   const { container } = render(<BattleSceneryLayer
@@ -139,4 +139,41 @@ test('combo: mantiene una sola reproducción y recurso visible si WebM no está 
   fireEvent.error(video);
   expect(container.querySelector('video')).toBeNull();
   expect(container.querySelector('.dr-energy-overlay__fallback')).toBeTruthy();
+});
+
+test('pausar un WebM durante su arranque no lo marca como roto', async () => {
+  vi.spyOn(HTMLMediaElement.prototype, 'play').mockImplementation(
+    () => Promise.reject({name:'AbortError'}),
+  );
+  const card: CardData = {id:'attack',type:'ATTACK',name:'Decreto de Ataque',
+    description:'Daño',cost:0,img:''};
+  const {container,rerender}=render(
+    <CardActivationBanner card={card} isPlayer={true} paused={false}/>,
+  );
+  const first=container.querySelector('video');
+  await act(async () => { await Promise.resolve(); await Promise.resolve(); });
+  expect(container.querySelector('video')).toBe(first);
+  rerender(<CardActivationBanner card={card} isPlayer={true} paused={true}/>);
+  expect(container.querySelector('video')).toBeTruthy();
+  rerender(<CardActivationBanner card={card} isPlayer={true} paused={false}/>);
+  await act(async () => { await Promise.resolve(); });
+  expect(container.querySelector('video')).toBeTruthy();
+  // A pause does not delete the original asset; an actual decoder error does.
+  fireEvent.error(container.querySelector('video')!);
+  expect(container.querySelector('video')).toBeNull();
+});
+
+test('un combo interrumpido por pausa tampoco elimina su clip', async () => {
+  vi.spyOn(HTMLMediaElement.prototype, 'play').mockImplementation(
+    () => Promise.reject({name:'AbortError'}),
+  );
+  const {container,rerender}=render(
+    <ComboEffectOverlay level={2} ability="HEAL" paused={false}/>,
+  );
+  await act(async () => { await Promise.resolve(); });
+  rerender(<ComboEffectOverlay level={2} ability="HEAL" paused={true}/>);
+  rerender(<ComboEffectOverlay level={2} ability="HEAL" paused={false}/>);
+  await act(async () => { await Promise.resolve(); });
+  expect(container.querySelector('video')).toBeTruthy();
+  expect(container.querySelector('video')?.hasAttribute('loop')).toBe(false);
 });
