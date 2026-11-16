@@ -1,0 +1,60 @@
+name: Release Readiness · Decreto Real IA
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/deploy.yml'
+      - '.github/workflows/release-readiness.yml'
+      - 'tools/release-audit.mjs'
+      - 'tools/live-pages-smoke.mjs'
+      - 'docs/ESTABILIZACION-FINAL-2026-11.md'
+      - 'screens/**'
+      - 'game/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-readiness-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run test:ui
+      - run: npx tsc --noEmit
+      - run: npm run build
+      - name: Verificar recursos existentes antes de generar el vídeo final
+        run: node tools/release-audit.mjs dist --skip-generated
+
+  mobile-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 17
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Inicio, cintas G3, pausa/reinicio/rendición y carga de producción
+        run: npx playwright test tests/e2e/duel-entrance.spec.ts tests/e2e/turn-indicator-viewport.spec.ts tests/e2e/mobile-performance-lifecycle.spec.ts tests/e2e/royal-pause-menu.spec.ts --project=mobile-390 --project=short-360 --workers=2 --trace off --reporter=line
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: release-movil-${{ github.run_id }}
+          path: test-results/
+          retention-days: 7
+          if-no-files-found: ignore
