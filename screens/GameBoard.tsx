@@ -843,6 +843,14 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
     setPhase(result.phase);
   };
   const handleSurrenderConfirm = () => { playSound('CLICK'); finishManually(resolveSurrender()); };
+  // Salir del duelo libre no equivale a rendirse: no registra una derrota.
+  const handleExitToMainMenu = () => {
+    if (guidedOpening || onOutcome || storyConversation) return;
+    playSound('CLICK');
+    aiController.current?.cancel();
+    announcementClock.current.cancel();
+    navigate('/', { replace: true });
+  };
   const handleDevelopmentWin = () => {
     if (!SHOW_DEV_WIN) return;
     playSound('CLICK');
@@ -958,7 +966,8 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
           onToggleSfx={() => { playSound('CLICK'); toggleSfx(); }}
           onClose={handleClosePause}
           onRestart={!guidedOpening && !onOutcome && !storyConversation ? handleRestartConfirmed : undefined}
-          onSurrender={!guidedOpening ? handleSurrenderConfirm : undefined}
+          onSurrender={!guidedOpening && (onOutcome || storyConversation) ? handleSurrenderConfirm : undefined}
+          onExitToMainMenu={!guidedOpening && !onOutcome && !storyConversation ? handleExitToMainMenu : undefined}
           onReturn={guidedOpening ? onReturn : undefined}
           onDevWin={SHOW_DEV_WIN && !guidedOpening ? handleDevelopmentWin : undefined}
         />
