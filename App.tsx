@@ -1,6 +1,6 @@
 import React from 'react';
 import { HashRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
-import MainMenu from './screens/MainMenu';
+import { InitialLoadingGate } from './screens/InitialLoadingGate';
 import { getCampaignStorage, isCampaignQaActive, isCampaignQaAvailable } from './campaign/campaignQA';
 import { PROLOGUE_COMPLETE_KEY } from './campaign/prologueArt';
 import { AudioProvider } from './contexts/AudioContext';
@@ -16,6 +16,7 @@ import './screens/royal-card-art.css';
 import './screens/royal-hud-art.css';
 
 /** Cargar cada pantalla sólo cuando se visita: evita incluir DRStudio/campaña en el menú. */
+const MainMenu = React.lazy(() => import('./screens/MainMenu'));
 const GameBoard = React.lazy(() => import('./screens/GameBoard'));
 const VictoryScreen = React.lazy(() => import('./screens/VictoryScreen'));
 const RulesScreen = React.lazy(() => import('./screens/RulesScreen'));
@@ -104,9 +105,11 @@ const CampaignRoutes: React.FC = () => {
 };
 
 const App: React.FC = () => (
-  <AudioProvider>
-    <HashRouter><CampaignRoutes /></HashRouter>
-  </AudioProvider>
+  <HashRouter>
+    <InitialLoadingGate>
+      <AudioProvider><CampaignRoutes /></AudioProvider>
+    </InitialLoadingGate>
+  </HashRouter>
 );
 
 export default App;

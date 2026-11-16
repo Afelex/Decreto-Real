@@ -8,6 +8,7 @@ import { isCampaignQaActive } from '../campaign/campaignQA';
 import { campaignOverview } from '../campaign/progressView.ts';
 import { useAmbientVideo } from './useAmbientVideo';
 import { G3_UI_ASSETS } from '../game/g3UiAssets';
+import { menuLoopSource } from '../game/mainMenuStartup';
 import { useOptionalAudio } from '../contexts/AudioContext';
 import { preloadVersusIa, type DuelLoadProgress } from '../game/versusIaPreload';
 import './main-menu-cinematic.css';
@@ -213,7 +214,7 @@ const MainMenu: React.FC = () => {
         aria-hidden="true"
         tabIndex={-1}
       >
-        <source src="./portada/portada-loop.mp4" type="video/mp4" />
+        <source src={menuLoopSource()} type="video/mp4" />
       </video>
       <div className="dr-cinematic-shade" aria-hidden="true" />
 

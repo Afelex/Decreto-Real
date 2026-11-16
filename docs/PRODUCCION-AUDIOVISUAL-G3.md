@@ -137,3 +137,28 @@ En móviles la reproducción puede requerir el primer toque del usuario.
 Antes de que el ZIP llegue a GitHub, las nuevas pistas permanecen desactivadas,
 por lo que no se producen errores 404 ni cambios inesperados en producción.
 Los recursos de audio no bloquean el progreso de carga de imágenes Versus IA.
+
+## Pantalla inicial de carga · Menú principal (16/11/2026)
+
+Antes de la **primera entrada a la portada**, se muestra un fondo gris oscuro
+(#28292c) con **únicamente el logo oficial de Decreto Real y una barra de carga**.
+El porcentaje corresponde al código del menú preparado, al logo y póster
+descargados/decodificados, a los dos botones G3 y al vídeo breve de portada
+en memoria. Sólo cuando se completen esas operaciones se muestra automáticamente
+el menú (sin solicitar otro clic). La primera pintura HTML ya contiene el
+logo/barra, sin esperar a que React termine de ejecutarse.
+
+Si falla un **recurso visual imprescindible**, la barra no llega a 100%:
+se muestra la causa y la opción de reintentar. Si el MP4 falla, el póster
+decodificado permite entrar sin pantalla negra; los vídeos no disponibles no
+bloquean el juego. El MP4 (<1 MB) se almacena en una URL de objeto de sesión
+para evitar descargarlo dos veces al abrir el menú. La música Suno no se
+fuerza a descargar antes del gesto del usuario y obedece al ajuste global.
+
+La precarga inicial **no descarga las 38 misiones, los vídeos de combate ni
+todas las canciones**: únicamente lo necesario para el menú principal.
+El botón **Versus IA** mantiene su segunda barra de precarga específica
+de motor, tablero y cartas. Las rutas directas de combate/Studio y los
+regresos al menú conservan su navegación actual y no repiten el splash.
+Pruebas: `tests/integration/main-menu-startup.test.tsx` y
+`tests/e2e/initial-loading-screen.spec.ts`.
