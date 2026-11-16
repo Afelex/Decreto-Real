@@ -12,7 +12,7 @@ type Props = {
 };
 
 /** A10 follows the ACTUAL mazo and hand DOM nodes; never moves a real card or changes rules. */
-export function CardDrawFX({ side, count, cueId, paused, onFinish }: Props) {
+export const CardDrawFX: React.FC<Props> = ({ side, count, cueId, paused, onFinish }) => {
   const hostRef = useRef<HTMLDivElement>(null);
   const onFinishRef = useRef(onFinish);
   onFinishRef.current = onFinish;
@@ -83,4 +83,4 @@ export function CardDrawFX({ side, count, cueId, paused, onFinish }: Props) {
         animationPlayState: paused ? 'paused' : 'running',
       } as React.CSSProperties}/>)}
   </div>;
-}
+};
