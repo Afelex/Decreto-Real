@@ -3,6 +3,7 @@ import { afterEach, expect, test } from 'vitest';
 import { cleanup, fireEvent, render } from '@testing-library/react';
 import { BattleSceneryLayer } from '../../screens/BattleSceneryLayer';
 import { CardActivationBanner } from '../../screens/CardActivationBanner';
+import { ComboEffectOverlay } from '../../screens/ComboEffectOverlay';
 import { LastDecreeIndicator } from '../../screens/LastDecreeIndicator';
 import type { CardData, CardType } from '../../types';
 
@@ -125,4 +126,17 @@ test('decreto: effect phase has a fallback and never shows the banner simultaneo
   expect(container.querySelectorAll('video')).toHaveLength(1);
   fireEvent.playing(video);
   expect(container.querySelector('.dr-cinematic-effect-fallback')).toBeNull();
+});
+
+test('combo: mantiene una sola reproducción y recurso visible si WebM no está listo', () => {
+  const { container }=render(<ComboEffectOverlay level={3} ability="DAMAGE" paused={false}/>);
+  const video=container.querySelector('video')!;
+  expect(video).toBeTruthy();
+  expect(video.hasAttribute('loop')).toBe(false);
+  expect(container.querySelector('.dr-energy-overlay__fallback')).toBeTruthy();
+  fireEvent.playing(video);
+  expect(container.querySelector('.dr-energy-overlay__fallback')).toBeNull();
+  fireEvent.error(video);
+  expect(container.querySelector('video')).toBeNull();
+  expect(container.querySelector('.dr-energy-overlay__fallback')).toBeTruthy();
 });
