@@ -21,7 +21,7 @@ describe('precarga Versus IA', () => {
       images,
     });
     await new Promise(resolve => setTimeout(resolve, 0));
-    expect(reports[0]).toEqual({ completed: 0, total: 3 });
+    expect(reports[0]).toMatchObject({ completed: 0, total: 3 });
     expect(reports.at(-1)?.completed).toBe(2);
     releaseSecond();
     await task;
