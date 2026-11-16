@@ -22,12 +22,12 @@ export type CreateSound = (url: string) => SoundVoice;
 export class SoundEffectPool {
   private readonly voices = new Map<SoundType, Slot[]>();
   private readonly maxPerSound: number;
+  private readonly create: CreateSound;
+  private readonly baseUrl: string;
 
-  constructor(
-    private readonly create: CreateSound,
-    private readonly baseUrl: string,
-    maxPerSound = 2,
-  ) {
+  constructor(create: CreateSound, baseUrl: string, maxPerSound = 2) {
+    this.create = create;
+    this.baseUrl = baseUrl;
     this.maxPerSound = Math.max(1, Math.floor(maxPerSound));
   }
 
