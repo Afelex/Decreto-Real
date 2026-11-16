@@ -18,6 +18,7 @@ import { ComboEffectOverlay } from './ComboEffectOverlay';
 import { cardEffectCue, DECREE_BANNER_DURATION_MS, DECREE_EFFECT_DURATION_MS } from '../game/effectCues';
 import { TurnIndicator, TurnAnnouncement, TURN_TRANSITION_DURATION_MS, ComboChoicePanel, CoinTossPanel } from './CombatEventUI';
 import { resolveBattleScenery } from '../game/battleScenery';
+import { freeDuelMusicScene } from '../game/musicScene';
 import { getRoyalCardText } from '../game/royalCardText';
 import { resolveBattleEnd, resolveSurrender, resolveDevelopmentVictory, type BattleEndResult } from '../game/battleEnd';
 import { BattleSceneryLayer } from './BattleSceneryLayer';
@@ -161,7 +162,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const [studioPlayerPreview,setStudioPlayerPreview] = useState(false);
   const [studioMotionReplay,setStudioMotionReplay] = useState(0);
   const [studioParams]=useSearchParams();
-  const { playSound, sfxEnabled, musicEnabled, toggleSfx, toggleMusic, setNarrativeMusicMode, setNarrativeMusicTrack } = useAudio();
+  const { playSound, sfxEnabled, musicEnabled, toggleSfx, toggleMusic, setNarrativeMusicMode, setNarrativeMusicTrack, setMusicScene } = useAudio();
 
   const [phase, setPhase] = useState<GamePhase>('INIT');
   const [turnCount, setTurnCount] = useState(0);
@@ -264,6 +265,16 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const [mysticComboAnnouncement, setMysticComboAnnouncement] = useState<{ id: number; level: 2 | 3; name: string; effect: string; isPlayer: boolean } | null>(null);
 
   const [opponentHP, setOpponentHP] = useState(MAX_HP);
+  // The free IA duel owns its soundtrack. Story missions retain their
+  // independent DRStudio narrative music and must not inherit this scene.
+  const freeVsIa = !onOutcome && !guidedOpening && !storyConversation;
+  useEffect(() => {
+    if (!freeVsIa) return;
+    const scene = freeDuelMusicScene({ entranceActive, phase, playerHP, opponentHP });
+    setMusicScene(scene);
+    return () => setMusicScene(null);
+  }, [freeVsIa, entranceActive, phase, playerHP <= MAX_HP * .2,
+    opponentHP <= MAX_HP * .2, setMusicScene]);
   // Trigger a short portrait motion for every real HP loss, never for healing.
   const previousPlayerHp = useRef(MAX_HP);
   const previousOpponentHp = useRef(MAX_HP);

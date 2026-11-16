@@ -1,11 +1,10 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react';
 import {NarrativeMusicDirector} from '../campaign/studio/musicDirector.ts';
 import type {StudioNarrativeMusicMode} from '../campaign/studio/narrativeAudio.ts';
-import { musicAssetUrl, type SoundType } from '../game/audioAssets.ts';
+import { musicSceneUrl, type MusicSlot, type SoundType } from '../game/audioAssets.ts';
 import { SoundEffectPool } from '../game/soundPool.ts';
 
-// Keep the existing published music until Suno tracks are explicitly approved.
-const BG_MUSIC_URL = musicAssetUrl('DEFAULT', import.meta.env.BASE_URL)!;
+// The selected scene always falls back to the currently published soundtrack.
 
 interface AudioContextType {
     sfxEnabled: boolean;
@@ -18,6 +17,8 @@ interface AudioContextType {
     setNarrativeMusicMode: (mode: StudioNarrativeMusicMode) => void;
     /** Selecciona una pista local/publicada del editor, null restaura música base. */
     setNarrativeMusicTrack: (url: string | null) => void;
+    /** Canciones por escena; no afecta a los efectos ni a la edición de narrativa. */
+    setMusicScene: (scene: Exclude<MusicSlot,'DEFAULT'> | null) => void;
 }
 
 const AudioContext = createContext<AudioContextType | undefined>(undefined);
@@ -42,6 +43,7 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         soundPoolRef.current?.dispose();
         soundPoolRef.current = null;
     }, []);
+    const [musicScene,setMusicScene]=useState<Exclude<MusicSlot,'DEFAULT'>|null>(null);
     const [narrativeMusicMode,setNarrativeMusicMode]=useState<StudioNarrativeMusicMode>('normal');
     const [narrativeMusicTrack,setNarrativeMusicTrack]=useState<string|null>(null);
 
@@ -61,11 +63,29 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         };
     },[]);
 
+    const soundtrackUrl = narrativeMusicTrack ?? musicSceneUrl(musicScene,import.meta.env.BASE_URL);
+
     useEffect(()=>{
-        directorRef.current?.setSoundtrack(
-            narrativeMusicTrack??BG_MUSIC_URL,musicEnabled,narrativeMusicMode);
+        if(soundtrackUrl)directorRef.current?.setSoundtrack(
+            soundtrackUrl,musicEnabled,narrativeMusicMode);
         localStorage.setItem('decreto_music', JSON.stringify(musicEnabled));
-    },[musicEnabled,narrativeMusicMode,narrativeMusicTrack]);
+    },[musicEnabled,narrativeMusicMode,soundtrackUrl]);
+
+    // Android/iOS may reject autoplay on initial load. Retrying the same track
+    // during the first real user gesture unlocks audio without extra controls,
+    // while disabled music stays muted. No song is downloaded during preload.
+    useEffect(()=>{
+        const unlock=()=>{
+            if(soundtrackUrl)directorRef.current?.setSoundtrack(
+                soundtrackUrl,musicEnabled,narrativeMusicMode);
+        };
+        document.addEventListener('pointerdown',unlock,{capture:true,passive:true});
+        document.addEventListener('keydown',unlock,true);
+        return ()=>{
+            document.removeEventListener('pointerdown',unlock,true);
+            document.removeEventListener('keydown',unlock,true);
+        };
+    },[soundtrackUrl,musicEnabled,narrativeMusicMode]);
 
     // Silence outstanding effects immediately when the SFX switch is disabled.
     useEffect(() => {
@@ -87,7 +107,7 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     };
 
     return (
-        <AudioContext.Provider value={{ sfxEnabled, musicEnabled, toggleSfx, toggleMusic, playSound, setNarrativeMusicMode, setNarrativeMusicTrack }}>
+        <AudioContext.Provider value={{ sfxEnabled, musicEnabled, toggleSfx, toggleMusic, playSound, setNarrativeMusicMode, setNarrativeMusicTrack, setMusicScene }}>
             {children}
         </AudioContext.Provider>
     );

@@ -109,3 +109,31 @@ Los fondos de campaña, pantallas futuras, música externa y vídeos de combate
 o reproducción por streaming, para no penalizar datos ni memoria. El fotograma
 de póster garantiza el inicio visual inmediato mientras el vídeo se prepara.
 La precarga no altera motor, cartas, sorteo, IA ni duración de banners.
+
+## Banda sonora original Suno G3 (16/11/2026)
+
+Se han verificado y convertido los **seis WAV originales** a MP3 estéreo
+a 160 kbps para reproducción web, conservando sus composiciones.
+Los originales en WAV no se incorporan a GitHub por su peso; permanecen
+en la biblioteca del usuario. El paquete de distribución firmado es
+`DecretoReal_G3_Audio_Integracion.zip` (SHA-256:
+`6f1897fd7a1e73ef32cc0bd4d48f9bdb8b0ceb38adf1949728ce999582bdb375`).
+Su carga y activación se describen en `incoming/README.md`.
+
+| Momento | Música Suno | Duración |
+| --- | --- | --- |
+| Menú principal | `mus_menu_reinos_del_peru_v01.mp3` | 3:07 |
+| Apertura del duelo Versus IA | `mus_presentacion_duelo_v01.mp3` | 0:30 |
+| Combate estándar | `mus_combate_ia_v01.mp3` | 2:18 |
+| Vida crítica (≤ 4 de 20 PV de cualquiera) | `mus_combate_tension_critica_v01.mp3` | 3:04 |
+| Victoria | `mus_victoria_v01.mp3` | 2:39 |
+| Derrota | `mus_derrota_v01.mp3` | 1:05 |
+
+La música usa el único reproductor compartido de `contexts/AudioContext.tsx`
+con transiciones por fundido. Respeta el interruptor **Música** y no modifica
+el interruptor **Efectos de sonido**; los sonidos actuales de monedas, ataques
+y defensa continúan intactos hasta que se entreguen efectos G3 finales.
+En móviles la reproducción puede requerir el primer toque del usuario.
+Antes de que el ZIP llegue a GitHub, las nuevas pistas permanecen desactivadas,
+por lo que no se producen errores 404 ni cambios inesperados en producción.
+Los recursos de audio no bloquean el progreso de carga de imágenes Versus IA.

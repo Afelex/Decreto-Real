@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { musicAssetUrl, resolveAudioSlot, soundAssetUrl } from './audioAssets.ts';
+import { SUNO_G3_READY, musicAssetUrl, musicSceneUrl, resolveAudioSlot, soundAssetUrl } from './audioAssets.ts';
 import { SoundEffectPool, type SoundVoice } from './soundPool.ts';
 
 class FakeSound implements SoundVoice {
@@ -20,14 +20,21 @@ class FakeSound implements SoundVoice {
   pause() { this.paused = true; this.stopped++; }
 }
 
-test('Suno slots remain empty: original sounds play and silent victory/defeat stay silent', () => {
+test('Suno slots are gated until MP3s are SHA-verified; SFX remain unchanged', () => {
   assert.equal(soundAssetUrl('ATTACK', '/Decreto-Real/'),
     'https://assets.mixkit.co/active_storage/sfx/1476/1476-preview.mp3');
   assert.equal(musicAssetUrl('DEFAULT','/Decreto-Real/'),
-    'https://assets.mixkit.co/music/80/80.mp3');
+    SUNO_G3_READY ? '/Decreto-Real/audio/suno-g3/mus_menu_reinos_del_peru_v01.mp3'
+      : 'https://assets.mixkit.co/music/80/80.mp3');
   assert.equal(soundAssetUrl('VICTORY','/Decreto-Real/'),null);
   assert.equal(soundAssetUrl('DEFEAT','/Decreto-Real/'),null);
-  assert.equal(musicAssetUrl('MENU','/Decreto-Real/'),null);
+  assert.equal(musicAssetUrl('MENU','/Decreto-Real/'),
+    SUNO_G3_READY ? '/Decreto-Real/audio/suno-g3/mus_menu_reinos_del_peru_v01.mp3' : null);
+  assert.equal(musicSceneUrl('CRITICAL','/Decreto-Real/'),
+    SUNO_G3_READY ? '/Decreto-Real/audio/suno-g3/mus_combate_tension_critica_v01.mp3'
+      : 'https://assets.mixkit.co/music/80/80.mp3');
+  assert.equal(musicAssetUrl('DUEL_ENTRANCE','/Decreto-Real/'),
+    SUNO_G3_READY ? '/Decreto-Real/audio/suno-g3/mus_presentacion_duelo_v01.mp3' : null);
   assert.equal(resolveAudioSlot({file:'audio/suno/prueba.mp3',fallback:null},'/Decreto-Real/'),
     '/Decreto-Real/audio/suno/prueba.mp3');
   assert.equal(resolveAudioSlot({file:'/audio/suno/prueba.mp3',fallback:'old'},'/Decreto-Real/'),

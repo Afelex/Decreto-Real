@@ -21,3 +21,19 @@ SHA-256 esperado del ZIP: `6a448921391caaa7a2e1c27ae8fe4c0d8fe0579f85e800ce0835f
 ## Paquete G3 · nueve imágenes de interfaz
 
 Sube **un único archivo** `DecretoReal_G3_Imagenes_Integracion.zip` en `incoming/` de `main` después de que se fusione la PR G3. El workflow `.github/workflows/g3-ui-import.yml` verifica su SHA-256 exacto (`1367e97d3eb8fe114c29b9b2c4311634948375621a32ecef63af154e5ce29716`), valida los diez WebP y sus hashes internos, conserva los nueve PNG maestros fuera de `public/`, ejecuta las pruebas y la compilación, publica únicamente los derivados optimizados y retira el ZIP temporal. Si falla alguna comprobación, no cambia los gráficos activos. La interfaz mantiene las versiones CSS anteriores como respaldo si faltan los archivos G3.
+
+## Música Suno G3 — seis pistas originales
+
+Desde el teléfono, sube un único archivo llamado
+`DecretoReal_G3_Audio_Integracion.zip` a esta carpeta `incoming/` en
+la rama `main`, una vez fusionada la PR de preparación del audio.
+El importador también reconoce el nombre accidental `.zip.zip` de Android.
+**No lo descomprimas ni subas los seis MP3 por separado.**
+
+GitHub Actions validará el ZIP exacto (SHA-256
+`6f1897fd7a1e73ef32cc0bd4d48f9bdb8b0ceb38adf1949728ce999582bdb375`),
+los seis MP3 por SHA-256 y el manifiesto de duraciones y nombres; después
+activará `SUNO_G3_READY`, comprobará reglas, interfaz, tipos y compilación,
+publicará los MP3 en `public/audio/suno-g3/`, retirará el ZIP temporal
+y solicitará un despliegue nuevo de GitHub Pages. Los WAV maestros
+quedan en la biblioteca del usuario; las pistas de SFX existentes no se alteran.
