@@ -3,7 +3,7 @@
 
 /* Artwork supplied for each faction; the title is live text for sharp rendering
    and accessibility on every screen size. Artwork is already diagonal. */
-.dr-royal-screen .dr-event-indicator {
+.dr-royal-screen.dr-classic-screen .dr-event-indicator {
   position:absolute;
   z-index:35;
   display:grid;
@@ -29,20 +29,20 @@
   white-space:nowrap;
   filter:drop-shadow(0 3px 3px #06061375);
 }
-.dr-royal-screen .dr-event-indicator.is-player {
+.dr-royal-screen.dr-classic-screen .dr-event-indicator.is-player {
   left:clamp(6px,2cqw,13px);right:auto;top:auto;
   bottom:clamp(140px,32dvh,410px);
   background-image:url('/Decreto-Real/interfaz/banner-tu-turno.webp');
 }
-.dr-royal-screen .dr-event-indicator.is-opponent {
+.dr-royal-screen.dr-classic-screen .dr-event-indicator.is-opponent {
   /* Mostrar el texto completo; solo la punta derecha del listón queda recortada. */
   right:calc(clamp(-13px,-2.6cqw,-9px) - 15px);left:auto;bottom:auto;
   top:clamp(92px,18.5dvh,225px);
   background-image:url('/Decreto-Real/interfaz/banner-turno-rival.webp');
 }
-.dr-royal-screen .dr-event-indicator::before,
-.dr-royal-screen .dr-event-indicator::after {content:none;}
-.dr-royal-screen .dr-event-indicator__label {
+.dr-royal-screen.dr-classic-screen .dr-event-indicator::before,
+.dr-royal-screen.dr-classic-screen .dr-event-indicator::after {content:none;}
+.dr-royal-screen.dr-classic-screen .dr-event-indicator__label {
   position:relative;
   z-index:1;
   display:block;
@@ -55,31 +55,31 @@
   color:#ffe9a2;
   text-shadow:0 1px 1px #3d1b0b,0 2px 3px #000,1px 0 1px #5f350e;
 }
-.dr-royal-screen .dr-event-indicator__laurel,
-.dr-royal-screen .dr-event-indicator__dot {display:none;}
+.dr-royal-screen.dr-classic-screen .dr-event-indicator__laurel,
+.dr-royal-screen.dr-classic-screen .dr-event-indicator__dot {display:none;}
 @media (max-height:570px) {
-  .dr-royal-screen .dr-event-indicator.is-player {bottom:30dvh;}
-  .dr-royal-screen .dr-event-indicator.is-opponent {top:20dvh;}
-  .dr-royal-screen .dr-event-indicator {width:clamp(120px,36cqw,168px);}
-  .dr-royal-screen .dr-event-indicator__label {font-size:clamp(10px,3cqw,15px);}
+  .dr-royal-screen.dr-classic-screen .dr-event-indicator.is-player {bottom:30dvh;}
+  .dr-royal-screen.dr-classic-screen .dr-event-indicator.is-opponent {top:20dvh;}
+  .dr-royal-screen.dr-classic-screen .dr-event-indicator {width:clamp(120px,36cqw,168px);}
+  .dr-royal-screen.dr-classic-screen .dr-event-indicator__label {font-size:clamp(10px,3cqw,15px);}
 }
 @media (prefers-reduced-motion:reduce) {
-  .dr-royal-screen .dr-event-indicator {transition:none;animation:none;}
+  .dr-royal-screen.dr-classic-screen .dr-event-indicator {transition:none;animation:none;}
 }
 
 /* La escritura sigue la inclinación real de la cinta (rojo ascendente, azul descendente). */
-.dr-royal-screen .dr-event-indicator.is-player .dr-event-indicator__label {
+.dr-royal-screen.dr-classic-screen .dr-event-indicator.is-player .dr-event-indicator__label {
   transform:translateY(-2px) rotate(-6.5deg);
   transform-origin:center;
 }
-.dr-royal-screen .dr-event-indicator.is-opponent .dr-event-indicator__label {
+.dr-royal-screen.dr-classic-screen .dr-event-indicator.is-opponent .dr-event-indicator__label {
   transform:translateY(2px) rotate(6.5deg);
   transform-origin:center;
 }
 
 /* Las nuevas cintas ya incluyen el texto dorado. Conservar el rótulo HTML
    para accesibilidad, ocultándolo visualmente para impedir la superposición. */
-.dr-royal-screen .dr-event-indicator__label {opacity:0;}
+.dr-royal-screen.dr-classic-screen .dr-event-indicator__label {opacity:0;}
 
 /* DR-UX07: motivo del desenlace antes del resultado final. */
 .dr-royal-screen .dr-royal-end-banner-stage {
