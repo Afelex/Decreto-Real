@@ -27,7 +27,8 @@ test('desde el menú, multijugador y duelo IA cargan sus pantallas bajo demanda'
   page.on('pageerror', error => pageErrors.push(error.message));
   await page.goto('/Decreto-Real/#/');
   await page.getByRole('button', { name: 'Multijugador' }).click();
-  await expect(page.getByRole('heading', { name: /Duelo multijugador/i })).toBeVisible();
+  await expect(page.locator('main.dr-pvp')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Volver al menú principal' })).toBeVisible();
   await page.getByRole('button', { name: 'Volver al menú principal' }).click();
   await expect(page.getByRole('button', { name: 'Jugar con la IA' })).toBeVisible();
   await page.getByRole('button', { name: 'Jugar con la IA' }).click();
