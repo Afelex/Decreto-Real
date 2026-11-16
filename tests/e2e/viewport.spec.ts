@@ -51,7 +51,7 @@ async function noPageScroll(page: Page) {
 
 test('home menu stays fully inside one screen', async ({ page }, testInfo) => {
   await page.goto(route(''));
-  await expect(page.getByRole('button', { name: 'Jugar con la IA' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Versus IA' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Multijugador' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Empezar campaña' })).toHaveCount(0);
   await fits(page, '.dr-cinematic-brand');

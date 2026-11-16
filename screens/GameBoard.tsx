@@ -145,7 +145,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const rivalPortrait = presentation?.opponentPortrait ?? OPPONENT_IMG;
   const navigate = useNavigate();
   const location = useLocation();
-  // La ceremonia solo se habilita al elegir Jugar con la IA en el menú.
+  // La ceremonia solo se habilita al elegir Versus IA en el menú.
   // Acceso directo, campaña, tutorial y editor conservan su inicio habitual.
   const [entranceActive, setEntranceActive] = useState(() =>
     location.state?.duelEntrance === true && !onOutcome && !guidedOpening && !storyConversation);

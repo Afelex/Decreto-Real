@@ -8,7 +8,9 @@ import { isCampaignQaActive } from '../campaign/campaignQA';
 import { campaignOverview } from '../campaign/progressView.ts';
 import { useAmbientVideo } from './useAmbientVideo';
 import { G3_UI_ASSETS } from '../game/g3UiAssets';
+import { preloadVersusIa, type DuelLoadProgress } from '../game/versusIaPreload';
 import './main-menu-cinematic.css';
+import './versus-ia-loading.css';
 
 /**
  * Recursos para sustituir los botones por PNG transparentes.
@@ -98,15 +100,60 @@ const MenuButton: React.FC<MenuButtonProps> = ({
   );
 };
 
+type LoadingView = DuelLoadProgress & {
+  phase: 'loading' | 'ready' | 'error';
+  error?: string;
+};
+
 const MainMenu: React.FC = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = React.useState<LoadingView | null>(null);
+  const preloadController = React.useRef<AbortController | null>(null);
+  React.useEffect(() => () => preloadController.current?.abort(), []);
+  const cancelVsIa = React.useCallback(() => {
+    preloadController.current?.abort();
+    preloadController.current = null;
+    setLoading(null);
+  }, []);
+  const openVsIa = React.useCallback(() => {
+    if (preloadController.current) return;
+    const controller = new AbortController();
+    preloadController.current = controller;
+    setLoading({ phase: 'loading', completed: 0, total: 1, label: 'Iniciando descarga…' });
+    void preloadVersusIa({
+      signal: controller.signal,
+      onProgress: progress => {
+        if (!controller.signal.aborted) setLoading({ ...progress, phase: 'loading' });
+      },
+    }).then(async () => {
+      if (controller.signal.aborted) return;
+      setLoading(current => current ? { ...current, phase: 'ready', label: 'Duelo preparado' } : null);
+      // Let 100% paint before the navigation unloads the progress dialog.
+      await new Promise<void>(resolve => {
+        if (typeof requestAnimationFrame === 'function') requestAnimationFrame(() => resolve());
+        else setTimeout(resolve, 0);
+      });
+      if (!controller.signal.aborted) navigate('/game', { state: { duelEntrance: true } });
+    }).catch((error: unknown) => {
+      if (controller.signal.aborted) return;
+      setLoading(current => ({
+        phase: 'error',
+        completed: current?.completed ?? 0,
+        total: current?.total ?? 1,
+        label: current?.label ?? 'Carga interrumpida',
+        error: error instanceof Error ? error.message : 'No se pudieron cargar los recursos',
+      }));
+    }).finally(() => {
+      if (preloadController.current === controller) preloadController.current = null;
+    });
+  }, [navigate]);
   // Warm the IA code only after explicit interest. The background MP4 of the
   // battle should NEVER compete with the menu's visible cinematic resources.
   const warmDuel = React.useCallback(() => {
     void import('./GameBoard').catch(() => { /* normal navigation can retry */ });
   }, []);
   const coverVideoRef = React.useRef<HTMLVideoElement>(null);
-  useAmbientVideo(coverVideoRef);
+  useAmbientVideo(coverVideoRef, loading?.phase === 'loading' || loading?.phase === 'ready');
   const progress = React.useMemo(() => {
     try { return loadCampaignProgress(getCampaignStorage()); }
     catch { return loadCampaignProgress(null); }
@@ -200,14 +247,15 @@ const MainMenu: React.FC = () => {
         <MenuButton
           artKey="duel"
           className="dr-cinematic-button-secondary"
-          ariaLabel="Jugar con la IA"
+          ariaLabel="Versus IA"
           onPointerEnter={warmDuel}
           onTouchStart={warmDuel}
           onFocus={warmDuel}
-          onClick={() => navigate('/game', { state: { duelEntrance: true } })}
+          onClick={openVsIa}
+          disabled={Boolean(loading)}
         >
           <span className="dr-cinematic-button-icon" aria-hidden="true">⚔️</span>
-          <strong>JUGAR CON LA IA</strong>
+          <strong>VERSUS IA</strong>
         </MenuButton>
 
         <MenuButton
@@ -259,6 +307,43 @@ const MainMenu: React.FC = () => {
           </>
         )}
       </nav>
+
+      {loading && (
+        <section className="dr-vsia-loading" role="dialog" aria-modal="true"
+          aria-labelledby="dr-vsia-loading-title" data-testid="vs-ia-loading">
+          <div className="dr-vsia-loading__panel">
+            <small>DECRETO REAL</small>
+            <h2 id="dr-vsia-loading-title">
+              {loading.phase === 'error' ? 'No se completó la carga' :
+                loading.phase === 'ready' ? '¡Todo listo!' : 'Preparando el duelo'}
+            </h2>
+            <p className="dr-vsia-loading__subtitle">Comprobando el motor, las cartas, los retratos y el escenario.</p>
+            <div className="dr-vsia-loading__progress" role="progressbar"
+              aria-label="Carga de recursos de Versus IA"
+              aria-valuemin={0} aria-valuemax={100}
+              aria-valuenow={Math.floor(100 * loading.completed / loading.total)}>
+              <span style={{ width: `${Math.floor(100 * loading.completed / loading.total)}%` }} />
+            </div>
+            <strong className="dr-vsia-loading__percentage">
+              {Math.floor(100 * loading.completed / loading.total)}%
+            </strong>
+            <p className="dr-vsia-loading__status" role="status" aria-live="polite">
+              {loading.phase === 'error' ? 'Comprueba tu conexión y vuelve a intentarlo.' :
+                loading.phase === 'ready' ? 'Comenzando la presentación…' :
+                  `Recurso verificado: ${loading.label}`}
+            </p>
+            {loading.phase === 'error' && <p className="dr-vsia-loading__error" role="alert">{loading.error}</p>}
+            <div className="dr-vsia-loading__actions">
+              {loading.phase === 'error' && <button type="button" onClick={() => { setLoading(null); openVsIa(); }}>
+                Reintentar
+              </button>}
+              <button type="button" onClick={cancelVsIa} autoFocus>
+                Volver al menú
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 };

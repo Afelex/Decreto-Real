@@ -65,7 +65,7 @@ test('salir al menú principal: cancelar conserva el duelo y confirmar no cuenta
   confirmation = page.getByRole('alertdialog', { name: '¿Deseas salir de la partida?' });
   await confirmation.getByRole('button', { name: 'SÍ', exact: true }).click();
   await expect(page.getByTestId('royal-pause-menu')).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Jugar con la IA' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Versus IA' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Derrota' })).toHaveCount(0);
 });
 

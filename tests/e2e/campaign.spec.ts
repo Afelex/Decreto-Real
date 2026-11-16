@@ -140,7 +140,7 @@ test('QA menu keeps campaign progress but hides the unpublished campaign access'
   })));
   await page.goto('/Decreto-Real/#/');
   await expect(page.getByRole('button', { name: 'Empezar campaña' })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Jugar con la IA' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Versus IA' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Multijugador' })).toBeVisible();
   const progress = await page.evaluate(() => localStorage.getItem('decreto-real.campania.v1'));
   expect(JSON.parse(progress!).stars).toEqual({ '01': 2, '38': 3 });
