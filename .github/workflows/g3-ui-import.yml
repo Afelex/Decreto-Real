@@ -17,8 +17,7 @@ concurrency:
 
 jobs:
   importar-g3:
-    # El commit del bot borra el ZIP; no intentar importarlo por segunda vez.
-    if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.added, 'incoming/DecretoReal_G3_Imagenes_Integracion.zip') || contains(github.event.head_commit.modified, 'incoming/DecretoReal_G3_Imagenes_Integracion.zip') }}
+    # Only pushes changing the ZIP trigger this workflow; GITHUB_TOKEN pushes do not retrigger it.
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
