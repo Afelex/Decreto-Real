@@ -11,7 +11,7 @@ type DuelEntranceProps = {
 };
 
 /**
- * Solo para la entrada desde «Jugar con la IA».
+ * Solo para la entrada desde «Versus IA».
  * El escenario real y el motor de combate ya están montados debajo:
  * esta ceremonia no reparte cartas, modifica turnos ni lanza la moneda.
  */
