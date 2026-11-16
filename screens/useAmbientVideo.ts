@@ -10,6 +10,7 @@ import React from 'react';
 export function useAmbientVideo(
   ref: React.RefObject<HTMLVideoElement | null>,
   paused = false,
+  source?: string,
 ): void {
   React.useEffect(() => {
     const video = ref.current;
@@ -42,5 +43,5 @@ export function useAmbientVideo(
       motion?.removeEventListener?.('change', sync);
       video.pause();
     };
-  }, [ref, paused]);
+  }, [ref, paused, source]);
 }
