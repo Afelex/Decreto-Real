@@ -9,6 +9,7 @@ vi.mock('../../contexts/AudioContext', () => {
     playSound:vi.fn(),sfxEnabled:false,musicEnabled:false,
     toggleSfx:vi.fn(),toggleMusic:vi.fn(),setNarrativeMusicMode:vi.fn(),
     setNarrativeMusicTrack:vi.fn(),
+    setMusicScene:vi.fn(),
   };
   return {useAudio:()=>audio,useOptionalAudio:()=>audio};
 });
