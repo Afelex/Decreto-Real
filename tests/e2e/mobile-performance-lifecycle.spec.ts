@@ -15,7 +15,7 @@ test('producción: la portada no descarga el MP4 del duelo antes de entrar', asy
   });
   const start=Date.now();
   await page.goto('http://127.0.0.1:4174/Decreto-Real/#/');
-  await expect(page.getByRole('button',{name:'Jugar con la IA'})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Versus IA'})).toBeVisible();
   const menuReadyMs=Date.now()-start;
   // Former menu prefetch triggered after 1500 ms even without any interest.
   await page.waitForTimeout(1750);
@@ -30,7 +30,7 @@ test('producción: la portada no descarga el MP4 del duelo antes de entrar', asy
     };
   });
   const clickAt=Date.now();
-  await page.getByRole('button',{name:'Jugar con la IA'}).click();
+  await page.getByRole('button',{name:'Versus IA'}).click();
   await expect(page.getByTestId('duel-entrance')).toBeVisible();
   await page.getByRole('button',{name:'Omitir introducción'}).click();
   await expect(page.getByRole('button',{name:'Lanzar Moneda'})).toBeEnabled();
@@ -79,7 +79,7 @@ test('ciclo del duelo: pausa, cancelación, reinicio y salida al menú sin error
   exitConfirmation = page.getByRole('alertdialog',{name:'¿Deseas salir de la partida?'});
   await exitConfirmation.getByRole('button',{name:'SÍ',exact:true}).click();
   await expect(page.getByTestId('royal-pause-menu')).toHaveCount(0);
-  await expect(page.getByRole('button',{name:'Jugar con la IA'})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Versus IA'})).toBeVisible();
   await expect(page.locator('.dr-royal-end-banner-stage.is-defeat')).toHaveCount(0);
   expect(errors).toEqual([]);
 });
