@@ -289,3 +289,40 @@
 @media(max-height:570px) {
   .dr-duel-entrance__portrait-wrap { height:clamp(80px,22dvh,132px); }
 }
+
+/* Retablos VS: un único patrón geométrico para ambos retratos.
+   El texto ocupa la cartela incluida en cada imagen, no un segundo panel bajo ella. */
+.dr-royal-screen .dr-duel-entrance__rivals {
+  grid-template-columns:minmax(0,1fr) clamp(44px,12vw,60px) minmax(0,1fr);
+  gap:0; align-items:start;
+}
+.dr-royal-screen .dr-duel-entrance__fighter {
+  width:100%; min-width:0; align-self:start;
+  grid-template-rows:auto auto; gap:0; justify-items:center;
+}
+.dr-royal-screen .dr-duel-entrance__portrait-wrap {
+  box-sizing:border-box; width:min(100%,165px);
+  height:clamp(115px,24dvh,226px); flex:none;
+  margin:0 auto; position:relative;
+}
+.dr-royal-screen .dr-duel-entrance__portrait-wrap > .dr-duel-entrance__portrait {
+  width:100%; height:100%; object-fit:cover;
+  object-position:center 18%; box-sizing:border-box;
+}
+.dr-royal-screen .dr-duel-entrance__portrait-ornament {
+  inset:-10% -9%; width:118%; height:120%;
+  object-fit:fill; transform:none;
+}
+.dr-royal-screen .dr-duel-entrance__fighter figcaption {
+  position:relative; z-index:4; box-sizing:border-box;
+  width:min(100%,165px); height:30px;
+  display:flex; justify-content:center; align-items:center;
+  margin:-19px auto 0; padding:0 3px;
+  border:0; background:transparent;
+  color:#fff5dc; text-shadow:0 2px 3px #09070a,0 0 7px #100b16;
+  font-size:clamp(11px,3vw,15px); line-height:1;
+}
+@media(max-height:570px) {
+  .dr-royal-screen .dr-duel-entrance__portrait-wrap { height:clamp(80px,22dvh,132px); }
+  .dr-royal-screen .dr-duel-entrance__fighter figcaption { margin-top:-13px; height:25px; }
+}
