@@ -7,6 +7,7 @@ import { PROLOGUE_COMPLETE_KEY } from '../campaign/prologueArt';
 import { isCampaignQaActive } from '../campaign/campaignQA';
 import { campaignOverview } from '../campaign/progressView.ts';
 import { useAmbientVideo } from './useAmbientVideo';
+import { G3_UI_ASSETS } from '../game/g3UiAssets';
 import './main-menu-cinematic.css';
 
 /**
@@ -22,12 +23,12 @@ import './main-menu-cinematic.css';
  *   Duelo / Reglas / Opciones: 1360 x 180 px (680 x 90 en referencia).
  */
 type MenuArtKey = 'campaign' | 'duel' | 'rules' | 'options';
-type MenuArt = { src: string | null; includesText: boolean };
+type MenuArt = { src: string | null; pressedSrc?: string | null; includesText: boolean };
 const BUTTON_PNG: Record<MenuArtKey, MenuArt> = {
-  campaign: { src: null, includesText: false },
-  duel: { src: null, includesText: false },
-  rules: { src: null, includesText: false },
-  options: { src: null, includesText: false },
+  campaign: { src: G3_UI_ASSETS.menuButton, pressedSrc: G3_UI_ASSETS.menuButtonPressed, includesText: false },
+  duel: { src: G3_UI_ASSETS.menuButton, pressedSrc: G3_UI_ASSETS.menuButtonPressed, includesText: false },
+  rules: { src: G3_UI_ASSETS.smallButton, includesText: false },
+  options: { src: G3_UI_ASSETS.smallButton, includesText: false },
 };
 
 /** La prueba de calidad publica solo las dos modalidades de duelo.
@@ -53,7 +54,9 @@ const MenuButton: React.FC<MenuButtonProps> = ({
   disabled = false, children,
 }) => {
   const art = BUTTON_PNG[artKey];
-  const fullArt = Boolean(art.src && art.includesText);
+  const [artLoaded, setArtLoaded] = React.useState(false);
+  const [pressedLoaded, setPressedLoaded] = React.useState(false);
+  const fullArt = Boolean(artLoaded && art.includesText);
 
   return (
     <button
@@ -64,15 +67,30 @@ const MenuButton: React.FC<MenuButtonProps> = ({
       onTouchStart={onTouchStart}
       onFocus={onFocus}
       disabled={disabled}
-      className={`dr-cinematic-button ${className} ${art.src ? 'dr-cinematic-button-has-png' : ''}`}
+      className={`dr-cinematic-button ${className} ${artLoaded ? 'dr-cinematic-button-has-png' : ''} ${pressedLoaded ? 'dr-cinematic-button-has-pressed' : ''}`}
     >
       {art.src && (
         <img
-          className="dr-cinematic-button-png"
+          className="dr-cinematic-button-png dr-cinematic-button-png--base"
           src={art.src}
           alt=""
           aria-hidden="true"
           draggable={false}
+          style={{ visibility: artLoaded ? 'visible' : 'hidden' }}
+          onLoad={() => setArtLoaded(true)}
+          onError={() => setArtLoaded(false)}
+        />
+      )}
+      {art.pressedSrc && (
+        <img
+          className="dr-cinematic-button-png dr-cinematic-button-png--pressed"
+          src={art.pressedSrc}
+          alt=""
+          aria-hidden="true"
+          draggable={false}
+          style={{ visibility: pressedLoaded ? 'visible' : 'hidden' }}
+          onLoad={() => setPressedLoaded(true)}
+          onError={() => setPressedLoaded(false)}
         />
       )}
       {!fullArt && <span className="dr-cinematic-button-copy">{children}</span>}

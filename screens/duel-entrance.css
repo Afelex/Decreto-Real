@@ -127,7 +127,7 @@
   min-width:0;
   justify-items:center;
 }
-.dr-duel-entrance__fighter img {
+.dr-duel-entrance__portrait {
   display:block;
   height:clamp(115px,24dvh,226px);
   width:min(100%,175px);
@@ -137,11 +137,11 @@
   background:linear-gradient(140deg,#553038,#181a30);
   box-shadow:0 8px 20px #000c;
 }
-.dr-duel-entrance__fighter--player img {
+.dr-duel-entrance__fighter--player .dr-duel-entrance__portrait {
   border-color:#e7a18e;
   background:linear-gradient(140deg,#8e2b36,#271426);
 }
-.dr-duel-entrance__fighter--rival img {
+.dr-duel-entrance__fighter--rival .dr-duel-entrance__portrait {
   border-color:#94b9e6;
   background:linear-gradient(140deg,#244979,#101d35);
 }
@@ -256,7 +256,7 @@
 }
 @media (max-height:570px) {
   .dr-duel-entrance__rivals{top:14%}
-  .dr-duel-entrance__fighter img{height:clamp(80px,22dvh,132px)}
+  .dr-duel-entrance__portrait{height:clamp(80px,22dvh,132px)}
   .dr-duel-entrance__rivals h2{margin:6px 0 0}
   .dr-duel-entrance__ready{top:33%}
   .dr-duel-entrance__welcome{top:24%}
@@ -270,4 +270,22 @@
     animation:none!important;
     transition:none!important;
   }
+}
+
+/* G3's two transparent door leaves overlay the older CSS-only gates. */
+.dr-duel-entrance__gate.has-g3-art { border:0; background:transparent; box-shadow:none; }
+.dr-duel-entrance__gate.has-g3-art::before,
+.dr-duel-entrance__gate.has-g3-art::after { display:none; }
+.dr-duel-entrance__gate-image { display:block; width:100%; height:100%; object-fit:fill; pointer-events:none; }
+.dr-duel-entrance__gate:not(.has-g3-art) .dr-duel-entrance__gate-image { visibility:hidden; }
+.dr-duel-entrance__portrait-wrap {
+  position:relative; width:min(100%,175px); height:clamp(115px,24dvh,226px);
+}
+.dr-duel-entrance__portrait-wrap > .dr-duel-entrance__portrait { width:100%; height:100%; }
+.dr-duel-entrance__portrait-ornament {
+  position:absolute; inset:-10% -9%; width:118%; height:120%;
+  display:block; object-fit:fill; pointer-events:none;
+}
+@media(max-height:570px) {
+  .dr-duel-entrance__portrait-wrap { height:clamp(80px,22dvh,132px); }
 }

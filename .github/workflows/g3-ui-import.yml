@@ -1,0 +1,59 @@
+name: G3 - Importar arte de interfaz aprobado
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - incoming/DecretoReal_G3_Imagenes_Integracion.zip
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: decreto-real-g3-ui-import
+  cancel-in-progress: false
+
+jobs:
+  importar-g3:
+    # El commit del bot borra el ZIP; no intentar importarlo por segunda vez.
+    if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.added, 'incoming/DecretoReal_G3_Imagenes_Integracion.zip') || contains(github.event.head_commit.modified, 'incoming/DecretoReal_G3_Imagenes_Integracion.zip') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Verificar paquete aprobado y estructura ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f incoming/DecretoReal_G3_Imagenes_Integracion.zip
+          echo '1367e97d3eb8fe114c29b9b2c4311634948375621a32ecef63af154e5ce29716  incoming/DecretoReal_G3_Imagenes_Integracion.zip' | sha256sum -c
+          unzip -t incoming/DecretoReal_G3_Imagenes_Integracion.zip | tail -2
+      - name: Preparar Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Importar sin sobrescribir los gráficos anteriores
+        run: node tools/importar-g3-ui.mjs incoming/DecretoReal_G3_Imagenes_Integracion.zip
+      - name: Instalar dependencias
+        run: npm ci
+      - name: Pruebas y compilación
+        run: |
+          npm test
+          npm run build
+      - name: Publicar nuevos assets y retirar ZIP temporal
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add public/interfaz/g3/ art-reference/g3-ui/
+          git rm -- incoming/DecretoReal_G3_Imagenes_Integracion.zip
+          git diff --cached --quiet || {
+            git commit -m 'assets(g3): instalar arte UI aprobado y conservar maestros'
+            git push origin HEAD:main
+          }

@@ -1,4 +1,5 @@
 import React from 'react';
+import { G3_UI_ASSETS } from '../game/g3UiAssets';
 import './battle-result.css';
 
 export type BattleResultStat = Readonly<{ label: string; value: string | number }>;
@@ -28,6 +29,12 @@ const BattleResultScreen: React.FC<Props> = ({ won, heading, stats, actions, war
     <img className="dr-result-screen__scene"
       src={`${import.meta.env.BASE_URL}final/${won ? 'victoria' : 'derrota'}.webp`}
       alt="" aria-hidden="true" draggable={false}/>
+    {!rewardShowcase && <div className="dr-result-screen__g3-heading" aria-hidden="true">
+      <img src={won ? G3_UI_ASSETS.victoryCartela : G3_UI_ASSETS.defeatCartela}
+        alt="" draggable={false}
+        onError={event => { event.currentTarget.parentElement?.classList.add('is-missing'); }}/>
+      <strong>{heading ?? (won ? 'VICTORIA' : 'DERROTA')}</strong>
+    </div>}
     {won && rewardShowcase && <section className="dr-result-screen__showcase" aria-label="Carta mística obtenida">
       <img className="dr-result-screen__hero" src={`${import.meta.env.BASE_URL}retratos/jugador.webp`} alt="Xervias"/>
       <div className="dr-result-screen__obtained">
@@ -61,7 +68,12 @@ const BattleResultScreen: React.FC<Props> = ({ won, heading, stats, actions, war
         {actions.map(({ label, onClick, primary }) => (
           <button key={label} type="button"
             className={`dr-result-screen__action ${primary ? 'is-primary' : 'is-secondary'}`}
-            onClick={onClick}>{label}</button>
+            onClick={onClick}>
+            <img className="dr-result-screen__action-art" src={G3_UI_ASSETS.smallButton}
+              alt="" aria-hidden="true" draggable={false}
+              onError={event => { event.currentTarget.style.display = 'none'; }}/>
+            <span>{label}</span>
+          </button>
         ))}
       </nav>
     </div>
