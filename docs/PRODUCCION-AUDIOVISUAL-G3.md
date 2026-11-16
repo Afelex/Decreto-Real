@@ -1,5 +1,7 @@
 # Decreto Real · Integración de recursos audiovisuales G3
 
+> **¿Necesitas los prompts para crear los archivos?** Abre el [Kit completo de producción audiovisual G3](./PROMPTS-PRODUCCION-AUDIOVISUAL-G3.md): 6 músicas para Suno, 16 efectos sonoros, 9 imágenes y 9 animaciones, con instrucciones listas para copiar. **Esta página explica únicamente la integración técnica.**
+
 Este documento indica dónde sustituir los recursos *provisionales* por los recursos aprobados.
 No es necesario tener música o vídeo definitivos para continuar las mejoras técnicas.
 
