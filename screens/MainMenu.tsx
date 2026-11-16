@@ -109,7 +109,8 @@ type LoadingView = DuelLoadProgress & {
 
 const MainMenu: React.FC = () => {
   const navigate = useNavigate();
-  const setMusicScene = useOptionalAudio()?.setMusicScene;
+  const audio = useOptionalAudio();
+  const setMusicScene = audio?.setMusicScene;
   React.useEffect(() => {
     setMusicScene?.('MENU');
     return () => setMusicScene?.(null);
@@ -217,6 +218,12 @@ const MainMenu: React.FC = () => {
         <source src={menuLoopSource()} type="video/mp4" />
       </video>
       <div className="dr-cinematic-shade" aria-hidden="true" />
+      {audio?.musicEnabled && audio.musicGestureRequired && (
+        <button className="dr-cinematic-music-unlock" type="button"
+          aria-label="Activar música del menú" onClick={audio.unlockMusic}>
+          Activar música
+        </button>
+      )}
 
       {/* El centro del logo coincide exactamente con el 50 % del viewport. */}
       <header className="dr-cinematic-brand">
@@ -240,7 +247,7 @@ const MainMenu: React.FC = () => {
           ariaLabel="Empezar campaña"
           onClick={openCampaign}
         >
-          <span className="dr-cinematic-button-icon" aria-hidden="true">⚔️</span>
+          
           <span className="dr-cinematic-primary-copy">
             <strong>CAMPAÑA</strong>
             <small title={nextMissionText}>{nextMissionText}</small>
@@ -261,7 +268,7 @@ const MainMenu: React.FC = () => {
           onClick={openVsIa}
           disabled={Boolean(loading)}
         >
-          <span className="dr-cinematic-button-icon" aria-hidden="true">⚔️</span>
+          
           <strong>VERSUS IA</strong>
         </MenuButton>
 
@@ -271,7 +278,7 @@ const MainMenu: React.FC = () => {
           ariaLabel="Multijugador"
           onClick={() => navigate('/multijugador')}
         >
-          <span className="dr-cinematic-button-icon" aria-hidden="true">🌐</span>
+          
           <strong>MULTIJUGADOR</strong>
         </MenuButton>
 
@@ -283,7 +290,7 @@ const MainMenu: React.FC = () => {
           ariaLabel="Creación de baraja - No disponible"
           disabled
         >
-          <span className="dr-cinematic-button-icon" aria-hidden="true">🃏</span>
+          
           <span className="dr-cinematic-deck-copy">
             <strong>CREACIÓN DE BARAJA</strong>
             <small>No disponible</small>
@@ -297,7 +304,7 @@ const MainMenu: React.FC = () => {
             ariaLabel="Reglas"
             onClick={() => navigate('/rules')}
           >
-            <span className="dr-cinematic-button-icon" aria-hidden="true">📖</span>
+            
             <strong>REGLAS</strong>
           </MenuButton>
 
@@ -307,7 +314,7 @@ const MainMenu: React.FC = () => {
             ariaLabel="Opciones"
             onClick={() => navigate('/options')}
           >
-            <span className="dr-cinematic-button-icon" aria-hidden="true">⚙️</span>
+            
             <strong>OPCIONES</strong>
           </MenuButton>
         </div>
