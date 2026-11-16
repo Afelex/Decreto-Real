@@ -967,7 +967,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
       {/* The selected combo video completes before the bonus damage/healing applies. */}
       {comboAnnouncement && (
         <ComboEffectOverlay key={comboAnnouncement.id} level={comboAnnouncement.level}
-          ability={comboAnnouncement.ability} paused={isMenuOpen} />
+          ability={comboAnnouncement.ability} isPlayer={comboAnnouncement.isPlayer} paused={isMenuOpen} />
       )}
 
       {guidedOpening && <button type="button" className="dr-royal-guided-pause" onClick={handleMenuToggle}

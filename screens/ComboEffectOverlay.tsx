@@ -1,56 +1,83 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { comboEffectCue, DECREE_EFFECT_DURATION_MS, isInterruptedMediaPlay, syncCueVideoRate } from '../game/effectCues';
+import { DECREE_EFFECT_DURATION_MS } from '../game/effectCues';
+import { preloadDecretoFX } from './DecretoFXOverlay';
 import './card-activation-banner.css';
 
 type Props = {
   level: 2 | 3;
   ability: 'DAMAGE' | 'HEAL';
+  isPlayer?: boolean;
   paused: boolean;
 };
 
-export const ComboEffectOverlay: React.FC<Props> = ({ level, ability, paused }) => {
-  const [failed, setFailed] = useState(false);
-  const [playing, setPlaying] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const { file } = comboEffectCue(ability, level);
-  const src = `${import.meta.env.BASE_URL}${file}`;
+/**
+ * G3 combos use Claude's native Canvas FX (B05/B06), not the old WebM clips.
+ * The board's pausable 1.5s clock remains the only source of truth for gameplay.
+ * A lightweight CSS fallback is available if the FX engine cannot load.
+ */
+export const ComboEffectOverlay: React.FC<Props> = ({
+  level, ability, isPlayer = true, paused,
+}) => {
+  const canvasHost = useRef<HTMLDivElement>(null);
+  const [status, setStatus] = useState<'loading' | 'playing' | 'failed'>('loading');
+  const effectId = level === 2 ? 'B05' : 'B06';
+  const healing = ability === 'HEAL';
+  const detail = healing ? 'GRACIA DIVINA' : 'FURIA REAL';
 
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    let disposed = false;
-    syncCueVideoRate(video, DECREE_EFFECT_DURATION_MS);
-    if (paused) video.pause();
-    else {
-      const playback = video.play();
-      if (playback && typeof playback.catch === 'function') {
-        void playback.catch(error => {
-          if (!disposed && !paused && !isInterruptedMediaPlay(error)) {
-            setFailed(true);
-            setPlaying(false);
-          }
-        });
-      }
-    }
-    return () => { disposed = true; };
-  }, [paused, src]);
+    const host = canvasHost.current;
+    setStatus('loading');
+    if (!host || paused) return;
+    let active = true;
+    let handle: { stop: () => void } | undefined;
+    let clear: (() => void) | undefined;
 
+    void preloadDecretoFX().then(engine => {
+      if (!active || !host.isConnected) return;
+      clear = () => engine.clear(host);
+      handle = engine.playFX(effectId, {
+        container: host,
+        at: { x: 0.5, y: 0.5 },
+        side: isPlayer ? 'player' : 'rival',
+        faction: isPlayer ? 'carmesi' : 'azul',
+        palette: healing ? 'vida' : isPlayer ? 'carmesi' : 'azul',
+        // El motor B05/B06 fuerza el rojo con kind=damage. Para el rival
+        // usamos su paleta azul sin alterar la habilidad de Ataque.
+        params: { kind: healing ? 'heal' : isPlayer ? 'damage' : null, label: 'COMBO', detail },
+        duration: DECREE_EFFECT_DURATION_MS,
+        intensity: level === 3 ? 1.25 : 1.08,
+        layer: 'combo-energy',
+        silent: true, // El juego reproduce los SFX oficiales una sola vez.
+        shake: false,
+      });
+      setStatus('playing');
+    }).catch(() => {
+      if (active) setStatus('failed');
+    });
+
+    // Al pausar se limpia el Canvas. Al reanudar comienza otra vez el efecto
+    // sin alterar los tiempos, el sonido ni el daño del motor de combate.
+    return () => {
+      active = false;
+      handle?.stop();
+      clear?.();
+    };
+  }, [effectId, healing, detail, isPlayer, level, paused]);
+
+  const showFallback = paused || status !== 'playing';
   return (
-    <div className={`dr-energy-overlay dr-energy-overlay--combo ${ability === 'HEAL' ? 'is-heal' : 'is-damage'} ${paused ? 'paused' : ''}`}
-      role="status" aria-label={`Combo ×${level}: ${ability === 'DAMAGE' ? 'Ataque' : 'Curación'}`}>
+    <div className={`dr-energy-overlay dr-energy-overlay--combo ${healing ? 'is-heal' : 'is-damage'} ${paused ? 'paused' : ''}`}
+      role="status" aria-label={`Combo ×${level}: ${healing ? 'Curación' : 'Ataque'}`}
+      data-fx-id={effectId} data-fx-engine="canvas-g3">
       <div className="dr-energy-overlay__media" aria-hidden="true">
-        {!playing && <div className="dr-energy-overlay__fallback" />}
-        {!failed && <video ref={videoRef}
-          className={`dr-cue-video${playing ? ' is-playing' : ''}`}
-          autoPlay={!paused} muted playsInline preload="auto"
-          onLoadedMetadata={event => syncCueVideoRate(event.currentTarget, DECREE_EFFECT_DURATION_MS)}
-          onPlaying={() => setPlaying(true)}
-          onWaiting={() => setPlaying(false)}
-          onError={() => { setFailed(true); setPlaying(false); }}>
-          <source src={src} type="video/webm" />
-        </video>}
+        <div ref={canvasHost} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }} />
+        {showFallback && <div className="dr-energy-overlay__fallback" />}
       </div>
-      <strong className="dr-energy-overlay__label">COMBO ×{level} · {ability === 'DAMAGE' ? 'ATAQUE' : 'CURACIÓN'}</strong>
+      {showFallback && (
+        <strong className="dr-energy-overlay__label">
+          COMBO ×{level} · {healing ? 'CURACIÓN' : 'ATAQUE'}
+        </strong>
+      )}
     </div>
   );
 };
