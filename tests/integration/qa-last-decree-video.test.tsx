@@ -58,16 +58,22 @@ for (const type of Object.keys(names) as CardType[]) {
       // The banner and energy clips must never occupy the same frame.
       expect(srcs).not.toContainEqual(expect.stringContaining('efectos/'));
       unmount();
-      if (clips[type]) {
-        const { container: energy, unmount: stop } = render(
-          <CardActivationBanner card={card} isPlayer={isPlayer} paused={false} stage="effect" />
-        );
-        const effectSources = Array.from(energy.querySelectorAll('video source')).map(source => source.getAttribute('src') || '');
-        expect(effectSources).toContainEqual(expect.stringContaining(clips[type]!));
-        expect(effectSources).not.toContainEqual(expect.stringContaining('animaciones/banner-'));
-        expect(energy.querySelector('.dr-cinematic-copy')).toBeNull();
-        stop();
-      }
+      const { container: energy, unmount: stop } = render(
+        <CardActivationBanner card={card} isPlayer={isPlayer} paused={false} stage="effect" />
+      );
+      const fx = energy.querySelector('.dr-fx-g3-host');
+      expect(fx).toBeTruthy();
+      expect(fx?.getAttribute('data-fx-id')).toBe(
+        type === 'ATTACK' ? (isPlayer ? 'A01' : 'A02') :
+        type === 'DEFENSE' ? 'A03' : type === 'ORDER' ? 'A09' :
+        type === 'IMPACT' ? 'A05' : 'D07'
+      );
+      expect(energy.querySelector('video source[src*="animaciones/banner-"]')).toBeNull();
+      expect(energy.querySelector('.dr-cinematic-copy')).toBeNull();
+      // Mientras carga el motor, el clip previo se conserva como respaldo.
+      if (clips[type]) expect(energy.querySelector('video[src*="' + clips[type] + '"]')).toBeTruthy();
+      else expect(energy.querySelector('.dr-cinematic-effect-fallback')).toBeTruthy();
+      stop();
     }
   });
   test(`el último decreto ${names[type]} tiene insignia SVG para ambos participantes`, () => {
@@ -119,13 +125,14 @@ test('decreto: effect phase has a fallback and never shows the banner simultaneo
     description:'Cura 1', cost:0, img:'' };
   const { container }=render(<CardActivationBanner card={card} isPlayer={false} paused={false} stage="effect"/>);
   const video=container.querySelector('video')!;
-  expect(video.querySelector('source')?.getAttribute('src')).toContain('efectos/defensa.webm');
+  expect(video.getAttribute('src')).toContain('efectos/defensa.webm');
   expect(video.hasAttribute('loop')).toBe(false);
-  expect(container.querySelector('.dr-cinematic-effect-fallback')).toBeTruthy();
+  expect(container.querySelector('.dr-fx-g3-host')?.getAttribute('data-fx-id')).toBe('A03');
   expect(container.querySelector('.dr-cinematic-copy')).toBeNull();
   expect(container.querySelectorAll('video')).toHaveLength(1);
+  // El clip es el respaldo hasta que el motor local se cargue, no otro efecto simultáneo.
   fireEvent.playing(video);
-  expect(container.querySelector('.dr-cinematic-effect-fallback')).toBeNull();
+  expect(container.querySelectorAll('video')).toHaveLength(1);
 });
 
 test('combo: mantiene una sola reproducción y recurso visible si WebM no está listo', () => {

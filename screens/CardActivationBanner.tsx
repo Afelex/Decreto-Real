@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import type { CardData } from '../types';
 import { cardActivationCopy } from '../game/cardActivationText';
 import { bannerCueFile, cardEffectCue, DECREE_BANNER_DURATION_MS, DECREE_EFFECT_DURATION_MS, isInterruptedMediaPlay, syncCueVideoRate } from '../game/effectCues';
+import { DecretoFXOverlay } from './DecretoFXOverlay';
+import { resolveDecreeFX } from '../game/decreeFxMapping';
 import './card-activation-banner.css';
 
 type Props = {
@@ -31,6 +33,7 @@ export const CardActivationBanner: React.FC<Props> = ({
   const cue = cardEffectCue(card.type);
   const showBanner = stage === 'banner';
   const showEnergy = stage === 'effect' && Boolean(cue.file);
+  const useG3 = stage === 'effect' && resolveDecreeFX(card, isPlayer) !== null;
   const bannerSrc = `${import.meta.env.BASE_URL}${bannerCueFile(isPlayer)}`;
   const energySrc = cue.file ? `${import.meta.env.BASE_URL}${cue.file}` : null;
 
@@ -58,12 +61,12 @@ export const CardActivationBanner: React.FC<Props> = ({
   }, [paused, stage, bannerSrc, energySrc]);
 
   return (
-    <div className={`dr-cinematic-overlay ${isPlayer ? 'player' : 'rival'}${showEnergy ? ' dr-cinematic-overlay--effect-only' : ''}${paused ? ' paused' : ''}`}
+    <div className={`dr-cinematic-overlay ${isPlayer ? 'player' : 'rival'}${showEnergy || useG3 ? ' dr-cinematic-overlay--effect-only' : ''}${paused ? ' paused' : ''}`}
       data-decree-stage={stage}
       role="status" aria-live="polite" aria-atomic="true"
       style={{ '--dr-cue-duration': `${showBanner ? DECREE_BANNER_DURATION_MS : DECREE_EFFECT_DURATION_MS}ms` } as React.CSSProperties}
       aria-label={showBanner ? `${copy.kicker}: ${card.name}. ${copy.effect}` : `Animación de ${card.name}`}>
-      {showEnergy && energySrc && (
+      {showEnergy && energySrc && !useG3 && (
         <div className="dr-cinematic-effect-media" aria-hidden="true">
           {!energyPlaying && <div className="dr-cinematic-effect-fallback" />}
           {!failedEnergy && <video ref={energyRef}
@@ -77,6 +80,7 @@ export const CardActivationBanner: React.FC<Props> = ({
           </video>}
         </div>
       )}
+      {useG3 && <DecretoFXOverlay card={card} isPlayer={isPlayer} paused={paused} fallbackSrc={energySrc} />}
       {showBanner && <>
         <div className="dr-cinematic-media" aria-hidden="true">
           {!bannerPlaying && <div className="dr-cinematic-fallback" />}
