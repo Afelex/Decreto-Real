@@ -135,17 +135,21 @@ test('decreto: effect phase has a fallback and never shows the banner simultaneo
   expect(container.querySelectorAll('video')).toHaveLength(1);
 });
 
-test('combo: mantiene una sola reproducción y recurso visible si WebM no está listo', () => {
-  const { container }=render(<ComboEffectOverlay level={3} ability="DAMAGE" paused={false}/>);
-  const video=container.querySelector('video')!;
-  expect(video).toBeTruthy();
-  expect(video.hasAttribute('loop')).toBe(false);
-  expect(container.querySelector('.dr-energy-overlay__fallback')).toBeTruthy();
-  fireEvent.playing(video);
-  expect(container.querySelector('.dr-energy-overlay__fallback')).toBeNull();
-  fireEvent.error(video);
-  expect(container.querySelector('video')).toBeNull();
-  expect(container.querySelector('.dr-energy-overlay__fallback')).toBeTruthy();
+test('combos ×2/×3 usan los efectos Canvas de Claude en las cuatro combinaciones', () => {
+  for (const level of [2, 3] as const) {
+    for (const ability of ['DAMAGE', 'HEAL'] as const) {
+      const { container, unmount } = render(
+        <ComboEffectOverlay level={level} ability={ability} isPlayer={false} paused={false} />
+      );
+      const overlay = container.querySelector('[data-fx-engine="canvas-g3"]');
+      expect(overlay?.getAttribute('data-fx-id')).toBe(level === 2 ? 'B05' : 'B06');
+      expect(container.querySelector('video')).toBeNull();
+      // Durante la carga o un fallo de red la partida conserva su respaldo CSS.
+      expect(container.querySelector('.dr-energy-overlay__fallback')).toBeTruthy();
+      expect(overlay?.getAttribute('aria-label')).toContain(ability === 'HEAL' ? 'Curación' : 'Ataque');
+      unmount();
+    }
+  }
 });
 
 test('pausar un WebM durante su arranque no lo marca como roto', async () => {
@@ -170,21 +174,18 @@ test('pausar un WebM durante su arranque no lo marca como roto', async () => {
   expect(container.querySelector('video')).toBeNull();
 });
 
-test('un combo interrumpido por pausa tampoco elimina su clip', async () => {
-  vi.spyOn(HTMLMediaElement.prototype, 'play').mockImplementation(
-    () => Promise.reject({name:'AbortError'}),
-  );
+test('pausar un combo G3 conserva el respaldo CSS y no reactiva vídeos anteriores', async () => {
   const {container,rerender}=render(
-    <ComboEffectOverlay level={2} ability="HEAL" paused={false}/>,
+    <ComboEffectOverlay level={2} ability="HEAL" isPlayer={true} paused={false}/>,
   );
   await act(async () => { await Promise.resolve(); });
-  rerender(<ComboEffectOverlay level={2} ability="HEAL" paused={true}/>);
-  rerender(<ComboEffectOverlay level={2} ability="HEAL" paused={false}/>);
+  rerender(<ComboEffectOverlay level={2} ability="HEAL" isPlayer={true} paused={true}/>);
+  expect(container.querySelector('.dr-energy-overlay__fallback')).toBeTruthy();
+  rerender(<ComboEffectOverlay level={2} ability="HEAL" isPlayer={true} paused={false}/>);
   await act(async () => { await Promise.resolve(); });
-  expect(container.querySelector('video')).toBeTruthy();
-  expect(container.querySelector('video')?.hasAttribute('loop')).toBe(false);
+  expect(container.querySelector('[data-fx-id="B05"]')).toBeTruthy();
+  expect(container.querySelector('video')).toBeNull();
 });
-
 
 test('video ambiental del duelo se pausa y reanuda sin cambiar su póster', () => {
   vi.spyOn(document, 'hidden', 'get').mockReturnValue(false);
