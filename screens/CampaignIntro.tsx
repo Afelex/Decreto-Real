@@ -1,11 +1,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCampaignStorage } from '../campaign/campaignQA';
-import { PROLOGUE_CHECKPOINT_KEY } from './CampaignOpening';
+import { CAMPAIGN_INTRO_KEY, PROLOGUE_CHECKPOINT_KEY } from '../campaign/campaignKeys';
 import CampaignPauseMenu from './CampaignPauseMenu';
 import './campaign-intro.css';
 
-export const CAMPAIGN_INTRO_KEY = 'decreto-real.campania.introduccion.v1';
+export { CAMPAIGN_INTRO_KEY } from '../campaign/campaignKeys';
 
 /** Campaign poster: one invitation, not a wall of exposition. */
 const CampaignIntro:React.FC=()=>{
