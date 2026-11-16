@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { mkdir, writeFile } from 'node:fs/promises';
 
 /**
  * Real production preview (built Vite assets) rather than the Vite dev server.
@@ -34,9 +35,13 @@ test('producción: la portada no descarga el MP4 del duelo antes de entrar', asy
   await page.getByRole('button',{name:'Omitir introducción'}).click();
   await expect(page.getByRole('button',{name:'Lanzar Moneda'})).toBeEnabled();
   const coinReadyMs=Date.now()-clickAt;
+  const report={viewport:page.viewportSize(),menuReadyMs,coinReadyMs,resourceReport};
+  const reportText=JSON.stringify(report,null,2);
+  await mkdir('test-results/ia-metrics',{recursive:true});
+  await writeFile(`test-results/ia-metrics/${testInfo.project.name}.json`,reportText,'utf8');
+  console.log('[IA_PERF] '+testInfo.project.name+' '+JSON.stringify(report));
   await testInfo.attach('rendimiento-menu-ia.json',{
-    body:JSON.stringify({viewport:page.viewportSize(),menuReadyMs,coinReadyMs,resourceReport},null,2),
-    contentType:'application/json',
+    body:reportText,contentType:'application/json',
   });
   expect(errors).toEqual([]);
 });
