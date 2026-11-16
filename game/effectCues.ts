@@ -13,6 +13,15 @@ export type EffectCue = { file: string | null; durationMs: number };
 export const DECREE_BANNER_DURATION_MS = 1500;
 export const DECREE_EFFECT_DURATION_MS = 1500;
 
+/** One place for the approved red/blue announcement clips (IA and PvP). */
+export const bannerCueFile = (isPlayer: boolean): string =>
+  isPlayer ? 'animaciones/banner-jugador-rojo.webm' : 'animaciones/banner-rival-azul.webm';
+
+/** pause() can abort a pending play() promise; this is not a codec error. */
+export const isInterruptedMediaPlay = (error: unknown): boolean =>
+  typeof error === 'object' && error !== null &&
+  'name' in error && error.name === 'AbortError';
+
 /** Keep the complete supplied clip visible for the requested duration.
  * Metadata may not be available yet; fallback to normal speed until it loads. */
 export function syncCueVideoRate(video: HTMLVideoElement, durationMs: number): void {
