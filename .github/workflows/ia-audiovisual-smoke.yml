@@ -4,6 +4,13 @@ on:
   pull_request:
     branches: [main]
     paths:
+      - 'contexts/AudioContext.tsx'
+      - 'game/audioAssets.ts'
+      - 'game/soundPool.ts'
+      - 'game/soundPool.test.ts'
+      - 'game/effectCues.test.ts'
+      - 'screens/MultiplayerCinematicCue.tsx'
+      - 'docs/PRODUCCION-AUDIOVISUAL-G3.md'
       - 'App.tsx'
       - 'index.html'
       - 'screens/MainMenu.tsx'
@@ -37,6 +44,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run test:ai
+      - run: node --experimental-strip-types --test game/soundPool.test.ts game/effectCues.test.ts
       - run: npx vitest run tests/integration/qa-last-decree-video.test.tsx tests/integration/royal-progress.test.tsx tests/integration/turn-video-banners.test.tsx
       - run: npx tsc --noEmit
       - run: npm run build
