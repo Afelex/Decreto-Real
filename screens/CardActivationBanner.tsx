@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { CardData } from '../types';
 import { cardActivationCopy } from '../game/cardActivationText';
-import { cardEffectCue, DECREE_BANNER_DURATION_MS, DECREE_EFFECT_DURATION_MS, syncCueVideoRate } from '../game/effectCues';
+import { bannerCueFile, cardEffectCue, DECREE_BANNER_DURATION_MS, DECREE_EFFECT_DURATION_MS, isInterruptedMediaPlay, syncCueVideoRate } from '../game/effectCues';
 import './card-activation-banner.css';
 
 type Props = {
@@ -31,7 +31,7 @@ export const CardActivationBanner: React.FC<Props> = ({
   const cue = cardEffectCue(card.type);
   const showBanner = stage === 'banner';
   const showEnergy = stage === 'effect' && Boolean(cue.file);
-  const bannerSrc = `${import.meta.env.BASE_URL}animaciones/banner-${isPlayer ? 'jugador-rojo' : 'rival-azul'}.webm`;
+  const bannerSrc = `${import.meta.env.BASE_URL}${bannerCueFile(isPlayer)}`;
   const energySrc = cue.file ? `${import.meta.env.BASE_URL}${cue.file}` : null;
 
   useEffect(() => {
@@ -48,7 +48,9 @@ export const CardActivationBanner: React.FC<Props> = ({
       else {
         const playback = video.play();
         if (playback && typeof playback.catch === 'function') {
-          void playback.catch(() => { if (!disposed) onFailure(true); });
+          void playback.catch(error => {
+            if (!disposed && !paused && !isInterruptedMediaPlay(error)) onFailure(true);
+          });
         }
       }
     }
