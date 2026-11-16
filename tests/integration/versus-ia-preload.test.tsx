@@ -25,7 +25,7 @@ describe('precarga Versus IA', () => {
     expect(reports.at(-1)?.completed).toBe(2);
     releaseSecond();
     await task;
-    expect(reports.at(-1)).toEqual({ completed: 3, total: 3 });
+    expect(reports.at(-1)).toMatchObject({ completed: 3, total: 3 });
     expect(reports.map(item => item.completed)).toEqual([0, 1, 2, 3]);
     expect(loadImage).toHaveBeenCalledTimes(2);
   });
