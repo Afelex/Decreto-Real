@@ -17,3 +17,7 @@ Tras fusionar la PR de preparación del bloque 02, subir **solo ese ZIP** dentro
 SHA-256 esperado del ZIP: `6a448921391caaa7a2e1c27ae8fe4c0d8fe0579f85e800ce0835f1967d383cd2`.
 
 **No publica expresiones nuevas ni modifica los recursos G1, el juego o DRStudio**. Los derivados G2 se generarán, verificarán e integrarán en una fase posterior.
+
+## Paquete G3 · nueve imágenes de interfaz
+
+Sube **un único archivo** `DecretoReal_G3_Imagenes_Integracion.zip` en `incoming/` de `main` después de que se fusione la PR G3. El workflow `.github/workflows/g3-ui-import.yml` verifica su SHA-256 exacto (`1367e97d3eb8fe114c29b9b2c4311634948375621a32ecef63af154e5ce29716`), valida los diez WebP y sus hashes internos, conserva los nueve PNG maestros fuera de `public/`, ejecuta las pruebas y la compilación, publica únicamente los derivados optimizados y retira el ZIP temporal. Si falla alguna comprobación, no cambia los gráficos activos. La interfaz mantiene las versiones CSS anteriores como respaldo si faltan los archivos G3.
