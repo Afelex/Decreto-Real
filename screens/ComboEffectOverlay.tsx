@@ -53,22 +53,34 @@ export const ComboEffectOverlay: React.FC<Props> = ({
       }));
       // Además del anuncio ×2/×3, la acción elegida se representa en
       // el campo durante el mismo reloj de 1.5 s (no se añade otra pausa).
-      const own = { x: 0.5, y: isPlayer ? 0.76 : 0.24 };
-      const foe = { x: 0.5, y: isPlayer ? 0.24 : 0.76 };
+      // El escenario del Canvas cubre todo el tablero. Los objetivos se
+      // obtienen del retablo REAL, no de porcentajes en una ventana central.
+      const screen = host.closest('.dr-royal-screen');
+      const selfFrame = screen?.querySelector<HTMLElement>(isPlayer
+        ? '.dr-royal-player-area .dr-royal-character-frame'
+        : '.dr-royal-rival-area .dr-royal-character-frame');
+      const injuredFrame = screen?.querySelector<HTMLElement>(isPlayer
+        ? '.dr-royal-rival-area .dr-royal-character-frame'
+        : '.dr-royal-player-area .dr-royal-character-frame');
       actionTimer = window.setTimeout(() => {
         if (!active || !host.isConnected) return;
-        const action = healing ? 'A04' : isPlayer ? 'A01' : 'A02';
+        // A04: cura el retrato de quien eligió Gracia Divina.
+        // B01/B02: ruptura de Claude SOBRE el retablo que recibe el golpe.
+        const action = healing ? 'A04' : isPlayer ? 'B02' : 'B01';
+        const recipientIsPlayer = healing ? isPlayer : !isPlayer;
+        const portrait = healing ? selfFrame : injuredFrame;
+        const fallback = { x: 0.5, y: recipientIsPlayer ? 0.84 : 0.16 };
+        const amount = level === 2 ? 1 : 3;
         handles.push(engine.playFX(action, {
           container: host,
-          side: isPlayer ? 'player' : 'rival',
-          faction: isPlayer ? 'carmesi' : 'azul',
-          palette: healing ? 'vida' : isPlayer ? 'carmesi' : 'azul',
-          from: own,
-          to: foe,
-          at: healing ? own : foe,
-          params: healing ? { amount: level === 2 ? 1 : 3 } : {},
-          duration: 890,
-          intensity: level === 3 ? 1.22 : 0.98,
+          side: recipientIsPlayer ? 'player' : 'rival',
+          faction: recipientIsPlayer ? 'carmesi' : 'azul',
+          palette: healing ? 'vida' : 'sangre',
+          at: portrait || fallback,
+          ...(healing ? {} : { target: portrait || undefined }),
+          params: { amount },
+          duration: 900,
+          intensity: level === 3 ? 1.22 : 1.05,
           silent: true,
           shake: false,
           layer: 'combo-action',
@@ -94,10 +106,10 @@ export const ComboEffectOverlay: React.FC<Props> = ({
     <div className={`dr-energy-overlay dr-energy-overlay--combo ${healing ? 'is-heal' : 'is-damage'} ${paused ? 'paused' : ''}`}
       role="status" aria-label={`Combo ×${level}: ${healing ? 'Curación' : 'Ataque'}`}
       data-fx-id={effectId} data-fx-engine="canvas-g3">
-      <div className="dr-energy-overlay__media" aria-hidden="true">
-        <div ref={canvasHost} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }} />
-        {showFallback && <div className="dr-energy-overlay__fallback" />}
-      </div>
+      <div ref={canvasHost} className="dr-g3-combo-stage" aria-hidden="true" />
+      {showFallback && <div className="dr-energy-overlay__media" aria-hidden="true">
+        <div className="dr-energy-overlay__fallback" />
+      </div>}
       {showFallback && (
         <strong className="dr-energy-overlay__label">
           COMBO ×{level} · {healing ? 'CURACIÓN' : 'ATAQUE'}
