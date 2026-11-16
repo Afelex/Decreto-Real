@@ -18,6 +18,7 @@ import { ComboEffectOverlay } from './ComboEffectOverlay';
 import { cardEffectCue, DECREE_BANNER_DURATION_MS, DECREE_EFFECT_DURATION_MS } from '../game/effectCues';
 import { TurnIndicator, TurnAnnouncement, TURN_TRANSITION_DURATION_MS, ComboChoicePanel, CoinTossPanel } from './CombatEventUI';
 import { resolveBattleScenery } from '../game/battleScenery';
+import { freeDuelMusicScene } from '../game/musicScene';
 import { getRoyalCardText } from '../game/royalCardText';
 import { resolveBattleEnd, resolveSurrender, resolveDevelopmentVictory, type BattleEndResult } from '../game/battleEnd';
 import { BattleSceneryLayer } from './BattleSceneryLayer';
@@ -269,10 +270,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const freeVsIa = !onOutcome && !guidedOpening && !storyConversation;
   useEffect(() => {
     if (!freeVsIa) return;
-    const scene = entranceActive ? 'DUEL_ENTRANCE'
-      : phase === 'VICTORY' ? 'VICTORY'
-      : phase === 'DEFEAT' ? 'DEFEAT'
-      : playerHP <= MAX_HP * .2 || opponentHP <= MAX_HP * .2 ? 'CRITICAL' : 'BATTLE';
+    const scene = freeDuelMusicScene({ entranceActive, phase, playerHP, opponentHP });
     setMusicScene(scene);
     return () => setMusicScene(null);
   }, [freeVsIa, entranceActive, phase, playerHP <= MAX_HP * .2,
