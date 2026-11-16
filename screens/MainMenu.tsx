@@ -2,7 +2,7 @@ import { getCampaignStorage } from '../campaign/campaignQA.ts';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { bestStars, loadCampaignProgress } from '../campaign/campaign.ts';
-import { CAMPAIGN_INTRO_KEY } from './CampaignIntro';
+import { CAMPAIGN_INTRO_KEY } from '../campaign/campaignKeys';
 import { PROLOGUE_COMPLETE_KEY } from '../campaign/prologueArt';
 import { isCampaignQaActive } from '../campaign/campaignQA';
 import { campaignOverview } from '../campaign/progressView.ts';
