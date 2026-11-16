@@ -108,3 +108,32 @@ test('volume bounds and smoothstep are stable and do not exceed user choices',()
   assert.equal(smoothMusicProgress(350,700),.5);
   assert.equal(smoothMusicProgress(900,700),1);
 });
+
+test('Android autoplay rejection is shown and a real gesture unlocks the same track',async()=>{
+  let blocked=true;
+  const permission:boolean[]=[];
+  const sound:MusicAudioLike={
+    loop:false,volume:0,
+    play:()=>blocked
+      ? Promise.reject(new DOMException('Playback blocked','NotAllowedError'))
+      : Promise.resolve(),
+    pause:()=>{},
+  };
+  const director=new NarrativeMusicDirector({
+    create:()=>sound,
+    requestFrame:()=>1,
+    cancelFrame:()=>{},
+    now:()=>0,
+    onPlaybackPermissionChange:value=>permission.push(value),
+  });
+  director.setSoundtrack('menu.mp3',true,'normal');
+  await Promise.resolve();
+  await Promise.resolve();
+  assert.deepEqual(permission,[true]);
+  blocked=false;
+  director.setSoundtrack('menu.mp3',true,'normal');
+  await Promise.resolve();
+  await Promise.resolve();
+  assert.deepEqual(permission,[true,false]);
+  director.dispose();
+});
