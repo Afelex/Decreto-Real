@@ -29,7 +29,7 @@ export type SoundType = keyof typeof SOUND_ASSETS;
  * The importer changes ONLY this flag when all six MP3s are committed.
  * This prevents 404 requests while the binary upload is still pending.
  */
-export const SUNO_G3_READY = false; // SUNO_G3_IMPORT_FLAG
+export const SUNO_G3_READY = true; // SUNO_G3_IMPORT_FLAG
 
 const suno = (filename: string): string | null =>
   SUNO_G3_READY ? 'audio/suno-g3/' + filename : null;
