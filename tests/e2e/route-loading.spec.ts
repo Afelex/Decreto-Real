@@ -4,7 +4,7 @@ test('el menú prioriza su póster y no precarga imágenes del campo sin entrar 
   const pageErrors: string[] = [];
   page.on('pageerror', error => pageErrors.push(error.message));
   await page.goto('/Decreto-Real/#/');
-  await expect(page.getByRole('button', { name: 'Jugar con la IA' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Versus IA' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Multijugador' })).toBeVisible();
   const preloads = await page.locator('head link[rel="preload"][as="image"]').evaluateAll(
     elements => elements.map(element => (element as HTMLLinkElement).href));
@@ -30,8 +30,8 @@ test('desde el menú, multijugador y duelo IA cargan sus pantallas bajo demanda'
   await expect(page.locator('main.dr-pvp')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Volver al menú principal' })).toBeVisible();
   await page.getByRole('button', { name: 'Volver al menú principal' }).click();
-  await expect(page.getByRole('button', { name: 'Jugar con la IA' })).toBeVisible();
-  await page.getByRole('button', { name: 'Jugar con la IA' }).click();
+  await expect(page.getByRole('button', { name: 'Versus IA' })).toBeVisible();
+  await page.getByRole('button', { name: 'Versus IA' }).click();
   await expect(page.getByTestId('duel-entrance')).toBeVisible();
   await page.getByRole('button', { name: 'Omitir introducción' }).click();
   await expect(page.getByRole('button', { name: 'Lanzar Moneda' })).toBeEnabled();
