@@ -1,5 +1,6 @@
 import { G3_UI_ASSETS } from './g3UiAssets';
 import { loadDecodedImage } from './versusIaPreload';
+import { preloadMenuMusic } from './menuMusicPreload';
 
 /** Only the resources necessary to *display the first menu* are blocking.
  * Combat art/music and campaign videos remain lazy on their own routes. */
@@ -42,12 +43,15 @@ type StartupOptions = {
   loadMenu?: () => Promise<unknown>;
   loadImage?: (url: string, signal: AbortSignal) => Promise<void>;
   loadVideo?: (signal: AbortSignal) => Promise<void>;
+  loadMusic?: (signal: AbortSignal) => Promise<void>;
   images?: readonly { label: string; url: string }[];
 };
 
 /** Percentage represents *completed* work, never elapsed time or simulated bytes.
  * On a failed required resource it stops short of 100% and enables Retry.
  * MP4 is an optional enhancement; the already-decoded poster is the fallback.
+ * The enabled local menu music is required before 100%, but actual playback
+ * can still require a real tap because of mobile-browser autoplay policies.
  */
 export async function preloadMainMenu({
   signal,
@@ -55,6 +59,7 @@ export async function preloadMainMenu({
   loadMenu = () => import('../screens/MainMenu'),
   loadImage = loadDecodedImage,
   loadVideo = loadMenuLoop,
+  loadMusic = preloadMenuMusic,
   images = MENU_STARTUP_IMAGES,
 }: StartupOptions): Promise<void> {
   const tasks = [
@@ -63,6 +68,7 @@ export async function preloadMainMenu({
       label: asset.label,
       run: () => loadImage(asset.url, signal),
     })),
+    { label: 'Música del menú preparada', run: () => loadMusic(signal) },
     { label: 'Vídeo de portada preparado', run: async () => {
       try { await loadVideo(signal); }
       catch (error) {
