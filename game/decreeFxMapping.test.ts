@@ -32,10 +32,12 @@ test('G3: el recurso publicado incluye las 34 definiciones originales', () => {
     window: {}, console,
   };
   runInNewContext(bundle, sandbox, { timeout: 10_000 });
-  const defs = sandbox.window.DecretoFX?.defs;
-  assert.ok(defs instanceof Map || typeof defs?.size === 'number');
-  assert.equal(defs?.size, 34);
+  // runInNewContext muta sandbox dinámicamente; el compilador no puede inferirlo.
+  const runtime = (sandbox.window as Record<string, unknown>).DecretoFX as
+    | { defs: Map<string, unknown> } | undefined;
+  assert.ok(runtime);
+  assert.equal(runtime.defs.size, 34);
   for (const id of ['A01', 'A02', 'A03', 'A05', 'A06', 'A07', 'A08', 'A09', 'D07']) {
-    assert.ok(defs?.has(id), 'Efecto G3 ausente: ' + id);
+    assert.ok(runtime.defs.has(id), 'Efecto G3 ausente: ' + id);
   }
 });
