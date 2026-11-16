@@ -25,7 +25,7 @@ test('rival row follows a real AI Impact while player slots remain independent',
   expect(within(row).queryAllByRole('button')).toHaveLength(0);
   random.mockReturnValue(0); // Rival wins the coin toss.
   fireEvent.click(screen.getByRole('button', { name: 'Lanzar Moneda' }));
-  for (const ms of [1500, 1500, 2000, 1500, 1000, 2500]) {
+  for (const ms of [1500, 1500, 2000, 1500, 1000, 3100]) {
     await act(async () => { await vi.advanceTimersByTimeAsync(ms); });
   }
   expect(screen.getByRole('group', { name: 'Progreso de impactos del rival: 1 de 4' })).toBeTruthy();
@@ -60,14 +60,14 @@ test('two Impacts across turns offer the one-point combo and preserve the streak
   fireEvent.click(screen.getByRole('button', { name: 'Casilla Impacto I' }));
   expect(screen.getByRole('status', {name: /HAS ACTIVADO/})).toBeTruthy();
   expect((screen.getByRole('button', { name: 'Terminar turno' }) as HTMLButtonElement).disabled).toBe(true);
-  await act(async () => { await vi.advanceTimersByTimeAsync(2500); });
+  await act(async () => { await vi.advanceTimersByTimeAsync(3100); });
   fireEvent.click(screen.getByRole('button', { name: 'Terminar turno' }));
-  for (const ms of [1500, 1000, 2500, 1500, 1500]) {
+  for (const ms of [1500, 1000, 3100, 1500, 1500]) {
     await act(async () => { await vi.advanceTimersByTimeAsync(ms); });
   }
   fireEvent.click(screen.getByRole('button', { name: /Impacto II:/ }));
   fireEvent.click(screen.getByRole('button', { name: 'Casilla Impacto II' }));
-  await act(async () => { await vi.advanceTimersByTimeAsync(2500); });
+  await act(async () => { await vi.advanceTimersByTimeAsync(3100); });
   expect(screen.getByText('Combo ×2')).toBeTruthy();
   expect(screen.queryByRole('status', { name: 'Combo por 2' })).toBeNull(); // The dialog owns the title, no duplicate floating label.
   expect(screen.getByText('1 Daño al Rival')).toBeTruthy();
@@ -113,7 +113,8 @@ test('Order draws one replacement card without changing the starting 28-card dec
   expect(screen.queryByRole('status', { name: /HAS ACTIVADO/ })).toBeNull();
   expect(document.querySelector('.dr-cinematic-overlay')?.getAttribute('data-decree-stage')).toBe('effect');
   const orderVideo = document.querySelector<HTMLVideoElement>('.dr-cinematic-overlay--effect-only video');
-  expect(orderVideo?.querySelector('source')?.getAttribute('src')).toContain('/efectos/orden.webm');
+  expect(orderVideo?.getAttribute('src')).toContain('/efectos/orden.webm');
+  expect(document.querySelector('.dr-fx-g3-host')?.getAttribute('data-fx-id')).toBe('A09');
   expect(orderVideo?.muted).toBe(true); // Mocked test preferences disable SFX.
   await act(async () => { await vi.advanceTimersByTimeAsync(1600); });
   expect(screen.getByLabelText(/Tu mano:/).querySelectorAll('.dr-royal-hand-card')).toHaveLength(before);
