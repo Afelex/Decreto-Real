@@ -1,31 +1,8 @@
 import React from 'react';
 import { HashRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import MainMenu from './screens/MainMenu';
-import GameBoard from './screens/GameBoard';
-import VictoryScreen from './screens/VictoryScreen';
-import RulesScreen from './screens/RulesScreen';
-import OptionsScreen from './screens/OptionsScreen';
-import CombatPrototype from './screens/CombatPrototype';
-import TutorialScreen from './screens/TutorialScreen';
-import CampaignMap from './screens/CampaignMap';
-import CampaignMission from './screens/CampaignMission';
-import CampaignStory from './screens/CampaignStory';
-import CampaignEpilogue from './screens/CampaignEpilogue';
-import CampaignDeck from './screens/CampaignDeck';
-import CampaignBossSelect from './screens/CampaignBossSelect';
-import CampaignIntro from './screens/CampaignIntro';
-import CampaignOpening from './screens/CampaignOpening';
-import CampaignPauseMenu from './screens/CampaignPauseMenu';
-import CampaignAfterVictory from './screens/CampaignAfterVictory';
-import CampaignCenterReveal from './screens/CampaignCenterReveal';
-import CampaignRegionMoment from './screens/CampaignRegionMoment';
-import CampaignQaNavigator from './screens/CampaignQaNavigator';
-import StudioScenesCatalog from './screens/studio/StudioScenesCatalog';
-import ArtGallery from './screens/ArtGallery';
-import MultiplayerScreen from './screens/MultiplayerScreen';
 import { getCampaignStorage, isCampaignQaActive, isCampaignQaAvailable } from './campaign/campaignQA';
 import { PROLOGUE_COMPLETE_KEY } from './campaign/prologueArt';
-import CampaignCredits from './screens/CampaignCredits';
 import { AudioProvider } from './contexts/AudioContext';
 import './screens/one-screen-ui.css';
 import './screens/duel-viewport.css';
@@ -38,6 +15,38 @@ import './screens/royal-table-v2.css';
 import './screens/royal-card-art.css';
 import './screens/royal-hud-art.css';
 import './screens/royal-battle-status.css';
+
+/** Cargar cada pantalla sólo cuando se visita: evita incluir DRStudio/campaña en el menú. */
+const GameBoard = React.lazy(() => import('./screens/GameBoard'));
+const VictoryScreen = React.lazy(() => import('./screens/VictoryScreen'));
+const RulesScreen = React.lazy(() => import('./screens/RulesScreen'));
+const OptionsScreen = React.lazy(() => import('./screens/OptionsScreen'));
+const CombatPrototype = React.lazy(() => import('./screens/CombatPrototype'));
+const TutorialScreen = React.lazy(() => import('./screens/TutorialScreen'));
+const CampaignMap = React.lazy(() => import('./screens/CampaignMap'));
+const CampaignMission = React.lazy(() => import('./screens/CampaignMission'));
+const CampaignStory = React.lazy(() => import('./screens/CampaignStory'));
+const CampaignEpilogue = React.lazy(() => import('./screens/CampaignEpilogue'));
+const CampaignDeck = React.lazy(() => import('./screens/CampaignDeck'));
+const CampaignBossSelect = React.lazy(() => import('./screens/CampaignBossSelect'));
+const CampaignIntro = React.lazy(() => import('./screens/CampaignIntro'));
+const CampaignOpening = React.lazy(() => import('./screens/CampaignOpening'));
+const CampaignPauseMenu = React.lazy(() => import('./screens/CampaignPauseMenu'));
+const CampaignAfterVictory = React.lazy(() => import('./screens/CampaignAfterVictory'));
+const CampaignCenterReveal = React.lazy(() => import('./screens/CampaignCenterReveal'));
+const CampaignRegionMoment = React.lazy(() => import('./screens/CampaignRegionMoment'));
+const CampaignQaNavigator = React.lazy(() => import('./screens/CampaignQaNavigator'));
+const StudioScenesCatalog = React.lazy(() => import('./screens/studio/StudioScenesCatalog'));
+const ArtGallery = React.lazy(() => import('./screens/ArtGallery'));
+const MultiplayerScreen = React.lazy(() => import('./screens/MultiplayerScreen'));
+const CampaignCredits = React.lazy(() => import('./screens/CampaignCredits'));
+
+/** Fallback accesible, sin vídeos ni recursos de campaña. */
+const RouteLoading: React.FC = () => <main role="status" aria-live="polite"
+  style={{ minHeight:'100dvh',display:'grid',placeItems:'center',background:'#101c2d',
+    color:'#ead9b0',fontFamily:'Cinzel,Georgia,serif',textAlign:'center',padding:'1rem' }}>
+  Cargando Decreto Real…
+</main>;
 
 /** Keep story beyond the prologue private in public builds; QA can still inspect it. */
 const LaterStoryOnlyQa:React.FC<{children:React.ReactNode}> = ({children})=>{
@@ -56,6 +65,7 @@ const CampaignRoutes: React.FC = () => {
   const studioSession = new URLSearchParams(location.search).get('studio') === '1';
   return <>
     <React.Fragment key={studioSession ? 'decreto-real-studio:' + location.pathname : location.key}>
+        <React.Suspense fallback={<RouteLoading />}>
         <Routes>
           <Route path="/" element={<MainMenu />} />
           <Route path="/game" element={<GameBoard />} />
@@ -85,9 +95,12 @@ const CampaignRoutes: React.FC = () => {
           <Route path="/rules" element={<RulesScreen />} />
           <Route path="/options" element={<OptionsScreen />} />
         </Routes>
+        </React.Suspense>
     </React.Fragment>
-    {location.pathname.startsWith('/campania') && location.pathname !== '/campania/inicio' && location.pathname !== '/campania/prologo' && !studioSession && <CampaignPauseMenu />}
-    <CampaignQaNavigator />
+    {location.pathname.startsWith('/campania') && location.pathname !== '/campania/inicio' && location.pathname !== '/campania/prologo' && !studioSession &&
+      <React.Suspense fallback={null}><CampaignPauseMenu /></React.Suspense>}
+    {isCampaignQaAvailable() && (location.pathname === '/' || location.pathname.startsWith('/campania')) &&
+      <React.Suspense fallback={null}><CampaignQaNavigator /></React.Suspense>}
   </>;
 };
 
