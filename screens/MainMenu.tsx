@@ -129,7 +129,10 @@ const MainMenu: React.FC = () => {
       if (controller.signal.aborted) return;
       setLoading(current => current ? { ...current, phase: 'ready', label: 'Duelo preparado' } : null);
       // Let 100% paint before the navigation unloads the progress dialog.
-      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      await new Promise<void>(resolve => {
+        if (typeof requestAnimationFrame === 'function') requestAnimationFrame(() => resolve());
+        else setTimeout(resolve, 0);
+      });
       if (!controller.signal.aborted) navigate('/game', { state: { duelEntrance: true } });
     }).catch((error: unknown) => {
       if (controller.signal.aborted) return;
