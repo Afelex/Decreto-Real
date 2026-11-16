@@ -384,3 +384,11 @@
   .dr-cinematic-actions-duo .dr-cinematic-button-half {width:auto;}
   .dr-cinematic-button-half strong {font-size:11px;}
 }
+
+/* G3 artwork: the pressed image retains the same exact geometry as the base. */
+.dr-cinematic-button-png--pressed { opacity:0; transition:opacity .07s linear; }
+.dr-cinematic-button-has-pressed:active .dr-cinematic-button-png--base { opacity:0; }
+.dr-cinematic-button-has-pressed:active .dr-cinematic-button-png--pressed { opacity:1; }
+@media (prefers-reduced-motion:reduce) {
+  .dr-cinematic-button-png--pressed { transition:none; }
+}
