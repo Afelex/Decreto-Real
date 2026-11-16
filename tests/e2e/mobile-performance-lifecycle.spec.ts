@@ -48,14 +48,17 @@ test('ciclo del duelo: pausa, cancelación, reinicio y rendición sin errores', 
   await page.addInitScript(()=>{Math.random=()=>0.99;});
   await page.goto('/Decreto-Real/#/game');
   await expect(page.getByRole('button',{name:'Lanzar Moneda'})).toBeEnabled();
+  // The coin modal correctly covers the board: pause only after a turn begins.
+  await page.getByRole('button',{name:'Lanzar Moneda'}).click();
+  await expect(page.locator('.dr-event-indicator.is-player')).toBeVisible({timeout:12000});
 
-  await page.getByRole('button',{name:'Abrir menú de pausa'}).click();
+  await page.getByRole('button',{name:'Abrir menú de pausa'}).click({timeout:8000});
   await expect(page.getByTestId('royal-pause-menu')).toBeVisible();
-  await page.getByRole('button',{name:/REINICIAR PARTIDA/i}).click();
+  await page.getByRole('button',{name:/REINICIAR PARTIDA/i}).click({timeout:8000});
   await expect(page.getByRole('alertdialog')).toBeVisible();
   await page.getByRole('button',{name:/CANCELAR/i}).click();
   await expect(page.getByRole('dialog',{name:'PAUSA'})).toBeVisible();
-  await page.getByRole('button',{name:/REINICIAR PARTIDA/i}).click();
+  await page.getByRole('button',{name:/REINICIAR PARTIDA/i}).click({timeout:8000});
   await page.getByRole('button',{name:/SÍ, REINICIAR/i}).click();
   await expect(page.getByRole('button',{name:'Lanzar Moneda'})).toBeEnabled({timeout:10000});
 
