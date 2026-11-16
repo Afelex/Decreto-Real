@@ -29,13 +29,14 @@ export const ComboEffectOverlay: React.FC<Props> = ({
     setStatus('loading');
     if (!host || paused) return;
     let active = true;
-    let handle: { stop: () => void } | undefined;
+    const handles: Array<{ stop: () => void }> = [];
+    let actionTimer: number | undefined;
     let clear: (() => void) | undefined;
 
     void preloadDecretoFX().then(engine => {
       if (!active || !host.isConnected) return;
       clear = () => engine.clear(host);
-      handle = engine.playFX(effectId, {
+      handles.push(engine.playFX(effectId, {
         container: host,
         at: { x: 0.5, y: 0.5 },
         side: isPlayer ? 'player' : 'rival',
@@ -49,7 +50,30 @@ export const ComboEffectOverlay: React.FC<Props> = ({
         layer: 'combo-energy',
         silent: true, // El juego reproduce los SFX oficiales una sola vez.
         shake: false,
-      });
+      }));
+      // Además del anuncio ×2/×3, la acción elegida se representa en
+      // el campo durante el mismo reloj de 1.5 s (no se añade otra pausa).
+      const own = { x: 0.5, y: isPlayer ? 0.76 : 0.24 };
+      const foe = { x: 0.5, y: isPlayer ? 0.24 : 0.76 };
+      actionTimer = window.setTimeout(() => {
+        if (!active || !host.isConnected) return;
+        const action = healing ? 'A04' : isPlayer ? 'A01' : 'A02';
+        handles.push(engine.playFX(action, {
+          container: host,
+          side: isPlayer ? 'player' : 'rival',
+          faction: isPlayer ? 'carmesi' : 'azul',
+          palette: healing ? 'vida' : isPlayer ? 'carmesi' : 'azul',
+          from: own,
+          to: foe,
+          at: healing ? own : foe,
+          params: healing ? { amount: level === 2 ? 1 : 3 } : {},
+          duration: 890,
+          intensity: level === 3 ? 1.22 : 0.98,
+          silent: true,
+          shake: false,
+          layer: 'combo-action',
+        }));
+      }, 390);
       setStatus('playing');
     }).catch(() => {
       if (active) setStatus('failed');
@@ -59,7 +83,8 @@ export const ComboEffectOverlay: React.FC<Props> = ({
     // sin alterar los tiempos, el sonido ni el daño del motor de combate.
     return () => {
       active = false;
-      handle?.stop();
+      if (actionTimer !== undefined) window.clearTimeout(actionTimer);
+      handles.forEach(handle => handle.stop());
       clear?.();
     };
   }, [effectId, healing, detail, isPlayer, level, paused]);

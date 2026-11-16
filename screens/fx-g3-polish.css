@@ -1,0 +1,37 @@
+/* Fase G3: las capas son decorativas; nunca interceptan la mano o los botones. */
+.dr-royal-screen .dr-g3-draw-host {
+  position:absolute; inset:0; z-index:74; pointer-events:none;
+  overflow:hidden; isolation:isolate;
+}
+.dr-royal-screen .dr-g3-draw-card {
+  position:absolute; width:clamp(22px,7vw,42px); aspect-ratio:0.69;
+  border:2px solid #ffdc77; border-radius:5px;
+  background:linear-gradient(145deg,#5f1030,#9b2341 45%,#2c1029);
+  box-shadow:0 0 16px #ffc55b,0 0 7px #ffffffbb,inset 0 0 0 2px #3a1720;
+  transform:translate(-50%,-50%);
+  animation:dr-g3-card-draw 800ms cubic-bezier(.22,.72,.18,1) both;
+}
+.dr-royal-screen .dr-g3-draw-card::after {
+  content:'✦'; position:absolute; inset:15%; display:grid; place-items:center;
+  border:1px solid #e9ba79; color:#ffe9ad; font:900 20px Georgia,serif;
+}
+.dr-royal-screen .dr-g3-draw-host[data-side="OPPONENT"] .dr-g3-draw-card {
+  background:linear-gradient(145deg,#112b57,#215996 45%,#0b1938);
+  box-shadow:0 0 16px #76d5ff,0 0 7px #ffffffbb,inset 0 0 0 2px #142a48;
+}
+@keyframes dr-g3-card-draw {
+  0% { opacity:0; transform:translate(-50%,-50%) scale(.65) rotate(-19deg); }
+  12% { opacity:1; }
+  48% { opacity:1; filter:brightness(1.5); }
+  86% { opacity:1; }
+  100% { opacity:0; transform:translate(calc(-50% + var(--draw-dx)),calc(-50% + var(--draw-dy))) scale(1.03) rotate(0deg); }
+}
+.dr-royal-screen .dr-royal-end-banner-stage .dr-g3-result-fx {
+  position:absolute; inset:0; z-index:1; pointer-events:none;
+}
+.dr-royal-screen .dr-royal-end-banner-stage .dr-royal-end-banner {
+  position:relative; z-index:2;
+}
+@media(prefers-reduced-motion:reduce) {
+  .dr-royal-screen .dr-g3-draw-card { animation:none; opacity:0; }
+}
