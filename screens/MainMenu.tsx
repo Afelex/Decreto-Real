@@ -8,6 +8,7 @@ import { isCampaignQaActive } from '../campaign/campaignQA';
 import { campaignOverview } from '../campaign/progressView.ts';
 import { useAmbientVideo } from './useAmbientVideo';
 import { G3_UI_ASSETS } from '../game/g3UiAssets';
+import { useOptionalAudio } from '../contexts/AudioContext';
 import { preloadVersusIa, type DuelLoadProgress } from '../game/versusIaPreload';
 import './main-menu-cinematic.css';
 import './versus-ia-loading.css';
@@ -107,6 +108,11 @@ type LoadingView = DuelLoadProgress & {
 
 const MainMenu: React.FC = () => {
   const navigate = useNavigate();
+  const setMusicScene = useOptionalAudio()?.setMusicScene;
+  React.useEffect(() => {
+    setMusicScene?.('MENU');
+    return () => setMusicScene?.(null);
+  }, [setMusicScene]);
   const [loading, setLoading] = React.useState<LoadingView | null>(null);
   const preloadController = React.useRef<AbortController | null>(null);
   React.useEffect(() => () => preloadController.current?.abort(), []);
