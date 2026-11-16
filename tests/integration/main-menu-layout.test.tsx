@@ -34,7 +34,7 @@ test('the QA home menu exposes exactly the two duel modes', () => {
 
 test('QA menu enters a duel against the AI after preload', async () => {
   openMenu();
-  fireEvent.click(screen.getByRole('button', { name: 'Jugar con la IA' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Versus IA' }));
   expect(await screen.findByRole('heading', { name: 'Partida contra IA' })).toBeTruthy();
 });
 
