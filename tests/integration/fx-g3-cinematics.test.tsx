@@ -6,7 +6,7 @@ import { ComboEffectOverlay } from '../../screens/ComboEffectOverlay';
 import { ResultCinematicFX } from '../../screens/ResultCinematicFX';
 
 const engine = vi.hoisted(() => ({
-  play: vi.fn(() => ({ stop: vi.fn() })),
+  play: vi.fn((_id: string, _options: Record<string, unknown>) => ({ stop: vi.fn() })),
   clear: vi.fn(),
 }));
 vi.mock('../../screens/DecretoFXOverlay', () => ({
@@ -64,7 +64,7 @@ test('combo curativo rival tiene pulso A04 con +1 y no ataque', async () => {
   await act(async () => { await Promise.resolve(); });
   await act(async () => { vi.advanceTimersByTime(391); });
   expect(engine.play.mock.calls.map(call => call[0])).toEqual(['B05', 'A04']);
-  expect(engine.play.mock.calls[1][1].params.amount).toBe(1);
+  expect((engine.play.mock.calls[1][1].params as { amount: number }).amount).toBe(1);
   expect(engine.play.mock.calls[1][1].side).toBe('rival');
 });
 
