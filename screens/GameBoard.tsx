@@ -300,7 +300,6 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const announcementBusy = useRef(false);
   const announcementCount = useRef(0);
   const announcementClock = useRef(new AiTurnController());
-  const cueFinished = useRef<(() => void) | null>(null);
   const [shakeScreen, setShakeScreen] = useState(false);
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   const [playHint, setPlayHint] = useState<string | null>(null);
@@ -403,19 +402,11 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
     setPhase('OPPONENT_TURN');
   };
 
-  // Advance as soon as the real clip ends; use a pausable fallback for blocked
-  // autoplay, unavailable assets, or browsers that never emit an ended event.
-  const waitForCue = async (durationMs: number): Promise<boolean> => {
-    const mediaEnded = new Promise<boolean>(resolve => {
-      cueFinished.current = () => resolve(true);
-    });
-    const active = await Promise.race([
-      mediaEnded,
-      announcementClock.current.wait(durationMs),
-    ]);
-    cueFinished.current = null;
-    return active;
-  };
+  // One shared, pausable presentation timeline owns the complete 1.5 s cue.
+  // Video events only manage rendering/fallback; they must not unlock cards
+  // early or strand the game when a WebM cannot decode or autoplay.
+  const waitForCue = (durationMs: number): Promise<boolean> =>
+    announcementClock.current.wait(durationMs);
 
   const triggerVisualEffect = (type: EffectType, target: EffectTarget) => {
     setVisualEffect({ type, target });
@@ -837,8 +828,6 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
     gameOverRef.current = true;
     aiController.current?.cancel();
     announcementClock.current.cancel();
-    cueFinished.current?.();
-    cueFinished.current = null;
     announcementBusy.current = false;
     setCardAnnouncement(null);
     setComboAnnouncement(null);

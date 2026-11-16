@@ -1,0 +1,52 @@
+name: IA Audiovisual Smoke
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'game/aiTurn.ts'
+      - 'game/aiTurn.test.ts'
+      - 'game/effectCues.ts'
+      - 'screens/GameBoard.tsx'
+      - 'screens/CardActivationBanner.tsx'
+      - 'screens/ComboEffectOverlay.tsx'
+      - 'screens/card-activation-banner.css'
+      - 'tests/integration/qa-last-decree-video.test.tsx'
+      - '.github/workflows/ia-audiovisual-smoke.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ia-audiovisual-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  focused-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run test:ai
+      - run: npx vitest run tests/integration/qa-last-decree-video.test.tsx tests/integration/royal-progress.test.tsx tests/integration/turn-video-banners.test.tsx
+      - run: npx tsc --noEmit
+      - run: npm run build
+
+  mobile-duel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Check duels and turn graphics on supported mobile viewports
+        run: npx playwright test tests/e2e/duel-entrance.spec.ts tests/e2e/turn-indicator-viewport.spec.ts --project=mobile-390 --project=short-360 --workers=2 --trace off --reporter=line

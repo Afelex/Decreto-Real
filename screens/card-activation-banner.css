@@ -349,3 +349,37 @@
     font-size:clamp(22px,6.15cqw,29px);
   }
 }
+
+/* Playback is decorative: the 1.5 s UI clock never waits for WebM decoding.
+   Show a low-cost still fallback until the first decoded frame is playing.
+   This is also the visible alternative on autoplay and codec failures. */
+.dr-royal-screen .dr-cinematic-media .dr-cue-video,
+.dr-royal-screen .dr-cinematic-effect-media .dr-cue-video,
+.dr-royal-screen .dr-energy-overlay__media .dr-cue-video {
+  position:relative;
+  z-index:1;
+  opacity:0;
+}
+.dr-royal-screen .dr-cinematic-media .dr-cue-video.is-playing,
+.dr-royal-screen .dr-cinematic-effect-media .dr-cue-video.is-playing,
+.dr-royal-screen .dr-energy-overlay__media .dr-cue-video.is-playing {
+  opacity:1;
+}
+.dr-royal-screen .dr-cinematic-fallback {
+  animation-duration:var(--dr-cue-duration,1500ms);
+}
+.dr-royal-screen .dr-cinematic-effect-fallback {
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:38%;
+  aspect-ratio:1;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  background:radial-gradient(circle,#fffbe8 0%,#a6c9f9 23%,#2059ae77 47%,transparent 75%);
+  animation:dr-energy-fallback var(--dr-cue-duration,1500ms) ease-out both;
+}
+.dr-royal-screen .dr-cinematic-overlay.paused .dr-cinematic-effect-fallback,
+.dr-royal-screen .dr-energy-overlay.paused .dr-energy-overlay__fallback {
+  animation-play-state:paused;
+}

@@ -10,19 +10,21 @@ type Props = {
   paused: boolean;
   stage?: 'banner' | 'effect';
   sfxEnabled?: boolean;
-  onEnded?: () => void;
 };
 
-/** The decree ribbon and its energy effect are strictly SEQUENTIAL.
- * Stage "banner": a red/blue transparent WebM + live decree caption.
- * Stage "effect": only the associated Attack/Defense/Order energy WebM.
- * GameBoard owns the two pausable clocks and applies the card once after both.
+/**
+ * Each stage gets its full approved 1.5 s from GameBoard's pausable clock.
+ * Video playback is decorative and cannot shorten or stall gameplay.
+ * While WebM is still decoding (or cannot play), show an inexpensive fallback.
+ * Stages are mounted separately, so banner and energy cannot overlap.
  */
 export const CardActivationBanner: React.FC<Props> = ({
-  card, isPlayer, paused, stage = 'banner', onEnded,
+  card, isPlayer, paused, stage = 'banner',
 }) => {
   const [failedBanner, setFailedBanner] = useState(false);
   const [failedEnergy, setFailedEnergy] = useState(false);
+  const [bannerPlaying, setBannerPlaying] = useState(false);
+  const [energyPlaying, setEnergyPlaying] = useState(false);
   const bannerRef = useRef<HTMLVideoElement>(null);
   const energyRef = useRef<HTMLVideoElement>(null);
   const copy = cardActivationCopy(card, isPlayer);
@@ -33,6 +35,7 @@ export const CardActivationBanner: React.FC<Props> = ({
   const energySrc = cue.file ? `${import.meta.env.BASE_URL}${cue.file}` : null;
 
   useEffect(() => {
+    let disposed = false;
     const videos: Array<[HTMLVideoElement | null, number, (bad: boolean) => void]> = [
       [bannerRef.current, DECREE_BANNER_DURATION_MS, setFailedBanner],
       [energyRef.current, DECREE_EFFECT_DURATION_MS, setFailedEnergy],
@@ -45,10 +48,11 @@ export const CardActivationBanner: React.FC<Props> = ({
       else {
         const playback = video.play();
         if (playback && typeof playback.catch === 'function') {
-          void playback.catch(() => onFailure(true));
+          void playback.catch(() => { if (!disposed) onFailure(true); });
         }
       }
     }
+    return () => { disposed = true; };
   }, [paused, stage, bannerSrc, energySrc]);
 
   return (
@@ -59,20 +63,30 @@ export const CardActivationBanner: React.FC<Props> = ({
       aria-label={showBanner ? `${copy.kicker}: ${card.name}. ${copy.effect}` : `Animación de ${card.name}`}>
       {showEnergy && energySrc && (
         <div className="dr-cinematic-effect-media" aria-hidden="true">
-          {!failedEnergy ? <video ref={energyRef} autoPlay muted loop playsInline preload="auto"
+          {!energyPlaying && <div className="dr-cinematic-effect-fallback" />}
+          {!failedEnergy && <video ref={energyRef}
+            className={`dr-cue-video${energyPlaying ? ' is-playing' : ''}`}
+            autoPlay={!paused} muted playsInline preload="auto"
             onLoadedMetadata={event => syncCueVideoRate(event.currentTarget, DECREE_EFFECT_DURATION_MS)}
-            onEnded={onEnded} onError={() => setFailedEnergy(true)}>
+            onPlaying={() => setEnergyPlaying(true)}
+            onWaiting={() => setEnergyPlaying(false)}
+            onError={() => { setFailedEnergy(true); setEnergyPlaying(false); }}>
             <source src={energySrc} type="video/webm" />
-          </video> : <div className="dr-cinematic-effect-fallback" />}
+          </video>}
         </div>
       )}
       {showBanner && <>
         <div className="dr-cinematic-media" aria-hidden="true">
-          {!failedBanner ? <video ref={bannerRef} autoPlay muted loop playsInline preload="auto"
+          {!bannerPlaying && <div className="dr-cinematic-fallback" />}
+          {!failedBanner && <video ref={bannerRef}
+            className={`dr-cue-video${bannerPlaying ? ' is-playing' : ''}`}
+            autoPlay={!paused} muted playsInline preload="auto"
             onLoadedMetadata={event => syncCueVideoRate(event.currentTarget, DECREE_BANNER_DURATION_MS)}
-            onError={() => setFailedBanner(true)}>
+            onPlaying={() => setBannerPlaying(true)}
+            onWaiting={() => setBannerPlaying(false)}
+            onError={() => { setFailedBanner(true); setBannerPlaying(false); }}>
             <source src={bannerSrc} type="video/webm" />
-          </video> : <div className="dr-cinematic-fallback" />}
+          </video>}
         </div>
         <div className="dr-cinematic-copy" aria-hidden="true">
           <span className="dr-cinematic-kicker">{copy.kicker}</span>
