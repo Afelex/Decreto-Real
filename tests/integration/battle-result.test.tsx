@@ -5,7 +5,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import VictoryScreen from '../../screens/VictoryScreen';
 
 vi.mock('../../contexts/AudioContext', () => ({
-  useAudio: () => ({ playSound: vi.fn() }),
+  useAudio: () => ({ playSound: vi.fn(), setMusicScene: vi.fn() }),
 }));
 
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
