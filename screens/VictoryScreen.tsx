@@ -7,7 +7,7 @@ import BattleResultScreen from './BattleResultScreen';
 const VictoryScreen: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { playSound } = useAudio();
+  const { playSound, setMusicScene } = useAudio();
   const result = location.state as {
     outcome?: 'VICTORY' | 'DEFEAT';
     turnCount?: number;
@@ -15,6 +15,10 @@ const VictoryScreen: React.FC = () => {
     playerImpactLevel?: number;
   } | null;
   const won = result?.outcome !== 'DEFEAT';
+  useEffect(() => {
+    setMusicScene(won ? 'VICTORY' : 'DEFEAT');
+    return () => setMusicScene(null);
+  }, [won, setMusicScene]);
 
   useEffect(() => {
     playSound(won ? 'VICTORY' : 'DEFEAT');
