@@ -81,3 +81,9 @@ ni las cintas G3 aprobadas.
 4. Ejecutar pruebas de reglas, integración y navegación antes de fusionar.
 5. Conservar el lote gráfico/sonoro anterior como respaldo; no sobrescribir
    archivos maestros sin autorización.
+
+## Integración visual G3 (noviembre 2026)
+
+Las rutas WebP del nuevo kit de 9 ilustraciones se declaran en `game/g3UiAssets.ts` y se usan en `screens/MainMenu.tsx`, `screens/DuelEntrance.tsx` y `screens/BattleResultScreen.tsx`. Dos hojas de puerta se derivan del maestro original, por lo que se distribuyen 10 WebP optimizados. Las imágenes permanecen desactivadas visualmente cuando falla su carga y la interfaz recupera automáticamente el diseño CSS anterior. El código no depende de recursos ausentes y no cambia el motor ni los tiempos de entrada.
+
+Para publicar los binarios exactos, seguir el flujo de carga única en `incoming/README.md`. Los nueve PNG maestros se guardan después en `art-reference/g3-ui/maestros_png/`, sin borrar los artes G1/G2 o las cintas G3 ya aprobadas. No cargar ZIP de otro origen ni con un hash distinto.
