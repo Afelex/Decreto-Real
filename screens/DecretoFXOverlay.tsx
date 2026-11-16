@@ -90,7 +90,9 @@ export const DecretoFXOverlay: React.FC<Props> = ({ card, isPlayer, paused, fall
         duration: DECREE_EFFECT_DURATION_MS,
         silent: true,
         shake: false,
-        intensity: 0.78,
+        // Orden necesita más presencia sin añadir vídeos ni ocultar el tablero.
+        intensity: card.type === 'ORDER' ? 1.35 : 0.78,
+        scale: card.type === 'ORDER' ? 1.10 : 1,
         layer: 'decree-energy',
       });
       setStatus('playing');
