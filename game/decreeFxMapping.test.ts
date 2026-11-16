@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { readFileSync } from 'node:fs';
+import { runInNewContext } from 'node:vm';
 import type { CardType } from '../types';
 import { resolveDecreeFX } from './decreeFxMapping.ts';
 
@@ -22,4 +24,18 @@ test('G3: los cuatro sellos de Impacto mantienen sus rangos', () => {
 });
 test('G3: las místicas tienen plantilla visual', () => {
   assert.equal(effect('MYSTIC'), 'D07');
+});
+
+test('G3: el recurso publicado incluye las 34 definiciones originales', () => {
+  const bundle = readFileSync(new URL('../public/fx-g3/decreto-real-fx-g3.bundle.js', import.meta.url), 'utf8');
+  const sandbox: { window: { DecretoFX?: { defs: Map<string, unknown> } }; console: Console } = {
+    window: {}, console,
+  };
+  runInNewContext(bundle, sandbox, { timeout: 10_000 });
+  const defs = sandbox.window.DecretoFX?.defs;
+  assert.ok(defs instanceof Map || typeof defs?.size === 'number');
+  assert.equal(defs?.size, 34);
+  for (const id of ['A01', 'A02', 'A03', 'A05', 'A06', 'A07', 'A08', 'A09', 'D07']) {
+    assert.ok(defs?.has(id), 'Efecto G3 ausente: ' + id);
+  }
 });
