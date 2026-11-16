@@ -40,7 +40,10 @@ export const ComboEffectOverlay: React.FC<Props> = ({
         at: { x: 0.5, y: 0.5 },
         side: isPlayer ? 'player' : 'rival',
         faction: isPlayer ? 'carmesi' : 'azul',
-        params: { kind: healing ? 'heal' : 'damage', label: 'COMBO', detail },
+        palette: healing ? 'vida' : isPlayer ? 'carmesi' : 'azul',
+        // El motor B05/B06 fuerza el rojo con kind=damage. Para el rival
+        // usamos su paleta azul sin alterar la habilidad de Ataque.
+        params: { kind: healing ? 'heal' : isPlayer ? 'damage' : null, label: 'COMBO', detail },
         duration: DECREE_EFFECT_DURATION_MS,
         intensity: level === 3 ? 1.25 : 1.08,
         layer: 'combo-energy',
