@@ -16,6 +16,8 @@ import { nextDecreeStreak } from '../game/decreeStreak';
 import './hud-g3.css';
 import { RoyalHpMeter } from './RoyalHpMeter';
 import { ComboEffectOverlay } from './ComboEffectOverlay';
+import { CardDrawFX } from './CardDrawFX';
+import { ResultCinematicFX } from './ResultCinematicFX';
 import { cardEffectCue, DECREE_BANNER_DURATION_MS, DECREE_EFFECT_DURATION_MS } from '../game/effectCues';
 import { TurnIndicator, TurnAnnouncement, TURN_TRANSITION_DURATION_MS, ComboChoicePanel, CoinTossPanel } from './CombatEventUI';
 import { resolveBattleScenery } from '../game/battleScenery';
@@ -170,6 +172,8 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const [whoStarted, setWhoStarted] = useState<'PLAYER' | 'OPPONENT' | null>(null);
   const gameOverRef = useRef(false);
   const campaignOutcomeReported = useRef(false);
+  // Evita cortar la pista final durante el salto a la pantalla de estadísticas.
+  const navigatingToStats = useRef(false);
   const midpointSpoken = useRef(false);
   const criticalSpoken = useRef(false);
   const [storyMoment, setStoryMoment] = useState<StoryMoment | null>(
@@ -273,7 +277,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
     if (!freeVsIa) return;
     const scene = freeDuelMusicScene({ entranceActive, phase, playerHP, opponentHP });
     setMusicScene(scene);
-    return () => setMusicScene(null);
+    return () => { if (!navigatingToStats.current) setMusicScene(null); };
   }, [freeVsIa, entranceActive, phase, playerHP <= MAX_HP * .2,
     opponentHP <= MAX_HP * .2, setMusicScene]);
   // Trigger a short portrait motion for every real HP loss, never for healing.
@@ -312,6 +316,8 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   useEffect(() => { void preloadDecretoFX().catch(() => { /* El WebM existente queda como respaldo. */ }); }, []);
   const [visualEffect, setVisualEffect] = useState<{ type: EffectType, target: EffectTarget }>({ type: null, target: null });
   const [cardAnnouncement, setCardAnnouncement] = useState<{ id: number; card: CardData; isPlayer: boolean; stage: 'banner' | 'effect' } | null>(null);
+  const drawCueCounter = useRef(0);
+  const [drawCues, setDrawCues] = useState<Array<{ id: number; side: 'PLAYER' | 'OPPONENT'; count: number }>>([]);
   const announcementBusy = useRef(false);
   const announcementCount = useRef(0);
   const announcementClock = useRef(new AiTurnController());
@@ -473,12 +479,18 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
       const drawn = playerDeckRef.current.slice(0, amount);
       playerDeckRef.current = playerDeckRef.current.slice(amount);
       setPlayerDeck(playerDeckRef.current);
-      if (drawn.length) setPlayerHand(hand => [...hand, ...drawn]);
+      if (drawn.length) {
+        setPlayerHand(hand => [...hand, ...drawn]);
+        setDrawCues(prev => [...prev, { id: ++drawCueCounter.current, side: 'PLAYER', count: drawn.length }]);
+      }
     } else {
       const drawn = opponentDeckRef.current.slice(0, amount);
       opponentDeckRef.current = opponentDeckRef.current.slice(amount);
       setOpponentDeck(opponentDeckRef.current);
-      if (drawn.length) setOpponentHand(hand => [...hand, ...drawn]);
+      if (drawn.length) {
+        setOpponentHand(hand => [...hand, ...drawn]);
+        setDrawCues(prev => [...prev, { id: ++drawCueCounter.current, side: 'OPPONENT', count: drawn.length }]);
+      }
     }
   };
 
@@ -733,6 +745,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
     if (onOutcome) {
       onOutcome({ won: battleEnd.phase === 'VICTORY', turns: turnCount, health: playerHP });
     } else {
+      navigatingToStats.current = true;
       navigate('/victory', { state: {
         outcome: battleEnd.phase, reason: battleEnd.reason,
         turnCount, playerHP, opponentHP, playerImpactLevel, opponentImpactLevel,
@@ -948,6 +961,10 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
         </div>
       )}
 
+      {/* El A10 sale de las coordenadas reales del mazo y llega a la mano de cada facción. */}
+      {drawCues.map(cue => <CardDrawFX key={cue.id} cueId={cue.id}
+        side={cue.side} count={cue.count} paused={isMenuOpen}
+        onFinish={id => setDrawCues(prev => prev.filter(item => item.id !== id))}/>)}
       {/* Real card animation completes before a ×2/×3 combo may be chosen. */}
       {cardAnnouncement && (
         <CardActivationBanner key={cardAnnouncement.id} card={cardAnnouncement.card}
@@ -1242,6 +1259,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
 
       {battleEnd && !guidedOpening && (phase === 'VICTORY' || phase === 'DEFEAT') && (
         <div className={`dr-royal-end-banner-stage ${battleEnd.phase === 'VICTORY' ? 'is-victory' : 'is-defeat'}`}>
+          <ResultCinematicFX won={battleEnd.phase === 'VICTORY'}/>
           <section className="dr-royal-end-banner" role="dialog" aria-modal="true"
             aria-labelledby="dr-royal-end-title" aria-describedby="dr-royal-end-reason">
             <h2 id="dr-royal-end-title">{battleEnd.title}</h2>
