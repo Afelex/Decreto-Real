@@ -265,13 +265,19 @@ export function MultiplayerBattleBoard({ view, online, activeTurn, cinematicCue,
             <img className="dr-royal-finish-art-image" src={HUD + 'fin_turno.webp'} alt="" draggable={false}/>
           </span><strong>FIN<br/>TURNO</strong>
         </button>
-        {(lastDecrees.player || lastDecrees.opponent) && <div className="dr-last-decree-stack"
-          role="group" aria-label="Últimos decretos activados">
-          <LastDecreeIndicator side="opponent" type={lastDecrees.opponent?.type ?? null}
-            comboLevel={lastDecrees.opponent?.level ?? 1}/>
-          <LastDecreeIndicator side="player" type={lastDecrees.player?.type ?? null}
-            comboLevel={lastDecrees.player?.level ?? 1}/>
-        </div>}
+        <div className="dr-last-decree-stack dr-pvp-decree-history"
+          role="group" aria-label="Últimos decretos activados, siempre visibles">
+          {lastDecrees.opponent
+            ? <LastDecreeIndicator side="opponent" type={lastDecrees.opponent.type}
+                comboLevel={lastDecrees.opponent.level}/>
+            : <span className="dr-pvp-decree-empty dr-pvp-decree-empty--opponent"
+                aria-label="Último decreto del rival: ninguno">RIVAL · —</span>}
+          {lastDecrees.player
+            ? <LastDecreeIndicator side="player" type={lastDecrees.player.type}
+                comboLevel={lastDecrees.player.level}/>
+            : <span className="dr-pvp-decree-empty dr-pvp-decree-empty--player"
+                aria-label="Último decreto propio: ninguno">TÚ · —</span>}
+        </div>
       </footer>
     </div>
     {!finished && view.opponent.connected && <TurnIndicator side={view.isMyTurn ? 'PLAYER' : 'OPPONENT'} />}
@@ -297,10 +303,11 @@ export function MultiplayerBattleBoard({ view, online, activeTurn, cinematicCue,
     {finished && !cinematicCue && <div className="dr-royal-end-banner-stage dr-pvp-outcome">
       <ResultCinematicFX won={winner}/>
       <section className="dr-royal-end-banner" role="dialog" aria-modal="true" aria-label={'Resultado del duelo: ' + outcome}>
-        <div className="dr-royal-end-cartela" aria-hidden="true">
-          <img src={winner ? G3_UI_ASSETS.victoryCartela : G3_UI_ASSETS.defeatCartela} alt="" draggable={false}/>
+        <div className="dr-royal-end-cartela">
+          <img src={winner ? G3_UI_ASSETS.victoryCartela : G3_UI_ASSETS.defeatCartela}
+            alt="" aria-hidden="true" draggable={false}/>
+          <h2>{outcome}</h2>
         </div>
-        <h2>{outcome}</h2>
         <p>Turno {view.turnNumber} · {view.lastEvent}</p>
         <button type="button" onClick={() => setShowStats(true)}>Continuar</button>
       </section>
