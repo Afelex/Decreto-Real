@@ -39,6 +39,8 @@ export default function MultiplayerScreen() {
   const inviteOnLoad = React.useRef(new URLSearchParams(window.location.search).get('sala') || '');
   const autoJoinAttempted = React.useRef(false);
   const [session, setSession] = React.useState<Session | null>(() => getStored(SESSION_KEY));
+  // A resumed tab must not replay the first-match ceremony.
+  const openingSeen = React.useRef(Boolean(session));
   const sessionRef = React.useRef<Session | null>(session);
   const socketRef = React.useRef<WebSocket | null>(null);
   const pendingRef = React.useRef<string | null>(null);
@@ -99,6 +101,8 @@ export default function MultiplayerScreen() {
         } else if (msg.type === 'waiting') {
           setWaiting(true); setView(null);
           previousView.current = null;
+          openingSeen.current = false;
+          activeCue.current = null; queuedCues.current = []; setCinematicCue(null);
           statsRef.current = null; setStats(null); setDrawCues([]);
         } else if (msg.type === 'state') {
           const latest = msg.view as View;
@@ -112,6 +116,13 @@ export default function MultiplayerScreen() {
             ...draws.map(draw => ({ ...draw, id: ++drawCounter.current }))]);
           previousView.current = latest;
           setWaiting(false); setView(latest);
+          // Same 3.55-second DuelEntrance as IA, before the official turn ribbon.
+          // Only the first state of a genuinely new match starts the ceremony.
+          if (!previous && !openingSeen.current &&
+            latest.revision === 1 && latest.turnNumber === 1 && latest.status === 'playing') {
+            openingSeen.current = true;
+            enqueueCue({ kind: 'intro', id: 0 });
+          }
           if (animation) enqueueCue(animation);
           pendingRef.current = null; setPending(false);
         } else if (msg.type === 'ack' && msg.id === pendingRef.current) {
@@ -150,14 +161,14 @@ export default function MultiplayerScreen() {
     }));
   }, [view?.status, view?.winner, view?.me.hp, view?.opponent.hp, setMusicScene]);
   React.useEffect(() => () => setMusicScene(null), [setMusicScene]);
-  React.useEffect(() => {
-    if (!cinematicCue) return;
-    if (cinematicCue.kind === 'combo') soundRef.current('IMPACT');
-    if (cinematicCue.kind === 'card') {
+  // Audio is triggered by the PRESENTED effect stage, never on WebSocket receipt.
+  const onCinematicEffect = (cue: MultiplayerCue) => {
+    if (cue.kind === 'combo') soundRef.current('IMPACT');
+    else if (cue.kind === 'card') {
       const sound = { ATTACK: 'ATTACK', DEFENSE: 'DEFENSE', ORDER: 'FLIP', IMPACT: 'IMPACT' } as const;
-      soundRef.current(sound[cinematicCue.cardType]);
+      soundRef.current(sound[cue.cardType]);
     }
-  }, [cinematicCue?.id]);
+  };
 
 
   const send = (data: object) => {
@@ -185,6 +196,7 @@ export default function MultiplayerScreen() {
     sessionRef.current = null; setSession(null); setView(null); setWaiting(false); setError('');
     pendingRef.current = null; setPending(false);
     previousView.current = null;
+    openingSeen.current = false;
     statsRef.current = null; setStats(null); setDrawCues([]);
     queuedCues.current = [];
     activeCue.current = null;
@@ -267,7 +279,7 @@ export default function MultiplayerScreen() {
       <p>Reconectando con la sala {session.code}…</p><div className="dr-pvp-ornament" aria-hidden="true"><span>✦</span></div></section>}
 
     {view && <MultiplayerBattleBoard view={view} online={online} activeTurn={activeTurn && !cinematicCue}
-      cinematicCue={cinematicCue} onCueEnded={finishCue}
+      cinematicCue={cinematicCue} onCueEnded={finishCue} onCinematicEffect={onCinematicEffect}
       stats={stats} drawCues={drawCues}
       onDrawFinished={id => setDrawCues(current => current.filter(cue => cue.id !== id))}
       onPlayCard={card => action({ type: 'play', cardId: card.id })}
