@@ -1,6 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './multiplayer.css';
+import { DuelistProfilePanel } from './DuelistProfilePanel';
+import { loadDuelistProfile, saveDuelistProfile, rewardMatch, portraitUrl } from '../game/duelistProfile';
 import { MultiplayerBattleBoard } from './MultiplayerBattleBoard';
 import { useAudio } from '../contexts/AudioContext';
 import { freeDuelMusicScene } from '../game/musicScene';
@@ -10,11 +12,12 @@ import { multiplayerCueFromState, type MultiplayerCue } from '../game/multiplaye
 
 type Card = { id: string; type: 'ATTACK' | 'DEFENSE' | 'IMPACT' | 'ORDER'; rank?: number };
 type Player = { name: string; hp: number; impact: number; connected: boolean; deckCount: number; discarded: number;
-  hand?: Card[]; handCount?: number; impactThisTurn?: boolean; comboType?: string | null; comboCount?: number };
+  hand?: Card[]; handCount?: number; impactThisTurn?: boolean; comboType?: string | null; comboCount?: number;
+  appearance?: { portrait: string; entrance: string; back: string; nameFx: string } };
 type View = { revision: number; ruleset: string; status: 'playing' | 'finished'; isMyTurn: boolean; turnNumber: number;
   pendingCombo: 2 | 3 | null; winner: 'me' | 'opponent' | 'draw' | null; me: Player & { hand: Card[]; impactThisTurn: boolean };
   opponent: Player & { handCount: number }; lastEvent: string };
-type Session = { code: string; token: string; slot: number; name: string; randomQueue?: boolean };
+type Session = { code: string; matchId?: string; token: string; slot: number; name: string; randomQueue?: boolean };
 const SESSION_KEY = 'decreto-real.pvp.session.v1';
 const NAME_KEY = 'decreto-real.pvp.nickname.v1';
 const configuredUrl = import.meta.env.VITE_MULTIPLAYER_WS_URL as string | undefined;
@@ -32,7 +35,9 @@ export default function MultiplayerScreen() {
   const { setMusicScene, playSound } = useAudio();
   const soundRef = React.useRef(playSound);
   soundRef.current = playSound;
-  const [nickname, setNickname] = React.useState(() => { try { return localStorage.getItem(NAME_KEY) || ''; } catch { return ''; } });
+  const [duelist, setDuelist] = React.useState(() => loadDuelistProfile());
+  const [nickname, setNickname] = React.useState(() => { const p = loadDuelistProfile(); return p.slots[p.active]?.name || ''; });
+  const [showProfile, setShowProfile] = React.useState(false);
   const [joinCode, setJoinCode] = React.useState(() => new URLSearchParams(window.location.search).get('sala') || '');
   const [showJoinCode, setShowJoinCode] = React.useState(() => Boolean(new URLSearchParams(window.location.search).get('sala')));
   const [editingName, setEditingName] = React.useState(() => !nickname.trim());
@@ -49,6 +54,16 @@ export default function MultiplayerScreen() {
   const [view, setView] = React.useState<View | null>(null);
   const [waiting, setWaiting] = React.useState(false);
   const [error, setError] = React.useState('');
+  const nicknameRef = React.useRef(nickname);
+  const cosmeticRef = React.useRef(duelist.slots[duelist.active]?.appearance);
+  nicknameRef.current = nickname;
+  cosmeticRef.current = duelist.slots[duelist.active]?.appearance;
+  React.useEffect(() => {
+    saveDuelistProfile(duelist);
+    const selectedName = duelist.slots[duelist.active]?.name || '';
+    setNickname(selectedName);
+    setEditingName(!selectedName.trim());
+  }, [duelist]);
   const previousView = React.useRef<View | null>(null);
   const activeCue = React.useRef<MultiplayerCue | null>(null);
   const queuedCues = React.useRef<MultiplayerCue[]>([]);
@@ -80,9 +95,10 @@ export default function MultiplayerScreen() {
         if (!active) return;
         setOnline(true); setError('');
         if (sessionRef.current) socket.send(JSON.stringify({ type: 'resume', ...sessionRef.current }));
-        else if (/^[0-9a-f]{10}$/i.test(inviteOnLoad.current) && !autoJoinAttempted.current && nickname.trim().length >= 2) {
+        else if (/^[0-9]{2}[A-HJ-NP-Z]{2}$/i.test(inviteOnLoad.current) && !autoJoinAttempted.current && nicknameRef.current.trim().length >= 2) {
           autoJoinAttempted.current = true;
-          socket.send(JSON.stringify({ type: 'join', name: nickname.trim(), code: inviteOnLoad.current.toUpperCase() }));
+          socket.send(JSON.stringify({ type: 'join', name: nicknameRef.current.trim(), appearance: cosmeticRef.current,
+            code: inviteOnLoad.current.toUpperCase() }));
         }
       });
       socket.addEventListener('message', event => {
@@ -90,7 +106,8 @@ export default function MultiplayerScreen() {
         let msg: any;
         try { msg = JSON.parse(String(event.data)); } catch { return; }
         if (msg.type === 'session' && typeof msg.token === 'string') {
-          const next: Session = { code: msg.code, token: msg.token, slot: msg.slot, name: msg.name, randomQueue: Boolean(msg.randomQueue) };
+          const next: Session = { code: msg.code, matchId: msg.matchId, token: msg.token,
+            slot: msg.slot, name: msg.name, randomQueue: Boolean(msg.randomQueue) };
           sessionRef.current = next; setSession(next); storeSession(next);
           if (inviteOnLoad.current) {
             const url = new URL(window.location.href);
@@ -111,6 +128,10 @@ export default function MultiplayerScreen() {
           const updatedStats = advancePvpStats(statsRef.current, previous, latest);
           statsRef.current = updatedStats;
           setStats(updatedStats);
+          if (latest.status === 'finished' && latest.winner && sessionRef.current?.matchId) {
+            const matchId = sessionRef.current.matchId;
+            setDuelist(current => rewardMatch(current, matchId, latest.winner === 'me', updatedStats.impactsSummoned));
+          }
           const draws = confirmedPvpDraws(previous, latest);
           if (draws.length) setDrawCues(current => [...current.slice(-6),
             ...draws.map(draw => ({ ...draw, id: ++drawCounter.current }))]);
@@ -180,10 +201,13 @@ export default function MultiplayerScreen() {
   const enter = (type: 'create' | 'join' | 'queue') => {
     if (session) return;
     if (nickname.trim().length < 2 || nickname.trim().length > 24) { setError('Escribe un apodo de 2 a 24 caracteres.'); return; }
-    try { localStorage.setItem(NAME_KEY, nickname.trim()); } catch { /* private mode */ }
+    const adjusted = { ...duelist, slots: duelist.slots.map((item, index) =>
+      index === duelist.active ? { ...item, name: nickname.trim() } : item) };
+    setDuelist(adjusted);
     setEditingName(false);
     setError('');
-    send({ type, name: nickname.trim(), ...(type === 'join' ? { code: joinCode.trim().toUpperCase() } : {}) });
+    send({ type, name: nickname.trim(), appearance: adjusted.slots[adjusted.active].appearance,
+      ...(type === 'join' ? { code: joinCode.trim().toUpperCase() } : {}) });
   };
   const action = (move: object) => {
     if (!view || pendingRef.current) return;
@@ -241,10 +265,13 @@ export default function MultiplayerScreen() {
         ? <label className="dr-pvp-name-field">Tu apodo (solo la primera vez)<input value={nickname} maxLength={24}
             onChange={e => setNickname(e.target.value)} placeholder="Elige tu nombre de jugador" /></label>
         : <div className="dr-pvp-identity">
-            <span className="dr-pvp-identity-symbol" aria-hidden="true">▣</span>
+            <span className="dr-pvp-identity-symbol" aria-hidden="true"><img src={portraitUrl(duelist.slots[duelist.active]?.appearance.portrait || 'xervias')} alt=""/></span>
             <span className="dr-pvp-identity-copy"><small>Juegas como</small><strong>{nickname}</strong></span>
             <button type="button" onClick={() => setEditingName(true)} aria-label="Cambiar apodo">✎</button>
           </div>}
+      <button type="button" className="dr-pvp-profile-shortcut" onClick={() => setShowProfile(true)}>
+        Mi perfil de duelista · Nombres, retratos y recompensas
+      </button>
       {!inviteOnLoad.current && <>
         <button type="button" className="dr-pvp-primary dr-pvp-feature-button" disabled={!online}
           onClick={() => enter('queue')}><span aria-hidden="true">⚔</span>Jugar ahora</button>
@@ -254,24 +281,24 @@ export default function MultiplayerScreen() {
           <span aria-hidden="true">↗</span>Tengo un código de invitación</button>
       </>}
       {showJoinCode && <div className="dr-pvp-code-join">
-        {!inviteOnLoad.current && <label>Código recibido<input value={joinCode} maxLength={10}
-          onChange={e => setJoinCode(e.target.value.toUpperCase())} placeholder="Código de 10 caracteres" /></label>}
+        {!inviteOnLoad.current && <label>Código recibido<input value={joinCode} maxLength={4}
+          onChange={e => setJoinCode(e.target.value.toUpperCase())} placeholder="Ej. 27KP" /></label>}
         <button type="button" className={inviteOnLoad.current ? 'dr-pvp-primary dr-pvp-feature-button' : 'dr-pvp-secondary'}
-          disabled={!online || !/^[0-9a-f]{10}$/i.test(joinCode.trim())}
+          disabled={!online || !/^[0-9]{2}[A-HJ-NP-Z]{2}$/i.test(joinCode.trim())}
           onClick={() => enter('join')}>{inviteOnLoad.current ? 'Aceptar desafío' : 'Unirme al duelo'}</button>
       </div>}
       <p className="dr-pvp-tip"><span aria-hidden="true">ⓘ</span>
-        Puedes invitar a un amigo compartiendo un enlace de la sala.</p>
+        Crea una sala y comparte el código de 2 números y 2 letras.</p>
     </section>}
 
     {session && waiting && <section className="dr-pvp-lobby dr-pvp-waiting">
       <h2>{session.randomQueue ? 'Buscando rival…' : 'Esperando al rival'}</h2>
       <div className="dr-pvp-ornament" aria-hidden="true"><span>✦</span></div>
-      <p>La partida comenzará cuando estén conectados los dos jugadores.</p>
+      <p>Tu rival puede entrar con el código privado de cuatro caracteres.</p>
       {!session.randomQueue && <>
         <button type="button" className="dr-pvp-primary dr-pvp-feature-button" onClick={() => { void copyRoom(); }}>
           <span aria-hidden="true">↗</span>Compartir invitación</button>
-        <details><summary>Compartir código de sala</summary><div className="dr-pvp-code">{session.code}</div></details>
+        <div className="dr-pvp-code" aria-label={'Código privado: ' + session.code}>{session.code}</div>
       </>}
       <button type="button" className="dr-pvp-secondary" onClick={resetSession}>Cancelar espera</button>
     </section>}
@@ -279,6 +306,8 @@ export default function MultiplayerScreen() {
     {session && !waiting && !view && <section className="dr-pvp-lobby"><h2>Restableciendo la partida</h2>
       <p>Reconectando con la sala {session.code}…</p><div className="dr-pvp-ornament" aria-hidden="true"><span>✦</span></div></section>}
 
+    {!session && showProfile && <DuelistProfilePanel profile={duelist} onChange={setDuelist}
+      onClose={() => setShowProfile(false)}/>}
     {view && <MultiplayerBattleBoard view={view} online={online} activeTurn={activeTurn && !cinematicCue}
       cinematicCue={cinematicCue} onCueEnded={finishCue} onCinematicEffect={onCinematicEffect}
       stats={stats} drawCues={drawCues}
