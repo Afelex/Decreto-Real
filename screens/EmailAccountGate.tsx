@@ -33,10 +33,8 @@ type Account = {
   signOut: () => Promise<void>;
 };
 const AccountContext = React.createContext<Account | null>(null);
-export function useDuelistAccount(): Account {
-  const account = React.useContext(AccountContext);
-  if (!account) throw new Error('La cuenta de duelista no está disponible.');
-  return account;
+export function useOptionalDuelistAccount(): Account | null {
+  return React.useContext(AccountContext);
 }
 
 function validEmail(value: string) {
