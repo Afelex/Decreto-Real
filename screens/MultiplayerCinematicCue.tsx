@@ -2,6 +2,7 @@ import React from 'react';
 import { CardActivationBanner } from './CardActivationBanner';
 import { DuelEntrance } from './DuelEntrance';
 import { OPPONENT_IMG, PLAYER_IMG } from '../constants';
+import { portraitUrl, type Appearance } from '../game/duelistProfile';
 import { ComboEffectOverlay } from './ComboEffectOverlay';
 import { TurnAnnouncement, TURN_TRANSITION_DURATION_MS } from './CombatEventUI';
 import { cardEffectCue, DECREE_BANNER_DURATION_MS, DECREE_EFFECT_DURATION_MS } from '../game/effectCues';
@@ -10,10 +11,11 @@ import type { CardData } from '../types';
 
 /** PvP uses the *same* decree and turn presenter as Versus IA.
  * WebSocket updates choose the cue; animations never commit combat actions. */
-export function MultiplayerCinematicCue({ cue, onEnded, onEffectStarted, myName, rivalName }: {
+export function MultiplayerCinematicCue({ cue, onEnded, onEffectStarted, myName, rivalName,
+  myAppearance, rivalAppearance }: {
   cue: MultiplayerCue; onEnded: () => void;
   onEffectStarted?: (cue: MultiplayerCue) => void;
-  myName?: string; rivalName?: string;
+  myName?: string; rivalName?: string; myAppearance?: Appearance; rivalAppearance?: Appearance;
 }) {
   const [stage, setStage] = React.useState<'banner' | 'effect'>('banner');
   const callback = React.useRef(onEnded);
@@ -47,8 +49,11 @@ export function MultiplayerCinematicCue({ cue, onEnded, onEffectStarted, myName,
   }, [cue.id, stage]);
 
   if (cue.kind === 'intro') return <DuelEntrance
-    playerPortrait={PLAYER_IMG} rivalPortrait={OPPONENT_IMG}
+    playerPortrait={myAppearance ? portraitUrl(myAppearance.portrait) : PLAYER_IMG}
+    rivalPortrait={rivalAppearance ? portraitUrl(rivalAppearance.portrait) : OPPONENT_IMG}
     playerName={myName} rivalName={rivalName}
+    playerNameFx={myAppearance?.nameFx} rivalNameFx={rivalAppearance?.nameFx}
+    playerEntranceFx={myAppearance?.entrance} rivalEntranceFx={rivalAppearance?.entrance}
     ariaLabel="Presentación del duelo multijugador"
     onFinish={() => callback.current()}/>;
   if (cue.kind === 'turn') return <TurnAnnouncement fullscreen
