@@ -45,24 +45,6 @@
   pointer-events:none;
 }
 .dr-pvp-royal .dr-royal-field {position:relative;}
-.dr-pvp-royal .dr-pvp-live-summary {
-  position:absolute;
-  top:45%;
-  left:14%;
-  width:72%;
-  z-index:3;
-  display:-webkit-box;
-  -webkit-box-orient:vertical;
-  -webkit-line-clamp:2;
-  line-clamp:2;
-  overflow:hidden;
-  text-align:center;
-  color:#e5d9bf;
-  font:600 clamp(9px,2.6cqw,11px)/1.25 Georgia,serif;
-  text-shadow:0 1px 3px #000;
-  pointer-events:none;
-  opacity:.8;
-}
 .dr-pvp-royal .dr-royal-activation-target {
   cursor:pointer;
   touch-action:manipulation;
@@ -154,4 +136,72 @@
   width:100%;
   height:100%;
   min-height:0;
+}
+
+/* PvP presentation quality fixes (17 Nov 2026).
+   Centered HP text shares the exact G3 plate on both portraits. */
+.dr-royal-screen.dr-pvp-royal .dr-royal-character-frame .dr-royal-hp {
+  box-sizing:border-box;
+  left:15%;
+  right:auto;
+  width:70%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  text-align:center;
+}
+.dr-royal-screen.dr-pvp-royal .dr-royal-character-frame .dr-royal-hp__label {
+  position:absolute;
+  inset:0;
+  box-sizing:border-box;
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:0;
+  margin:0;
+  padding:0;
+  white-space:nowrap;
+  line-height:1;
+  text-align:center;
+}
+.dr-royal-screen.dr-pvp-royal .dr-royal-hp__label > small,
+.dr-royal-screen.dr-pvp-royal .dr-royal-hp__label > b {
+  display:inline;
+  flex:0 0 auto;
+  margin:0;
+  padding:0;
+  line-height:1;
+}
+
+/* A cinematic owns the whole presentation layer. An empty help pill
+   must not flash underneath the turn or decree banners. */
+.dr-royal-screen.dr-pvp-royal .dr-royal-activation-target.dr-pvp-target-hidden {
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+}
+
+/* Reserve an unobstructed slot in the upper-right of the footer,
+   above FIN TURNO and BELOW the hand. The previous negative-bottom
+   offset placed these badges behind cards in five-card hands. */
+.dr-royal-screen.dr-pvp-royal .dr-royal-player-area > .dr-last-decree-stack {
+  top:clamp(4px,1dvh,12px);
+  bottom:auto;
+  right:clamp(4px,1.5cqw,10px);
+  z-index:45;
+  max-width:clamp(112px,34cqw,150px);
+  transform:none;
+  gap:3px;
+}
+@media (max-height:650px) {
+  .dr-royal-screen.dr-pvp-royal .dr-royal-player-area > .dr-last-decree-stack {
+    top:1px;
+    right:3px;
+    transform:scale(.78);
+    transform-origin:top right;
+    gap:1px;
+  }
 }
