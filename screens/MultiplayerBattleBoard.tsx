@@ -282,7 +282,9 @@ export function MultiplayerBattleBoard({ view, online, activeTurn, cinematicCue,
     </div>}
     {drawCues.map(cue => <CardDrawFX key={cue.id} cueId={cue.id} side={cue.side} count={cue.count}
       paused={false} onFinish={onDrawFinished}/>)}
-    {cinematicCue && <MultiplayerCinematicCue key={cinematicCue.id} cue={cinematicCue} onEnded={onCueEnded}/>}
+    {cinematicCue && <React.Fragment key={cinematicCue.id}>
+      <MultiplayerCinematicCue cue={cinematicCue} onEnded={onCueEnded}/>
+    </React.Fragment>}
     {!online && <div className="dr-pvp-status-overlay" role="status">Conexión interrumpida. Reconectando…</div>}
     {!!view.pendingCombo && !finished && !cinematicCue && <ComboChoicePanel level={view.pendingCombo}
       onDamage={() => onCombo('DAMAGE')} onHeal={() => onCombo('HEAL')}/>}
