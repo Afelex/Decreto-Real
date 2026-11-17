@@ -21,7 +21,8 @@ export function LastDecreeIndicator({ type, comboLevel = 1, side }: {
     <div className={`dr-last-decree-indicator dr-last-decree-indicator--${type.toLowerCase()} dr-last-decree-indicator--${side}`}
       role="status" aria-label={`Último decreto ${side === 'player' ? 'del jugador' : 'del rival'}: ${decree.name}${comboLevel > 1 ? ` ×${comboLevel}` : ''}`}>
       <span className="dr-last-decree-icon" aria-hidden="true">
-        <img className="dr-g3-decree-visual"
+        {/* key: el icono anterior nunca acompaña al nombre del decreto nuevo mientras carga. */}
+        <img key={type} className="dr-g3-decree-visual"
           src={`${import.meta.env.BASE_URL}interfaz/hud-g3/${decree.art}`}
           alt="" width={20} height={20} draggable={false}/>
       </span>

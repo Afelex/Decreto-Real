@@ -14,7 +14,9 @@ import { preloadDecretoFX } from './DecretoFXOverlay';
 import { LastDecreeIndicator } from './LastDecreeIndicator';
 import { nextDecreeStreak } from '../game/decreeStreak';
 import './hud-g3.css';
-import { RoyalHpMeter } from './RoyalHpMeter';
+import { RoyalHpMeter, HpDeltaCue } from './RoyalHpMeter';
+import { cardCueTier, comboCueTier, resolveHudMode } from '../game/hudMode';
+import { G3_UI_ASSETS } from '../game/g3UiAssets';
 import { ComboEffectOverlay } from './ComboEffectOverlay';
 import { CardDrawFX } from './CardDrawFX';
 import { ResultCinematicFX } from './ResultCinematicFX';
@@ -36,6 +38,7 @@ import {
 } from '../game/mysticCards.ts';
 // Approved indicator crop must load with the board, after the generic cue CSS.
 import './royal-battle-status.css';
+import './hud-modes.css';
 
 // --- GAME CONFIGURATION ---
 const MAX_HP = 20;
@@ -451,12 +454,17 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
 
     // The bonus is resolved only AFTER the chosen combo animation finishes.
     const value = level === 2 ? 1 : SPECIAL_VALUE;
+    // Nivel ×3: el golpe se siente en la mesa en el instante en que baja la vida.
+    if (level === 3 && ability === 'DAMAGE') {
+      setShakeScreen(true);
+      setTimeout(() => setShakeScreen(false), 500);
+    }
     if (user === 'PLAYER') {
-      if (level === 3) { setPlayerGauge(0); setPlayerLastType(null); }
+      if (level === 3) { setPlayerGauge(0); setPlayerLastType(null); setPlayerLastDecreeLevel(1); }
       if (ability === 'DAMAGE') setOpponentHP(p => Math.max(0, p - value));
       else setPlayerHP(p => Math.min(MAX_HP, p + value));
     } else {
-      if (level === 3) { setOpponentGauge(0); setOpponentLastType(null); }
+      if (level === 3) { setOpponentGauge(0); setOpponentLastType(null); setOpponentLastDecreeLevel(1); }
       if (ability === 'DAMAGE') setPlayerHP(p => Math.max(0, p - value));
       else setOpponentHP(p => Math.min(MAX_HP, p + value));
     }
@@ -569,8 +577,8 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
     if (active && !gameOverRef.current) {
       activateMysticPower(isPlayer, power, mysticDisplayName(id));
       if (level === 3) {
-        if (isPlayer) { setPlayerGauge(0); setPlayerLastType(null); }
-        else { setOpponentGauge(0); setOpponentLastType(null); }
+        if (isPlayer) { setPlayerGauge(0); setPlayerLastType(null); setPlayerLastDecreeLevel(1); }
+        else { setOpponentGauge(0); setOpponentLastType(null); setOpponentLastDecreeLevel(1); }
       }
     }
     announcementBusy.current = false;
@@ -888,8 +896,20 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
 
   const endTurnUnavailable = (guidedOpening && !expectedGuideAction?.startsWith('end')) || phase !== 'PLAYER_TURN' || !!storyMoment || showSpecialSelection || !!comboAnnouncement || !!mysticComboAnnouncement || isMenuOpen || !!cardAnnouncement || announcementBusy.current;
 
+  // Presentación derivada: un único modo de HUD y un único nivel de anuncio.
+  const cueActive = !!cardAnnouncement || !!comboAnnouncement || !!mysticComboAnnouncement;
+  const hudMode = resolveHudMode({
+    editing: board.editing, entranceActive, finished: !!battleEnd, storyActive: !!storyMoment,
+    phase, choosingCombo: showSpecialSelection, cueActive,
+  });
+  const cueTier = cardAnnouncement ? cardCueTier(cardAnnouncement.card.type)
+    : comboAnnouncement ? comboCueTier(comboAnnouncement.level)
+    : mysticComboAnnouncement ? comboCueTier(mysticComboAnnouncement.level) : undefined;
+
   const Board = (
-    <div ref={boardLayoutRef} className={`dr-classic-screen dr-royal-screen${isMenuOpen ? ' dr-royal-pause-open' : ''}${entranceSeen ? ' dr-duel-entrance-complete' : ''}${board.editing ? ' dr-royal-tutorial-studio' : ''}${board.editing&&studioPlayerPreview ? ' dr-royal-player-preview' : ''} bg-[#050505] font-body w-full overflow-hidden select-none flex flex-col relative text-white ${shakeScreen ? 'animate-shake' : ''}`} style={{ width: 'min(100vw, 430px)', height: '100dvh' }}>
+    <div ref={boardLayoutRef} data-hud-mode={hudMode} data-cue-tier={cueTier}
+      data-hud-result={battleEnd && hudMode === 'result' ? battleEnd.phase.toLowerCase() : undefined}
+      className={`dr-classic-screen dr-royal-screen${isMenuOpen ? ' dr-royal-pause-open' : ''}${entranceSeen ? ' dr-duel-entrance-complete' : ''}${board.editing ? ' dr-royal-tutorial-studio' : ''}${board.editing&&studioPlayerPreview ? ' dr-royal-player-preview' : ''} bg-[#050505] font-body w-full overflow-hidden select-none flex flex-col relative text-white ${shakeScreen ? 'animate-shake' : ''}`} style={{ width: 'min(100vw, 430px)', height: '100dvh' }}>
       <style>{`
         /* Animaciones para el botón de fuego */
         @keyframes fire-glow { 0%, 100% { box-shadow: 0 0 15px #f59e0b, 0 0 30px #f97316; } 50% { box-shadow: 0 0 25px #fbbf24, 0 0 50px #ef4444; } }
@@ -1036,6 +1056,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
                 data-hit-count={opponentHitCount}/>
               <PortraitOrnament/>
               <RoyalHpMeter hp={opponentHP} maxHp={MAX_HP} side="opponent"/>
+              <HpDeltaCue hp={opponentHP} side="opponent"/>
             </div>
 
           </div>
@@ -1099,7 +1120,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
               </button>;
             })}
           </div>
-          {((!board.editing&&playerGauge >= 2 && phase === 'PLAYER_TURN' && !showSpecialSelection) || (board.editing&&(board.selected==='native-tablero-combo'||previewNarrativeAction?.startsWith('combo')))) && <div key={board.editing?'studio-preview':playerGauge} {...board.attrs('native-tablero-combo', `dr-royal-combo combo-${board.editing&&previewNarrativeAction==='combo3'?3:playerGauge>=2?playerGauge:2}`)}
+          {((!board.editing&&playerGauge >= 2 && phase === 'PLAYER_TURN' && !showSpecialSelection && !cueActive) || (board.editing&&(board.selected==='native-tablero-combo'||previewNarrativeAction?.startsWith('combo')))) && <div key={board.editing?'studio-preview':playerGauge} {...board.attrs('native-tablero-combo', `dr-royal-combo combo-${board.editing&&previewNarrativeAction==='combo3'?3:playerGauge>=2?playerGauge:2}`)}
             aria-label={`Combo por ${board.editing&&previewNarrativeAction==='combo3'?3:playerGauge>=2?playerGauge:2}`} role="status"><strong>COMBO</strong><b>×{board.editing&&previewNarrativeAction==='combo3'?3:playerGauge>=2?playerGauge:2}</b><em>de {{ ATTACK: 'Ataque', DEFENSE: 'Defensa', IMPACT: 'Impacto', ORDER: 'Orden' }[playerLastType ?? 'ATTACK']}</em></div>}
         </section>
 
@@ -1151,6 +1172,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
                 data-hit-count={playerHitCount}/>
               <PortraitOrnament/>
               <RoyalHpMeter hp={playerHP} maxHp={MAX_HP} side="player"/>
+              <HpDeltaCue hp={playerHP} side="player"/>
             </div>
 
           </div>
@@ -1264,8 +1286,22 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
           <ResultCinematicFX won={battleEnd.phase === 'VICTORY'}/>
           <section className="dr-royal-end-banner" role="dialog" aria-modal="true"
             aria-labelledby="dr-royal-end-title" aria-describedby="dr-royal-end-reason">
-            <h2 id="dr-royal-end-title">{battleEnd.title}</h2>
+            <div className="dr-royal-end-cartela">
+              <img src={battleEnd.phase === 'VICTORY' ? G3_UI_ASSETS.victoryCartela : G3_UI_ASSETS.defeatCartela}
+                alt="" aria-hidden="true" draggable={false}/>
+              <h2 id="dr-royal-end-title">{battleEnd.title}</h2>
+            </div>
             <p id="dr-royal-end-reason">{battleEnd.message}</p>
+            <dl className="dr-royal-end-seals" aria-label="Resumen del duelo">
+              <div className="dr-royal-end-seal">
+                <img src={G3_UI_ASSETS.resultSeal} alt="" aria-hidden="true" draggable={false}/>
+                <dd>{turnCount}</dd><dt>Turnos</dt>
+              </div>
+              <div className="dr-royal-end-seal">
+                <img src={G3_UI_ASSETS.resultSeal} alt="" aria-hidden="true" draggable={false}/>
+                <dd>{Math.max(0, playerHP)}</dd><dt>Tu vida</dt>
+              </div>
+            </dl>
             <button type="button" onClick={handleBattleEndContinue} autoFocus>Continuar</button>
           </section>
         </div>
