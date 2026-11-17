@@ -62,11 +62,11 @@ test('si Chrome bloquea autoplay, la bocina pequeña permite reanudar la música
   const speaker = page.getByRole('button', { name: 'Reproducir música' });
   await expect(speaker).toBeVisible();
   await expect(speaker).toHaveAttribute('aria-pressed', 'false');
-  await expect(speaker.locator('img')).toHaveAttribute('src', /sonido_silenciado\\.webp$/);
+  await expect(speaker.locator('img')).toHaveAttribute('src', /sonido_silenciado\.webp$/);
   await speaker.click();
   const playing = page.getByRole('button', { name: 'Silenciar música' });
   await expect(playing).toBeVisible();
   await expect(playing).toHaveAttribute('aria-pressed', 'true');
-  await expect(playing.locator('img')).toHaveAttribute('src', /sonido_activado\\.webp$/);
+  await expect(playing.locator('img')).toHaveAttribute('src', /sonido_activado\.webp$/);
   await expect(menu).toBeVisible();
 });
