@@ -1,5 +1,6 @@
 import React from 'react';
 import { OPPONENT_IMG, PLAYER_IMG } from '../constants';
+import { portraitUrl, type Appearance } from '../game/duelistProfile';
 import { BattleSceneryLayer } from './BattleSceneryLayer';
 import { resolveBattleScenery } from '../game/battleScenery';
 import { RoyalHpMeter, HpDeltaCue } from './RoyalHpMeter';
@@ -21,7 +22,7 @@ import './multiplayer-board.css';
 
 type Card = { id: string; type: 'ATTACK' | 'DEFENSE' | 'IMPACT' | 'ORDER'; rank?: number };
 type Player = { name: string; hp: number; impact: number; connected: boolean; deckCount: number;
-  hand?: Card[]; handCount?: number; comboCount?: number; impactThisTurn?: boolean };
+  hand?: Card[]; handCount?: number; comboCount?: number; impactThisTurn?: boolean; appearance?: Appearance };
 type DuelView = { revision: number; status: 'playing' | 'finished'; isMyTurn: boolean; turnNumber: number;
   pendingCombo: 2 | 3 | null; winner: 'me' | 'opponent' | 'draw' | null;
   me: Player & { hand: Card[]; impactThisTurn: boolean }; opponent: Player & { handCount: number };
@@ -51,11 +52,12 @@ const CARD_IMAGES: Record<Card['type'], string> = {
 const CARD_NAMES: Record<Card['type'], string> = { ATTACK: 'Ataque', DEFENSE: 'Defensa', ORDER: 'Orden', IMPACT: 'Impacto' };
 const impactLabel = (rank: number) => rank === 4 ? 'FINAL' : ['I', 'II', 'III'][rank - 1];
 
-function Portrait({ name, hp, rival }: { name: string; hp: number; rival?: boolean }) {
+function Portrait({ name, hp, rival, appearance }: { name: string; hp: number; rival?: boolean; appearance?: Appearance }) {
   const side = rival ? 'opponent' : 'player';
   return <div className={'dr-royal-character' + (rival ? '' : ' player')}>
     <div className="dr-royal-character-frame gold-leaf-frame">
-      <img src={rival ? OPPONENT_IMG : PLAYER_IMG} alt={'Retrato de ' + name} draggable={false}/>
+      <img src={appearance ? portraitUrl(appearance.portrait) : rival ? OPPONENT_IMG : PLAYER_IMG}
+        alt={'Retrato de ' + name} draggable={false}/>
       <span className="dr-royal-portrait-ornament" aria-hidden="true">
         <img className="dr-royal-portrait-art-image" src={HUD + 'retrato_marco.webp'} alt="" draggable={false}/>
       </span>
@@ -66,10 +68,10 @@ function Portrait({ name, hp, rival }: { name: string; hp: number; rival?: boole
   </div>;
 }
 
-function Deck({ count, rival, children }: { count: number; rival?: boolean; children?: React.ReactNode }) {
+function Deck({ count, rival, back, children }: { count: number; rival?: boolean; back?: string; children?: React.ReactNode }) {
   return <div className={rival ? 'dr-royal-deck dr-royal-rival-deck' : 'dr-royal-player-deck'}>
     {children}
-    <div className={'dr-royal-deck-back' + (rival ? '' : ' red')}>
+    <div className={'dr-royal-deck-back' + (rival ? '' : ' red')} data-back={back || 'clasico'}>
       <img className="dr-g3-deck-art" src={HUD + 'mazo.webp'} alt="" aria-hidden="true" draggable={false}/>
       <div className="dr-g3-deck-copy"><small>MAZO</small><span>{count}</span></div>
     </div>
@@ -176,8 +178,8 @@ export function MultiplayerBattleBoard({ view, online, activeTurn, cinematicCue,
     <BattleSceneryLayer {...resolveBattleScenery()} paused={false}/>
     <div className="dr-royal-layout">
       <header className="dr-royal-rival-area" aria-label={'Estado del rival ' + view.opponent.name}>
-        <Deck count={view.opponent.deckCount} rival/>
-        <Portrait name={view.opponent.name} hp={view.opponent.hp} rival/>
+        <Deck count={view.opponent.deckCount} rival back={view.opponent.appearance?.back}/>
+        <Portrait name={view.opponent.name} hp={view.opponent.hp} appearance={view.opponent.appearance} rival/>
         <button className="dr-royal-menu-button dr-g3-menu" type="button"
           onClick={() => setMenuOpen(true)} aria-label="Abrir menú de pausa">
           <img className="dr-g3-menu-art" src={HUD + 'menu.webp'} alt="" aria-hidden="true"/>
@@ -188,7 +190,7 @@ export function MultiplayerBattleBoard({ view, online, activeTurn, cinematicCue,
           {Array.from({ length: view.opponent.handCount }, (_, i) => {
             const d = i - (view.opponent.handCount - 1) / 2;
             const step = Math.min(14, 54 / Math.max(1, view.opponent.handCount - 1));
-            return <div key={i} className="dr-royal-facedown" style={{
+            return <div key={i} className="dr-royal-facedown" data-back={view.opponent.appearance?.back || 'clasico'} style={{
               left: `${50 + d * step}%`, '--rival-card-rotate': `${d * 7}deg`,
               '--rival-card-rise': `${Math.abs(d) * 2}px`,
             } as React.CSSProperties}><span className="dr-royal-card-crest">✥</span></div>;
@@ -250,14 +252,14 @@ export function MultiplayerBattleBoard({ view, online, activeTurn, cinematicCue,
         </div>
       </section>
       <footer className="dr-royal-player-area" aria-label="Tus estadísticas y controles">
-        <Deck count={view.me.deckCount}>
+        <Deck count={view.me.deckCount} back={view.me.appearance?.back}>
         <button className="dr-royal-audio dr-g3-audio" type="button" onClick={toggleAllAudio}
           aria-label={muted ? 'Activar sonido' : 'Silenciar sonido'}>
           <img className="dr-g3-audio-art" src={HUD + (muted ? 'sonido_silenciado.webp' : 'sonido_activado.webp')}
             alt="" aria-hidden="true" draggable={false}/>
         </button>
         </Deck>
-        <Portrait name={view.me.name} hp={view.me.hp}/>
+        <Portrait name={view.me.name} hp={view.me.hp} appearance={view.me.appearance}/>
         <button type="button" className="dr-royal-finish" disabled={!activeTurn || !!view.pendingCombo}
           aria-label="Terminar turno" data-art-version="hud-g3" onClick={onEndTurn}>
           <span className="dr-royal-finish-ornament" aria-hidden="true"
@@ -289,7 +291,8 @@ export function MultiplayerBattleBoard({ view, online, activeTurn, cinematicCue,
       paused={false} onFinish={onDrawFinished}/>)}
     {cinematicCue && <React.Fragment key={cinematicCue.id}>
       <MultiplayerCinematicCue cue={cinematicCue} onEnded={onCueEnded}
-        onEffectStarted={onCinematicEffect} myName={view.me.name} rivalName={view.opponent.name}/>
+        onEffectStarted={onCinematicEffect} myName={view.me.name} rivalName={view.opponent.name}
+        myAppearance={view.me.appearance} rivalAppearance={view.opponent.appearance}/>
     </React.Fragment>}
     {!online && <div className="dr-pvp-status-overlay" role="status">Conexión interrumpida. Reconectando…</div>}
     {!!view.pendingCombo && !finished && !cinematicCue && <ComboChoicePanel level={view.pendingCombo}
