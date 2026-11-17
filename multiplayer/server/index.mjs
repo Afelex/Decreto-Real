@@ -89,14 +89,19 @@ function token() { return randomBytes(24).toString('hex'); }
 function createRoom(name, appearance, randomQueue = false, accountId = null) {
   const room = { code: roomCode(), matchId: randomBytes(12).toString('hex'),
     seats: [{ name, appearance, token: token(), accountId }], sockets: [null, null],
-    match: null, randomQueue, lastUsed: Date.now(), disconnected: [null, null], actionIds: [new Set(), new Set()] };
+    impactCounts: [0, 0], match: null, randomQueue, lastUsed: Date.now(), disconnected: [null, null], actionIds: [new Set(), new Set()] };
   rooms.set(room.code, room);
   return room;
 }
 function broadcast(room) {
   if (accounts && room.match?.status === 'finished' && !room.finishedStored) {
-    try { accounts.recordMatch(room); }
-    catch (error) { console.error('No se pudo guardar el resultado de la partida.', error); }
+    try {
+      if (accounts.recordMatch(room)) for (const player of room.sockets) {
+        if (player?.account?.uid) send(player, { type: 'account:history',
+          history: accounts.getHistory(player.account.uid),
+          profile: accounts.getDuelist(player.account.uid) });
+      }
+    } catch (error) { console.error('No se pudo guardar el resultado de la partida.', error); }
   }
   for (let slot = 0; slot < room.seats.length; slot++) {
     const ws = room.sockets[slot];
@@ -278,8 +283,11 @@ sockets.on('connection', ws => {
       if (room.sockets.some(client => !client || client.readyState !== WebSocket.OPEN) && msg.action?.type !== 'surrender')
         return fail(ws, 'Esperando a que el rival se reconecte.', msg.id);
       if (msg.revision !== room.match.revision) return fail(ws, 'Estado desactualizado; espera la sincronización.', msg.id);
+      const impactPlayed = msg.action?.type === 'play' &&
+        room.match.players[slot].hand.some(card => card.id === msg.action.cardId && card.type === 'IMPACT');
       const error = act(room.match, slot, msg.action);
       if (error) return fail(ws, error, msg.id);
+      if (impactPlayed) room.impactCounts[slot]++;
       room.actionIds[slot].add(msg.id);
       if (room.actionIds[slot].size > HISTORY_LIMIT) room.actionIds[slot].delete(room.actionIds[slot].values().next().value);
       room.lastUsed = Date.now();
