@@ -64,8 +64,9 @@ function Portrait({ name, hp, rival }: { name: string; hp: number; rival?: boole
   </div>;
 }
 
-function Deck({ count, rival }: { count: number; rival?: boolean }) {
+function Deck({ count, rival, children }: { count: number; rival?: boolean; children?: React.ReactNode }) {
   return <div className={rival ? 'dr-royal-deck dr-royal-rival-deck' : 'dr-royal-player-deck'}>
+    {children}
     <div className={'dr-royal-deck-back' + (rival ? '' : ' red')}>
       <img className="dr-g3-deck-art" src={HUD + 'mazo.webp'} alt="" aria-hidden="true" draggable={false}/>
       <div className="dr-g3-deck-copy"><small>MAZO</small><span>{count}</span></div>
@@ -79,6 +80,8 @@ export function MultiplayerBattleBoard({ view, online, activeTurn, cinematicCue,
   const [selected, setSelected] = React.useState<string | null>(null);
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [showStats, setShowStats] = React.useState(false);
+  const [dragAt, setDragAt] = React.useState<{ id: string; x: number; y: number } | null>(null);
+  const gesture = React.useRef<{ id: string; pointerId: number; x: number; y: number; moved: boolean } | null>(null);
   const { musicEnabled, sfxEnabled, toggleMusic, toggleSfx, playSound } = useAudio();
   const muted = !musicEnabled && !sfxEnabled;
   const toggleAllAudio = () => {
@@ -91,7 +94,7 @@ export function MultiplayerBattleBoard({ view, online, activeTurn, cinematicCue,
     }
   };
   // A newly accepted state always clears selection, preventing stale card IDs.
-  React.useEffect(() => { setSelected(null); }, [view.revision, view.isMyTurn]);
+  React.useEffect(() => { setSelected(null); setDragAt(null); gesture.current = null; }, [view.revision, view.isMyTurn]);
   const canPlay = (card: Card) => activeTurn && !view.pendingCombo &&
     (card.type !== 'IMPACT' || (card.rank === view.me.impact + 1 && !view.me.impactThisTurn));
   const chosen = view.me.hand.find(card => card.id === selected && canPlay(card));
@@ -99,6 +102,39 @@ export function MultiplayerBattleBoard({ view, online, activeTurn, cinematicCue,
     if (!chosen || (rank && (chosen.type !== 'IMPACT' || chosen.rank !== rank))) return;
     if (!rank && chosen.type === 'IMPACT') return;
     onPlayCard(chosen);
+    setSelected(null);
+  };
+  const onCardPointerDown = (event: React.PointerEvent<HTMLButtonElement>, card: Card) => {
+    if (!canPlay(card) || (event.pointerType === 'mouse' && event.button !== 0)) return;
+    setSelected(card.id);
+    gesture.current = { id: card.id, pointerId: event.pointerId, x: event.clientX, y: event.clientY, moved: false };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+  const onCardPointerMove = (event: React.PointerEvent<HTMLButtonElement>, card: Card) => {
+    const current = gesture.current;
+    if (!current || current.id !== card.id || current.pointerId !== event.pointerId) return;
+    if (Math.hypot(event.clientX - current.x, event.clientY - current.y) >= 9) current.moved = true;
+    if (current.moved) setDragAt({ id: card.id, x: event.clientX, y: event.clientY });
+  };
+  const onCardPointerUp = (event: React.PointerEvent<HTMLButtonElement>, card: Card) => {
+    const current = gesture.current;
+    if (!current || current.id !== card.id || current.pointerId !== event.pointerId) return;
+    gesture.current = null;
+    setDragAt(null);
+    if (!current.moved || !canPlay(card)) return;
+    const field = document.querySelector<HTMLElement>('.dr-pvp-royal .dr-royal-field');
+    const within = (el: HTMLElement) => {
+      const rect = el.getBoundingClientRect();
+      return event.clientX >= rect.left && event.clientX <= rect.right &&
+        event.clientY >= rect.top && event.clientY <= rect.bottom;
+    };
+    if (!field || !within(field)) return;
+    if (card.type === 'IMPACT') {
+      const slots = field.querySelectorAll<HTMLElement>('.dr-royal-impact-slot');
+      const target = slots[card.rank ? card.rank - 1 : -1];
+      if (!target || !within(target)) return;
+    }
+    onPlayCard(card);
     setSelected(null);
   };
   const finished = view.status === 'finished';
@@ -142,7 +178,7 @@ export function MultiplayerBattleBoard({ view, online, activeTurn, cinematicCue,
           })}
         </div>
       </section>
-      <section className={'dr-royal-field' + (chosen ? ' is-guiding' : '')} aria-label="Campo central de activación">
+      <section className={'dr-royal-field' + (chosen ? ' is-guiding' : '') + (dragAt ? ' is-dragging' : '')} aria-label="Campo central de activación">
         <div className="dr-royal-rival-progress" role="group" aria-label={'Impactos del rival: ' + view.opponent.impact}>
           {[1,2,3,4].map(rank => <div key={rank} className={'dr-royal-rival-progress-slot' + (view.opponent.impact >= rank ? ' completed' : '')}>
             {view.opponent.impact >= rank && <img className="dr-royal-impact-card-art" src={CARD_IMAGES.IMPACT} alt=""/>}
@@ -185,7 +221,11 @@ export function MultiplayerBattleBoard({ view, online, activeTurn, cinematicCue,
               className={`dr-royal-hand-card ${card.type.toLowerCase()}${chosenCard ? ' selected' : ''}${!allowed ? ' unavailable' : ''}`}
               style={{ left: `${50 + d * step}%`, '--fan-rotate': `${d * 7}deg`,
                 '--fan-rise': `${Math.abs(d) * 4}px`, zIndex: chosenCard ? 20 : i + 1 } as React.CSSProperties}
-              onClick={() => setSelected(chosenCard ? null : card.id)}>
+              onPointerDown={event => onCardPointerDown(event, card)}
+              onPointerMove={event => onCardPointerMove(event, card)}
+              onPointerUp={event => onCardPointerUp(event, card)}
+              onPointerCancel={() => { gesture.current = null; setDragAt(null); }}
+              onClick={event => { if (event.detail === 0) setSelected(chosenCard ? null : card.id); }}>
               <img src={CARD_IMAGES[card.type]} alt="" draggable={false}/>
               <span className="dr-royal-card-title">{CARD_NAMES[card.type]}{card.type === 'IMPACT' ? ' ' + (card.rank === 4 ? 'Final' : card.rank) : ''}</span>
               <span className="dr-royal-card-effect">{card.type === 'ATTACK' ? '-2 PV rival' :
@@ -195,12 +235,13 @@ export function MultiplayerBattleBoard({ view, online, activeTurn, cinematicCue,
         </div>
       </section>
       <footer className="dr-royal-player-area" aria-label="Tus estadísticas y controles">
-        <Deck count={view.me.deckCount}/>
+        <Deck count={view.me.deckCount}>
         <button className="dr-royal-audio dr-g3-audio" type="button" onClick={toggleAllAudio}
           aria-label={muted ? 'Activar sonido' : 'Silenciar sonido'}>
           <img className="dr-g3-audio-art" src={HUD + (muted ? 'sonido_silenciado.webp' : 'sonido_activado.webp')}
             alt="" aria-hidden="true" draggable={false}/>
         </button>
+        </Deck>
         <Portrait name={view.me.name} hp={view.me.hp}/>
         <button type="button" className="dr-royal-finish" disabled={!activeTurn || !!view.pendingCombo}
           aria-label="Terminar turno" onClick={onEndTurn}>
@@ -211,6 +252,10 @@ export function MultiplayerBattleBoard({ view, online, activeTurn, cinematicCue,
       </footer>
     </div>
     {!finished && view.opponent.connected && <TurnIndicator side={view.isMyTurn ? 'PLAYER' : 'OPPONENT'} />}
+    {dragAt && <div className={`dr-royal-drag-ghost ${view.me.hand.find(card => card.id === dragAt.id)?.type.toLowerCase() ?? ''}`}
+      aria-hidden="true" style={{ left: dragAt.x, top: dragAt.y }}>
+      <img src={CARD_IMAGES[view.me.hand.find(card => card.id === dragAt.id)?.type ?? 'ATTACK']} alt=""/>
+    </div>}
     {drawCues.map(cue => <CardDrawFX key={cue.id} cueId={cue.id} side={cue.side} count={cue.count}
       paused={false} onFinish={onDrawFinished}/>)}
     {cinematicCue && <MultiplayerCinematicCue cue={cinematicCue} onEnded={onCueEnded}/>}
