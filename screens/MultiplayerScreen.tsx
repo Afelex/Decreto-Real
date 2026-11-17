@@ -36,7 +36,10 @@ export default function MultiplayerScreen() {
   soundRef.current = playSound;
   const [duelist, setDuelist] = React.useState(() => loadDuelistProfile());
   const [nickname, setNickname] = React.useState(() => { const p = loadDuelistProfile(); return p.slots[p.active]?.name || ''; });
-  const [showProfile, setShowProfile] = React.useState(false);
+  const [showProfile, setShowProfile] = React.useState(() => {
+    const p = loadDuelistProfile();
+    return !(p.slots[p.active]?.name || '').trim();
+  });
   const [joinCode, setJoinCode] = React.useState(() => new URLSearchParams(window.location.search).get('sala') || '');
   const [showJoinCode, setShowJoinCode] = React.useState(() => Boolean(new URLSearchParams(window.location.search).get('sala')));
   const [editingName, setEditingName] = React.useState(() => !nickname.trim());
@@ -228,6 +231,11 @@ export default function MultiplayerScreen() {
     try { sessionStorage.removeItem(SESSION_KEY); } catch { /* private mode */ }
     socketRef.current?.close(4000, 'Salir de la sala');
   };
+  const copyCode = async () => {
+    if (!session) return;
+    try { await navigator.clipboard.writeText(session.code); }
+    catch { setError('No se pudo copiar. Puedes dictar los cuatro caracteres que aparecen en pantalla.'); }
+  };
   const copyRoom = async () => {
     if (!session) return;
     const link = window.location.origin + window.location.pathname + '?sala=' + session.code + '#/multijugador';
@@ -293,11 +301,12 @@ export default function MultiplayerScreen() {
     {session && waiting && <section className="dr-pvp-lobby dr-pvp-waiting">
       <h2>{session.randomQueue ? 'Buscando rival…' : 'Esperando al rival'}</h2>
       <div className="dr-pvp-ornament" aria-hidden="true"><span>✦</span></div>
-      <p>Tu rival puede entrar con el código privado de cuatro caracteres.</p>
+      <p>{session.randomQueue ? 'Buscando otro duelista disponible…' :
+        'Tu rival puede entrar con el código privado de cuatro caracteres.'}</p>
       {!session.randomQueue && <>
-        <button type="button" className="dr-pvp-primary dr-pvp-feature-button" onClick={() => { void copyRoom(); }}>
-          <span aria-hidden="true">↗</span>Compartir invitación</button>
         <div className="dr-pvp-code" aria-label={'Código privado: ' + session.code}>{session.code}</div>
+        <button type="button" className="dr-pvp-primary" onClick={() => { void copyCode(); }}>Copiar código</button>
+        <button type="button" className="dr-pvp-secondary" onClick={() => { void copyRoom(); }}>Compartir enlace</button>
       </>}
       <button type="button" className="dr-pvp-secondary" onClick={resetSession}>Cancelar espera</button>
     </section>}
