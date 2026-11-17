@@ -1,0 +1,277 @@
+/* Decreto Real · HUD adaptativo del duelo contra la IA.
+   Solo presentación: `data-hud-mode`, `data-cue-tier` y `data-hud-result`
+   se derivan del estado de combate existente (game/hudMode.ts). Ninguna
+   regla aquí mueve retratos, mazos, casillas ni cambia tiempos de juego.
+   Se anima únicamente opacity/transform para teléfonos de gama media. */
+
+/* ── 1. HUD por fases ─────────────────────────────────────────────────
+   Las piezas se atenúan con opacity (no display/visibility): conservan su
+   sitio, su geometría y su lectura accesible; solo dejan de competir. */
+.dr-royal-screen[data-hud-mode] .dr-royal-activation-target,
+.dr-royal-screen[data-hud-mode] .dr-royal-player-area > .dr-royal-finish,
+.dr-royal-screen[data-hud-mode] .dr-last-decree-stack,
+.dr-royal-screen[data-hud-mode] .dr-royal-player-hand,
+.dr-royal-screen[data-hud-mode] .dr-royal-rival-hand {
+  transition:opacity .22s ease;
+}
+/* El aviso «Selecciona una carta…» solo tiene sentido cuando se puede jugar. */
+.dr-royal-screen[data-hud-mode="entrance"] .dr-royal-activation-target,
+.dr-royal-screen[data-hud-mode="coin"] .dr-royal-activation-target,
+.dr-royal-screen[data-hud-mode="story"] .dr-royal-activation-target,
+.dr-royal-screen[data-hud-mode="handoff"] .dr-royal-activation-target,
+.dr-royal-screen[data-hud-mode="rival"] .dr-royal-activation-target,
+.dr-royal-screen[data-hud-mode="cue"] .dr-royal-activation-target,
+.dr-royal-screen[data-hud-mode="combo-choice"] .dr-royal-activation-target,
+.dr-royal-screen[data-hud-mode="result"] .dr-royal-activation-target {
+  opacity:0;
+  pointer-events:none;
+}
+/* Ceremonias (puertas, VS, moneda, diálogo) y resultado: sin controles de turno. */
+.dr-royal-screen[data-hud-mode="entrance"] .dr-royal-player-area > .dr-royal-finish,
+.dr-royal-screen[data-hud-mode="coin"] .dr-royal-player-area > .dr-royal-finish,
+.dr-royal-screen[data-hud-mode="story"] .dr-royal-player-area > .dr-royal-finish,
+.dr-royal-screen[data-hud-mode="result"] .dr-royal-player-area > .dr-royal-finish,
+.dr-royal-screen[data-hud-mode="entrance"] .dr-last-decree-stack,
+.dr-royal-screen[data-hud-mode="coin"] .dr-last-decree-stack,
+.dr-royal-screen[data-hud-mode="story"] .dr-last-decree-stack,
+.dr-royal-screen[data-hud-mode="result"] .dr-last-decree-stack,
+.dr-royal-screen[data-hud-mode="result"] .dr-royal-combo,
+.dr-royal-screen[data-hud-mode="result"] .dr-royal-player-hand,
+.dr-royal-screen[data-hud-mode="result"] .dr-royal-rival-hand {
+  opacity:0;
+  pointer-events:none;
+}
+
+/* ── 2. Vida protagonista ─────────────────────────────────────────────
+   Misma placa y misma posición bajo el retrato; más ancha, más alta y con
+   la cifra actual como dato principal. */
+.dr-royal-screen[data-hud-mode] .dr-royal-character-frame .dr-royal-hp,
+.dr-royal-screen[data-hud-mode] .dr-royal-character-frame .dr-royal-hp.blue,
+.dr-royal-screen[data-hud-mode] .dr-royal-character-frame .dr-royal-hp.red {
+  --dr-hp-plate-h:clamp(22px,3.9dvh,31px);
+  left:9%;
+  right:9%;
+  width:82%;
+  min-height:22px;
+  height:var(--dr-hp-plate-h);
+  border-width:2px;
+  font-size:clamp(10px,2.9cqw,15px);
+}
+.dr-royal-screen[data-hud-mode] .dr-royal-character-frame .dr-royal-hp__label {
+  display:block;
+  line-height:calc(var(--dr-hp-plate-h) - 4px);
+  letter-spacing:.01em;
+}
+.dr-royal-screen[data-hud-mode] .dr-royal-character-frame .dr-royal-hp__label > small {
+  font:inherit;
+  font-size:.82em;
+  opacity:.9;
+}
+.dr-royal-screen[data-hud-mode] .dr-royal-character-frame .dr-royal-hp__label > b {
+  font:inherit;
+  font-size:1.5em;
+  color:#fff;
+}
+/* Rastro del daño: la porción perdida permanece un instante y luego se vacía. */
+.dr-royal-screen .dr-royal-character-frame .dr-royal-hp__ghost {
+  position:absolute;
+  z-index:0;
+  left:0;
+  top:0;
+  bottom:0;
+  max-width:100%;
+  display:block;
+  border-radius:3px;
+  background:#ffe9a8;
+  opacity:.85;
+  transition:width 620ms cubic-bezier(.5,0,.75,.4) 420ms;
+  pointer-events:none;
+}
+/* Cifra flotante «+N / −N», junto al retrato y sin tapar la placa de vida. */
+.dr-royal-screen .dr-royal-character-frame .dr-royal-hp-delta {
+  position:absolute;
+  z-index:6;
+  left:100%;
+  bottom:12%;
+  margin-left:clamp(2px,1cqw,6px);
+  font:900 clamp(22px,7cqw,32px)/1 Cinzel,Georgia,serif;
+  white-space:nowrap;
+  pointer-events:none;
+  -webkit-text-stroke:1px #1a0508;
+  paint-order:stroke fill;
+  text-shadow:0 2px 0 #1a0508,0 0 10px #000c;
+  animation:dr-hp-delta-float 1300ms cubic-bezier(.2,.8,.3,1) both;
+  will-change:transform,opacity;
+}
+.dr-royal-screen .dr-royal-character-frame .dr-royal-hp-delta--damage {color:#ff6b5c;}
+.dr-royal-screen .dr-royal-character-frame .dr-royal-hp-delta--heal {color:#8dffa6;}
+@keyframes dr-hp-delta-float {
+  0% {opacity:0;transform:translateY(8px) scale(.55);}
+  14% {opacity:1;transform:translateY(0) scale(1.22);}
+  26% {transform:translateY(0) scale(1);}
+  72% {opacity:1;transform:translateY(-10px) scale(1);}
+  100% {opacity:0;transform:translateY(-24px) scale(.96);}
+}
+
+/* ── 3. Niveles de presentación ───────────────────────────────────────
+   normal  · Ataque/Defensa/Orden: cinta más contenida, la mesa sigue visible.
+   special · Impacto/Místico: cinta completa con viñeta ceremonial.
+   combo2  · como hasta ahora.
+   combo3  · viñeta + sacudida de mesa al aplicar el daño (GameBoard). */
+.dr-royal-screen[data-cue-tier="normal"] .dr-cinematic-overlay[data-decree-stage="banner"] .dr-cinematic-media {
+  scale:.86;
+}
+.dr-royal-screen[data-cue-tier="normal"] .dr-cinematic-overlay[data-decree-stage="banner"] .dr-cinematic-copy {
+  scale:.92;
+}
+.dr-royal-screen[data-cue-tier="special"] .dr-cinematic-overlay::before,
+.dr-royal-screen[data-cue-tier="combo3"] .dr-energy-overlay--combo::before,
+.dr-royal-screen[data-cue-tier="combo3"] .dr-mystic-combo-overlay::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  background:radial-gradient(ellipse 78% 62% at 50% 50%,transparent 38%,#05030c99 100%);
+  animation:dr-hud-vignette 1500ms ease both;
+}
+@keyframes dr-hud-vignette {
+  0% {opacity:0;}
+  14%,82% {opacity:1;}
+  100% {opacity:0;}
+}
+
+/* ── 4. Desenlace ─────────────────────────────────────────────────────
+   La cinemática C06/C07 conserva su duración; después llega la cartela G3
+   en el centro de la mesa, de modo que ambos retratos siguen a la vista. */
+.dr-royal-screen[data-hud-result="victory"] .dr-royal-rival-area .dr-royal-character-frame > img:first-child,
+.dr-royal-screen[data-hud-result="defeat"] .dr-royal-player-area .dr-royal-character-frame > img:first-child {
+  filter:grayscale(1) brightness(.62);
+  transition:filter .5s ease;
+}
+.dr-royal-screen[data-hud-mode="result"] .dr-royal-end-banner-stage .dr-royal-end-banner {
+  top:0;
+  bottom:0;
+  margin:auto;
+  height:fit-content;
+  gap:clamp(8px,1.6dvh,14px);
+  padding-top:0;
+}
+.dr-royal-screen .dr-royal-end-cartela {
+  position:relative;
+  width:min(96%,330px);
+  aspect-ratio:1100 / 548;
+  margin-top:clamp(-56px,-13cqw,-34px);
+  flex:0 0 auto;
+}
+.dr-royal-screen .dr-royal-end-cartela > img {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  pointer-events:none;
+  filter:drop-shadow(0 6px 10px #000a);
+}
+.dr-royal-screen .dr-royal-end-banner .dr-royal-end-cartela > h2 {
+  position:absolute;
+  left:18%;
+  right:18%;
+  top:40%;
+  height:33%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:0;
+  color:#4a160f;
+  font:900 clamp(21px,6.4cqw,30px)/1 Cinzel,Georgia,serif;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  text-shadow:0 1px 0 #fff3cf;
+}
+.dr-royal-screen .dr-royal-end-seals {
+  display:flex;
+  justify-content:center;
+  gap:clamp(16px,6cqw,30px);
+  margin:0;
+  padding:0;
+}
+.dr-royal-screen .dr-royal-end-seal {
+  position:relative;
+  width:clamp(64px,19cqw,82px);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  animation:dr-end-seal-stamp .3s cubic-bezier(.3,1.4,.5,1) 3.75s both;
+}
+.dr-royal-screen .dr-royal-end-seal + .dr-royal-end-seal {animation-delay:3.93s;}
+.dr-royal-screen .dr-royal-end-seal > img {
+  width:100%;
+  aspect-ratio:1;
+  object-fit:contain;
+  pointer-events:none;
+}
+.dr-royal-screen .dr-royal-end-seal > dd {
+  position:absolute;
+  left:0;
+  right:0;
+  top:0;
+  aspect-ratio:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:0;
+  color:#4a160f;
+  font:900 clamp(19px,5.6cqw,25px)/1 Cinzel,Georgia,serif;
+}
+.dr-royal-screen .dr-royal-end-seal > dt {
+  margin-top:2px;
+  color:#ffe6a0;
+  font:800 clamp(10px,2.8cqw,12px)/1.1 Cinzel,Georgia,serif;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+@keyframes dr-end-seal-stamp {
+  0% {opacity:0;transform:scale(1.7) rotate(-9deg);}
+  100% {opacity:1;transform:scale(1) rotate(0);}
+}
+@media (max-height:600px) {
+  .dr-royal-screen .dr-royal-end-cartela {width:min(70%,230px);margin-top:-26px;}
+  .dr-royal-screen .dr-royal-end-seal {width:52px;}
+  .dr-royal-screen .dr-royal-end-seal > dd {font-size:17px;}
+  .dr-royal-screen[data-hud-mode="result"] .dr-royal-end-banner-stage .dr-royal-end-banner {gap:6px;}
+  .dr-royal-screen .dr-royal-end-banner .dr-royal-end-cartela > h2 {font-size:17px;}
+  .dr-royal-screen[data-hud-mode] .dr-royal-character-frame .dr-royal-hp__label > b {font-size:1.25em;}
+  .dr-royal-screen[data-hud-mode] .dr-royal-character-frame .dr-royal-hp__label > small {font-size:.78em;}
+}
+@media (max-height:500px) {
+  .dr-royal-screen .dr-royal-end-seals {display:none;}
+}
+
+/* ── 5. Una sola familia tipográfica en los avisos de ceremonia ─────── */
+.dr-royal-screen .dr-duel-entrance .dr-duel-entrance__skip,
+.dr-royal-screen .dr-event-coin-panel .dr-event-coin-panel__result {
+  font-family:Georgia,"Times New Roman",serif;
+}
+
+@media (prefers-reduced-motion:reduce) {
+  .dr-royal-screen .dr-royal-character-frame .dr-royal-hp__ghost {transition:none;}
+  .dr-royal-screen .dr-royal-character-frame .dr-royal-hp-delta {animation:none;}
+  .dr-royal-screen .dr-royal-end-seal {animation:none;}
+  .dr-royal-screen[data-cue-tier] .dr-cinematic-overlay::before,
+  .dr-royal-screen[data-cue-tier] .dr-energy-overlay--combo::before,
+  .dr-royal-screen[data-cue-tier] .dr-mystic-combo-overlay::before {animation:none;}
+  .dr-royal-screen[data-hud-mode] .dr-royal-activation-target,
+  .dr-royal-screen[data-hud-mode] .dr-royal-player-area > .dr-royal-finish,
+  .dr-royal-screen[data-hud-mode] .dr-last-decree-stack,
+  .dr-royal-screen[data-hud-mode] .dr-royal-player-hand,
+  .dr-royal-screen[data-hud-mode] .dr-royal-rival-hand {transition:none;}
+}
+
+/* Apaisado o pantallas muy bajas: el retrato es diminuto. La cifra de vida
+   tiene prioridad sobre el prefijo «HP:» (que sigue en el DOM y en aria). */
+@media (max-height:430px) {
+  .dr-royal-screen[data-hud-mode] .dr-royal-character-frame .dr-royal-hp__label > small:first-child {display:none;}
+  .dr-royal-screen[data-hud-mode] .dr-royal-character-frame .dr-royal-hp__label > b {font-size:1.2em;}
+}
