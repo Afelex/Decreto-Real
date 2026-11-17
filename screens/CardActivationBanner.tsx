@@ -17,7 +17,8 @@ type Props = {
 /**
  * Each stage gets its full approved 1.5 s from GameBoard's pausable clock.
  * Video playback is decorative and cannot shorten or stall gameplay.
- * While WebM is still decoding (or cannot play), show an inexpensive fallback.
+ * The decree ribbon and its lettering share one centered media stage.
+ * No opaque fallback ribbon is ever shown during decoding/buffering/failure.
  * Stages are mounted separately, so banner and energy cannot overlap.
  */
 export const CardActivationBanner: React.FC<Props> = ({
@@ -81,11 +82,12 @@ export const CardActivationBanner: React.FC<Props> = ({
         </div>
       )}
       {useG3 && <DecretoFXOverlay card={card} isPlayer={isPlayer} paused={paused} fallbackSrc={energySrc} />}
-      {showBanner && <>
-        <div className="dr-cinematic-media" aria-hidden="true">
-          {!bannerPlaying && <div className="dr-cinematic-fallback" />}
+      {showBanner && (
+        <div className={`dr-decree-banner${bannerPlaying && !failedBanner ? ' is-playing' : ''}`}
+          data-decree-video={failedBanner ? 'failed' : bannerPlaying ? 'playing' : 'loading'}
+          aria-hidden="true">
           {!failedBanner && <video ref={bannerRef}
-            className={`dr-cue-video${bannerPlaying ? ' is-playing' : ''}`}
+            className="dr-decree-banner__video"
             autoPlay={!paused} muted playsInline preload="auto"
             onLoadedMetadata={event => syncCueVideoRate(event.currentTarget, DECREE_BANNER_DURATION_MS)}
             onPlaying={() => setBannerPlaying(true)}
@@ -93,13 +95,13 @@ export const CardActivationBanner: React.FC<Props> = ({
             onError={() => { setFailedBanner(true); setBannerPlaying(false); }}>
             <source src={bannerSrc} type="video/webm" />
           </video>}
+          <div className="dr-decree-banner__copy">
+            <span className="dr-decree-banner__kicker">{copy.kicker}</span>
+            <strong className="dr-decree-banner__title">{copy.title}</strong>
+            <span className="dr-decree-banner__effect">{copy.effect}</span>
+          </div>
         </div>
-        <div className="dr-cinematic-copy" aria-hidden="true">
-          <span className="dr-cinematic-kicker">{copy.kicker}</span>
-          <strong className="dr-cinematic-title">{copy.title}</strong>
-          <span className="dr-cinematic-effect">{copy.effect}</span>
-        </div>
-      </>}
+      )}
     </div>
   );
 };

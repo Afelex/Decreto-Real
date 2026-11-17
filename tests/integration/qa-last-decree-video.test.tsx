@@ -52,7 +52,10 @@ for (const type of Object.keys(names) as CardType[]) {
         <CardActivationBanner card={card} isPlayer={isPlayer} paused={false} />
       );
       const srcs = Array.from(container.querySelectorAll('video source')).map(source=>source.getAttribute('src')||'');
-      expect(container.querySelector('.dr-cinematic-copy')).toBeTruthy();
+      expect(container.querySelector('.dr-decree-banner__copy')).toBeTruthy();
+       expect(container.querySelectorAll('.dr-decree-banner')).toHaveLength(1);
+       expect(container.querySelector('.dr-cinematic-fallback')).toBeNull();
+       expect(container.querySelector('.dr-cinematic-media')).toBeNull();
       expect(container.querySelector('.dr-cinematic-overlay')?.getAttribute('style')).toContain('--dr-cue-duration: 1500ms');
       expect(srcs).toContainEqual(expect.stringContaining(isPlayer ? 'banner-jugador-rojo.webm' : 'banner-rival-azul.webm'));
       // The banner and energy clips must never occupy the same frame.
@@ -101,23 +104,31 @@ test('indicador ×2/×3 comunica la racha real en ambos lados con su icono', () 
 });
 
 
-test('decreto: fallback until video plays, restores fallback on buffering or failure', () => {
+test('decreto: una sola cinta WebM sin franja CSS; texto sincronizado con el video', () => {
   const card: CardData = { id:'attack', type:'ATTACK', name:'Decreto de Ataque',
     description:'Inflige 2 daño', cost:0, img:'' };
   const { container }=render(<CardActivationBanner card={card} isPlayer paused={false} />);
-  const video=container.querySelector('video')!;
+  const stage=container.querySelector('.dr-decree-banner')!;
+  const video=stage.querySelector('video')!;
   expect(video).toBeTruthy();
   expect(video.hasAttribute('loop')).toBe(false);
-  expect(container.querySelector('.dr-cinematic-fallback')).toBeTruthy();
-  expect(video.classList.contains('is-playing')).toBe(false);
-  fireEvent.playing(video);
+  expect(stage.getAttribute('data-decree-video')).toBe('loading');
+  expect(stage.classList.contains('is-playing')).toBe(false);
+  expect(stage.querySelectorAll('.dr-decree-banner__copy')).toHaveLength(1);
+  expect(stage.querySelectorAll('.dr-decree-banner__video')).toHaveLength(1);
   expect(container.querySelector('.dr-cinematic-fallback')).toBeNull();
-  expect(video.classList.contains('is-playing')).toBe(true);
+  expect(container.querySelector('.dr-cinematic-media')).toBeNull();
+  fireEvent.playing(video);
+  expect(stage.getAttribute('data-decree-video')).toBe('playing');
+  expect(stage.classList.contains('is-playing')).toBe(true);
   fireEvent.waiting(video);
-  expect(container.querySelector('.dr-cinematic-fallback')).toBeTruthy();
+  expect(stage.getAttribute('data-decree-video')).toBe('loading');
+  expect(stage.classList.contains('is-playing')).toBe(false);
   fireEvent.error(video);
-  expect(container.querySelector('video')).toBeNull();
-  expect(container.querySelector('.dr-cinematic-fallback')).toBeTruthy();
+  expect(stage.querySelector('video')).toBeNull();
+  expect(stage.getAttribute('data-decree-video')).toBe('failed');
+  expect(stage.classList.contains('is-playing')).toBe(false);
+  expect(container.querySelector('.dr-cinematic-fallback')).toBeNull();
 });
 
 test('decreto: effect phase has a fallback and never shows the banner simultaneously', () => {
