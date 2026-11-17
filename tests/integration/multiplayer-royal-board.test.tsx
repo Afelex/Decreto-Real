@@ -52,6 +52,23 @@ test('el tablero PvP reutiliza las dos fichas, losas, escenario y cartas IA', ()
   fireEvent.click(screen.getByLabelText('Terminar turno'));
   expect(onEndTurn).toHaveBeenCalledOnce();
 });
+test('la información de ambos últimos decretos permanece visible desde el inicio', () => {
+  mount();
+  const history=document.querySelector('.dr-pvp-decree-history');
+  expect(history).toBeTruthy();
+  expect(history?.getAttribute('aria-label')).toContain('siempre visibles');
+  expect(screen.getByLabelText('Último decreto del rival: ninguno').textContent).toContain('RIVAL');
+  expect(screen.getByLabelText('Último decreto propio: ninguno').textContent).toContain('TÚ');
+});
+
+test('la tipografía HP es compartida para jugador y rival', () => {
+  mount();
+  const bars=document.querySelectorAll('.dr-royal-hp__label');
+  expect(bars).toHaveLength(2);
+  expect(Array.from(bars).every(bar=>bar.textContent?.includes('HP:'))).toBe(true);
+  expect(document.querySelectorAll('.dr-pvp-portrait-name')).toHaveLength(2);
+});
+
 test('combo confirmado abre el panel de IA y no altera acciones pendientes', () => {
   const view=makeView(); view.pendingCombo=3;
   const {onCombo,onPlayCard}=mount(view);
@@ -60,6 +77,20 @@ test('combo confirmado abre el panel de IA y no altera acciones pendientes', () 
   expect(onCombo).toHaveBeenCalledWith('HEAL');
   expect(onPlayCard).not.toHaveBeenCalled();
 });
+test('victoria y derrota escriben el resultado dentro de la etiqueta ilustrada', () => {
+  for (const winner of ['me', 'opponent'] as const) {
+    const view=makeView(); view.status='finished'; view.winner=winner;
+    mount(view);
+    const label=document.querySelector('.dr-pvp-outcome .dr-royal-end-cartela');
+    expect(label).toBeTruthy();
+    expect(label?.querySelector('img')).toBeTruthy();
+    expect(label?.querySelector('h2')?.textContent)
+      .toBe(winner === 'me' ? '¡VICTORIA!' : 'DERROTA');
+    expect(label?.parentElement?.querySelector(':scope > h2')).toBeNull();
+    cleanup();
+  }
+});
+
 test('resultado PvP usa la misma pantalla de estadisticas de IA', () => {
   const view=makeView(); view.status='finished'; view.winner='me'; view.turnNumber=23;
   const {onNewGame}=mount(view);
