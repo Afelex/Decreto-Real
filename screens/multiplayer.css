@@ -223,3 +223,20 @@
 .dr-pvp-cinematic.is-card .dr-pvp-cinematic-copy strong {
   font-size:clamp(20px,5.6vw,34px);
 }
+
+
+/* Invitation-ready screen: two equally prominent, thumb-friendly choices.
+   Never auto-join the duel while the guest is choosing an alias or portrait. */
+.dr-pvp .dr-pvp-invited-lobby{justify-content:center;gap:clamp(10px,2dvh,19px)}
+.dr-pvp-invite-actions{display:flex;flex-direction:column;width:100%;gap:clamp(12px,2dvh,19px);margin-top:4px}
+.dr-pvp .dr-pvp-invite-description{color:#f3ddc0;font:clamp(13px,3.4vw,16px)/1.45 system-ui,sans-serif;text-align:center;margin:0}
+.dr-pvp-invite-description strong{color:#ffe1a6;overflow-wrap:anywhere}
+.dr-pvp .dr-pvp-invite-big-button{
+  width:100%;min-height:clamp(74px,11dvh,96px);
+  padding:14px 16px;font-size:clamp(19px,5.2vw,26px);
+  font-weight:800;line-height:1.18;white-space:normal;text-align:center;
+}
+@media(max-height:620px){
+  .dr-pvp .dr-pvp-invite-big-button{min-height:64px}
+  .dr-pvp .dr-pvp-invited-lobby{gap:8px}
+}
