@@ -26,6 +26,7 @@ import { resolveBattleScenery } from '../game/battleScenery';
 import { freeDuelMusicScene } from '../game/musicScene';
 import { getRoyalCardText } from '../game/royalCardText';
 import { resolveBattleEnd, resolveSurrender, resolveDevelopmentVictory, type BattleEndResult } from '../game/battleEnd';
+import { BattleStatsTracker } from '../game/battleStats';
 import { BattleSceneryLayer } from './BattleSceneryLayer';
 import { DuelEntrance } from './DuelEntrance';
 import { RoyalPauseMenu } from './RoyalPauseMenu';
@@ -256,7 +257,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const expectedGuideAction = currentGuide?.action;
   const guidedCardId = expectedGuideAction ? GUIDED_ACTION_CARDS[expectedGuideAction] : undefined;
 
-  const [playerHP, setPlayerHP] = useState(MAX_HP);
+  const [playerHP, setPlayerHPState] = useState(MAX_HP);
   const [playerDeck, setPlayerDeck] = useState<CardData[]>([]);
   const playerDeckRef = useRef<CardData[]>([]);
   const [playerHand, setPlayerHand] = useState<CardData[]>([]);
@@ -272,7 +273,14 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const [comboAnnouncement, setComboAnnouncement] = useState<{ id: number; level: 2 | 3; ability: 'DAMAGE' | 'HEAL'; isPlayer: boolean } | null>(null);
   const [mysticComboAnnouncement, setMysticComboAnnouncement] = useState<{ id: number; level: 2 | 3; name: string; effect: string; isPlayer: boolean } | null>(null);
 
-  const [opponentHP, setOpponentHP] = useState(MAX_HP);
+  const [opponentHP, setOpponentHPState] = useState(MAX_HP);
+  // El acumulador se actualiza por acción, no por render: incluye combos y
+  // variaciones sucesivas de PV aunque React agrupe varias actualizaciones.
+  const battleStats = useRef(new BattleStatsTracker());
+  const setPlayerHP = (update: React.SetStateAction<number>) =>
+    setPlayerHPState(battleStats.current.updateHealth('PLAYER', update));
+  const setOpponentHP = (update: React.SetStateAction<number>, creditedToPlayer = true) =>
+    setOpponentHPState(battleStats.current.updateHealth('OPPONENT', update, creditedToPlayer));
   // The free IA duel owns its soundtrack. Story missions retain their
   // independent DRStudio narrative music and must not inherit this scene.
   const freeVsIa = !onOutcome && !guidedOpening && !storyConversation;
@@ -388,6 +396,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
          if (gameOverRef.current) return;
          drawCards('PLAYER', INITIAL_HAND_SIZE);
          drawCards('OPPONENT', INITIAL_HAND_SIZE);
+         battleStats.current.start();
          setTurnCount(1);
          setPhase('TURN_BANNER');
        }, 450);
@@ -554,10 +563,11 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
       setPlayerHP(result.selfHp); setOpponentHP(result.enemyHp);
       if (power.impact) { setPlayerImpactLevel(result.selfSeals); setPlayerImpactPlayedThisTurn(true); }
     } else {
-      setOpponentHP(result.selfHp); setPlayerHP(result.enemyHp);
+      // El sacrificio místico del rival no es daño realizado por el jugador.
+      setOpponentHP(result.selfHp, false); setPlayerHP(result.enemyHp);
       if (power.impact) { setOpponentImpactLevel(result.selfSeals); setOpponentImpactPlayedThisTurn(true); }
     }
-    if (power.impact) { playSound('IMPACT'); triggerVisualEffect('IMPACT', 'GLOBAL'); }
+    if (power.impact) { battleStats.current.summonImpact(isPlayer); playSound('IMPACT'); triggerVisualEffect('IMPACT', 'GLOBAL'); }
     if (result.steal) stealMysticCards(isPlayer, result.steal);
     if (result.draw) drawCards(isPlayer ? 'PLAYER' : 'OPPONENT', result.draw);
   };
@@ -638,6 +648,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
       drawCards(isPlayer ? 'PLAYER' : 'OPPONENT', 1);
     } else if (card.type === 'IMPACT') {
       // Impacto G3 se reproduce en la fase visual anterior, sin duplicar animaciones.
+      battleStats.current.summonImpact(isPlayer);
       if (isPlayer) { setPlayerImpactLevel(p => p + 1); setPlayerImpactPlayedThisTurn(true); setOpponentHP(p => Math.max(0, p - 1)); setPlayerHP(p => Math.min(MAX_HP, p + 1)); }
       else { setOpponentImpactLevel(p => p + 1); setOpponentImpactPlayedThisTurn(true); setPlayerHP(p => Math.max(0, p - 1)); setOpponentHP(p => Math.min(MAX_HP, p + 1)); }
     }
@@ -693,8 +704,8 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   }, [phase]);
 
   useEffect(() => {
-    if (isMenuOpen || storyMoment) { aiController.current?.pause(); announcementClock.current.pause(); }
-    else { aiController.current?.resume(); announcementClock.current.resume(); }
+    if (isMenuOpen || storyMoment) { aiController.current?.pause(); announcementClock.current.pause(); battleStats.current.pause(); }
+    else { aiController.current?.resume(); announcementClock.current.resume(); battleStats.current.resume(); }
   }, [isMenuOpen, storyMoment]);
 
   // Player-caused thresholds only; never interrupt a playing clip, a choice,
@@ -732,6 +743,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
     const result = resolveBattleEnd({ playerHP, opponentHP, playerImpactLevel, opponentImpactLevel });
     if (!result) return;
     gameOverRef.current = true;
+    battleStats.current.stop();
     setBattleEnd(result);
     setShowSpecialSelection(false);
     if (result.phase === 'VICTORY' && storyConversation?.victory.length) {
@@ -759,6 +771,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
       navigate('/victory', { state: {
         outcome: battleEnd.phase, reason: battleEnd.reason,
         turnCount, playerHP, opponentHP, playerImpactLevel, opponentImpactLevel,
+        ...battleStats.current.snapshot(),
       } });
     }
   };
@@ -876,6 +889,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
     setDragAt(null);
     setIsMenuOpen(false);
     setStoryMoment(null);
+    battleStats.current.stop();
     setBattleEnd(result);
     setPhase(result.phase);
   };
