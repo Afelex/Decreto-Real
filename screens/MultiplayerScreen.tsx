@@ -157,9 +157,10 @@ export default function MultiplayerScreen() {
       : view.winner === 'me' ? 'VICTORY'
       : view.winner === 'opponent' ? 'DEFEAT' : 'PLAYER_TURN';
     setMusicScene(freeDuelMusicScene({
-      entranceActive: false, phase, playerHP: view.me.hp, opponentHP: view.opponent.hp,
+      entranceActive: cinematicCue?.kind === 'intro', phase,
+      playerHP: view.me.hp, opponentHP: view.opponent.hp,
     }));
-  }, [view?.status, view?.winner, view?.me.hp, view?.opponent.hp, setMusicScene]);
+  }, [view?.status, view?.winner, view?.me.hp, view?.opponent.hp, cinematicCue?.kind, setMusicScene]);
   React.useEffect(() => () => setMusicScene(null), [setMusicScene]);
   // Audio is triggered by the PRESENTED effect stage, never on WebSocket receipt.
   const onCinematicEffect = (cue: MultiplayerCue) => {
