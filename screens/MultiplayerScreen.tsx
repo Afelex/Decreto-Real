@@ -1,9 +1,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './multiplayer.css';
+import './multiplayer-social.css';
+import { MultiplayerSocialPanel, type SocialPeer, type FriendRequest, type SocialMessage, type SocialStatus } from './MultiplayerSocialPanel';
 import { DuelistProfilePanel } from './DuelistProfilePanel';
-import { loadDuelistProfile, saveDuelistProfile, rewardMatch, portraitUrl } from '../game/duelistProfile';
 import { isPrivateRoomCode } from '../game/pvpRoomCode';
+import { loadDuelistProfile, saveDuelistProfile, rewardMatch, portraitUrl } from '../game/duelistProfile';
 import { MultiplayerBattleBoard } from './MultiplayerBattleBoard';
 import { useAudio } from '../contexts/AudioContext';
 import { freeDuelMusicScene } from '../game/musicScene';
@@ -20,6 +22,7 @@ type View = { revision: number; ruleset: string; status: 'playing' | 'finished';
   opponent: Player & { handCount: number }; lastEvent: string };
 type Session = { code: string; matchId?: string; token: string; slot: number; name: string; randomQueue?: boolean };
 const SESSION_KEY = 'decreto-real.pvp.session.v1';
+const SOCIAL_KEY = 'decreto-real.pvp.social-secret.v1';
 const configuredUrl = import.meta.env.VITE_MULTIPLAYER_WS_URL as string | undefined;
 const SOCKET_URL = configuredUrl || (typeof window !== 'undefined' && ['localhost', '127.0.0.1'].includes(window.location.hostname)
   ? 'ws://localhost:3001' : '');
@@ -29,8 +32,6 @@ function getStored<T>(key: string): T | null {
 function getValidStoredSession(): Session | null {
   const saved = getStored<Session>(SESSION_KEY);
   if (!saved) return null;
-  // SessionStorage can retain rooms created by a previous 10-character server.
-  // Never resume or display those as a valid four-character invitation.
   if (!isPrivateRoomCode(saved.code) || typeof saved.token !== 'string') {
     try { sessionStorage.removeItem(SESSION_KEY); } catch { /* private mode */ }
     return null;
@@ -65,6 +66,16 @@ export default function MultiplayerScreen() {
   const pendingRef = React.useRef<string | null>(null);
   const [pending, setPending] = React.useState(false);
   const [online, setOnline] = React.useState(false);
+  const [showSocial, setShowSocial] = React.useState(false);
+  const [socialId, setSocialId] = React.useState('');
+  const [socialStatus, setSocialStatus] = React.useState<SocialStatus>('hidden');
+  const socialStatusRef = React.useRef<SocialStatus>('hidden');
+  const [socialPeers, setSocialPeers] = React.useState<SocialPeer[]>([]);
+  const [socialTotal, setSocialTotal] = React.useState(0);
+  const [socialFriends, setSocialFriends] = React.useState<string[]>([]);
+  const [friendRequests, setFriendRequests] = React.useState<FriendRequest[]>([]);
+  const [socialMessages, setSocialMessages] = React.useState<SocialMessage[]>([]);
+  const [incomingChallenge, setIncomingChallenge] = React.useState<{ from: string; name: string; code: string } | null>(null);
   const [view, setView] = React.useState<View | null>(null);
   const [waiting, setWaiting] = React.useState(false);
   const [error, setError] = React.useState('');
@@ -109,6 +120,10 @@ export default function MultiplayerScreen() {
       socket.addEventListener('open', () => {
         if (!active) return;
         setOnline(true); setError('');
+        let secret = '';
+        try { secret = localStorage.getItem(SOCIAL_KEY) || ''; } catch { /* private mode */ }
+        socket.send(JSON.stringify({ type: 'social:hello', secret, status: socialStatusRef.current,
+          name: nicknameRef.current || 'Duelista', portrait: cosmeticRef.current?.portrait || 'xervias' }));
         if (sessionRef.current) socket.send(JSON.stringify({ type: 'resume', ...sessionRef.current }));
         else if (isPrivateRoomCode(inviteOnLoad.current) && !autoJoinAttempted.current && nicknameRef.current.trim().length >= 2) {
           autoJoinAttempted.current = true;
@@ -120,10 +135,33 @@ export default function MultiplayerScreen() {
         if (!active) return;
         let msg: any;
         try { msg = JSON.parse(String(event.data)); } catch { return; }
-        if (msg.type === 'session' && typeof msg.token === 'string') {
+        if (msg.type === 'social:identity') {
+          setSocialId(msg.id);
+          if (typeof msg.secret === 'string') {
+            try { localStorage.setItem(SOCIAL_KEY, msg.secret); } catch { /* private mode */ }
+          }
+          setSocialFriends(Array.isArray(msg.friends) ? msg.friends : []);
+          setFriendRequests(Array.isArray(msg.requests) ? msg.requests : []);
+        } else if (msg.type === 'social:roster') {
+          setSocialPeers(Array.isArray(msg.peers) ? msg.peers : []);
+          setSocialTotal(typeof msg.total === 'number' ? msg.total : 0);
+        } else if (msg.type === 'social:friend_request') {
+          setFriendRequests(current => current.some(item => item.from === msg.from)
+            ? current : [...current, { from: msg.from, name: msg.name }]);
+        } else if (msg.type === 'social:request_closed') {
+          setFriendRequests(current => current.filter(item => item.from !== msg.from));
+        } else if (msg.type === 'social:friend_added') {
+          setSocialFriends(current => current.includes(msg.id) ? current : [...current, msg.id]);
+        } else if (msg.type === 'social:blocked') {
+          setSocialFriends(current => current.filter(id => id !== msg.id));
+        } else if (msg.type === 'social:chat') {
+          setSocialMessages(current => [...current.slice(-99), msg as SocialMessage]);
+        } else if (msg.type === 'social:incoming_challenge') {
+          setIncomingChallenge({ from: msg.from, name: msg.name, code: msg.code });
+        } else if (msg.type === 'social:challenge_declined') {
+          setError((msg.name || 'El duelista') + ' rechazó el desafío. Puedes cancelar la espera.');
+        } else if (msg.type === 'session' && typeof msg.token === 'string') {
           if (!isPrivateRoomCode(msg.code)) {
-            // A current GitHub Pages client talking to an older Railway server
-            // must never advertise a ten-character code as a usable invite.
             setServerNeedsUpdate(true);
             setError('');
             socket.close(4000, 'Servidor de partidas desactualizado');
@@ -185,7 +223,8 @@ export default function MultiplayerScreen() {
       });
       socket.addEventListener('close', () => {
         if (!active) return;
-        setOnline(false); pendingRef.current = null; setPending(false);
+        setOnline(false); setSocialPeers([]); setSocialTotal(0);
+        pendingRef.current = null; setPending(false);
         retry = setTimeout(connect, 1800);
       });
       socket.addEventListener('error', () => { if (active) setError('No se pudo conectar con el servidor de partidas.'); });
@@ -193,6 +232,14 @@ export default function MultiplayerScreen() {
     connect();
     return () => { active = false; clearTimeout(retry); socketRef.current?.close(); };
   }, []);
+
+  React.useEffect(() => {
+    const ws = socketRef.current;
+    if (socialId && ws?.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({ type: 'social:profile', name: nickname || 'Duelista',
+        portrait: duelist.slots[duelist.active]?.appearance.portrait || 'xervias' }));
+    }
+  }, [socialId, nickname, duelist]);
 
   // La banda sonora utiliza la misma selección de escenas que Versus IA.
   // No se altera el estado del combate ni la autoridad del servidor.
@@ -239,6 +286,11 @@ export default function MultiplayerScreen() {
     if (!send({ type: 'action', id, revision: view.revision, action: move })) {
       pendingRef.current = null; setPending(false);
     }
+  };
+  const updateSocialStatus = (next: SocialStatus) => {
+    socialStatusRef.current = next;
+    setSocialStatus(next);
+    send({ type: 'social:status', status: next });
   };
   const activeTurn = Boolean(online && view?.isMyTurn && view.status === 'playing' && view.opponent.connected && !pending);
   const resetSession = () => {
@@ -313,6 +365,12 @@ export default function MultiplayerScreen() {
         <button type="button" className="dr-pvp-minor" onClick={() => setShowJoinCode(current => !current)}>
           <span aria-hidden="true">↗</span>Tengo un código de invitación</button>
       </>}
+      {!inviteOnLoad.current && <button type="button" className="dr-pvp-community-shortcut"
+        onClick={() => setShowSocial(true)}>
+        <span><strong>Amigos y chat</strong><small>Conectados, solicitudes y desafíos</small></span>
+        <span className="dr-pvp-community-count" aria-label={socialTotal + ' jugadores visibles'}>
+          {friendRequests.length ? friendRequests.length + ' ✉' : socialTotal}</span>
+      </button>}
       {showJoinCode && <div className="dr-pvp-code-join">
         {!inviteOnLoad.current && <label>Código recibido<input value={joinCode} maxLength={4}
           onChange={e => setJoinCode(e.target.value.toUpperCase())} placeholder="Ej. 27KP" /></label>}
@@ -340,6 +398,25 @@ export default function MultiplayerScreen() {
     {session && !waiting && !view && <section className="dr-pvp-lobby"><h2>Restableciendo la partida</h2>
       <p>Reconectando con la sala {session.code}…</p><div className="dr-pvp-ornament" aria-hidden="true"><span>✦</span></div></section>}
 
+    {!session && showSocial && <MultiplayerSocialPanel peers={socialPeers} total={socialTotal}
+      requests={friendRequests} friends={socialFriends} messages={socialMessages}
+      status={socialStatus} myId={socialId} online={online}
+      onStatus={updateSocialStatus} onSend={send} onClose={() => setShowSocial(false)}/>}
+    {!session && incomingChallenge && <section className="dr-pvp-incoming" role="alertdialog"
+      aria-label="Desafío recibido">
+      <h3>¡Te desafían a un duelo!</h3>
+      <p><strong>{incomingChallenge.name}</strong> quiere jugar contigo.</p>
+      <div>
+        <button type="button" className="dr-pvp-primary" onClick={() => {
+          send({ type: 'social:accept_challenge', code: incomingChallenge.code });
+          setIncomingChallenge(null); setShowSocial(false);
+        }}>Aceptar</button>
+        <button type="button" className="dr-pvp-secondary" onClick={() => {
+          send({ type: 'social:decline_challenge', code: incomingChallenge.code });
+          setIncomingChallenge(null);
+        }}>Rechazar</button>
+      </div>
+    </section>}
     {!session && showProfile && <DuelistProfilePanel profile={duelist} onChange={setDuelist}
       onClose={() => setShowProfile(false)}/>}
     {view && <MultiplayerBattleBoard view={view} online={online} activeTurn={activeTurn && !cinematicCue}
