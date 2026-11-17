@@ -153,6 +153,8 @@ function enter(ws, room, name, appearance) {
   if (room.inviteExpires && Date.now() > room.inviteExpires)
     return fail(ws, 'Esta invitación ha caducado.');
   if (room.seats.length !== 1 || room.match) return fail(ws, 'La sala ya está completa.');
+  if (!ws.social?.id || room.seats[0].id === ws.social.id)
+    return fail(ws, 'No puedes combatir contra tu propio perfil.');
   if (room.sockets[0]?.readyState !== WebSocket.OPEN) return fail(ws, 'El creador de la sala está desconectado.');
   room.seats.push({ name, appearance, id: ws.social?.id || null, token: token() });
   room.match = createMatch(room.seats.map(seat => seat.name));
