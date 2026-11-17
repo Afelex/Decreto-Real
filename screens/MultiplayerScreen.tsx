@@ -176,6 +176,9 @@ function AuthenticatedMultiplayer() {
             status: socialStatusRef.current, name: selected.slots[selected.active]?.name || 'Duelista',
             portrait: selected.slots[selected.active]?.appearance?.portrait || 'xervias' }));
           if (sessionRef.current) socket.send(JSON.stringify({ type: 'resume', ...sessionRef.current }));
+        } else if (msg.type === 'account:history') {
+          if (msg.profile) setDuelist(msg.profile);
+          setHistory(Array.isArray(msg.history) ? msg.history : []);
         } else if (msg.type === 'social:identity') {
           if (!account && typeof msg.secret === 'string') {
             try { localStorage.setItem(SOCIAL_KEY, msg.secret); } catch { /* private mode */ }
