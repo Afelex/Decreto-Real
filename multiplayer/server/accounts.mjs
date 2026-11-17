@@ -103,7 +103,6 @@ export class AccountStore {
   getHistory(uid) { return structuredClone(this.user(uid).history || []); }
   recordMatch(room) {
     if (!room.match || room.match.status !== 'finished' || room.finishedStored) return false;
-    room.finishedStored = true;
     const now = new Date().toISOString();
     for (let slot = 0; slot < room.seats.length; slot++) {
       const seat = room.seats[slot];
@@ -122,6 +121,7 @@ export class AccountStore {
       user.duelist.rewardedRooms = [room.matchId, ...user.duelist.rewardedRooms].slice(0, 80);
     }
     this.flush();
+    room.finishedStored = true;
     return true;
   }
 }
