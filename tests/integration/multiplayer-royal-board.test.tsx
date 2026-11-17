@@ -20,7 +20,7 @@ afterEach(() => cleanup());
 const attack = { id:'p0-atk-0', type:'ATTACK' as const };
 const defense = { id:'p0-def-0', type:'DEFENSE' as const };
 const makeView = () => ({
-  revision:1, status:'playing' as const, isMyTurn:true, turnNumber:1,
+  revision:1, status:'playing' as 'playing' | 'finished', isMyTurn:true, turnNumber:1,
   pendingCombo:null as 2 | 3 | null, winner:null as 'me' | 'opponent' | 'draw' | null,
   lastEvent:'Comienza el duelo.',
   me:{name:'Alfredo',hp:20,impact:0,connected:true,deckCount:24,hand:[attack,defense],impactThisTurn:false},
@@ -45,7 +45,7 @@ test('el tablero PvP reutiliza las dos fichas, losas, escenario y cartas IA', ()
   expect(document.querySelectorAll('.dr-royal-impact-slot')).toHaveLength(4);
   expect(document.querySelectorAll('.dr-royal-facedown')).toHaveLength(3);
   expect(document.querySelectorAll('.dr-royal-hand-card')).toHaveLength(2);
-  expect(screen.getByLabelText('Terminar turno')).toHaveAttribute('data-art-version','hud-g3');
+  expect(screen.getByLabelText('Terminar turno').getAttribute('data-art-version')).toBe('hud-g3');
   fireEvent.click(screen.getByLabelText('Seleccionar Decreto de Ataque'), {detail:0});
   fireEvent.click(screen.getByLabelText('Activar decreto seleccionado en el campo'));
   expect(onPlayCard).toHaveBeenCalledWith(attack);
