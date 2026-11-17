@@ -5,6 +5,12 @@ import { resolveBattleScenery } from '../game/battleScenery';
 import { RoyalHpMeter, HpDeltaCue } from './RoyalHpMeter';
 import { TurnIndicator, ComboChoicePanel } from './CombatEventUI';
 import { ResultCinematicFX } from './ResultCinematicFX';
+import { CardDrawFX } from './CardDrawFX';
+import BattleResultScreen from './BattleResultScreen';
+import { RoyalPauseMenu } from './RoyalPauseMenu';
+import { formatBattleDuration } from '../game/battleStats';
+import type { PvpStats } from '../game/multiplayerStats';
+import { useAudio } from '../contexts/AudioContext';
 import { G3_UI_ASSETS } from '../game/g3UiAssets';
 import { MultiplayerCinematicCue } from './MultiplayerCinematicCue';
 import type { MultiplayerCue } from '../game/multiplayerPresentation';
@@ -22,6 +28,9 @@ type DuelView = { revision: number; status: 'playing' | 'finished'; isMyTurn: bo
 type Props = {
   view: DuelView; online: boolean; activeTurn: boolean;
   cinematicCue: MultiplayerCue | null; onCueEnded: () => void;
+  stats: PvpStats | null;
+  drawCues: Array<{id: number; side: 'PLAYER' | 'OPPONENT'; count: number}>;
+  onDrawFinished: (id: number) => void;
   onPlayCard: (card: Card) => void;
   onEndTurn: () => void;
   onCombo: (choice: 'DAMAGE' | 'HEAL') => void;
@@ -65,9 +74,22 @@ function Deck({ count, rival }: { count: number; rival?: boolean }) {
 }
 
 /** Vista de combate PvP. Los eventos y las reglas pertenecen exclusivamente al servidor. */
-export function MultiplayerBattleBoard({ view, online, activeTurn, cinematicCue, onCueEnded, onPlayCard, onEndTurn, onCombo, onSurrender, onNewGame, onExit }: Props) {
+export function MultiplayerBattleBoard({ view, online, activeTurn, cinematicCue, onCueEnded, stats,
+  drawCues, onDrawFinished, onPlayCard, onEndTurn, onCombo, onSurrender, onNewGame, onExit }: Props) {
   const [selected, setSelected] = React.useState<string | null>(null);
   const [menuOpen, setMenuOpen] = React.useState(false);
+  const [showStats, setShowStats] = React.useState(false);
+  const { musicEnabled, sfxEnabled, toggleMusic, toggleSfx, playSound } = useAudio();
+  const muted = !musicEnabled && !sfxEnabled;
+  const toggleAllAudio = () => {
+    if (muted) {
+      if (!musicEnabled) toggleMusic();
+      if (!sfxEnabled) toggleSfx();
+    } else {
+      if (musicEnabled) toggleMusic();
+      if (sfxEnabled) toggleSfx();
+    }
+  };
   // A newly accepted state always clears selection, preventing stale card IDs.
   React.useEffect(() => { setSelected(null); }, [view.revision, view.isMyTurn]);
   const canPlay = (card: Card) => activeTurn && !view.pendingCombo &&
@@ -82,10 +104,23 @@ export function MultiplayerBattleBoard({ view, online, activeTurn, cinematicCue,
   const finished = view.status === 'finished';
   const winner = view.winner === 'me';
   const outcome = view.winner === 'me' ? '¡VICTORIA!' : view.winner === 'opponent' ? 'DERROTA' : 'EMPATE';
+  if (finished && showStats) return <div className="dr-pvp-stats-shell">
+    <BattleResultScreen won={winner} heading={outcome} stats={[
+      { label: 'Turnos', value: view.turnNumber },
+      { label: 'Tiempo', value: stats?.complete ? formatBattleDuration(stats.durationMs) : '—' },
+      { label: 'Vida recuperada', value: stats?.complete ? stats.healthRecovered : '—' },
+      { label: 'Daño realizado', value: stats?.complete ? stats.damageDealt : '—' },
+      { label: 'Impactos convocados', value: stats?.complete ? stats.impactsSummoned : '—' },
+    ]} warning={stats && !stats.complete
+      ? 'Al reconectar o perder actualizaciones, las estadísticas acumuladas no pueden verificarse.'
+      : undefined}
+      actions={[{ label: 'Nueva partida', onClick: onNewGame, primary: true },
+        { label: 'Menú principal', onClick: onExit }]}/>
+  </div>;
   return <section className="dr-classic-screen dr-royal-screen dr-pvp-royal" data-hud-mode={finished ? 'result' : view.pendingCombo ? 'combo-choice' : !view.opponent.connected ? 'rival' : view.isMyTurn ? 'player' : 'rival'}
     data-hud-result={finished ? (winner ? 'victory' : 'defeat') : undefined}
     aria-label="Tablero de Decreto Real en línea">
-    <BattleSceneryLayer {...resolveBattleScenery()} paused={menuOpen}/>
+    <BattleSceneryLayer {...resolveBattleScenery()} paused={false}/>
     <div className="dr-royal-layout">
       <header className="dr-royal-rival-area" aria-label={'Estado del rival ' + view.opponent.name}>
         <Deck count={view.opponent.deckCount} rival/>
@@ -161,6 +196,11 @@ export function MultiplayerBattleBoard({ view, online, activeTurn, cinematicCue,
       </section>
       <footer className="dr-royal-player-area" aria-label="Tus estadísticas y controles">
         <Deck count={view.me.deckCount}/>
+        <button className="dr-royal-audio dr-g3-audio" type="button" onClick={toggleAllAudio}
+          aria-label={muted ? 'Activar sonido' : 'Silenciar sonido'}>
+          <img className="dr-g3-audio-art" src={HUD + (muted ? 'sonido_silenciado.webp' : 'sonido_activado.webp')}
+            alt="" aria-hidden="true" draggable={false}/>
+        </button>
         <Portrait name={view.me.name} hp={view.me.hp}/>
         <button type="button" className="dr-royal-finish" disabled={!activeTurn || !!view.pendingCombo}
           aria-label="Terminar turno" onClick={onEndTurn}>
@@ -171,19 +211,18 @@ export function MultiplayerBattleBoard({ view, online, activeTurn, cinematicCue,
       </footer>
     </div>
     {!finished && view.opponent.connected && <TurnIndicator side={view.isMyTurn ? 'PLAYER' : 'OPPONENT'} />}
+    {drawCues.map(cue => <CardDrawFX key={cue.id} cueId={cue.id} side={cue.side} count={cue.count}
+      paused={false} onFinish={onDrawFinished}/>)}
     {cinematicCue && <MultiplayerCinematicCue cue={cinematicCue} onEnded={onCueEnded}/>}
     {!online && <div className="dr-pvp-status-overlay" role="status">Conexión interrumpida. Reconectando…</div>}
     {!!view.pendingCombo && !finished && !cinematicCue && <ComboChoicePanel level={view.pendingCombo}
       onDamage={() => onCombo('DAMAGE')} onHeal={() => onCombo('HEAL')}/>}
-    {menuOpen && <div className="dr-pvp-pause" role="dialog" aria-modal="true" aria-label="Pausa multijugador">
-      <div className="dr-pvp-pause-panel">
-        <h2>DECRETO REAL</h2><p>Multijugador · {online ? 'En línea' : 'Reconectando'}</p>
-        <button type="button" onClick={() => setMenuOpen(false)}>Continuar partida</button>
-        <button type="button" onClick={() => { if (window.confirm('¿Rendirte? La partida contará como derrota.')) { setMenuOpen(false); onSurrender(); } }}
-          disabled={finished || !online}>Rendirse</button>
-        {finished && <button type="button" onClick={onExit}>Volver al menú principal</button>}
-      </div>
-    </div>}
+    {menuOpen && <RoyalPauseMenu musicEnabled={musicEnabled} sfxEnabled={sfxEnabled}
+      onToggleMusic={() => { playSound('CLICK'); toggleMusic(); }}
+      onToggleSfx={() => { playSound('CLICK'); toggleSfx(); }}
+      onClose={() => setMenuOpen(false)}
+      onSurrender={!finished && online ? () => { setMenuOpen(false); onSurrender(); } : undefined}
+      onReturn={finished ? onExit : undefined}/>}
     {finished && !cinematicCue && <div className="dr-royal-end-banner-stage dr-pvp-outcome">
       <ResultCinematicFX won={winner}/>
       <section className="dr-royal-end-banner" role="dialog" aria-modal="true" aria-label={'Resultado del duelo: ' + outcome}>
@@ -192,8 +231,7 @@ export function MultiplayerBattleBoard({ view, online, activeTurn, cinematicCue,
         </div>
         <h2>{outcome}</h2>
         <p>Turno {view.turnNumber} · {view.lastEvent}</p>
-        <button type="button" onClick={onNewGame}>Nueva partida</button>
-        <button type="button" onClick={onExit}>Volver al menú</button>
+        <button type="button" onClick={() => setShowStats(true)}>Continuar</button>
       </section>
     </div>}
   </section>;
