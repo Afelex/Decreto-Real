@@ -3,6 +3,7 @@ import { randomBytes, randomInt } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { WebSocket, WebSocketServer } from 'ws';
 import { createMatch, act, viewFor } from './engine.mjs';
+import { createSocialHub } from './social.mjs';
 
 const port = Number(process.env.PORT || 3001);
 const origins = new Set((process.env.ALLOWED_ORIGINS || 'http://localhost:5173,http://127.0.0.1:5173,https://afelex.github.io,https://decreto-real-production.up.railway.app')
@@ -117,9 +118,14 @@ function attach(ws, room, slot) {
   send(ws, { type: 'session', code: room.code, matchId: room.matchId, token: room.seats[slot].token,
     slot, name: room.seats[slot].name, randomQueue: room.randomQueue });
   broadcast(room);
+  social.broadcast();
 }
 function enter(ws, room, name, appearance) {
   if (ws.seat) return fail(ws, 'Ya perteneces a una sala.');
+  if (room.invitedId && room.invitedId !== ws.social?.id)
+    return fail(ws, 'Esta sala está reservada para el duelista invitado.');
+  if (room.inviteExpires && Date.now() > room.inviteExpires)
+    return fail(ws, 'Esta invitación ha caducado.');
   if (room.seats.length !== 1 || room.match) return fail(ws, 'La sala ya está completa.');
   if (room.sockets[0]?.readyState !== WebSocket.OPEN) return fail(ws, 'El creador de la sala está desconectado.');
   room.seats.push({ name, appearance, token: token() });
@@ -127,6 +133,34 @@ function enter(ws, room, name, appearance) {
   if (waitingRandom === room.code) waitingRandom = null;
   attach(ws, room, 1);
 }
+const social = createSocialHub({
+  send, fail,
+  onChallenge(ws, other) {
+    if (rooms.size >= MAX_ROOMS) { fail(ws, 'Servidor ocupado. Intenta más tarde.'); return null; }
+    const room = createRoom(ws.social.name, appearanceOf({ portrait: ws.social.portrait }));
+    room.invitedId = other.social.id;
+    room.inviteExpires = Date.now() + 90_000;
+    attach(ws, room, 0);
+    return room.code;
+  },
+  onAcceptChallenge(ws, code) {
+    const room = rooms.get(code.toUpperCase());
+    if (!room || room.invitedId !== ws.social?.id || Date.now() > room.inviteExpires) {
+      fail(ws, 'La invitación ya no está disponible.'); return false;
+    }
+    if (ws.seat) { fail(ws, 'Ya estás jugando una partida.'); return false; }
+    enter(ws, room, ws.social.name, appearanceOf({ portrait: ws.social.portrait }));
+    return Boolean(ws.seat);
+  },
+  onDeclineChallenge(ws, code) {
+    const room = rooms.get(code.toUpperCase());
+    if (!room || room.invitedId !== ws.social?.id) return;
+    send(room.sockets[0], { type: 'social:challenge_declined', name: ws.social.name, code: room.code });
+    room.invitedId = null;
+    room.inviteExpires = Date.now();
+  },
+});
+
 function onDisconnect(ws) {
   if (!ws.seat) return;
   const { code, slot } = ws.seat;
@@ -135,6 +169,7 @@ function onDisconnect(ws) {
   if (!room || room.sockets[slot] !== ws) return;
   room.sockets[slot] = null;
   room.lastUsed = Date.now();
+  social.broadcast();
   if (room.randomQueue && room.seats.length === 1 && waitingRandom === code) waitingRandom = null;
   broadcast(room);
   if (room.match?.status !== 'playing') return;
@@ -156,7 +191,7 @@ sockets.on('connection', ws => {
   ws.messageCount = 0;
   ws.rateWindow = Date.now();
   ws.on('pong', () => { ws.isAlive = true; });
-  ws.on('close', () => onDisconnect(ws));
+  ws.on('close', () => { onDisconnect(ws); social.disconnected(ws); });
   ws.on('message', payload => {
     if (Date.now() - ws.rateWindow > 1000) { ws.rateWindow = Date.now(); ws.messageCount = 0; }
     if (++ws.messageCount > 20) { ws.close(4008, 'Límite de mensajes'); return; }
@@ -164,6 +199,7 @@ sockets.on('connection', ws => {
     try { msg = JSON.parse(payload.toString()); }
     catch { return fail(ws, 'Mensaje JSON inválido.'); }
     if (!msg || typeof msg !== 'object' || Array.isArray(msg)) return fail(ws, 'Mensaje inválido.');
+    if (social.handle(ws, msg)) return;
     if (msg.type === 'create' || msg.type === 'queue') {
       if (ws.seat) return fail(ws, 'Ya perteneces a una sala.');
       const name = nameOf(msg.name);
