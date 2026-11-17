@@ -29,7 +29,9 @@ function storeSession(session: Session) {
 
 export default function MultiplayerScreen() {
   const navigate = useNavigate();
-  const { setMusicScene } = useAudio();
+  const { setMusicScene, playSound } = useAudio();
+  const soundRef = React.useRef(playSound);
+  soundRef.current = playSound;
   const [nickname, setNickname] = React.useState(() => { try { return localStorage.getItem(NAME_KEY) || ''; } catch { return ''; } });
   const [joinCode, setJoinCode] = React.useState(() => new URLSearchParams(window.location.search).get('sala') || '');
   const [showJoinCode, setShowJoinCode] = React.useState(() => Boolean(new URLSearchParams(window.location.search).get('sala')));
@@ -148,6 +150,15 @@ export default function MultiplayerScreen() {
     }));
   }, [view?.status, view?.winner, view?.me.hp, view?.opponent.hp, setMusicScene]);
   React.useEffect(() => () => setMusicScene(null), [setMusicScene]);
+  React.useEffect(() => {
+    if (!cinematicCue) return;
+    if (cinematicCue.kind === 'combo') soundRef.current('IMPACT');
+    if (cinematicCue.kind === 'card') {
+      const sound = { ATTACK: 'ATTACK', DEFENSE: 'DEFENSE', ORDER: 'FLIP', IMPACT: 'IMPACT' } as const;
+      soundRef.current(sound[cinematicCue.cardType]);
+    }
+  }, [cinematicCue?.id]);
+
 
   const send = (data: object) => {
     const ws = socketRef.current;
