@@ -50,7 +50,8 @@ export class BattleStatsTracker {
 
   resume(now = Date.now()): void {
     if (this.pausedAt !== null) {
-      this.pausedMs += Math.max(0, now - this.pausedAt);
+      // Si ya terminó el duelo, cerrar la pausa en el instante exacto del resultado.
+      this.pausedMs += Math.max(0, (this.endAt ?? now) - this.pausedAt);
       this.pausedAt = null;
     }
   }
