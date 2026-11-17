@@ -4,6 +4,7 @@ import './multiplayer.css';
 import './multiplayer-social.css';
 import { MultiplayerSocialPanel, type SocialPeer, type FriendRequest, type SocialMessage, type SocialStatus } from './MultiplayerSocialPanel';
 import { DuelistProfilePanel } from './DuelistProfilePanel';
+import { MultiplayerRecordsPanel, type RecordsSummary } from './MultiplayerRecordsPanel';
 import { isPrivateRoomCode } from '../game/pvpRoomCode';
 import { loadDuelistProfile, saveDuelistProfile, rewardMatch, portraitUrl } from '../game/duelistProfile';
 import { MultiplayerBattleBoard } from './MultiplayerBattleBoard';
@@ -67,6 +68,8 @@ export default function MultiplayerScreen() {
   const [pending, setPending] = React.useState(false);
   const [online, setOnline] = React.useState(false);
   const [showSocial, setShowSocial] = React.useState(false);
+  const [showRecords, setShowRecords] = React.useState(false);
+  const [records, setRecords] = React.useState<RecordsSummary | null>(null);
   const [socialId, setSocialId] = React.useState('');
   const [socialReady, setSocialReady] = React.useState(false);
   const socialReadyRef = React.useRef(false);
@@ -137,7 +140,11 @@ export default function MultiplayerScreen() {
         if (!active) return;
         let msg: any;
         try { msg = JSON.parse(String(event.data)); } catch { return; }
-        if (msg.type === 'social:identity') {
+        if (msg.type === 'records:summary') {
+          setRecords(msg as RecordsSummary);
+        } else if (msg.type === 'records:error') {
+          setError(typeof msg.reason === 'string' ? msg.reason : 'No se pudo guardar el combate.');
+        } else if (msg.type === 'social:identity') {
           socialReadyRef.current = true; setSocialReady(true);
           setSocialId(msg.id);
           if (typeof msg.secret === 'string') {
@@ -275,7 +282,7 @@ export default function MultiplayerScreen() {
     if (!ws || ws.readyState !== WebSocket.OPEN) { setError('Esperando conexión con el servidor.'); return false; }
     ws.send(JSON.stringify(data)); return true;
   };
-  const enter = (type: 'create' | 'join' | 'queue') => {
+  const enter = (type: 'create' | 'join' | 'queue' | 'ranked') => {
     if (session) return;
     if (nickname.trim().length < 2 || nickname.trim().length > 24) { setError('Escribe un apodo de 2 a 24 caracteres.'); return; }
     const adjusted = { ...duelist, slots: duelist.slots.map((item, index) =>
@@ -283,7 +290,8 @@ export default function MultiplayerScreen() {
     setDuelist(adjusted);
     setEditingName(false);
     setError('');
-    send({ type, name: nickname.trim(), appearance: adjusted.slots[adjusted.active].appearance,
+    send({ type: type === 'ranked' ? 'queue' : type, ranked: type === 'ranked',
+      name: nickname.trim(), appearance: adjusted.slots[adjusted.active].appearance,
       ...(type === 'join' ? { code: joinCode.trim().toUpperCase() } : {}) });
   };
   const action = (move: object) => {
@@ -364,9 +372,16 @@ export default function MultiplayerScreen() {
       <button type="button" className="dr-pvp-profile-shortcut" onClick={() => setShowProfile(true)}>
         Mi Perfil
       </button>
+      <button type="button" className="dr-pvp-profile-shortcut" onClick={() => {
+        setShowRecords(true);
+        send({ type: 'records:get' });
+      }}>Historial y clasificación{records ? ' · ' + records.totals.wins + ' victorias' : ''}</button>
       {!inviteOnLoad.current && <>
         <button type="button" className="dr-pvp-primary dr-pvp-feature-button" disabled={!online || serverNeedsUpdate}
           onClick={() => enter('queue')}><span aria-hidden="true">⚔</span>Jugar ahora</button>
+        <button type="button" className="dr-pvp-secondary dr-pvp-feature-button" disabled={!online || serverNeedsUpdate || !records?.rankedEnabled}
+          title={records?.rankedEnabled ? 'Combates que modifican tu puntuación RP' : 'Requiere registro permanente en el servidor'}
+          onClick={() => enter('ranked')}><span aria-hidden="true">♛</span>Combate Ranked</button>
         <button type="button" className="dr-pvp-secondary dr-pvp-feature-button" disabled={!online || serverNeedsUpdate}
           onClick={() => enter('create')}><span aria-hidden="true">♟</span>Invitar a un amigo</button>
         <button type="button" className="dr-pvp-minor" onClick={() => setShowJoinCode(current => !current)}>
@@ -405,6 +420,8 @@ export default function MultiplayerScreen() {
     {session && !waiting && !view && <section className="dr-pvp-lobby"><h2>Restableciendo la partida</h2>
       <p>Reconectando con la sala {session.code}…</p><div className="dr-pvp-ornament" aria-hidden="true"><span>✦</span></div></section>}
 
+    {!session && showRecords && <MultiplayerRecordsPanel summary={records}
+      onClose={() => setShowRecords(false)}/>} 
     {!session && showSocial && <MultiplayerSocialPanel peers={socialPeers} total={socialTotal}
       requests={friendRequests} friends={socialFriends} messages={socialMessages}
       status={socialStatus} myId={socialId} online={online && socialReady}
