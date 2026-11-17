@@ -66,6 +66,7 @@ export default function MultiplayerScreen() {
   const [pending, setPending] = React.useState(false);
   const [online, setOnline] = React.useState(false);
   const [showSocial, setShowSocial] = React.useState(false);
+  const [invitationStarting, setInvitationStarting] = React.useState(false);
   const [socialId, setSocialId] = React.useState('');
   const [socialReady, setSocialReady] = React.useState(false);
   const socialReadyRef = React.useRef(false);
@@ -167,6 +168,7 @@ export default function MultiplayerScreen() {
             return;
           }
           setServerNeedsUpdate(false);
+          setInvitationStarting(false);
           const next: Session = { code: msg.code, matchId: msg.matchId, token: msg.token,
             slot: msg.slot, name: msg.name, randomQueue: Boolean(msg.randomQueue) };
           sessionRef.current = next; setSession(next); storeSession(next);
@@ -213,6 +215,7 @@ export default function MultiplayerScreen() {
           // Keep older Railway servers usable for standard PvP while social protocol rolls out.
           if (msg.reason === 'Mensaje desconocido.' && !socialReadyRef.current) return;
           setError(msg.reason || 'No se pudo completar la acción.');
+          setInvitationStarting(false);
           if (msg.id === pendingRef.current) { pendingRef.current = null; setPending(false); }
           if (msg.reason?.includes('Sesión caducada')) {
             sessionRef.current = null; setSession(null); setView(null); setWaiting(false);
@@ -225,6 +228,7 @@ export default function MultiplayerScreen() {
       socket.addEventListener('close', () => {
         if (!active) return;
         setOnline(false); socialReadyRef.current = false; setSocialReady(false);
+        setInvitationStarting(false);
         setSocialPeers([]); setSocialTotal(0);
         pendingRef.current = null; setPending(false);
         retry = setTimeout(connect, 1800);
@@ -272,14 +276,14 @@ export default function MultiplayerScreen() {
     ws.send(JSON.stringify(data)); return true;
   };
   const enter = (type: 'create' | 'join' | 'queue') => {
-    if (session) return;
-    if (nickname.trim().length < 2 || nickname.trim().length > 24) { setError('Escribe un apodo de 2 a 24 caracteres.'); return; }
+    if (session) return false;
+    if (nickname.trim().length < 2 || nickname.trim().length > 24) { setError('Escribe un apodo de 2 a 24 caracteres.'); return false; }
     const adjusted = { ...duelist, slots: duelist.slots.map((item, index) =>
       index === duelist.active ? { ...item, name: nickname.trim() } : item) };
     setDuelist(adjusted);
     setEditingName(false);
     setError('');
-    send({ type, name: nickname.trim(), appearance: adjusted.slots[adjusted.active].appearance,
+    return send({ type, name: nickname.trim(), appearance: adjusted.slots[adjusted.active].appearance,
       ...(type === 'join' ? { code: joinCode.trim().toUpperCase() } : {}) });
   };
   // Only a deliberate tap starts an invited duel. Returning leaves both the room
@@ -287,6 +291,7 @@ export default function MultiplayerScreen() {
   const clearInvitation = () => {
     if (incomingChallenge) send({ type: 'social:decline_challenge', code: incomingChallenge.code });
     setIncomingChallenge(null);
+    setInvitationStarting(false);
     inviteOnLoad.current = '';
     setJoinCode('');
     setShowJoinCode(false);
@@ -297,7 +302,7 @@ export default function MultiplayerScreen() {
     window.history.replaceState(null, '', url.toString());
   };
   const startInvitation = () => {
-    if (!online || serverNeedsUpdate || session) return;
+    if (!online || serverNeedsUpdate || session || invitationStarting) return;
     if (nickname.trim().length < 2 || nickname.trim().length > 24) {
       setError('Guarda primero un apodo de 2 a 24 caracteres en Mi Perfil.');
       setShowProfile(true);
@@ -308,12 +313,14 @@ export default function MultiplayerScreen() {
       const appearance = duelist.slots[duelist.active]?.appearance;
       if (!send({ type: 'social:profile', name: nickname.trim(), portrait: appearance?.portrait || 'xervias' })) return;
       if (send({ type: 'social:accept_challenge', code: incomingChallenge.code })) {
-        setIncomingChallenge(null);
+        setInvitationStarting(true);
         setShowSocial(false);
       }
       return;
     }
-    if (isPrivateRoomCode(joinCode)) enter('join');
+    if (isPrivateRoomCode(joinCode)) {
+      if (enter('join')) setInvitationStarting(true);
+    }
     else setError('El código de invitación no es válido.');
   };
   const action = (move: object) => {
@@ -403,8 +410,8 @@ export default function MultiplayerScreen() {
           {' '}Confirma tu perfil y elige cuándo comenzar.
         </p>
         <button type="button" className="dr-pvp-primary dr-pvp-feature-button dr-pvp-invite-big-button"
-          disabled={!online || serverNeedsUpdate || nickname.trim().length < 2 || !isPrivateRoomCode(incomingChallenge?.code || joinCode)}
-          onClick={startInvitation}>Empezar partida</button>
+          disabled={!online || serverNeedsUpdate || invitationStarting || nickname.trim().length < 2 || !isPrivateRoomCode(incomingChallenge?.code || joinCode)}
+          onClick={startInvitation}>{invitationStarting ? 'Conectando al duelo…' : 'Empezar partida'}</button>
         <button type="button" className="dr-pvp-secondary dr-pvp-feature-button dr-pvp-invite-big-button"
           onClick={clearInvitation}>Volver al menú Multijugador</button>
       </div> : <>
