@@ -68,6 +68,8 @@ export default function MultiplayerScreen() {
   const [online, setOnline] = React.useState(false);
   const [showSocial, setShowSocial] = React.useState(false);
   const [socialId, setSocialId] = React.useState('');
+  const [socialReady, setSocialReady] = React.useState(false);
+  const socialReadyRef = React.useRef(false);
   const [socialStatus, setSocialStatus] = React.useState<SocialStatus>('hidden');
   const socialStatusRef = React.useRef<SocialStatus>('hidden');
   const [socialPeers, setSocialPeers] = React.useState<SocialPeer[]>([]);
@@ -136,6 +138,7 @@ export default function MultiplayerScreen() {
         let msg: any;
         try { msg = JSON.parse(String(event.data)); } catch { return; }
         if (msg.type === 'social:identity') {
+          socialReadyRef.current = true; setSocialReady(true);
           setSocialId(msg.id);
           if (typeof msg.secret === 'string') {
             try { localStorage.setItem(SOCIAL_KEY, msg.secret); } catch { /* private mode */ }
@@ -211,6 +214,8 @@ export default function MultiplayerScreen() {
         } else if (msg.type === 'ack' && msg.id === pendingRef.current) {
           pendingRef.current = null; setPending(false);
         } else if (msg.type === 'error') {
+          // Keep older Railway servers usable for standard PvP while social protocol rolls out.
+          if (msg.reason === 'Mensaje desconocido.' && !socialReadyRef.current) return;
           setError(msg.reason || 'No se pudo completar la acción.');
           if (msg.id === pendingRef.current) { pendingRef.current = null; setPending(false); }
           if (msg.reason?.includes('Sesión caducada')) {
@@ -223,7 +228,8 @@ export default function MultiplayerScreen() {
       });
       socket.addEventListener('close', () => {
         if (!active) return;
-        setOnline(false); setSocialPeers([]); setSocialTotal(0);
+        setOnline(false); socialReadyRef.current = false; setSocialReady(false);
+        setSocialPeers([]); setSocialTotal(0);
         pendingRef.current = null; setPending(false);
         retry = setTimeout(connect, 1800);
       });
@@ -288,6 +294,7 @@ export default function MultiplayerScreen() {
     }
   };
   const updateSocialStatus = (next: SocialStatus) => {
+    if (!socialReady) return;
     socialStatusRef.current = next;
     setSocialStatus(next);
     send({ type: 'social:status', status: next });
@@ -366,8 +373,8 @@ export default function MultiplayerScreen() {
           <span aria-hidden="true">↗</span>Tengo un código de invitación</button>
       </>}
       {!inviteOnLoad.current && <button type="button" className="dr-pvp-community-shortcut"
-        onClick={() => setShowSocial(true)}>
-        <span><strong>Amigos y chat</strong><small>Conectados, solicitudes y desafíos</small></span>
+        disabled={!socialReady} onClick={() => setShowSocial(true)}>
+        <span><strong>Amigos y chat</strong><small>{socialReady ? 'Conectados, solicitudes y desafíos' : 'Actualización del servidor social pendiente'}</small></span>
         <span className="dr-pvp-community-count" aria-label={socialTotal + ' jugadores visibles'}>
           {friendRequests.length ? friendRequests.length + ' ✉' : socialTotal}</span>
       </button>}
@@ -400,7 +407,7 @@ export default function MultiplayerScreen() {
 
     {!session && showSocial && <MultiplayerSocialPanel peers={socialPeers} total={socialTotal}
       requests={friendRequests} friends={socialFriends} messages={socialMessages}
-      status={socialStatus} myId={socialId} online={online}
+      status={socialStatus} myId={socialId} online={online && socialReady}
       onStatus={updateSocialStatus} onSend={send} onClose={() => setShowSocial(false)}/>}
     {!session && incomingChallenge && <section className="dr-pvp-incoming" role="alertdialog"
       aria-label="Desafío recibido">
