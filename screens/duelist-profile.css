@@ -67,3 +67,49 @@
 .dr-pvp-identity-symbol img{display:block;width:45px;height:48px;object-fit:cover;object-position:center top;border-radius:6px}
 .dr-pvp-home .dr-pvp-code{margin:auto;padding:10px 20px;letter-spacing:.2em;border:1px solid #e5b675;
   border-radius:12px;background:#131726;color:#ffe1a7;font:900 clamp(27px,7vw,38px) Georgia,serif}
+
+
+/* Cosmetic card backs are deterministic CSS treatments, never card data. */
+.dr-royal-screen.dr-pvp-royal .dr-royal-facedown[data-back="sol"]{
+ background-image:radial-gradient(circle at 50% 44%,#e7b665 0%,#b78034 22%,#48301a 26%,#211827 63%)!important;
+ border:2px solid #e4ba71;box-shadow:0 5px 13px #0008,inset 0 0 0 3px #cb9558
+}
+.dr-royal-screen.dr-pvp-royal .dr-royal-facedown[data-back="carmesi"]{
+ background-image:repeating-linear-gradient(135deg,#781b37 0 9px,#4b1329 9px 18px)!important;
+ border:2px solid #e3b17a;box-shadow:0 5px 13px #0009,inset 0 0 0 3px #bd8556
+}
+.dr-royal-screen.dr-pvp-royal .dr-royal-facedown[data-back="sol"]::after,
+.dr-royal-screen.dr-pvp-royal .dr-royal-facedown[data-back="carmesi"]::after{
+ content:'☼';position:absolute;inset:16% 12%;display:grid;place-items:center;
+ border:2px double #f9d996;border-radius:50%;font:900 clamp(18px,4dvh,34px) Georgia,serif;
+ color:#ffdd95;text-shadow:0 0 9px #000
+}
+.dr-royal-screen.dr-pvp-royal .dr-royal-facedown[data-back="carmesi"]::after{content:'♛'}
+.dr-royal-screen.dr-pvp-royal .dr-royal-deck-back[data-back="sol"]{
+ filter:sepia(.55) saturate(1.4) brightness(1.05);
+}
+.dr-royal-screen.dr-pvp-royal .dr-royal-deck-back[data-back="carmesi"]{
+ filter:sepia(.4) saturate(1.7) hue-rotate(313deg);
+}
+/* Intro FX: only names and banners, leaving the VS composition unobscured. */
+.dr-duel-entrance .dr-duelist-intro-name.namefx-brillo,
+.dr-duel-entrance .dr-duelist-intro-name.namefx-particulas{
+ animation:dr-duelist-glow .85s ease-in-out infinite alternate;
+}
+.dr-duel-entrance .dr-duelist-intro-name.namefx-particulas::before,
+.dr-duel-entrance .dr-duelist-intro-name.namefx-particulas::after{
+ content:'✦';color:#ffe298;padding:0 4px;animation:dr-duelist-twinkle .75s ease-in-out infinite alternate;
+}
+.dr-duel-entrance .dr-duelist-intro-name.namefx-particulas::after{animation-delay:.4s}
+.dr-duel-entrance .dr-duel-entrance__fighter.entrance-aurea{
+ filter:drop-shadow(0 0 12px #f5c16e);
+}
+.dr-duel-entrance .dr-duel-entrance__fighter.entrance-estandarte{
+ filter:drop-shadow(0 0 8px #c4485e);
+}
+@media(prefers-reduced-motion:reduce){
+ .dr-duel-entrance .dr-duelist-intro-name.namefx-brillo,
+ .dr-duel-entrance .dr-duelist-intro-name.namefx-particulas,
+ .dr-duel-entrance .dr-duelist-intro-name::before,
+ .dr-duel-entrance .dr-duelist-intro-name::after{animation:none!important}
+}
