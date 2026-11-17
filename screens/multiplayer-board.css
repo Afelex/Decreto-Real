@@ -24,25 +24,7 @@
   color:#fff0d5;
   font-family:Cinzel,Georgia,serif;
 }
-/* PvP lobby styles must not force 43px rectangular buttons onto the board. */
-.dr-pvp-playing .dr-pvp-royal .dr-royal-layout button {
-  min-width:0;
-  min-height:0;
-  padding:0;
-  font:inherit;
-}
-.dr-pvp-playing .dr-pvp-royal .dr-royal-layout .dr-royal-hand-card {
-  overflow:visible;
-  border-radius:0;
-  touch-action:manipulation;
-}
-.dr-pvp-playing .dr-pvp-royal .dr-royal-layout .dr-royal-hand-card:disabled {
-  opacity:.6;
-  filter:grayscale(.3);
-}
-.dr-pvp-playing .dr-pvp-royal .dr-royal-layout .dr-royal-hand-card.selected {
-  filter:drop-shadow(0 0 9px #f8e2a0);
-}
+.dr-pvp-royal .dr-royal-hand-card {touch-action:manipulation;}
 .dr-pvp-royal .dr-royal-rival-area,
 .dr-pvp-royal .dr-royal-player-area {min-height:0;}
 .dr-pvp-royal .dr-royal-character .dr-pvp-portrait-name {
