@@ -15,7 +15,7 @@ export const MAX_ALIASES = 4;
 export const COSMETICS: Record<CosmeticKind, Cosmetic[]> = {
   portrait: [
     { id: 'xervias', title: 'Xervias', image: 'retratos/jugador.webp' },
-    { id: 'cronista', title: 'Cronista', image: 'campania/arte/retratos/rival-01-domingo-quispe.webp', need: { metric: 'matches', amount: 3 } },
+    { id: 'cronista', title: 'Domingo Quispe', image: 'campania/arte/retratos/rival-01-domingo-quispe.webp', need: { metric: 'matches', amount: 3 } },
     { id: 'vandalo', title: 'Vándalo Rojo', image: 'campania/arte/retratos/rival-36-vandalo-rojo.webp', need: { metric: 'wins', amount: 2 } },
     { id: 'amaru', title: 'Amaru', image: 'campania/arte/retratos/rival-20-amaru-llaguno.webp', need: { metric: 'impacts', amount: 5 } },
   ],
