@@ -9,8 +9,9 @@ import { AccountStore, verifyFirebaseToken } from './accounts.mjs';
 const port = Number(process.env.PORT || 3001);
 const origins = new Set((process.env.ALLOWED_ORIGINS || 'http://localhost:5173,http://127.0.0.1:5173,https://afelex.github.io,https://decreto-real-production.up.railway.app')
   .split(',').map(item => item.trim()).filter(Boolean));
-// Mount a persistent Railway volume at /data before enabling this service in production.
-const accounts = new AccountStore();
+// Roll out email accounts only when a persistent Railway volume is configured.
+// Without DR_DATA_FILE the existing guest PvP remains fully functional.
+const accounts = process.env.DR_DATA_FILE ? new AccountStore(process.env.DR_DATA_FILE) : null;
 const rooms = new Map();
 const REJOIN_MS = 120_000;
 const ROOM_TTL_MS = 30 * 60_000;
@@ -93,7 +94,7 @@ function createRoom(name, appearance, randomQueue = false, accountId = null) {
   return room;
 }
 function broadcast(room) {
-  if (room.match?.status === 'finished' && !room.finishedStored) {
+  if (accounts && room.match?.status === 'finished' && !room.finishedStored) {
     try { accounts.recordMatch(room); }
     catch (error) { console.error('No se pudo guardar el resultado de la partida.', error); }
   }
@@ -207,6 +208,7 @@ sockets.on('connection', ws => {
     catch { return fail(ws, 'Mensaje JSON inválido.'); }
     if (!msg || typeof msg !== 'object' || Array.isArray(msg)) return fail(ws, 'Mensaje inválido.');
     if (msg.type === 'account:hello') {
+      if (!accounts) return fail(ws, 'El acceso por correo todavía no está habilitado en el servidor.');
       if (ws.account || ws.authPending) return fail(ws, 'La sesión ya está identificada.');
       ws.authPending = true;
       void verifyFirebaseToken(msg.idToken).then(account => {
@@ -220,8 +222,9 @@ sockets.on('connection', ws => {
       return;
     }
     // No playable or social action can run under a name or an unverified email.
-    if (!ws.account) return fail(ws, 'Inicia sesión con tu correo para jugar.');
+    if (accounts && !ws.account) return fail(ws, 'Inicia sesión con tu correo para jugar.');
     if (msg.type === 'account:save_profile') {
+      if (!accounts || !ws.account) return fail(ws, 'Debes verificar tu correo.');
       if (JSON.stringify(msg.profile || {}).length > 4500)
         return fail(ws, 'El perfil es demasiado grande.');
       try { accounts.saveDuelist(ws.account.uid, msg.profile); }
@@ -262,7 +265,7 @@ sockets.on('connection', ws => {
       if (ws.seat) return fail(ws, 'Ya perteneces a una sala.');
       const room = rooms.get(typeof msg.code === 'string' ? msg.code.toUpperCase() : '');
       const slot = room?.seats.findIndex(seat => seat.token === msg.token);
-      if (slot === undefined || slot < 0 || room.seats[slot].accountId !== ws.account.uid)
+      if (slot === undefined || slot < 0 || (accounts && room.seats[slot].accountId !== ws.account.uid))
         return fail(ws, 'Sesión caducada. Abre una nueva partida.');
       attach(ws, room, slot); return;
     }
