@@ -24,7 +24,7 @@
   color:#fff0d5;
   font-family:Cinzel,Georgia,serif;
 }
-.dr-pvp-royal .dr-royal-hand-card {touch-action:manipulation;}
+.dr-pvp-royal .dr-royal-hand-card {touch-action:none;}
 .dr-pvp-royal .dr-royal-rival-area,
 .dr-pvp-royal .dr-royal-player-area {min-height:0;}
 .dr-pvp-royal .dr-royal-character .dr-pvp-portrait-name {
@@ -137,4 +137,21 @@
 @media (max-height:590px) {
   .dr-pvp-royal .dr-pvp-live-summary {display:none;}
   .dr-pvp-royal .dr-royal-character .dr-pvp-portrait-name {font-size:9px;}
+}
+
+/* El resultado usa la misma pantalla final de Versus IA, sin scroll lateral. */
+.dr-pvp-playing .dr-pvp-stats-shell {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:min(100vw,430px);
+  height:100dvh;
+  margin:0 auto;
+  overflow:hidden;
+  flex:0 0 auto;
+}
+.dr-pvp-playing .dr-pvp-stats-shell > .dr-result-screen {
+  width:100%;
+  height:100%;
+  min-height:0;
 }
