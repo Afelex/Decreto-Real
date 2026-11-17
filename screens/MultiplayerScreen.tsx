@@ -413,7 +413,7 @@ export default function MultiplayerScreen() {
           disabled={!online || serverNeedsUpdate || invitationStarting || nickname.trim().length < 2 || !isPrivateRoomCode(incomingChallenge?.code || joinCode)}
           onClick={startInvitation}>{invitationStarting ? 'Conectando al duelo…' : 'Empezar partida'}</button>
         <button type="button" className="dr-pvp-secondary dr-pvp-feature-button dr-pvp-invite-big-button"
-          onClick={clearInvitation}>Volver al menú Multijugador</button>
+          disabled={invitationStarting} onClick={clearInvitation}>Volver al menú Multijugador</button>
       </div> : <>
         <button type="button" className="dr-pvp-primary dr-pvp-feature-button" disabled={!online || serverNeedsUpdate}
           onClick={() => enter('queue')}><span aria-hidden="true">⚔</span>Jugar ahora</button>
@@ -435,7 +435,7 @@ export default function MultiplayerScreen() {
           disabled={!online || serverNeedsUpdate || invitationStarting || nickname.trim().length < 2 || !isPrivateRoomCode(joinCode)}
           onClick={startInvitation}>{invitationStarting ? 'Conectando al duelo…' : 'Empezar partida'}</button>
         <button type="button" className="dr-pvp-secondary dr-pvp-feature-button dr-pvp-invite-big-button"
-          onClick={clearInvitation}>Volver al menú Multijugador</button>
+          disabled={invitationStarting} onClick={clearInvitation}>Volver al menú Multijugador</button>
       </div>}
       {!(inviteOnLoad.current || incomingChallenge) && <p className="dr-pvp-tip"><span aria-hidden="true">ⓘ</span>
         Crea una sala y comparte el código de 2 números y 2 letras.</p>}
