@@ -57,7 +57,6 @@ export default function MultiplayerScreen() {
   const [showJoinCode, setShowJoinCode] = React.useState(() => Boolean(new URLSearchParams(window.location.search).get('sala')));
   const [editingName, setEditingName] = React.useState(() => !nickname.trim());
   const inviteOnLoad = React.useRef(new URLSearchParams(window.location.search).get('sala') || '');
-  const autoJoinAttempted = React.useRef(false);
   const [session, setSession] = React.useState<Session | null>(() => getValidStoredSession());
   // A resumed tab must not replay the first-match ceremony.
   const openingSeen = React.useRef(Boolean(session));
@@ -126,12 +125,8 @@ export default function MultiplayerScreen() {
         try { secret = localStorage.getItem(SOCIAL_KEY) || ''; } catch { /* private mode */ }
         socket.send(JSON.stringify({ type: 'social:hello', secret, status: socialStatusRef.current,
           name: nicknameRef.current || 'Duelista', portrait: cosmeticRef.current?.portrait || 'xervias' }));
+        // An invitation must never join automatically: the guest chooses "Empezar partida".
         if (sessionRef.current) socket.send(JSON.stringify({ type: 'resume', ...sessionRef.current }));
-        else if (isPrivateRoomCode(inviteOnLoad.current) && !autoJoinAttempted.current && nicknameRef.current.trim().length >= 2) {
-          autoJoinAttempted.current = true;
-          socket.send(JSON.stringify({ type: 'join', name: nicknameRef.current.trim(), appearance: cosmeticRef.current,
-            code: inviteOnLoad.current.toUpperCase() }));
-        }
       });
       socket.addEventListener('message', event => {
         if (!active) return;
@@ -161,6 +156,7 @@ export default function MultiplayerScreen() {
           setSocialMessages(current => [...current.slice(-99), msg as SocialMessage]);
         } else if (msg.type === 'social:incoming_challenge') {
           setIncomingChallenge({ from: msg.from, name: msg.name, code: msg.code });
+          setShowSocial(false);
         } else if (msg.type === 'social:challenge_declined') {
           setError((msg.name || 'El duelista') + ' rechazó el desafío. Puedes cancelar la espera.');
         } else if (msg.type === 'session' && typeof msg.token === 'string') {
@@ -286,6 +282,40 @@ export default function MultiplayerScreen() {
     send({ type, name: nickname.trim(), appearance: adjusted.slots[adjusted.active].appearance,
       ...(type === 'join' ? { code: joinCode.trim().toUpperCase() } : {}) });
   };
+  // Only a deliberate tap starts an invited duel. Returning leaves both the room
+  // and the profile selection untouched; no "join" is sent to the server.
+  const clearInvitation = () => {
+    if (incomingChallenge) send({ type: 'social:decline_challenge', code: incomingChallenge.code });
+    setIncomingChallenge(null);
+    inviteOnLoad.current = '';
+    setJoinCode('');
+    setShowJoinCode(false);
+    setShowSocial(false);
+    setError('');
+    const url = new URL(window.location.href);
+    url.searchParams.delete('sala');
+    window.history.replaceState(null, '', url.toString());
+  };
+  const startInvitation = () => {
+    if (!online || serverNeedsUpdate || session) return;
+    if (nickname.trim().length < 2 || nickname.trim().length > 24) {
+      setError('Guarda primero un apodo de 2 a 24 caracteres en Mi Perfil.');
+      setShowProfile(true);
+      return;
+    }
+    if (incomingChallenge) {
+      // The guest's freshly chosen name/portrait must reach the server before acceptance.
+      const appearance = duelist.slots[duelist.active]?.appearance;
+      if (!send({ type: 'social:profile', name: nickname.trim(), portrait: appearance?.portrait || 'xervias' })) return;
+      if (send({ type: 'social:accept_challenge', code: incomingChallenge.code })) {
+        setIncomingChallenge(null);
+        setShowSocial(false);
+      }
+      return;
+    }
+    if (isPrivateRoomCode(joinCode)) enter('join');
+    else setError('El código de invitación no es válido.');
+  };
   const action = (move: object) => {
     if (!view || pendingRef.current) return;
     const id = crypto.randomUUID(); pendingRef.current = id; setPending(true); setError('');
@@ -350,8 +380,9 @@ export default function MultiplayerScreen() {
     </div>}
     {error && <p className="dr-pvp-alert" role="alert">{error}</p>}
 
-    {!session && <section className="dr-pvp-lobby" aria-label="Opciones de juego en línea">
-      <h2>{inviteOnLoad.current ? 'Te invitaron a un duelo' : '¿Cómo quieres jugar?'}</h2>
+    {!session && <section className={'dr-pvp-lobby' + (inviteOnLoad.current || incomingChallenge ? ' dr-pvp-invited-lobby' : '')}
+      aria-label={inviteOnLoad.current || incomingChallenge ? 'Invitación a duelo' : 'Opciones de juego en línea'}>
+      <h2>{inviteOnLoad.current || incomingChallenge ? '¡Tu duelo te espera!' : '¿Cómo quieres jugar?'}</h2>
       <div className="dr-pvp-ornament" aria-hidden="true"><span>✦</span></div>
       {editingName
         ? <label className="dr-pvp-name-field">Tu apodo (solo la primera vez)<input value={nickname} maxLength={24}
@@ -364,7 +395,19 @@ export default function MultiplayerScreen() {
       <button type="button" className="dr-pvp-profile-shortcut" onClick={() => setShowProfile(true)}>
         Mi Perfil
       </button>
-      {!inviteOnLoad.current && <>
+      {(inviteOnLoad.current || incomingChallenge) ? <div className="dr-pvp-invite-actions">
+        <p className="dr-pvp-invite-description">
+          {incomingChallenge
+            ? <><strong>{incomingChallenge.name}</strong> te ha desafiado.</>
+            : <>Te han invitado a la sala <strong>{joinCode.toUpperCase()}</strong>.</>}
+          {' '}Confirma tu perfil y elige cuándo comenzar.
+        </p>
+        <button type="button" className="dr-pvp-primary dr-pvp-feature-button dr-pvp-invite-big-button"
+          disabled={!online || serverNeedsUpdate || nickname.trim().length < 2 || !isPrivateRoomCode(incomingChallenge?.code || joinCode)}
+          onClick={startInvitation}>Empezar partida</button>
+        <button type="button" className="dr-pvp-secondary dr-pvp-feature-button dr-pvp-invite-big-button"
+          onClick={clearInvitation}>Volver al menú Multijugador</button>
+      </div> : <>
         <button type="button" className="dr-pvp-primary dr-pvp-feature-button" disabled={!online || serverNeedsUpdate}
           onClick={() => enter('queue')}><span aria-hidden="true">⚔</span>Jugar ahora</button>
         <button type="button" className="dr-pvp-secondary dr-pvp-feature-button" disabled={!online || serverNeedsUpdate}
@@ -372,21 +415,21 @@ export default function MultiplayerScreen() {
         <button type="button" className="dr-pvp-minor" onClick={() => setShowJoinCode(current => !current)}>
           <span aria-hidden="true">↗</span>Tengo un código de invitación</button>
       </>}
-      {!inviteOnLoad.current && <button type="button" className="dr-pvp-community-shortcut"
+      {!(inviteOnLoad.current || incomingChallenge) && <button type="button" className="dr-pvp-community-shortcut"
         disabled={!socialReady} onClick={() => setShowSocial(true)}>
         <span><strong>Amigos y chat</strong><small>{socialReady ? 'Conectados, solicitudes y desafíos' : 'Actualización del servidor social pendiente'}</small></span>
         <span className="dr-pvp-community-count" aria-label={socialTotal + ' jugadores visibles'}>
           {friendRequests.length ? friendRequests.length + ' ✉' : socialTotal}</span>
       </button>}
-      {showJoinCode && <div className="dr-pvp-code-join">
+      {showJoinCode && !(inviteOnLoad.current || incomingChallenge) && <div className="dr-pvp-code-join">
         {!inviteOnLoad.current && <label>Código recibido<input value={joinCode} maxLength={4}
           onChange={e => setJoinCode(e.target.value.toUpperCase())} placeholder="Ej. 27KP" /></label>}
         <button type="button" className={inviteOnLoad.current ? 'dr-pvp-primary dr-pvp-feature-button' : 'dr-pvp-secondary'}
           disabled={!online || serverNeedsUpdate || !isPrivateRoomCode(joinCode)}
           onClick={() => enter('join')}>{inviteOnLoad.current ? 'Aceptar desafío' : 'Unirme al duelo'}</button>
       </div>}
-      <p className="dr-pvp-tip"><span aria-hidden="true">ⓘ</span>
-        Crea una sala y comparte el código de 2 números y 2 letras.</p>
+      {!(inviteOnLoad.current || incomingChallenge) && <p className="dr-pvp-tip"><span aria-hidden="true">ⓘ</span>
+        Crea una sala y comparte el código de 2 números y 2 letras.</p>}
     </section>}
 
     {session && waiting && <section className="dr-pvp-lobby dr-pvp-waiting">
@@ -409,21 +452,6 @@ export default function MultiplayerScreen() {
       requests={friendRequests} friends={socialFriends} messages={socialMessages}
       status={socialStatus} myId={socialId} online={online && socialReady}
       onStatus={updateSocialStatus} onSend={send} onClose={() => setShowSocial(false)}/>}
-    {!session && incomingChallenge && <section className="dr-pvp-incoming" role="alertdialog"
-      aria-label="Desafío recibido">
-      <h3>¡Te desafían a un duelo!</h3>
-      <p><strong>{incomingChallenge.name}</strong> quiere jugar contigo.</p>
-      <div>
-        <button type="button" className="dr-pvp-primary" onClick={() => {
-          send({ type: 'social:accept_challenge', code: incomingChallenge.code });
-          setIncomingChallenge(null); setShowSocial(false);
-        }}>Aceptar</button>
-        <button type="button" className="dr-pvp-secondary" onClick={() => {
-          send({ type: 'social:decline_challenge', code: incomingChallenge.code });
-          setIncomingChallenge(null);
-        }}>Rechazar</button>
-      </div>
-    </section>}
     {!session && showProfile && <DuelistProfilePanel profile={duelist} onChange={setDuelist}
       onClose={() => setShowProfile(false)}/>}
     {view && <MultiplayerBattleBoard view={view} online={online} activeTurn={activeTurn && !cinematicCue}
