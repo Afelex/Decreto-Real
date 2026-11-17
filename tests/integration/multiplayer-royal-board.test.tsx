@@ -67,7 +67,7 @@ test('resultado PvP usa la misma pantalla de estadisticas de IA', () => {
   fireEvent.click(screen.getByRole('button',{name:'Continuar'}));
   expect(document.querySelector('.dr-result-screen.is-victory')).toBeTruthy();
   const labels=Array.from(document.querySelectorAll('.dr-result-screen__stats dt')).map(n=>n.textContent);
-  expect(labels).toEqual(['Turnos','Tiempo','Vida recuperada','Daño realizado','Impactos convocados']);
+  expect(labels).toEqual(['Turnos','Tiempo','Vida recuperada','Daño realizado','Impactos convocados','Vida restante']);
   fireEvent.click(screen.getByRole('button',{name:'Nueva partida'}));
   expect(onNewGame).toHaveBeenCalledOnce();
 });
