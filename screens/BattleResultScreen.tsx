@@ -49,7 +49,7 @@ const BattleResultScreen: React.FC<Props> = ({ won, heading, stats, actions, war
     </section>}
     <div className={`dr-result-screen__controls${won && rewardShowcase ? ' has-reward-showcase' : ''}`}>
       <h1 className="dr-result-screen__sr-only">{heading ?? (won ? 'Victoria' : 'Derrota')}</h1>
-      <section className="dr-result-screen__stats" aria-label="Estadísticas de la partida">
+      <section className={`dr-result-screen__stats${stats.length > 3 ? ' has-expanded-stats' : ''}`} aria-label="Estadísticas de la partida">
         <h2>Resultados</h2>
         <dl>
           {stats.map(({ label, value }) => (
