@@ -74,7 +74,7 @@ export function loadDuelistProfile(storage?: Pick<Storage, 'getItem'>): DuelistP
     const profile = emptyProfile(oldName);
     profile.progress = progress;
     profile.rewardedRooms = Array.isArray(data.rewardedRooms)
-      ? data.rewardedRooms.filter((v): v is string => typeof v === 'string' && /^[0-9A-F]{10}$/.test(v)).slice(-80) : [];
+      ? data.rewardedRooms.filter((v): v is string => typeof v === 'string' && /^[0-9a-f]{24}$/.test(v)).slice(-80) : [];
     profile.slots = Array.isArray(data.slots) ? data.slots.slice(0, MAX_ALIASES)
       .filter(s => s && typeof s === 'object').map(s => ({
         name: cleanName(s.name), appearance: validAppearance(s.appearance, profile),
@@ -94,7 +94,7 @@ export function saveDuelistProfile(profile: DuelistProfile, storage?: Pick<Stora
   } catch { return false; }
 }
 export function rewardMatch(profile: DuelistProfile, room: string, won: boolean, impacts: number): DuelistProfile {
-  if (!/^[0-9A-F]{10}$/.test(room) || profile.rewardedRooms.includes(room)) return profile;
+  if (!/^[0-9a-f]{24}$/.test(room) || profile.rewardedRooms.includes(room)) return profile;
   return { ...profile, rewardedRooms: [...profile.rewardedRooms, room].slice(-80),
     progress: { matches: profile.progress.matches + 1, wins: profile.progress.wins + (won ? 1 : 0),
       impacts: profile.progress.impacts + Math.max(0, Math.min(4, safeCount(impacts))) } };
