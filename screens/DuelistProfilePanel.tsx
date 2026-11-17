@@ -113,7 +113,9 @@ export function DuelistProfilePanel({ profile, onChange, onClose, onSignOut, ema
       <div className={'dr-duelist-preview-card back-' + slot.appearance.back} aria-label="Dorso seleccionado">✥</div>
       <p>Vista previa visual · Sin alterar el combate</p>
     </div>}
-    <p className="dr-duelist-help">Tus datos se vinculan a tu correo verificado. No se comparten con otros jugadores.</p>
+    <p className="dr-duelist-help">{email
+      ? 'Tus datos se vinculan a tu correo verificado. No se comparten con otros jugadores.'
+      : 'Modo invitado: el perfil se guarda en este dispositivo. El acceso por correo se habilitará cuando termine su verificación.'}</p>
     {email && <p className="dr-duelist-help" style={{ overflowWrap: 'anywhere' }}>
       Cuenta: <strong>{email}</strong>
     </p>}
