@@ -1,6 +1,7 @@
 /** A visual-only cue derived from a server-authoritative match update.
  * It never changes rules, turn ownership, rewards or the outcome. */
 export type MultiplayerCue = (
+  | { kind: 'intro'; id: number }
   | { kind: 'turn'; id: number; isPlayer: boolean }
   | { kind: 'card'; id: number; isPlayer: boolean; cardType: 'ATTACK' | 'DEFENSE' | 'ORDER' | 'IMPACT'; rank?: number }
   | { kind: 'combo'; id: number; isPlayer: boolean; level: 2 | 3; ability: 'DAMAGE' | 'HEAL' }

@@ -29,6 +29,7 @@ type DuelView = { revision: number; status: 'playing' | 'finished'; isMyTurn: bo
 type Props = {
   view: DuelView; online: boolean; activeTurn: boolean;
   cinematicCue: MultiplayerCue | null; onCueEnded: () => void;
+  onCinematicEffect?: (cue: MultiplayerCue) => void;
   stats: PvpStats | null;
   drawCues: Array<{id: number; side: 'PLAYER' | 'OPPONENT'; count: number}>;
   onDrawFinished: (id: number) => void;
@@ -76,7 +77,7 @@ function Deck({ count, rival, children }: { count: number; rival?: boolean; chil
 }
 
 /** Vista de combate PvP. Los eventos y las reglas pertenecen exclusivamente al servidor. */
-export function MultiplayerBattleBoard({ view, online, activeTurn, cinematicCue, onCueEnded, stats,
+export function MultiplayerBattleBoard({ view, online, activeTurn, cinematicCue, onCueEnded, onCinematicEffect, stats,
   drawCues, onDrawFinished, onPlayCard, onEndTurn, onCombo, onSurrender, onNewGame, onExit }: Props) {
   const [selected, setSelected] = React.useState<string | null>(null);
   const [menuOpen, setMenuOpen] = React.useState(false);
@@ -201,10 +202,11 @@ export function MultiplayerBattleBoard({ view, online, activeTurn, cinematicCue,
             <span className="dr-royal-rival-progress-numeral dr-royal-impact-persistent-label">{impactLabel(rank)}</span>
           </div>)}
         </div>
-        <button type="button" className="dr-royal-activation-target" disabled={!chosen || chosen.type === 'IMPACT'}
+        <button type="button" className={'dr-royal-activation-target' + (cinematicCue ? ' dr-pvp-target-hidden' : '')}
+          disabled={!!cinematicCue || !chosen || chosen.type === 'IMPACT'}
           onClick={() => playSelected()} aria-label="Activar decreto seleccionado en el campo">
           <span id="dr-royal-help" className="dr-royal-field-prompt" aria-live="polite">
-            {!view.opponent.connected ? 'Esperando reconexión del rival…' :
+            {cinematicCue || finished ? null : !view.opponent.connected ? 'Esperando reconexión del rival…' :
               finished ? outcome : view.pendingCombo ? 'Elige el efecto de tu combo' :
               chosen ? 'Toca el campo para activar el decreto seleccionado' :
               view.isMyTurn ? 'Selecciona una carta de tu mano' : 'El rival está jugando…'}
@@ -221,9 +223,6 @@ export function MultiplayerBattleBoard({ view, online, activeTurn, cinematicCue,
             <span className="dr-royal-impact-numeral dr-royal-impact-persistent-label">{rank === 4 ? 'Final' : impactLabel(rank)}</span>
           </button>)}
         </div>
-        <span className="dr-pvp-live-summary" aria-live="polite">
-          Turno {view.turnNumber} · {view.lastEvent}
-        </span>
       </section>
       <section className="dr-royal-player-hand" aria-label={'Tu mano: ' + view.me.hand.length + ' cartas'}>
         <div className="dr-royal-player-fan">
@@ -283,7 +282,8 @@ export function MultiplayerBattleBoard({ view, online, activeTurn, cinematicCue,
     {drawCues.map(cue => <CardDrawFX key={cue.id} cueId={cue.id} side={cue.side} count={cue.count}
       paused={false} onFinish={onDrawFinished}/>)}
     {cinematicCue && <React.Fragment key={cinematicCue.id}>
-      <MultiplayerCinematicCue cue={cinematicCue} onEnded={onCueEnded}/>
+      <MultiplayerCinematicCue cue={cinematicCue} onEnded={onCueEnded}
+        onEffectStarted={onCinematicEffect} myName={view.me.name} rivalName={view.opponent.name}/>
     </React.Fragment>}
     {!online && <div className="dr-pvp-status-overlay" role="status">Conexión interrumpida. Reconectando…</div>}
     {!!view.pendingCombo && !finished && !cinematicCue && <ComboChoicePanel level={view.pendingCombo}

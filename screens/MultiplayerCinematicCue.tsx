@@ -1,5 +1,7 @@
 import React from 'react';
 import { CardActivationBanner } from './CardActivationBanner';
+import { DuelEntrance } from './DuelEntrance';
+import { OPPONENT_IMG, PLAYER_IMG } from '../constants';
 import { ComboEffectOverlay } from './ComboEffectOverlay';
 import { TurnAnnouncement, TURN_TRANSITION_DURATION_MS } from './CombatEventUI';
 import { cardEffectCue, DECREE_BANNER_DURATION_MS, DECREE_EFFECT_DURATION_MS } from '../game/effectCues';
@@ -8,14 +10,19 @@ import type { CardData } from '../types';
 
 /** PvP uses the *same* decree and turn presenter as Versus IA.
  * WebSocket updates choose the cue; animations never commit combat actions. */
-export function MultiplayerCinematicCue({ cue, onEnded }: {
+export function MultiplayerCinematicCue({ cue, onEnded, onEffectStarted, myName, rivalName }: {
   cue: MultiplayerCue; onEnded: () => void;
+  onEffectStarted?: (cue: MultiplayerCue) => void;
+  myName?: string; rivalName?: string;
 }) {
   const [stage, setStage] = React.useState<'banner' | 'effect'>('banner');
   const callback = React.useRef(onEnded);
   callback.current = onEnded;
+  const soundCallback = React.useRef(onEffectStarted);
+  soundCallback.current = onEffectStarted;
 
   React.useEffect(() => {
+    if (cue.kind === 'intro') return;
     setStage('banner');
     const duration = cue.kind === 'turn' ? TURN_TRANSITION_DURATION_MS
       : cue.kind === 'combo' ? DECREE_EFFECT_DURATION_MS : DECREE_BANNER_DURATION_MS;
@@ -32,6 +39,18 @@ export function MultiplayerCinematicCue({ cue, onEnded }: {
     return () => window.clearTimeout(timeout);
   }, [cue.id, stage]);
 
+  // This effect runs after React commits the visual stage; no premature SFX.
+  React.useEffect(() => {
+    if (cue.kind === 'combo' || (cue.kind === 'card' && stage === 'effect')) {
+      soundCallback.current?.(cue);
+    }
+  }, [cue.id, stage]);
+
+  if (cue.kind === 'intro') return <DuelEntrance
+    playerPortrait={PLAYER_IMG} rivalPortrait={OPPONENT_IMG}
+    playerName={myName} rivalName={rivalName}
+    ariaLabel="Presentación del duelo multijugador"
+    onFinish={() => callback.current()}/>;
   if (cue.kind === 'turn') return <TurnAnnouncement fullscreen
     variant={cue.isPlayer ? 'player' : 'opponent'}/>;
   if (cue.kind === 'combo') return <ComboEffectOverlay level={cue.level} ability={cue.ability}
