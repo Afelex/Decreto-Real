@@ -173,7 +173,7 @@ export function MultiplayerBattleBoard({ view, online, activeTurn, cinematicCue,
     {!finished && view.opponent.connected && <TurnIndicator side={view.isMyTurn ? 'PLAYER' : 'OPPONENT'} />}
     {cinematicCue && <MultiplayerCinematicCue cue={cinematicCue} onEnded={onCueEnded}/>}
     {!online && <div className="dr-pvp-status-overlay" role="status">Conexión interrumpida. Reconectando…</div>}
-    {!!view.pendingCombo && !finished && <ComboChoicePanel level={view.pendingCombo}
+    {!!view.pendingCombo && !finished && !cinematicCue && <ComboChoicePanel level={view.pendingCombo}
       onDamage={() => onCombo('DAMAGE')} onHeal={() => onCombo('HEAL')}/>}
     {menuOpen && <div className="dr-pvp-pause" role="dialog" aria-modal="true" aria-label="Pausa multijugador">
       <div className="dr-pvp-pause-panel">
