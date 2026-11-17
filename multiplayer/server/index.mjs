@@ -12,6 +12,7 @@ const origins = new Set((process.env.ALLOWED_ORIGINS || 'http://localhost:5173,h
 // Roll out email accounts only when a persistent Railway volume is configured.
 // Without DR_DATA_FILE the existing guest PvP remains fully functional.
 const accounts = process.env.DR_DATA_FILE ? new AccountStore(process.env.DR_DATA_FILE) : null;
+const requireAccounts = Boolean(accounts && process.env.DR_REQUIRE_EMAIL_ACCOUNTS === 'true');
 const rooms = new Map();
 const REJOIN_MS = 120_000;
 const ROOM_TTL_MS = 30 * 60_000;
@@ -147,7 +148,7 @@ function enter(ws, room, name, appearance) {
   attach(ws, room, 1);
 }
 const social = createSocialHub({
-  send, fail, accountStore: accounts,
+  send, fail, accountStore: accounts, requireAccount: requireAccounts,
   onChallenge(ws, other) {
     if (rooms.size >= MAX_ROOMS) { fail(ws, 'Servidor ocupado. Intenta más tarde.'); return null; }
     const room = createRoom(ws.social.name, appearanceOf({ portrait: ws.social.portrait }), false, ws.account?.uid || null);
@@ -227,7 +228,7 @@ sockets.on('connection', ws => {
       return;
     }
     // No playable or social action can run under a name or an unverified email.
-    if (accounts && !ws.account) return fail(ws, 'Inicia sesión con tu correo para jugar.');
+    if (requireAccounts && !ws.account) return fail(ws, 'Inicia sesión con tu correo para jugar.');
     if (msg.type === 'account:save_profile') {
       if (!accounts || !ws.account) return fail(ws, 'Debes verificar tu correo.');
       if (JSON.stringify(msg.profile || {}).length > 4500)
