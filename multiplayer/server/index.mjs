@@ -150,7 +150,7 @@ const social = createSocialHub({
   send, fail, accountStore: accounts,
   onChallenge(ws, other) {
     if (rooms.size >= MAX_ROOMS) { fail(ws, 'Servidor ocupado. Intenta más tarde.'); return null; }
-    const room = createRoom(ws.social.name, appearanceOf({ portrait: ws.social.portrait }), false, ws.account.uid);
+    const room = createRoom(ws.social.name, appearanceOf({ portrait: ws.social.portrait }), false, ws.account?.uid || null);
     room.invitedId = other.social.id;
     room.inviteExpires = Date.now() + 90_000;
     attach(ws, room, 0);
@@ -249,7 +249,7 @@ sockets.on('connection', ws => {
         waitingRandom = null;
       }
       if (rooms.size >= MAX_ROOMS) return fail(ws, 'Servidor ocupado. Intenta más tarde.');
-      const room = createRoom(name, appearanceOf(msg.appearance), msg.type === 'queue', ws.account.uid);
+      const room = createRoom(name, appearanceOf(msg.appearance), msg.type === 'queue', ws.account?.uid || null);
       if (msg.type === 'queue') waitingRandom = room.code;
       attach(ws, room, 0);
       return;
