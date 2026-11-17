@@ -162,6 +162,7 @@ export function MultiplayerBattleBoard({ view, online, activeTurn, cinematicCue,
       { label: 'Vida recuperada', value: stats?.complete ? stats.healthRecovered : '—' },
       { label: 'Daño realizado', value: stats?.complete ? stats.damageDealt : '—' },
       { label: 'Impactos convocados', value: stats?.complete ? stats.impactsSummoned : '—' },
+      { label: 'Vida restante', value: view.me.hp },
     ]} warning={stats && !stats.complete
       ? 'Al reconectar o perder actualizaciones, las estadísticas acumuladas no pueden verificarse.'
       : undefined}
@@ -260,7 +261,8 @@ export function MultiplayerBattleBoard({ view, online, activeTurn, cinematicCue,
         <Portrait name={view.me.name} hp={view.me.hp}/>
         <button type="button" className="dr-royal-finish" disabled={!activeTurn || !!view.pendingCombo}
           aria-label="Terminar turno" data-art-version="hud-g3" onClick={onEndTurn}>
-          <span className="dr-royal-finish-ornament" aria-hidden="true">
+          <span className="dr-royal-finish-ornament" aria-hidden="true"
+            data-state={!activeTurn || !!view.pendingCombo ? 'disabled' : 'active'}>
             <img className="dr-royal-finish-art-image" src={HUD + 'fin_turno.webp'} alt="" draggable={false}/>
           </span><strong>FIN<br/>TURNO</strong>
         </button>
@@ -280,7 +282,7 @@ export function MultiplayerBattleBoard({ view, online, activeTurn, cinematicCue,
     </div>}
     {drawCues.map(cue => <CardDrawFX key={cue.id} cueId={cue.id} side={cue.side} count={cue.count}
       paused={false} onFinish={onDrawFinished}/>)}
-    {cinematicCue && <MultiplayerCinematicCue cue={cinematicCue} onEnded={onCueEnded}/>}
+    {cinematicCue && <MultiplayerCinematicCue key={cinematicCue.id} cue={cinematicCue} onEnded={onCueEnded}/>}
     {!online && <div className="dr-pvp-status-overlay" role="status">Conexión interrumpida. Reconectando…</div>}
     {!!view.pendingCombo && !finished && !cinematicCue && <ComboChoicePanel level={view.pendingCombo}
       onDamage={() => onCombo('DAMAGE')} onHeal={() => onCombo('HEAL')}/>}
