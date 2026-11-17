@@ -53,12 +53,10 @@ test('PvP reutiliza el banner oficial IA y después reproduce solo el efecto del
     expect(container.querySelector('source')?.getAttribute('src')).toContain('animaciones/banner-jugador-rojo.webm');
     expect(container.querySelector('.dr-decree-banner__copy')).toBeTruthy();
     await act(async () => { await vi.advanceTimersByTimeAsync(1500); });
-    if (type !== 'IMPACT') {
-      expect(container.querySelector('[data-decree-stage]')?.getAttribute('data-decree-stage')).toBe('effect');
-      expect(container.querySelector('.dr-decree-banner__copy')).toBeNull();
-      expect(finished).not.toHaveBeenCalled();
-      await act(async () => { await vi.advanceTimersByTimeAsync(1500); });
-    }
+    expect(container.querySelector('[data-decree-stage]')?.getAttribute('data-decree-stage')).toBe('effect');
+    expect(container.querySelector('.dr-decree-banner__copy')).toBeNull();
+    expect(finished).not.toHaveBeenCalled();
+    await act(async () => { await vi.advanceTimersByTimeAsync(1500); });
     expect(finished).toHaveBeenCalledTimes(1);
     unmount();
   }
