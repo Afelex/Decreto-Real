@@ -1,5 +1,7 @@
 import React from 'react';
 import { CardActivationBanner } from './CardActivationBanner';
+import { ComboEffectOverlay } from './ComboEffectOverlay';
+import { useAudio } from '../contexts/AudioContext';
 import { TurnAnnouncement, TURN_TRANSITION_DURATION_MS } from './CombatEventUI';
 import { cardEffectCue, DECREE_BANNER_DURATION_MS, DECREE_EFFECT_DURATION_MS } from '../game/effectCues';
 import type { MultiplayerCue } from '../game/multiplayerPresentation';
@@ -11,17 +13,29 @@ export function MultiplayerCinematicCue({ cue, onEnded }: {
   cue: MultiplayerCue; onEnded: () => void;
 }) {
   const [stage, setStage] = React.useState<'banner' | 'effect'>('banner');
+  const { playSound } = useAudio();
+  const soundRef = React.useRef(playSound);
+  soundRef.current = playSound;
   const callback = React.useRef(onEnded);
   callback.current = onEnded;
 
   React.useEffect(() => {
     setStage('banner');
-    const duration = cue.kind === 'turn' ? TURN_TRANSITION_DURATION_MS : DECREE_BANNER_DURATION_MS;
+    const duration = cue.kind === 'turn' ? TURN_TRANSITION_DURATION_MS
+      : cue.kind === 'combo' ? DECREE_EFFECT_DURATION_MS : DECREE_BANNER_DURATION_MS;
     const timeout = window.setTimeout(() => {
       if (cue.kind === 'card' && cardEffectCue(cue.cardType).file) setStage('effect');
       else callback.current();
     }, duration);
     return () => window.clearTimeout(timeout);
+  }, [cue.id]);
+
+  React.useEffect(() => {
+    if (cue.kind === 'combo') soundRef.current('IMPACT');
+    else if (cue.kind === 'card') {
+      const fxSound = { ATTACK: 'ATTACK', DEFENSE: 'DEFENSE', ORDER: 'FLIP', IMPACT: 'IMPACT' } as const;
+      soundRef.current(fxSound[cue.cardType]);
+    }
   }, [cue.id]);
 
   React.useEffect(() => {
@@ -31,7 +45,9 @@ export function MultiplayerCinematicCue({ cue, onEnded }: {
   }, [cue.id, stage]);
 
   if (cue.kind === 'turn') return <TurnAnnouncement fullscreen
-    variant={cue.isPlayer ? 'player' : 'opponent'}/>;
+    variant={cue.isPlayer ? 'player' : 'opponent'/>;
+  if (cue.kind === 'combo') return <ComboEffectOverlay level={cue.level} ability={cue.ability}
+    isPlayer={cue.isPlayer} paused={false}/>;
 
   const names = { ATTACK: 'Decreto de Ataque', DEFENSE: 'Decreto de Defensa',
     ORDER: 'Decreto de Orden', IMPACT: cue.rank === 4 ? 'Impacto Final' : 'Impacto ' + (cue.rank ?? 1) };
