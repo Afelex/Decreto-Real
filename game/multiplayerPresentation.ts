@@ -28,7 +28,7 @@ export function multiplayerCueFromState(previous: MultiplayerCueView | null, nex
   const event = next.lastEvent;
   // Server-authoritative combo resolutions use this exact event grammar.
   // Their cinematic is a separate approved G3 effect, never a second decree banner.
-  const combo = event.match(/: combo ×([23]), ([+-])\\d+ vida(?: rival)?\\.$/);
+  const combo = event.match(/: combo ×([23]), ([+-])\d+ vida(?: rival)?\.$/);
   if (combo) return { kind: 'combo', id: next.revision,
     isPlayer: previous.isMyTurn, level: Number(combo[1]) as 2 | 3,
     ability: combo[2] === '-' ? 'DAMAGE' : 'HEAL' };
