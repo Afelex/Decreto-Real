@@ -8,6 +8,10 @@ type DuelEntranceProps = {
   playerPortrait: string;
   rivalPortrait: string;
   onFinish: () => void;
+  /** PvP presents the real player names; Versus IA keeps its approved defaults. */
+  playerName?: string;
+  rivalName?: string;
+  ariaLabel?: string;
 };
 
 /**
@@ -16,7 +20,8 @@ type DuelEntranceProps = {
  * esta ceremonia no reparte cartas, modifica turnos ni lanza la moneda.
  */
 export const DuelEntrance: React.FC<DuelEntranceProps> = ({
-  playerPortrait, rivalPortrait, onFinish,
+  playerPortrait, rivalPortrait, onFinish, playerName = 'XERVIAS',
+  rivalName = 'RIVAL IA', ariaLabel = 'Presentación del duelo contra la IA',
 }) => {
   const [stage, setStage] = React.useState<EntranceStage>('gate');
   const [gateLoaded, setGateLoaded] = React.useState({ left: false, right: false });
@@ -40,7 +45,7 @@ export const DuelEntrance: React.FC<DuelEntranceProps> = ({
   return (
     <div className="dr-duel-entrance" data-testid="duel-entrance"
       data-stage={stage} role="dialog" aria-modal="true"
-      aria-label="Presentación del duelo contra la IA">
+      aria-label={ariaLabel}>
       <div className="dr-duel-entrance__shade" aria-hidden="true" />
       <div className={`dr-duel-entrance__gate dr-duel-entrance__gate--left ${gatesReady ? 'has-g3-art' : ''}`} aria-hidden="true">
         <img className="dr-duel-entrance__gate-image" src={G3_UI_ASSETS.gateLeft} alt="" draggable={false}
@@ -65,7 +70,7 @@ export const DuelEntrance: React.FC<DuelEntranceProps> = ({
             <img className="dr-duel-entrance__portrait" src={playerPortrait} alt="" draggable={false} />
             <img className="dr-duel-entrance__portrait-ornament" src={G3_UI_ASSETS.playerFrame} alt="" aria-hidden="true" draggable={false}
               onError={event => { event.currentTarget.style.display = 'none'; }}/>
-            <figcaption>XERVIAS</figcaption>
+            <figcaption>{playerName}</figcaption>
           </div>
         </figure>
         <div className="dr-duel-entrance__versus" aria-hidden="true">VS</div>
@@ -74,7 +79,7 @@ export const DuelEntrance: React.FC<DuelEntranceProps> = ({
             <img className="dr-duel-entrance__portrait" src={rivalPortrait} alt="" draggable={false} />
             <img className="dr-duel-entrance__portrait-ornament" src={G3_UI_ASSETS.rivalFrame} alt="" aria-hidden="true" draggable={false}
               onError={event => { event.currentTarget.style.display = 'none'; }}/>
-            <figcaption>RIVAL IA</figcaption>
+            <figcaption>{rivalName}</figcaption>
           </div>
         </figure>
         <h2>QUE COMIENCE EL DUELO</h2>
