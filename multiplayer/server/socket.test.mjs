@@ -63,7 +63,8 @@ test('salas privadas, manos ocultas, turnos y rechazo de jugadas ilegales', asyn
     send(a, { type: 'create', name: 'Jugador Uno' });
     const s1 = await s1Promise;
     await waitingPromise;
-    assert.match(s1.code, /^[0-9A-F]{10}$/);
+    assert.match(s1.code, /^[0-9]{2}[A-HJ-NP-Z]{2}$/);
+    assert.match(s1.matchId, /^[0-9a-f]{24}$/);
     const aStatePromise = waitMessage(a, 'state');
     const s2Promise = waitMessage(b, 'session');
     const bStatePromise = waitMessage(b, 'state');

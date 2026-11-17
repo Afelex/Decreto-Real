@@ -37,9 +37,9 @@ test('dos navegadores móviles completan un duelo con reconexión y resultado si
     await one.locator('#name').fill('Invitado Uno');
     await one.getByRole('button', { name: 'Invitar a un amigo' }).click();
     await expect(one.locator('#waiting')).toBeVisible();
-    await expect(one.locator('#room')).toHaveText(/^[A-F0-9]{10}$/);
+    await expect(one.locator('#room')).toHaveText(/^[0-9]{2}[A-HJ-NP-Z]{2}$/);
     const code = (await one.locator('#room').textContent() || '').trim();
-    expect(code).toMatch(/^[A-F0-9]{10}$/);
+    expect(code).toMatch(/^[0-9]{2}[A-HJ-NP-Z]{2}$/);
 
     await two.goto(base + '/prueba?sala=' + code);
     await expect(two.locator('#network')).toContainText('Conectado');
@@ -87,7 +87,7 @@ test('invitación por enlace acepta automáticamente a un jugador recurrente', a
     await one.locator('#name').fill('Primer Invitado');
     await one.getByRole('button', { name: 'Invitar a un amigo' }).click();
     await expect(one.locator('#waiting')).toBeVisible();
-    await expect(one.locator('#room')).toHaveText(/^[A-F0-9]{10}$/);
+    await expect(one.locator('#room')).toHaveText(/^[0-9]{2}[A-HJ-NP-Z]{2}$/);
     const code = (await one.locator('#room').textContent() || '').trim();
 
     await two.goto(base + '/prueba?sala=' + code);

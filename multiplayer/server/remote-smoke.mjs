@@ -62,7 +62,7 @@ async function testOnlineDuel() {
     send(first, { type: 'create', name: 'PruebaAutomatica1' });
     const { code } = await sessionOne;
     await waitingOne;
-    assert.match(code, /^[A-F0-9]{10}$/);
+    assert.match(code, /^[0-9]{2}[A-HJ-NP-Z]{2}$/);
 
     const aStatePromise = waitMessage(first, 'state');
     const bStatePromise = waitMessage(second, 'state');

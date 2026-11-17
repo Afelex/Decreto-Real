@@ -1,5 +1,5 @@
 import { createServer } from 'node:http';
-import { randomBytes } from 'node:crypto';
+import { randomBytes, randomInt } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { WebSocket, WebSocketServer } from 'ws';
 import { createMatch, act, viewFor } from './engine.mjs';
@@ -12,6 +12,8 @@ const REJOIN_MS = 120_000;
 const ROOM_TTL_MS = 30 * 60_000;
 const HISTORY_LIMIT = 100;
 const MAX_ROOMS = 1000;
+const CODE_LETTERS = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+const failedJoinAttempts = new Map();
 let waitingRandom = null;
 
 const previewHtml = readFileSync(new URL('./pvp-preview.html', import.meta.url));
@@ -51,12 +53,37 @@ function nameOf(input) {
 }
 function roomCode() {
   let code;
-  do { code = randomBytes(5).toString('hex').toUpperCase(); } while (rooms.has(code));
+  do { code = String(randomInt(100)).padStart(2, '0') +
+    CODE_LETTERS[randomInt(CODE_LETTERS.length)] + CODE_LETTERS[randomInt(CODE_LETTERS.length)];
+  } while (rooms.has(code));
   return code;
 }
+function appearanceOf(value) {
+  const input = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+  const allowed = { portrait: ['xervias', 'cronista', 'vandalo', 'amaru'],
+    entrance: ['clasica', 'estandarte', 'aurea'], back: ['clasico', 'sol', 'carmesi'],
+    nameFx: ['clasico', 'brillo', 'particulas'] };
+  return Object.fromEntries(Object.entries(allowed).map(([key, values]) =>
+    [key, values.includes(input[key]) ? input[key] : values[0]]));
+}
+function canTryCode(ws) {
+  const ip = ws._socket?.remoteAddress || 'unknown';
+  const now = Date.now();
+  const state = failedJoinAttempts.get(ip);
+  if (state && now - state.at < 60_000 && state.count >= 5) return false;
+  return true;
+}
+function registerWrongCode(ws) {
+  const ip = ws._socket?.remoteAddress || 'unknown';
+  const now = Date.now();
+  const previous = failedJoinAttempts.get(ip);
+  failedJoinAttempts.set(ip, { at: previous && now - previous.at < 60_000 ? previous.at : now,
+    count: previous && now - previous.at < 60_000 ? previous.count + 1 : 1 });
+}
 function token() { return randomBytes(24).toString('hex'); }
-function createRoom(name, randomQueue = false) {
-  const room = { code: roomCode(), seats: [{ name, token: token() }], sockets: [null, null],
+function createRoom(name, appearance, randomQueue = false) {
+  const room = { code: roomCode(), matchId: randomBytes(12).toString('hex'),
+    seats: [{ name, appearance, token: token() }], sockets: [null, null],
     match: null, randomQueue, lastUsed: Date.now(), disconnected: [null, null], actionIds: [new Set(), new Set()] };
   rooms.set(room.code, room);
   return room;
@@ -69,8 +96,11 @@ function broadcast(room) {
       send(ws, { type: 'waiting', code: room.code, randomQueue: room.randomQueue,
         players: room.seats.map(seat => seat.name) });
     } else {
-      send(ws, { type: 'state', code: room.code, view: viewFor(room.match, slot,
-        room.sockets.map(client => client?.readyState === WebSocket.OPEN)) });
+      const view = viewFor(room.match, slot,
+        room.sockets.map(client => client?.readyState === WebSocket.OPEN));
+      view.me.appearance = room.seats[slot].appearance;
+      view.opponent.appearance = room.seats[1 - slot].appearance;
+      send(ws, { type: 'state', code: room.code, matchId: room.matchId, view });
     }
   }
 }
@@ -84,15 +114,15 @@ function attach(ws, room, slot) {
   ws.seat = { code: room.code, slot };
   room.sockets[slot] = ws;
   room.lastUsed = Date.now();
-  send(ws, { type: 'session', code: room.code, token: room.seats[slot].token,
+  send(ws, { type: 'session', code: room.code, matchId: room.matchId, token: room.seats[slot].token,
     slot, name: room.seats[slot].name, randomQueue: room.randomQueue });
   broadcast(room);
 }
-function enter(ws, room, name) {
+function enter(ws, room, name, appearance) {
   if (ws.seat) return fail(ws, 'Ya perteneces a una sala.');
   if (room.seats.length !== 1 || room.match) return fail(ws, 'La sala ya está completa.');
   if (room.sockets[0]?.readyState !== WebSocket.OPEN) return fail(ws, 'El creador de la sala está desconectado.');
-  room.seats.push({ name, token: token() });
+  room.seats.push({ name, appearance, token: token() });
   room.match = createMatch(room.seats.map(seat => seat.name));
   if (waitingRandom === room.code) waitingRandom = null;
   attach(ws, room, 1);
@@ -141,12 +171,12 @@ sockets.on('connection', ws => {
       if (msg.type === 'queue' && waitingRandom) {
         const existing = rooms.get(waitingRandom);
         if (existing?.sockets[0]?.readyState === WebSocket.OPEN && !existing.match) {
-          enter(ws, existing, name); return;
+          enter(ws, existing, name, appearanceOf(msg.appearance)); return;
         }
         waitingRandom = null;
       }
       if (rooms.size >= MAX_ROOMS) return fail(ws, 'Servidor ocupado. Intenta más tarde.');
-      const room = createRoom(name, msg.type === 'queue');
+      const room = createRoom(name, appearanceOf(msg.appearance), msg.type === 'queue');
       if (msg.type === 'queue') waitingRandom = room.code;
       attach(ws, room, 0);
       return;
@@ -154,9 +184,14 @@ sockets.on('connection', ws => {
     if (msg.type === 'join') {
       const name = nameOf(msg.name), code = typeof msg.code === 'string' ? msg.code.trim().toUpperCase() : '';
       if (!name) return fail(ws, 'El apodo debe tener de 2 a 24 caracteres.');
+      if (!/^[0-9]{2}[A-HJ-NP-Z]{2}$/.test(code)) return fail(ws, 'Introduce un código de 2 números y 2 letras.');
+      if (!canTryCode(ws)) return fail(ws, 'Demasiados intentos. Espera un minuto.');
       const room = rooms.get(code);
-      if (!room || room.randomQueue) return fail(ws, 'No existe una sala privada con ese código.');
-      enter(ws, room, name); return;
+      if (!room || room.randomQueue) {
+        registerWrongCode(ws);
+        return fail(ws, 'No existe una sala privada con ese código.');
+      }
+      enter(ws, room, name, appearanceOf(msg.appearance)); return;
     }
     if (msg.type === 'resume') {
       if (ws.seat) return fail(ws, 'Ya perteneces a una sala.');
@@ -193,6 +228,7 @@ const heartbeat = setInterval(() => {
     ws.isAlive = false; ws.ping();
   }
   const now = Date.now();
+  for (const [ip, state] of failedJoinAttempts) if (now - state.at >= 60_000) failedJoinAttempts.delete(ip);
   for (const [code, room] of rooms) {
     if (now - room.lastUsed < ROOM_TTL_MS) continue;
     for (const timer of room.disconnected) if (timer) clearTimeout(timer);
