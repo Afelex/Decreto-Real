@@ -1,0 +1,59 @@
+/* Duelist personalization is limited to the multiplayer lobby; battle HUD is unchanged. */
+.dr-pvp-home .dr-duelist-panel{
+ position:absolute;inset:0;z-index:90;display:flex;flex-direction:column;gap:clamp(7px,1.25dvh,13px);
+ align-items:stretch;box-sizing:border-box;overflow-y:auto;overscroll-behavior:contain;
+ width:min(100%,560px);height:100dvh;margin:0 auto;padding:max(12px,env(safe-area-inset-top)) clamp(14px,4vw,25px) max(14px,env(safe-area-inset-bottom));
+ background:linear-gradient(155deg,#121c30 0%,#241829 58%,#3a172a 100%);
+ border-left:2px solid #7b593e;border-right:2px solid #7b593e;color:#fff0cf;
+ box-shadow:0 0 0 100vmax #070b16cb,0 10px 35px #000d;
+ font:14px/1.35 system-ui,sans-serif
+}
+.dr-duelist-panel-header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:9px;border-bottom:1px solid #b48a54}
+.dr-duelist-panel-header h2{margin:2px 0;font:700 clamp(22px,5.8vw,31px)/1.1 Cinzel,Georgia,serif;color:#ffdf9b}
+.dr-duelist-panel-header small{color:#dcb77c;letter-spacing:.16em;font-weight:800}
+.dr-pvp-home .dr-duelist-panel button{min-height:37px;padding:7px 10px;border:1px solid #a88050;border-radius:9px;background:linear-gradient(#2f354d,#171c2c);color:#fff0d1;box-shadow:none;font:700 12px/1.15 system-ui,sans-serif}
+.dr-duelist-panel-header>button{min-width:38px}
+.dr-duelist-help{margin:0!important;font:12px/1.35 system-ui,sans-serif!important;color:#d8c6ad}
+.dr-duelist-aliases{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.dr-duelist-aliases>button{min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.dr-duelist-panel button.active,.dr-duelist-panel button.selected{border-color:#ffd993;background:linear-gradient(155deg,#8b3446,#51253d);box-shadow:inset 0 0 0 1px #f6d597!important}
+.dr-duelist-name-edit{display:flex;flex-direction:column;gap:4px}
+.dr-duelist-name-edit>label{font:700 12px system-ui,sans-serif}
+.dr-duelist-name-edit>div{display:flex;gap:8px}
+.dr-duelist-name-edit input{min-width:0;flex:1;background:#0e1828;border:1px solid #b9915f;border-radius:8px;padding:8px 10px;color:white;font:15px system-ui,sans-serif}
+.dr-duelist-name-edit button{min-width:75px}
+.dr-duelist-panel .dr-duelist-message{margin:0;color:#ffe09b;font:700 12px system-ui,sans-serif}
+.dr-duelist-progress{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;font-size:12px}
+.dr-duelist-progress span{border:1px solid #8e7657;border-radius:99px;padding:4px 9px;background:#131a2d}
+.dr-duelist-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.dr-duelist-section{display:flex;flex-direction:column;gap:7px}
+.dr-duelist-section h3{margin:0;color:#ffe3b1;font:700 18px Cinzel,Georgia,serif}
+.dr-duelist-cosmetics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.dr-pvp-home .dr-duelist-cosmetics .dr-duelist-option{min-width:0;min-height:110px;display:flex;align-items:center;flex-direction:column;justify-content:flex-start;gap:5px;position:relative;overflow:hidden;padding:6px 3px}
+.dr-duelist-option img{width:55px;height:55px;border-radius:9px;object-fit:cover;object-position:center top}
+.dr-duelist-option strong{font:700 11px/1.12 system-ui,sans-serif;text-align:center;overflow-wrap:anywhere}
+.dr-duelist-option small{font:10px/1.12 system-ui,sans-serif;color:#f4d9a4;overflow-wrap:anywhere;text-align:center}
+.dr-duelist-option:disabled{opacity:.6;filter:grayscale(.4)}
+.dr-duelist-symbol{display:grid;place-items:center;width:55px;height:55px;border:1px solid #ad8e62;border-radius:7px;font:30px Georgia,serif;background:radial-gradient(circle,#71475e,#1a1e33);color:#ffe0a1}
+.dr-duelist-back{display:grid;place-items:center;width:39px;height:55px;border:3px double #d6aa6b;border-radius:5px;background:repeating-linear-gradient(45deg,#481427 0 6px,#651e38 6px 12px);font:28px Georgia,serif;color:#fff2cf}
+.dr-duelist-back.back-sol,.dr-duelist-preview-card.back-sol{background:radial-gradient(#c69245,#44301b 65%);color:#fff0a4}
+.dr-duelist-back.back-carmesi,.dr-duelist-preview-card.back-carmesi{background:linear-gradient(45deg,#82182c,#320e1c);color:#f5c6bd}
+.dr-pvp-home .dr-duelist-preview-toggle{background:linear-gradient(#8b3446,#55233c)}
+.dr-duelist-preview{position:relative;isolation:isolate;display:grid;grid-template-columns:1fr auto 1fr;grid-template-rows:auto auto auto;align-items:center;justify-items:center;gap:6px;padding:12px 8px;min-height:130px;border:1px solid #d1a066;border-radius:14px;background:radial-gradient(ellipse at center,#633b49,#111a2d 75%);overflow:hidden}
+.dr-duelist-preview.entrance-estandarte:before,.dr-duelist-preview.entrance-aurea:before{content:'✦';position:absolute;inset:-70px auto auto -20px;font-size:190px;color:#b8793b22;z-index:-1;transform:rotate(30deg)}
+.dr-duelist-preview.entrance-aurea{background:radial-gradient(#98774c,#401b2e 60%,#101627)}
+.dr-duelist-preview-portrait{width:68px;height:80px;overflow:hidden;border:2px solid #d4b37d;border-radius:6px}
+.dr-duelist-preview-portrait img{width:100%;height:100%;object-fit:cover}
+.dr-duelist-preview-versus{font:900 21px Cinzel,Georgia,serif;color:#f6d4a0;text-shadow:0 1px 6px #000}
+.dr-duelist-preview-card{display:grid;place-items:center;width:55px;height:75px;border:4px double #d7a65d;border-radius:7px;background:#471c38;font:34px Georgia,serif}
+.dr-duelist-preview-name{grid-column:1/-1;text-align:center;font:900 19px Cinzel,Georgia,serif;color:#ffebbb;text-shadow:0 2px 3px #000}
+.dr-duelist-preview-name.namefx-brillo{animation:dr-duelist-glow 2s ease-in-out infinite alternate}
+.dr-duelist-preview-name.namefx-particulas{animation:dr-duelist-glow 1.4s ease-in-out infinite alternate}
+.dr-duelist-preview-name.namefx-particulas:before,.dr-duelist-preview-name.namefx-particulas:after{content:'✦';padding:0 8px;color:#ffcc65;animation:dr-duelist-twinkle 1s ease-in-out infinite alternate}
+.dr-duelist-preview-name.namefx-particulas:after{animation-delay:.5s}
+.dr-duelist-preview>p{grid-column:1/-1;margin:0!important;font:11px system-ui,sans-serif}
+@keyframes dr-duelist-glow{from{text-shadow:0 1px 4px #000}to{text-shadow:0 0 9px #ffe190,0 0 20px #e9a63a}}
+@keyframes dr-duelist-twinkle{from{opacity:.3}to{opacity:1}}
+.dr-pvp-home .dr-duelist-done{background:linear-gradient(#992d42,#651b33);min-height:44px;margin-top:auto}
+@media (max-height:610px){.dr-pvp-home .dr-duelist-panel{gap:6px}.dr-duelist-panel-header h2{font-size:22px}.dr-pvp-home .dr-duelist-cosmetics .dr-duelist-option{min-height:86px}.dr-duelist-option img,.dr-duelist-symbol{width:43px;height:43px}.dr-duelist-back{height:43px}.dr-duelist-help{font-size:11px!important}}
+@media(prefers-reduced-motion:reduce){.dr-duelist-preview-name,.dr-duelist-preview-name:before,.dr-duelist-preview-name:after{animation:none!important}}
