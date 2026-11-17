@@ -6,6 +6,7 @@ import { RoyalHpMeter, HpDeltaCue } from './RoyalHpMeter';
 import { TurnIndicator, ComboChoicePanel } from './CombatEventUI';
 import { ResultCinematicFX } from './ResultCinematicFX';
 import { CardDrawFX } from './CardDrawFX';
+import { LastDecreeIndicator } from './LastDecreeIndicator';
 import BattleResultScreen from './BattleResultScreen';
 import { RoyalPauseMenu } from './RoyalPauseMenu';
 import { formatBattleDuration } from '../game/battleStats';
@@ -80,6 +81,20 @@ export function MultiplayerBattleBoard({ view, online, activeTurn, cinematicCue,
   const [selected, setSelected] = React.useState<string | null>(null);
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [showStats, setShowStats] = React.useState(false);
+  const [lastDecrees, setLastDecrees] = React.useState<{
+    player: {type: Card['type']; level: 1 | 2 | 3} | null;
+    opponent: {type: Card['type']; level: 1 | 2 | 3} | null;
+  }>({player:null,opponent:null});
+  React.useEffect(() => {
+    if (!cinematicCue || cinematicCue.kind !== 'card') return;
+    const side = cinematicCue.isPlayer ? 'player' : 'opponent';
+    setLastDecrees(current => {
+      const previous = current[side];
+      const level = previous?.type === cinematicCue.cardType
+        ? Math.min(3, previous.level + 1) as 1 | 2 | 3 : 1;
+      return {...current, [side]: {type:cinematicCue.cardType,level}};
+    });
+  }, [cinematicCue?.id]);
   const [dragAt, setDragAt] = React.useState<{ id: string; x: number; y: number } | null>(null);
   const gesture = React.useRef<{ id: string; pointerId: number; x: number; y: number; moved: boolean } | null>(null);
   const { musicEnabled, sfxEnabled, toggleMusic, toggleSfx, playSound } = useAudio();
@@ -244,11 +259,18 @@ export function MultiplayerBattleBoard({ view, online, activeTurn, cinematicCue,
         </Deck>
         <Portrait name={view.me.name} hp={view.me.hp}/>
         <button type="button" className="dr-royal-finish" disabled={!activeTurn || !!view.pendingCombo}
-          aria-label="Terminar turno" onClick={onEndTurn}>
+          aria-label="Terminar turno" data-art-version="hud-g3" onClick={onEndTurn}>
           <span className="dr-royal-finish-ornament" aria-hidden="true">
             <img className="dr-royal-finish-art-image" src={HUD + 'fin_turno.webp'} alt="" draggable={false}/>
           </span><strong>FIN<br/>TURNO</strong>
         </button>
+        {(lastDecrees.player || lastDecrees.opponent) && <div className="dr-last-decree-stack"
+          role="group" aria-label="Últimos decretos activados">
+          <LastDecreeIndicator side="opponent" type={lastDecrees.opponent?.type ?? null}
+            comboLevel={lastDecrees.opponent?.level ?? 1}/>
+          <LastDecreeIndicator side="player" type={lastDecrees.player?.type ?? null}
+            comboLevel={lastDecrees.player?.level ?? 1}/>
+        </div>}
       </footer>
     </div>
     {!finished && view.opponent.connected && <TurnIndicator side={view.isMyTurn ? 'PLAYER' : 'OPPONENT'} />}
