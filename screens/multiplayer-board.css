@@ -1,0 +1,163 @@
+/* PvP royal presentation: reuse the approved Versus IA scene, slots, HUD G3
+   and card fan. Only action handlers differ; the WebSocket server owns state. */
+.dr-pvp.dr-pvp-playing {
+  padding:0;
+  gap:0;
+  align-items:center;
+  justify-content:center;
+  background:#08111d;
+}
+.dr-pvp-playing > .dr-pvp-header,
+.dr-pvp-playing > .dr-pvp-backdrop,
+.dr-pvp-playing > .dr-pvp-vignette {display:none;}
+.dr-pvp-playing::after {display:none;}
+.dr-pvp .dr-pvp-royal.dr-classic-screen.dr-royal-screen {
+  flex:0 0 auto;
+  width:min(100vw,430px)!important;
+  height:100dvh!important;
+  max-height:100dvh;
+  margin:0 auto;
+  padding:0;
+  border:0;
+  border-radius:0;
+  overflow:hidden;
+  color:#fff0d5;
+  font-family:Cinzel,Georgia,serif;
+}
+/* PvP lobby styles must not force 43px rectangular buttons onto the board. */
+.dr-pvp-playing .dr-pvp-royal .dr-royal-layout button {
+  min-width:0;
+  min-height:0;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  font:inherit;
+}
+.dr-pvp-playing .dr-pvp-royal .dr-royal-layout .dr-royal-hand-card {
+  overflow:visible;
+  border-radius:0;
+  touch-action:manipulation;
+}
+.dr-pvp-playing .dr-pvp-royal .dr-royal-layout .dr-royal-hand-card:disabled {
+  opacity:.6;
+  filter:grayscale(.3);
+}
+.dr-pvp-playing .dr-pvp-royal .dr-royal-layout .dr-royal-hand-card.selected {
+  filter:drop-shadow(0 0 9px #f8e2a0);
+}
+.dr-pvp-royal .dr-royal-rival-area,
+.dr-pvp-royal .dr-royal-player-area {min-height:0;}
+.dr-pvp-royal .dr-royal-character {position:relative;}
+.dr-pvp-royal .dr-royal-character .dr-pvp-portrait-name {
+  position:absolute;
+  bottom:0;
+  left:50%;
+  z-index:6;
+  display:block;
+  max-width:142px;
+  padding:1px 5px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  transform:translateX(-50%);
+  color:#fff4d8;
+  font:700 clamp(9px,2.6cqw,12px)/1.2 Georgia,serif;
+  text-shadow:0 1px 2px #050510,0 0 5px #000;
+  pointer-events:none;
+}
+.dr-pvp-royal .dr-royal-field {position:relative;}
+.dr-pvp-royal .dr-pvp-live-summary {
+  position:absolute;
+  top:45%;
+  left:14%;
+  width:72%;
+  z-index:3;
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  line-clamp:2;
+  overflow:hidden;
+  text-align:center;
+  color:#e5d9bf;
+  font:600 clamp(9px,2.6cqw,11px)/1.25 Georgia,serif;
+  text-shadow:0 1px 3px #000;
+  pointer-events:none;
+  opacity:.8;
+}
+.dr-pvp-royal .dr-royal-activation-target {
+  cursor:pointer;
+  touch-action:manipulation;
+}
+.dr-pvp-playing .dr-pvp-royal .dr-royal-impact-slot:disabled {cursor:default;opacity:1;filter:none;}
+.dr-pvp-playing .dr-pvp-royal .dr-royal-finish:disabled {opacity:.6;}
+.dr-pvp-royal .dr-pvp-status-overlay {
+  position:absolute;
+  inset:auto 10px 24%;
+  z-index:50;
+  padding:7px;
+  border:1px solid #e1a56b;
+  border-radius:10px;
+  background:#141523eb;
+  text-align:center;
+  font:600 12px/1.4 system-ui,sans-serif;
+  color:#fff2d2;
+}
+.dr-pvp-royal .dr-pvp-pause {
+  position:absolute;
+  inset:0;
+  z-index:110;
+  display:grid;
+  place-items:center;
+  padding:20px;
+  background:#070a17bd;
+}
+.dr-pvp-royal .dr-pvp-pause-panel {
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  width:min(100%,330px);
+  padding:26px 19px;
+  border:2px solid #d4aa63;
+  border-radius:18px;
+  background:linear-gradient(155deg,#311b2b,#12182b);
+  text-align:center;
+  box-shadow:0 12px 38px #000b;
+}
+.dr-pvp-pause-panel h2 {margin:0;color:#ffe5a5;font:900 23px Cinzel,Georgia,serif;}
+.dr-pvp-pause-panel p {margin:0;color:#e6d7bd;font:12px system-ui,sans-serif;}
+.dr-pvp-royal .dr-pvp-pause-panel button {
+  padding:10px 12px;
+  border:1px solid #d3a96b;
+  border-radius:12px;
+  background:linear-gradient(#873047,#4d1d35);
+  color:#fff7de;
+  font:700 15px Georgia,serif;
+}
+.dr-pvp-royal .dr-pvp-pause-panel button:disabled {opacity:.5;}
+.dr-pvp-royal .dr-pvp-outcome {z-index:125;}
+.dr-pvp-royal .dr-pvp-outcome .dr-g3-result-fx {z-index:0;pointer-events:none;}
+.dr-pvp-royal .dr-pvp-outcome .dr-royal-end-banner {
+  position:relative;
+  z-index:2;
+}
+.dr-pvp-royal .dr-pvp-outcome .dr-royal-end-cartela {
+  min-height:60px;
+  max-height:25dvh;
+}
+.dr-pvp-royal .dr-pvp-outcome .dr-royal-end-banner > button {
+  min-height:45px;
+  padding:8px 16px;
+}
+.dr-pvp-playing > .dr-pvp-alert {
+  position:absolute;
+  top:max(7px,env(safe-area-inset-top));
+  left:50%;
+  z-index:150;
+  transform:translateX(-50%);
+}
+@media (max-height:590px) {
+  .dr-pvp-royal .dr-pvp-live-summary {display:none;}
+  .dr-pvp-royal .dr-royal-character .dr-pvp-portrait-name {font-size:9px;}
+}
