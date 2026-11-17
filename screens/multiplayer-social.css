@@ -1,0 +1,106 @@
+/* Centro social PvP G3: capa independiente del tablero y de los efectos del combate. */
+.dr-pvp .dr-pvp-community-shortcut {
+  display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;
+  border:1.5px solid #d3ad72;border-radius:14px;min-height:58px;
+  background:linear-gradient(135deg,#2b314b,#18213a);padding:10px 14px;
+  box-shadow:inset 0 2px #f9d99919,0 5px 13px #080b1980;
+  color:#f8e8cb;text-align:left;
+}
+.dr-pvp-community-shortcut strong {display:block;font-size:clamp(17px,4.2vw,22px);}
+.dr-pvp-community-shortcut small {display:block;font:12px/1.4 system-ui,sans-serif;color:#dbc9b1;margin-top:3px;}
+.dr-pvp-community-count {display:grid;place-items:center;min-width:36px;height:36px;
+  border-radius:50%;background:#31513ac9;border:1px solid #79ad80;color:#caffd5;font:700 14px system-ui,sans-serif;}
+.dr-pvp-social-cover {position:absolute;inset:0;z-index:90;display:grid;place-items:center;
+  background:#080b14d9;padding:max(12px,env(safe-area-inset-top)) 10px max(12px,env(safe-area-inset-bottom));
+  font-family:system-ui,sans-serif;}
+.dr-pvp-social-panel {display:flex;flex-direction:column;min-height:0;width:min(100%,560px);
+  height:min(100%,830px);border-radius:21px;border:2px solid #d5aa6b;
+  background:linear-gradient(155deg,#242239,#201c32 50%,#291b2d);
+  color:#f6e8d0;overflow:hidden;
+  box-shadow:inset 0 0 0 3px #e5c48f1a,0 12px 46px #000c;}
+.dr-pvp-social-panel button {font:600 13px system-ui,sans-serif;cursor:pointer;
+  min-height:35px;padding:7px 10px;border:1px solid #bf9761;border-radius:10px;
+  background:linear-gradient(150deg,#383650,#20273f);color:#f9e7c6;}
+.dr-pvp-social-panel button:disabled {opacity:.48;cursor:not-allowed;}
+.dr-pvp-social-panel button:focus-visible,.dr-pvp-social-panel summary:focus-visible,
+.dr-pvp-social-panel input:focus-visible {outline:3px solid #fbd78c;outline-offset:2px;}
+.dr-pvp-social-header {display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:16px 16px 13px;border-bottom:1px solid #956e4e;background:#101a2c95;}
+.dr-pvp-social-header h2 {font:700 clamp(22px,5.5vw,31px)/1.1 Georgia,serif;color:#ffe4a9;margin:5px 0 0;}
+.dr-pvp-social-header small {font:700 10px/1.3 system-ui,sans-serif;letter-spacing:.07em;color:#dcbf8f;}
+.dr-pvp-social-header button {min-width:39px;min-height:39px;font-size:26px;line-height:20px;padding:4px;}
+.dr-pvp-social-visibility {padding:12px 14px;border-bottom:1px solid #705765;
+  display:flex;flex-direction:column;gap:7px;}
+.dr-pvp-social-visibility>span {font:700 12px system-ui,sans-serif;color:#e8d2b4;}
+.dr-pvp-social-visibility>div {display:flex;gap:6px;}
+.dr-pvp-social-visibility button {flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
+  min-width:0;padding:8px 4px;font-size:clamp(10px,2.9vw,13px);border-color:#716b6e;}
+.dr-pvp-social-visibility button.is-selected {border:2px solid #f3c276;background:#54405b;color:#fff4d7;}
+.dr-pvp-social-panel i {display:inline-block;flex:0 0 8px;width:8px;height:8px;border-radius:50%;
+  margin-right:3px;vertical-align:middle;}
+.dr-pvp-social-panel i.is-available {background:#60d782;box-shadow:0 0 8px #60d782;}
+.dr-pvp-social-panel i.is-busy {background:#e7b355;box-shadow:0 0 8px #e7b355;}
+.dr-pvp-social-panel i.is-hidden {background:#89899c;}
+.dr-pvp-social-tabs {display:flex;gap:4px;padding:10px 9px 0;border-bottom:1px solid #7d5f58;}
+.dr-pvp-social-tabs button {flex:1;padding:8px 4px;min-width:0;
+  border:0;border-radius:9px 9px 0 0;background:transparent;color:#d1bed1;font-size:clamp(10px,2.7vw,12px);}
+.dr-pvp-social-tabs button[aria-selected=true] {background:#60445b;border-bottom:3px solid #f3c276;color:#fff0cb;}
+.dr-pvp-social-list {overflow-y:auto;overscroll-behavior:contain;flex:1;min-height:0;
+  display:flex;flex-direction:column;gap:8px;padding:12px;}
+.dr-pvp-social-peer {display:flex;align-items:center;gap:9px;padding:9px;
+  border:1px solid #816c62;border-radius:13px;background:#161c2edb;text-align:left;}
+.dr-pvp-social-peer>img {width:41px;height:45px;object-fit:contain;flex-shrink:0;}
+.dr-pvp-social-peer-copy {min-width:0;flex:1;}
+.dr-pvp-social-peer-copy strong {display:block;font:700 15px/1.2 Georgia,serif;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.dr-pvp-social-peer-copy small {display:block;color:#d7c6b6;font:11px/1.5 system-ui,sans-serif;}
+.dr-pvp-social-actions {display:flex;flex-wrap:wrap;justify-content:flex-end;gap:5px;max-width:58%;}
+.dr-pvp-social-actions button {font-size:11px;min-height:32px;padding:5px 8px;}
+.dr-pvp-social-actions button.challenge {background:linear-gradient(160deg,#a53747,#742638);}
+.dr-pvp-social-actions details {position:relative;}
+.dr-pvp-social-actions summary {list-style:none;display:grid;place-items:center;width:26px;
+  min-height:32px;font-size:20px;color:#ecd6aa;cursor:pointer;}
+.dr-pvp-social-actions summary::-webkit-details-marker {display:none;}
+.dr-pvp-social-more {position:absolute;right:0;top:33px;z-index:5;min-width:104px;
+  display:flex;flex-direction:column;gap:5px;padding:6px;border:1px solid #ba955f;
+  background:#171b2d;border-radius:10px;box-shadow:0 4px 12px #0009;}
+.dr-pvp-social-empty {font:13px/1.55 system-ui,sans-serif;text-align:center;color:#e5d6c2;margin:auto 10px;}
+.dr-pvp-social-note {font:11px/1.45 system-ui,sans-serif;color:#dfc8a5;
+  margin:0;border-top:1px solid #72525b;padding:11px 14px 13px;text-align:left;}
+.dr-pvp-chat-person {display:flex;justify-content:space-between;gap:8px;align-items:center;
+  padding:11px 15px;background:#1b2535;}
+.dr-pvp-chat-person strong {font:700 19px Georgia,serif;color:#f6dfaa;}
+.dr-pvp-chat-person small {color:#91e4a5;font-size:11px;}
+.dr-pvp-chat-messages {display:flex;flex:1;min-height:0;flex-direction:column;gap:10px;
+  overflow-y:auto;overscroll-behavior:contain;padding:16px 13px;}
+.dr-pvp-chat-bubble {display:flex;flex-direction:column;align-self:flex-start;gap:4px;
+  max-width:86%;overflow-wrap:anywhere;border-radius:13px 13px 13px 2px;padding:9px 12px;
+  background:#35405b;border:1px solid #667998;font:13px/1.45 system-ui,sans-serif;}
+.dr-pvp-chat-bubble.mine {align-self:flex-end;border-radius:13px 13px 2px 13px;
+  background:#6c314c;border-color:#b27d72;}
+.dr-pvp-chat-bubble small {align-self:flex-end;font-size:10px;color:#e3ccbd;}
+.dr-pvp-chat-compose {display:flex;gap:8px;padding:10px 12px 13px;border-top:1px solid #705767;}
+.dr-pvp-chat-compose input {flex:1;min-width:0;min-height:43px;border-radius:9px;
+  border:1px solid #9b825e;background:#101929;color:white;padding:10px 11px;font:14px system-ui,sans-serif;}
+.dr-pvp-chat-compose button {min-width:64px;}
+.dr-pvp-incoming {position:absolute;z-index:85;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:min(calc(100% - 30px),440px);padding:20px;text-align:center;
+  background:linear-gradient(160deg,#2e2840,#191d30);border:2px solid #efbf76;border-radius:19px;
+  box-shadow:0 0 0 100vmax #070910bd,0 8px 28px #0009;}
+.dr-pvp-incoming h3 {font:700 26px Georgia,serif;margin:0 0 9px;color:#ffe2a5;}
+.dr-pvp-incoming p {font:14px/1.4 system-ui,sans-serif;margin:8px 0 16px;}
+.dr-pvp-incoming>div {display:flex;gap:10px;}
+.dr-pvp-incoming button {flex:1;}
+@media(max-width:390px) {
+  .dr-pvp-social-actions {max-width:51%;}
+  .dr-pvp-social-peer {gap:6px;padding:7px;}
+  .dr-pvp-social-peer>img {width:35px;height:38px;}
+  .dr-pvp-social-peer-copy strong {font-size:14px;}
+  .dr-pvp-social-actions button {font-size:10px;padding:4px 6px;}
+}
+@media(max-height:680px) {
+  .dr-pvp-social-header {padding:9px 13px;}
+  .dr-pvp-social-visibility {padding:8px 12px;}
+  .dr-pvp-social-tabs {padding-top:5px;}
+  .dr-pvp-social-note {padding:7px 11px;}
+}
