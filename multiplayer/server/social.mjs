@@ -18,7 +18,8 @@ function textContent(value) {
   return value.replace(/[\u0000-\u0008\u000b-\u001f]/g, '').trim().slice(0, 500);
 }
 
-export function createSocialHub({ send, fail, onChallenge, onAcceptChallenge, onDeclineChallenge, accountStore = null }) {
+export function createSocialHub({ send, fail, onChallenge, onAcceptChallenge, onDeclineChallenge,
+  accountStore = null, requireAccount = false }) {
   const profiles = new Map(); // Presence is ephemeral; friends/blocks/requests are durable.
   const active = new Map();   // One active social socket per guest identity.
   const requests = new Map();
@@ -66,7 +67,7 @@ export function createSocialHub({ send, fail, onChallenge, onAcceptChallenge, on
   }
 
   function handleHello(ws, msg) {
-    if (accountStore && !ws.account?.uid) return fail(ws, 'Debes verificar tu correo para entrar al multijugador.');
+    if (requireAccount && !ws.account?.uid) return fail(ws, 'Debes verificar tu correo para entrar al multijugador.');
     const uid = ws.account?.uid || null;
     const secret = !uid && typeof msg.secret === 'string' && HEX_SECRET.test(msg.secret)
       ? msg.secret.toLowerCase() : !uid ? randomBytes(32).toString('hex') : null;
@@ -74,7 +75,7 @@ export function createSocialHub({ send, fail, onChallenge, onAcceptChallenge, on
       : identityFromSecret(secret);
     let profile = profiles.get(id);
     if (!profile) {
-      const saved = uid ? accountStore.getSocial(uid) : null;
+      const saved = uid && accountStore ? accountStore.getSocial(uid) : null;
       profile = { id, ownerUid: uid, name: saved?.name || safeName(msg.name),
         portrait: saved?.portrait || 'xervias', status: 'hidden',
         friends: new Set(saved?.friends || []), blocked: new Set(saved?.blocked || []),
