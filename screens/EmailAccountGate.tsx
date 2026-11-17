@@ -10,6 +10,20 @@ const firebaseConfig = {
   appId: '1:936991085362:web:46467dfe4312586c70bd2b',
 };
 const EMAIL_KEY = 'decreto-real.email-link.pending.v1';
+const INVITE_KEY = 'decreto-real.email-link.invite.v1';
+function savedInvitation() {
+  const fromUrl = new URLSearchParams(window.location.search).get('sala') || '';
+  const fromStorage = localStorage.getItem(INVITE_KEY) || '';
+  const code = (fromUrl || fromStorage).toUpperCase();
+  return /^[0-9]{2}[A-HJ-NP-Z]{2}$/.test(code) ? code : '';
+}
+function finishEmailLink() {
+  const code = savedInvitation();
+  localStorage.removeItem(EMAIL_KEY);
+  localStorage.removeItem(INVITE_KEY);
+  window.history.replaceState({}, '', window.location.pathname
+    + (code ? '?sala=' + encodeURIComponent(code) : '') + '#/multijugador');
+}
 let sdkPromise: Promise<any> | null = null;
 async function sdk() {
   if (!sdkPromise) sdkPromise = (async () => {
@@ -65,9 +79,8 @@ export function EmailAccountGate({ children }: { children: React.ReactNode }) {
           setEmail(remembered);
           try {
             await api.signInWithEmailLink(api.auth, remembered, window.location.href);
-            localStorage.removeItem(EMAIL_KEY);
+            finishEmailLink();
             setLinkPending(false);
-            window.history.replaceState({}, '', window.location.pathname + '#/multijugador');
           } catch {
             if (live) setError('Escribe el correo al que se envió el enlace para terminar el acceso.');
           }
@@ -88,15 +101,17 @@ export function EmailAccountGate({ children }: { children: React.ReactNode }) {
       const api = await sdk();
       if (linkPending) {
         await api.signInWithEmailLink(api.auth, address, window.location.href);
-        localStorage.removeItem(EMAIL_KEY);
+        finishEmailLink();
         setLinkPending(false);
-        window.history.replaceState({}, '', window.location.pathname + '#/multijugador');
         setStatus('ready');
       } else {
         // This domain must be authorized and Email Link enabled in Firebase Console.
-        const destination = window.location.origin + import.meta.env.BASE_URL + '#/multijugador';
+        const code = savedInvitation();
+        const destination = window.location.origin + import.meta.env.BASE_URL
+          + (code ? '?sala=' + encodeURIComponent(code) : '') + '#/multijugador';
         await api.sendSignInLinkToEmail(api.auth, address, { url: destination, handleCodeInApp: true });
         localStorage.setItem(EMAIL_KEY, address);
+        if (code) localStorage.setItem(INVITE_KEY, code);
         setStatus('sent');
       }
     } catch (err: any) {
