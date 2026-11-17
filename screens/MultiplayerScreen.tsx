@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './multiplayer.css';
 import { DuelistProfilePanel } from './DuelistProfilePanel';
 import { loadDuelistProfile, saveDuelistProfile, rewardMatch, portraitUrl } from '../game/duelistProfile';
+import { isPrivateRoomCode } from '../game/pvpRoomCode';
 import { MultiplayerBattleBoard } from './MultiplayerBattleBoard';
 import { useAudio } from '../contexts/AudioContext';
 import { freeDuelMusicScene } from '../game/musicScene';
@@ -25,6 +26,17 @@ const SOCKET_URL = configuredUrl || (typeof window !== 'undefined' && ['localhos
 function getStored<T>(key: string): T | null {
   try { const raw = sessionStorage.getItem(key); return raw ? JSON.parse(raw) as T : null; } catch { return null; }
 }
+function getValidStoredSession(): Session | null {
+  const saved = getStored<Session>(SESSION_KEY);
+  if (!saved) return null;
+  // SessionStorage can retain rooms created by a previous 10-character server.
+  // Never resume or display those as a valid four-character invitation.
+  if (!isPrivateRoomCode(saved.code) || typeof saved.token !== 'string') {
+    try { sessionStorage.removeItem(SESSION_KEY); } catch { /* private mode */ }
+    return null;
+  }
+  return saved;
+}
 function storeSession(session: Session) {
   try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(session)); } catch { /* private mode */ }
 }
@@ -45,7 +57,7 @@ export default function MultiplayerScreen() {
   const [editingName, setEditingName] = React.useState(() => !nickname.trim());
   const inviteOnLoad = React.useRef(new URLSearchParams(window.location.search).get('sala') || '');
   const autoJoinAttempted = React.useRef(false);
-  const [session, setSession] = React.useState<Session | null>(() => getStored(SESSION_KEY));
+  const [session, setSession] = React.useState<Session | null>(() => getValidStoredSession());
   // A resumed tab must not replay the first-match ceremony.
   const openingSeen = React.useRef(Boolean(session));
   const sessionRef = React.useRef<Session | null>(session);
@@ -56,6 +68,7 @@ export default function MultiplayerScreen() {
   const [view, setView] = React.useState<View | null>(null);
   const [waiting, setWaiting] = React.useState(false);
   const [error, setError] = React.useState('');
+  const [serverNeedsUpdate, setServerNeedsUpdate] = React.useState(false);
   const nicknameRef = React.useRef(nickname);
   const cosmeticRef = React.useRef(duelist.slots[duelist.active]?.appearance);
   nicknameRef.current = nickname;
@@ -97,7 +110,7 @@ export default function MultiplayerScreen() {
         if (!active) return;
         setOnline(true); setError('');
         if (sessionRef.current) socket.send(JSON.stringify({ type: 'resume', ...sessionRef.current }));
-        else if (/^[0-9]{2}[A-HJ-NP-Z]{2}$/i.test(inviteOnLoad.current) && !autoJoinAttempted.current && nicknameRef.current.trim().length >= 2) {
+        else if (isPrivateRoomCode(inviteOnLoad.current) && !autoJoinAttempted.current && nicknameRef.current.trim().length >= 2) {
           autoJoinAttempted.current = true;
           socket.send(JSON.stringify({ type: 'join', name: nicknameRef.current.trim(), appearance: cosmeticRef.current,
             code: inviteOnLoad.current.toUpperCase() }));
@@ -108,6 +121,15 @@ export default function MultiplayerScreen() {
         let msg: any;
         try { msg = JSON.parse(String(event.data)); } catch { return; }
         if (msg.type === 'session' && typeof msg.token === 'string') {
+          if (!isPrivateRoomCode(msg.code)) {
+            // A current GitHub Pages client talking to an older Railway server
+            // must never advertise a ten-character code as a usable invite.
+            setServerNeedsUpdate(true);
+            setError('');
+            socket.close(4000, 'Servidor de partidas desactualizado');
+            return;
+          }
+          setServerNeedsUpdate(false);
           const next: Session = { code: msg.code, matchId: msg.matchId, token: msg.token,
             slot: msg.slot, name: msg.name, randomQueue: Boolean(msg.randomQueue) };
           sessionRef.current = next; setSession(next); storeSession(next);
@@ -263,6 +285,10 @@ export default function MultiplayerScreen() {
       <div className="dr-pvp-hero-rule"><span>✦</span></div>
     </div>}
     {!SOCKET_URL && <p className="dr-pvp-alert" role="alert">El servidor multijugador aún no está configurado. Se necesita VITE_MULTIPLAYER_WS_URL.</p>}
+    {serverNeedsUpdate && <div className="dr-pvp-alert" role="alert">
+      El servidor todavía genera códigos antiguos de 10 caracteres. La versión de cuatro caracteres debe actualizarse en Railway.
+      <button type="button" onClick={() => setServerNeedsUpdate(false)}>Reintentar</button>
+    </div>}
     {error && <p className="dr-pvp-alert" role="alert">{error}</p>}
 
     {!session && <section className="dr-pvp-lobby" aria-label="Opciones de juego en línea">
@@ -277,12 +303,12 @@ export default function MultiplayerScreen() {
             <button type="button" onClick={() => setEditingName(true)} aria-label="Cambiar apodo">✎</button>
           </div>}
       <button type="button" className="dr-pvp-profile-shortcut" onClick={() => setShowProfile(true)}>
-        Mi perfil de duelista · Nombres, retratos y recompensas
+        Mi Perfil
       </button>
       {!inviteOnLoad.current && <>
-        <button type="button" className="dr-pvp-primary dr-pvp-feature-button" disabled={!online}
+        <button type="button" className="dr-pvp-primary dr-pvp-feature-button" disabled={!online || serverNeedsUpdate}
           onClick={() => enter('queue')}><span aria-hidden="true">⚔</span>Jugar ahora</button>
-        <button type="button" className="dr-pvp-secondary dr-pvp-feature-button" disabled={!online}
+        <button type="button" className="dr-pvp-secondary dr-pvp-feature-button" disabled={!online || serverNeedsUpdate}
           onClick={() => enter('create')}><span aria-hidden="true">♟</span>Invitar a un amigo</button>
         <button type="button" className="dr-pvp-minor" onClick={() => setShowJoinCode(current => !current)}>
           <span aria-hidden="true">↗</span>Tengo un código de invitación</button>
@@ -291,7 +317,7 @@ export default function MultiplayerScreen() {
         {!inviteOnLoad.current && <label>Código recibido<input value={joinCode} maxLength={4}
           onChange={e => setJoinCode(e.target.value.toUpperCase())} placeholder="Ej. 27KP" /></label>}
         <button type="button" className={inviteOnLoad.current ? 'dr-pvp-primary dr-pvp-feature-button' : 'dr-pvp-secondary'}
-          disabled={!online || !/^[0-9]{2}[A-HJ-NP-Z]{2}$/i.test(joinCode.trim())}
+          disabled={!online || serverNeedsUpdate || !isPrivateRoomCode(joinCode)}
           onClick={() => enter('join')}>{inviteOnLoad.current ? 'Aceptar desafío' : 'Unirme al duelo'}</button>
       </div>}
       <p className="dr-pvp-tip"><span aria-hidden="true">ⓘ</span>
