@@ -97,6 +97,9 @@ function sendRecords(ws) {
 }
 function commitResult(room) {
   if (room.recorded || room.match?.status !== 'finished' || room.seats.length !== 2) return;
+  // Legacy standalone clients may still duel casually without a social profile.
+  // Their result cannot be attached to a stable identity.
+  if (room.seats.some(seat => !seat.id)) return;
   try {
     const ok = ledger.record({ matchId: room.matchId,
       mode: room.ranked ? 'ranked' : 'casual',
@@ -153,7 +156,7 @@ function enter(ws, room, name, appearance) {
   if (room.inviteExpires && Date.now() > room.inviteExpires)
     return fail(ws, 'Esta invitación ha caducado.');
   if (room.seats.length !== 1 || room.match) return fail(ws, 'La sala ya está completa.');
-  if (!ws.social?.id || room.seats[0].id === ws.social.id)
+  if (ws.social?.id && room.seats[0].id === ws.social.id)
     return fail(ws, 'No puedes combatir contra tu propio perfil.');
   if (room.sockets[0]?.readyState !== WebSocket.OPEN) return fail(ws, 'El creador de la sala está desconectado.');
   room.seats.push({ name, appearance, id: ws.social?.id || null, token: token() });
@@ -236,8 +239,8 @@ sockets.on('connection', ws => {
     if (msg.type === 'records:get') { sendRecords(ws); return; }
     if (msg.type === 'create' || msg.type === 'queue') {
       if (ws.seat) return fail(ws, 'Ya perteneces a una sala.');
-      if (!ws.social?.id) return fail(ws, 'Debes conectar tu perfil primero.');
       const ranked = msg.type === 'queue' && msg.ranked === true;
+      if (ranked && !ws.social?.id) return fail(ws, 'Conecta tu perfil para jugar Ranked.');
       if (ranked && !ledger.durable) return fail(ws, 'Ranked requiere almacenamiento permanente en el servidor.');
       const name = nameOf(msg.name);
       if (!name) return fail(ws, 'El apodo debe tener de 2 a 24 caracteres.');
@@ -260,7 +263,6 @@ sockets.on('connection', ws => {
       return;
     }
     if (msg.type === 'join') {
-      if (!ws.social?.id) return fail(ws, 'Debes conectar tu perfil primero.');
       const name = nameOf(msg.name), code = typeof msg.code === 'string' ? msg.code.trim().toUpperCase() : '';
       if (!name) return fail(ws, 'El apodo debe tener de 2 a 24 caracteres.');
       if (!/^[0-9]{2}[A-HJ-NP-Z]{2}$/.test(code)) return fail(ws, 'Introduce un código de 2 números y 2 letras.');
