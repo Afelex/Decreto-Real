@@ -33,7 +33,7 @@ export function MultiplayerCinematicCue({ cue, onEnded }: {
   }, [cue.id, stage]);
 
   if (cue.kind === 'turn') return <TurnAnnouncement fullscreen
-    variant={cue.isPlayer ? 'player' : 'opponent'/>;
+    variant={cue.isPlayer ? 'player' : 'opponent'}/>;
   if (cue.kind === 'combo') return <ComboEffectOverlay level={cue.level} ability={cue.ability}
     isPlayer={cue.isPlayer} paused={false}/>;
 
