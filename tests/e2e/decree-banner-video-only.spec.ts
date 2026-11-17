@@ -5,13 +5,17 @@ import { expect, test } from '@playwright/test';
 test('decreto: solo WebM y texto en el mismo centro, sin cinta plana previa', async ({ page }, info) => {
   test.skip(!['mobile-320', 'mobile-390', 'short-360'].includes(info.project.name),
     'Focused mobile video ribbon QA');
-  await page.addInitScript(() => { Math.random = () => 0.99; });
+  await page.addInitScript(() => { Math.random = () => 0.6; });
   await page.goto('/Decreto-Real/#/game');
   await page.getByRole('button', { name: 'Lanzar Moneda' }).click();
   await expect(page.locator('.dr-royal-hand-card')).toHaveCount(4, { timeout: 19000 });
 
-  const ordinary = page.locator('.dr-royal-hand-card')
-    .filter({ hasText: /Ataque|Defensa|Orden/ }).first();
+  // 0.99 leaves the four Impact cards at the top of the Fisher–Yates deck;
+  // 0.6 gives an ordinary playable card while still awarding the first turn.
+  const ordinary = page.locator(
+    '.dr-royal-hand-card.attack, .dr-royal-hand-card.defense, .dr-royal-hand-card.order',
+  ).first();
+  await expect(ordinary).toBeVisible();
   await ordinary.click();
   await page.getByRole('button', { name: 'Campo para activar Ataque, Defensa, Orden o Mística' }).click();
 
