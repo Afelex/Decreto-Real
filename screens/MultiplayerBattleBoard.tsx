@@ -6,6 +6,8 @@ import { RoyalHpMeter, HpDeltaCue } from './RoyalHpMeter';
 import { TurnIndicator, ComboChoicePanel } from './CombatEventUI';
 import { ResultCinematicFX } from './ResultCinematicFX';
 import { G3_UI_ASSETS } from '../game/g3UiAssets';
+import { MultiplayerCinematicCue } from './MultiplayerCinematicCue';
+import type { MultiplayerCue } from '../game/multiplayerPresentation';
 import './hud-g3.css';
 import './royal-battle-status.css';
 import './multiplayer-board.css';
@@ -19,6 +21,7 @@ type DuelView = { revision: number; status: 'playing' | 'finished'; isMyTurn: bo
   lastEvent: string };
 type Props = {
   view: DuelView; online: boolean; activeTurn: boolean;
+  cinematicCue: MultiplayerCue | null; onCueEnded: () => void;
   onPlayCard: (card: Card) => void;
   onEndTurn: () => void;
   onCombo: (choice: 'DAMAGE' | 'HEAL') => void;
@@ -62,7 +65,7 @@ function Deck({ count, rival }: { count: number; rival?: boolean }) {
 }
 
 /** Vista de combate PvP. Los eventos y las reglas pertenecen exclusivamente al servidor. */
-export function MultiplayerBattleBoard({ view, online, activeTurn, onPlayCard, onEndTurn, onCombo, onSurrender, onNewGame, onExit }: Props) {
+export function MultiplayerBattleBoard({ view, online, activeTurn, cinematicCue, onCueEnded, onPlayCard, onEndTurn, onCombo, onSurrender, onNewGame, onExit }: Props) {
   const [selected, setSelected] = React.useState<string | null>(null);
   const [menuOpen, setMenuOpen] = React.useState(false);
   // A newly accepted state always clears selection, preventing stale card IDs.
@@ -168,6 +171,7 @@ export function MultiplayerBattleBoard({ view, online, activeTurn, onPlayCard, o
       </footer>
     </div>
     {!finished && view.opponent.connected && <TurnIndicator side={view.isMyTurn ? 'PLAYER' : 'OPPONENT'} />}
+    {cinematicCue && <MultiplayerCinematicCue cue={cinematicCue} onEnded={onCueEnded}/>}
     {!online && <div className="dr-pvp-status-overlay" role="status">Conexión interrumpida. Reconectando…</div>}
     {!!view.pendingCombo && !finished && <ComboChoicePanel level={view.pendingCombo}
       onDamage={() => onCombo('DAMAGE')} onHeal={() => onCombo('HEAL')}/>}
@@ -180,7 +184,7 @@ export function MultiplayerBattleBoard({ view, online, activeTurn, onPlayCard, o
         {finished && <button type="button" onClick={onExit}>Volver al menú principal</button>}
       </div>
     </div>}
-    {finished && <div className="dr-royal-end-banner-stage dr-pvp-outcome">
+    {finished && !cinematicCue && <div className="dr-royal-end-banner-stage dr-pvp-outcome">
       <ResultCinematicFX won={winner}/>
       <section className="dr-royal-end-banner" role="dialog" aria-modal="true" aria-label={'Resultado del duelo: ' + outcome}>
         <div className="dr-royal-end-cartela" aria-hidden="true">
