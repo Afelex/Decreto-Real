@@ -428,12 +428,14 @@ export default function MultiplayerScreen() {
         <span className="dr-pvp-community-count" aria-label={socialTotal + ' jugadores visibles'}>
           {friendRequests.length ? friendRequests.length + ' ✉' : socialTotal}</span>
       </button>}
-      {showJoinCode && !(inviteOnLoad.current || incomingChallenge) && <div className="dr-pvp-code-join">
-        {!inviteOnLoad.current && <label>Código recibido<input value={joinCode} maxLength={4}
-          onChange={e => setJoinCode(e.target.value.toUpperCase())} placeholder="Ej. 27KP" /></label>}
-        <button type="button" className={inviteOnLoad.current ? 'dr-pvp-primary dr-pvp-feature-button' : 'dr-pvp-secondary'}
-          disabled={!online || serverNeedsUpdate || !isPrivateRoomCode(joinCode)}
-          onClick={() => enter('join')}>{inviteOnLoad.current ? 'Aceptar desafío' : 'Unirme al duelo'}</button>
+      {showJoinCode && !(inviteOnLoad.current || incomingChallenge) && <div className="dr-pvp-code-join dr-pvp-manual-invite">
+        <label>Código recibido<input value={joinCode} maxLength={4}
+          onChange={e => setJoinCode(e.target.value.toUpperCase())} placeholder="Ej. 27KP" /></label>
+        <button type="button" className="dr-pvp-primary dr-pvp-feature-button dr-pvp-invite-big-button"
+          disabled={!online || serverNeedsUpdate || invitationStarting || nickname.trim().length < 2 || !isPrivateRoomCode(joinCode)}
+          onClick={startInvitation}>{invitationStarting ? 'Conectando al duelo…' : 'Empezar partida'}</button>
+        <button type="button" className="dr-pvp-secondary dr-pvp-feature-button dr-pvp-invite-big-button"
+          onClick={clearInvitation}>Volver al menú Multijugador</button>
       </div>}
       {!(inviteOnLoad.current || incomingChallenge) && <p className="dr-pvp-tip"><span aria-hidden="true">ⓘ</span>
         Crea una sala y comparte el código de 2 números y 2 letras.</p>}
