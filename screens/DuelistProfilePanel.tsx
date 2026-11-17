@@ -12,8 +12,10 @@ const SECTIONS: { kind: CosmeticKind; title: string }[] = [
   { kind: 'nameFx', title: 'Efecto del nombre' },
 ];
 
-export function DuelistProfilePanel({ profile, onChange, onClose }: {
+export function DuelistProfilePanel({ profile, onChange, onClose, onSignOut, email, history = [] }: {
   profile: DuelistProfile; onChange: (updated: DuelistProfile) => void; onClose: () => void;
+  onSignOut?: () => void; email?: string;
+  history?: Array<{ id: string; date: string; result: string; opponentName: string; turns: number }>;
 }) {
   const slot = profile.slots[profile.active];
   const [draftName, setDraftName] = React.useState(slot.name);
@@ -111,7 +113,21 @@ export function DuelistProfilePanel({ profile, onChange, onClose }: {
       <div className={'dr-duelist-preview-card back-' + slot.appearance.back} aria-label="Dorso seleccionado">✥</div>
       <p>Vista previa visual · Sin alterar el combate</p>
     </div>}
-    <p className="dr-duelist-help">Versión inicial: se guarda en este dispositivo. La sincronización con Peruanistas está pendiente.</p>
+    <p className="dr-duelist-help">Tus datos se vinculan a tu correo verificado. No se comparten con otros jugadores.</p>
+    {email && <p className="dr-duelist-help" style={{ overflowWrap: 'anywhere' }}>
+      Cuenta: <strong>{email}</strong>
+    </p>}
+    {history.length > 0 && <section aria-label="Últimas partidas" className="dr-duelist-section">
+      <h3>Últimas partidas</h3>
+      <ul style={{ paddingInlineStart: '1.3rem', fontSize: '.9rem' }}>
+        {history.slice(0, 10).map(item => <li key={item.id}>
+          {item.result === 'victoria' ? 'Victoria' : item.result === 'derrota' ? 'Derrota' : 'Empate'}
+          {' · '}{item.opponentName || 'Rival'}{' · '}{item.turns} turnos
+        </li>)}
+      </ul>
+    </section>}
     <button type="button" className="dr-duelist-done" onClick={onClose}>Volver al multijugador</button>
+    {onSignOut && <button type="button" className="dr-duelist-done" onClick={onSignOut}
+      style={{ background: '#6c2027', marginTop: '.6rem' }}>Cerrar sesión</button>
   </section>;
 }
