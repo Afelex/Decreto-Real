@@ -18,7 +18,8 @@ type Props = {
  * Each stage gets its full approved 1.5 s from GameBoard's pausable clock.
  * Video playback is decorative and cannot shorten or stall gameplay.
  * The decree ribbon and its lettering share one centered media stage.
- * No opaque fallback ribbon is ever shown during decoding/buffering/failure.
+ * The approved WebM stays mounted during brief mobile buffering. A waiting
+ * event must NEVER hide the entire ribbon and caption after their first frame.
  * Stages are mounted separately, so banner and energy cannot overlap.
  */
 export const CardActivationBanner: React.FC<Props> = ({
@@ -75,7 +76,7 @@ export const CardActivationBanner: React.FC<Props> = ({
             autoPlay={!paused} muted playsInline preload="auto"
             onLoadedMetadata={event => syncCueVideoRate(event.currentTarget, DECREE_EFFECT_DURATION_MS)}
             onPlaying={() => setEnergyPlaying(true)}
-            onWaiting={() => setEnergyPlaying(false)}
+            // Avoid flashing the energy fallback on transient buffer stalls.
             onError={() => { setFailedEnergy(true); setEnergyPlaying(false); }}>
             <source src={energySrc} type="video/webm" />
           </video>}
@@ -91,7 +92,9 @@ export const CardActivationBanner: React.FC<Props> = ({
             autoPlay={!paused} muted playsInline preload="auto"
             onLoadedMetadata={event => syncCueVideoRate(event.currentTarget, DECREE_BANNER_DURATION_MS)}
             onPlaying={() => setBannerPlaying(true)}
-            onWaiting={() => setBannerPlaying(false)}
+            // Chrome/Android may emit several waiting/playing events while decoding
+            // transparent VP9 frames. Once visible, never blink the whole stage.
+            // onError still removes failed media without a legacy colored strip.
             onError={() => { setFailedBanner(true); setBannerPlaying(false); }}>
             <source src={bannerSrc} type="video/webm" />
           </video>}
