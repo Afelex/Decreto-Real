@@ -76,6 +76,21 @@
   border-right:1px solid #bd975b57;
 }
 .dr-result-screen__stats dl > div:last-child {border-right:0;}
+.dr-result-screen__stats.has-expanded-stats dl {
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  column-gap:0;
+  row-gap:clamp(7px,1.3dvh,11px);
+}
+.dr-result-screen__stats.has-expanded-stats dl > div {
+  padding:3px 2px;
+}
+.dr-result-screen__stats.has-expanded-stats dl > div:nth-child(3n) {
+  border-right:0;
+}
+.dr-result-screen__stats.has-expanded-stats dt {
+  overflow-wrap:break-word;
+}
+
 .dr-result-screen__stats dt {
   color:#e5d7ba;
   font:600 clamp(10px,2.55vw,12px)/1.2 system-ui,sans-serif;
