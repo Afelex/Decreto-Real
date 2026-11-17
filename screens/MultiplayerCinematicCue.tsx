@@ -1,7 +1,6 @@
 import React from 'react';
 import { CardActivationBanner } from './CardActivationBanner';
 import { ComboEffectOverlay } from './ComboEffectOverlay';
-import { useAudio } from '../contexts/AudioContext';
 import { TurnAnnouncement, TURN_TRANSITION_DURATION_MS } from './CombatEventUI';
 import { cardEffectCue, DECREE_BANNER_DURATION_MS, DECREE_EFFECT_DURATION_MS } from '../game/effectCues';
 import type { MultiplayerCue } from '../game/multiplayerPresentation';
@@ -13,9 +12,6 @@ export function MultiplayerCinematicCue({ cue, onEnded }: {
   cue: MultiplayerCue; onEnded: () => void;
 }) {
   const [stage, setStage] = React.useState<'banner' | 'effect'>('banner');
-  const { playSound } = useAudio();
-  const soundRef = React.useRef(playSound);
-  soundRef.current = playSound;
   const callback = React.useRef(onEnded);
   callback.current = onEnded;
 
@@ -28,14 +24,6 @@ export function MultiplayerCinematicCue({ cue, onEnded }: {
       else callback.current();
     }, duration);
     return () => window.clearTimeout(timeout);
-  }, [cue.id]);
-
-  React.useEffect(() => {
-    if (cue.kind === 'combo') soundRef.current('IMPACT');
-    else if (cue.kind === 'card') {
-      const fxSound = { ATTACK: 'ATTACK', DEFENSE: 'DEFENSE', ORDER: 'FLIP', IMPACT: 'IMPACT' } as const;
-      soundRef.current(fxSound[cue.cardType]);
-    }
   }, [cue.id]);
 
   React.useEffect(() => {
