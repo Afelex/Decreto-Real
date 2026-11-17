@@ -29,10 +29,6 @@
   min-width:0;
   min-height:0;
   padding:0;
-  border:0;
-  border-radius:0;
-  background:transparent;
-  box-shadow:none;
   font:inherit;
 }
 .dr-pvp-playing .dr-pvp-royal .dr-royal-layout .dr-royal-hand-card {
@@ -49,7 +45,6 @@
 }
 .dr-pvp-royal .dr-royal-rival-area,
 .dr-pvp-royal .dr-royal-player-area {min-height:0;}
-.dr-pvp-royal .dr-royal-character {position:relative;}
 .dr-pvp-royal .dr-royal-character .dr-pvp-portrait-name {
   position:absolute;
   bottom:0;
