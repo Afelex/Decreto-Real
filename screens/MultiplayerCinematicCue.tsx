@@ -20,7 +20,7 @@ export function MultiplayerCinematicCue({ cue, onEnded }: {
     const duration = cue.kind === 'turn' ? TURN_TRANSITION_DURATION_MS
       : cue.kind === 'combo' ? DECREE_EFFECT_DURATION_MS : DECREE_BANNER_DURATION_MS;
     const timeout = window.setTimeout(() => {
-      if (cue.kind === 'card' && cardEffectCue(cue.cardType).file) setStage('effect');
+      if (cue.kind === 'card' && (cardEffectCue(cue.cardType).file || cue.cardType === 'IMPACT')) setStage('effect');
       else callback.current();
     }, duration);
     return () => window.clearTimeout(timeout);
