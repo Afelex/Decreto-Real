@@ -54,12 +54,11 @@
   width:82%;
   min-height:22px;
   height:var(--dr-hp-plate-h);
-  border-width:2px;
   font-size:clamp(10px,2.9cqw,15px);
 }
 .dr-royal-screen[data-hud-mode] .dr-royal-character-frame .dr-royal-hp__label {
   display:block;
-  line-height:calc(var(--dr-hp-plate-h) - 4px);
+  line-height:calc(var(--dr-hp-plate-h) - 2px);
   letter-spacing:.01em;
 }
 .dr-royal-screen[data-hud-mode] .dr-royal-character-frame .dr-royal-hp__label > small {
