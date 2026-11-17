@@ -5,6 +5,7 @@ import { MultiplayerBattleBoard } from './MultiplayerBattleBoard';
 import { useAudio } from '../contexts/AudioContext';
 import { freeDuelMusicScene } from '../game/musicScene';
 import type { GamePhase } from '../types';
+import { advancePvpStats, confirmedPvpDraws, type PvpStats } from '../game/multiplayerStats';
 import { multiplayerCueFromState, type MultiplayerCue } from '../game/multiplayerPresentation';
 
 type Card = { id: string; type: 'ATTACK' | 'DEFENSE' | 'IMPACT' | 'ORDER'; rank?: number };
@@ -48,6 +49,12 @@ export default function MultiplayerScreen() {
   const activeCue = React.useRef<MultiplayerCue | null>(null);
   const queuedCues = React.useRef<MultiplayerCue[]>([]);
   const [cinematicCue, setCinematicCue] = React.useState<MultiplayerCue | null>(null);
+  const statsRef = React.useRef<PvpStats | null>(null);
+  const [stats, setStats] = React.useState<PvpStats | null>(null);
+  const drawCounter = React.useRef(0);
+  const [drawCues, setDrawCues] = React.useState<Array<{
+    id: number; side: 'PLAYER' | 'OPPONENT'; count: number;
+  }>>([]);
   const enqueueCue = (next: MultiplayerCue) => {
     if (activeCue.current) queuedCues.current.push(next);
     else { activeCue.current = next; setCinematicCue(next); }
@@ -89,9 +96,18 @@ export default function MultiplayerScreen() {
           }
         } else if (msg.type === 'waiting') {
           setWaiting(true); setView(null);
+          previousView.current = null;
+          statsRef.current = null; setStats(null); setDrawCues([]);
         } else if (msg.type === 'state') {
           const latest = msg.view as View;
-          const animation = multiplayerCueFromState(previousView.current, latest);
+          const previous = previousView.current;
+          const animation = multiplayerCueFromState(previous, latest);
+          const updatedStats = advancePvpStats(statsRef.current, previous, latest);
+          statsRef.current = updatedStats;
+          setStats(updatedStats);
+          const draws = confirmedPvpDraws(previous, latest);
+          if (draws.length) setDrawCues(current => [...current.slice(-6),
+            ...draws.map(draw => ({ ...draw, id: ++drawCounter.current }))]);
           previousView.current = latest;
           setWaiting(false); setView(latest);
           if (animation) enqueueCue(animation);
@@ -103,6 +119,8 @@ export default function MultiplayerScreen() {
           if (msg.id === pendingRef.current) { pendingRef.current = null; setPending(false); }
           if (msg.reason?.includes('Sesión caducada')) {
             sessionRef.current = null; setSession(null); setView(null); setWaiting(false);
+            previousView.current = null; statsRef.current = null;
+            setStats(null); setDrawCues([]);
             try { sessionStorage.removeItem(SESSION_KEY); } catch { /* private mode */ }
           }
         }
@@ -128,8 +146,8 @@ export default function MultiplayerScreen() {
     setMusicScene(freeDuelMusicScene({
       entranceActive: false, phase, playerHP: view.me.hp, opponentHP: view.opponent.hp,
     }));
-    return () => setMusicScene(null);
   }, [view?.status, view?.winner, view?.me.hp, view?.opponent.hp, setMusicScene]);
+  React.useEffect(() => () => setMusicScene(null), [setMusicScene]);
 
   const send = (data: object) => {
     const ws = socketRef.current;
@@ -156,6 +174,7 @@ export default function MultiplayerScreen() {
     sessionRef.current = null; setSession(null); setView(null); setWaiting(false); setError('');
     pendingRef.current = null; setPending(false);
     previousView.current = null;
+    statsRef.current = null; setStats(null); setDrawCues([]);
     queuedCues.current = [];
     activeCue.current = null;
     setCinematicCue(null);
@@ -238,6 +257,8 @@ export default function MultiplayerScreen() {
 
     {view && <MultiplayerBattleBoard view={view} online={online} activeTurn={activeTurn && !cinematicCue}
       cinematicCue={cinematicCue} onCueEnded={finishCue}
+      stats={stats} drawCues={drawCues}
+      onDrawFinished={id => setDrawCues(current => current.filter(cue => cue.id !== id))}
       onPlayCard={card => action({ type: 'play', cardId: card.id })}
       onEndTurn={() => action({ type: 'end_turn' })}
       onCombo={choice => action({ type: 'combo', choice })}
