@@ -22,7 +22,7 @@ jobs:
           node-version: 22
       - name: Install PvP WebSocket client
         working-directory: multiplayer/server
-        run: npm ci --no-audit --no-fund
+        run: npm install --no-audit --no-fund
       - name: 'Verify live Railway server: 4-character code, 2 clients and a finished duel'
         working-directory: multiplayer/server
         run: node remote-smoke.mjs
