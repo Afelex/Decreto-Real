@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { EmailAccountGate, useDuelistAccount } from './EmailAccountGate';
 import './multiplayer.css';
 import './multiplayer-social.css';
 import { MultiplayerSocialPanel, type SocialPeer, type FriendRequest, type SocialMessage, type SocialStatus } from './MultiplayerSocialPanel';
@@ -22,42 +23,52 @@ type View = { revision: number; ruleset: string; status: 'playing' | 'finished';
   opponent: Player & { handCount: number }; lastEvent: string };
 type Session = { code: string; matchId?: string; token: string; slot: number; name: string; randomQueue?: boolean };
 const SESSION_KEY = 'decreto-real.pvp.session.v1';
-const SOCIAL_KEY = 'decreto-real.pvp.social-secret.v1';
+function storageForAccount(uid: string) {
+  const prefix = 'decreto-real.account.' + uid + '.';
+  return { getItem: (key: string) => localStorage.getItem(prefix + key),
+    setItem: (key: string, value: string) => localStorage.setItem(prefix + key, value) };
+}
 const configuredUrl = import.meta.env.VITE_MULTIPLAYER_WS_URL as string | undefined;
 const SOCKET_URL = configuredUrl || (typeof window !== 'undefined' && ['localhost', '127.0.0.1'].includes(window.location.hostname)
   ? 'ws://localhost:3001' : '');
 function getStored<T>(key: string): T | null {
   try { const raw = sessionStorage.getItem(key); return raw ? JSON.parse(raw) as T : null; } catch { return null; }
 }
-function getValidStoredSession(): Session | null {
-  const saved = getStored<Session>(SESSION_KEY);
+function getValidStoredSession(uid: string): Session | null {
+  const saved = getStored<Session>(SESSION_KEY + '.' + uid);
   if (!saved) return null;
   if (!isPrivateRoomCode(saved.code) || typeof saved.token !== 'string') {
-    try { sessionStorage.removeItem(SESSION_KEY); } catch { /* private mode */ }
+    try { sessionStorage.removeItem(SESSION_KEY + '.' + uid); } catch { /* private mode */ }
     return null;
   }
   return saved;
 }
-function storeSession(session: Session) {
-  try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(session)); } catch { /* private mode */ }
+function storeSession(session: Session, uid: string) {
+  try { sessionStorage.setItem(SESSION_KEY + '.' + uid, JSON.stringify(session)); } catch { /* private mode */ }
 }
 
 export default function MultiplayerScreen() {
+  return <EmailAccountGate><AuthenticatedMultiplayer/></EmailAccountGate>;
+}
+
+function AuthenticatedMultiplayer() {
+  const account = useDuelistAccount();
   const navigate = useNavigate();
   const { setMusicScene, playSound } = useAudio();
   const soundRef = React.useRef(playSound);
   soundRef.current = playSound;
-  const [duelist, setDuelist] = React.useState(() => loadDuelistProfile());
-  const [nickname, setNickname] = React.useState(() => { const p = loadDuelistProfile(); return p.slots[p.active]?.name || ''; });
+  const [duelist, setDuelist] = React.useState(() => loadDuelistProfile(storageForAccount(account.uid)));
+  const [nickname, setNickname] = React.useState(() => {
+    const p = loadDuelistProfile(storageForAccount(account.uid)); return p.slots[p.active]?.name || ''; });
   const [showProfile, setShowProfile] = React.useState(() => {
-    const p = loadDuelistProfile();
+    const p = loadDuelistProfile(storageForAccount(account.uid));
     return !(p.slots[p.active]?.name || '').trim();
   });
   const [joinCode, setJoinCode] = React.useState(() => new URLSearchParams(window.location.search).get('sala') || '');
   const [showJoinCode, setShowJoinCode] = React.useState(() => Boolean(new URLSearchParams(window.location.search).get('sala')));
   const [editingName, setEditingName] = React.useState(() => !nickname.trim());
   const inviteOnLoad = React.useRef(new URLSearchParams(window.location.search).get('sala') || '');
-  const [session, setSession] = React.useState<Session | null>(() => getValidStoredSession());
+  const [session, setSession] = React.useState<Session | null>(() => getValidStoredSession(account.uid));
   // A resumed tab must not replay the first-match ceremony.
   const openingSeen = React.useRef(Boolean(session));
   const sessionRef = React.useRef<Session | null>(session);
@@ -69,6 +80,11 @@ export default function MultiplayerScreen() {
   const [invitationStarting, setInvitationStarting] = React.useState(false);
   const [socialId, setSocialId] = React.useState('');
   const [socialReady, setSocialReady] = React.useState(false);
+  const [accountReady, setAccountReady] = React.useState(false);
+  const [history, setHistory] = React.useState<Array<{ id: string; date: string;
+    result: string; opponentName: string; turns: number }>>([]);
+  const duelistRef = React.useRef(duelist);
+  duelistRef.current = duelist;
   const socialReadyRef = React.useRef(false);
   const [socialStatus, setSocialStatus] = React.useState<SocialStatus>('hidden');
   const socialStatusRef = React.useRef<SocialStatus>('hidden');
@@ -87,11 +103,16 @@ export default function MultiplayerScreen() {
   nicknameRef.current = nickname;
   cosmeticRef.current = duelist.slots[duelist.active]?.appearance;
   React.useEffect(() => {
-    saveDuelistProfile(duelist);
+    if (accountReady) {
+      saveDuelistProfile(duelist, storageForAccount(account.uid));
+      const ws = socketRef.current;
+      if (ws?.readyState === WebSocket.OPEN)
+        ws.send(JSON.stringify({ type: 'account:save_profile', profile: duelist }));
+    }
     const selectedName = duelist.slots[duelist.active]?.name || '';
     setNickname(selectedName);
     setEditingName(!selectedName.trim());
-  }, [duelist]);
+  }, [duelist, accountReady, account.uid]);
   const previousView = React.useRef<View | null>(null);
   const activeCue = React.useRef<MultiplayerCue | null>(null);
   const queuedCues = React.useRef<MultiplayerCue[]>([]);
@@ -122,23 +143,30 @@ export default function MultiplayerScreen() {
       socket.addEventListener('open', () => {
         if (!active) return;
         setOnline(true); setError('');
-        let secret = '';
-        try { secret = localStorage.getItem(SOCIAL_KEY) || ''; } catch { /* private mode */ }
-        socket.send(JSON.stringify({ type: 'social:hello', secret, status: socialStatusRef.current,
-          name: nicknameRef.current || 'Duelista', portrait: cosmeticRef.current?.portrait || 'xervias' }));
-        // An invitation must never join automatically: the guest chooses "Empezar partida".
-        if (sessionRef.current) socket.send(JSON.stringify({ type: 'resume', ...sessionRef.current }));
+        void account.getToken().then(idToken => {
+          if (active && socket.readyState === WebSocket.OPEN)
+            socket.send(JSON.stringify({ type: 'account:hello', idToken }));
+        }).catch(() => setError('No se pudo comprobar tu sesión. Cierra sesión y vuelve a ingresar.'));
       });
       socket.addEventListener('message', event => {
         if (!active) return;
         let msg: any;
         try { msg = JSON.parse(String(event.data)); } catch { return; }
-        if (msg.type === 'social:identity') {
+        if (msg.type === 'account:ready') {
+          const remote = msg.profile;
+          const local = duelistRef.current;
+          const selected = remote?.slots?.some((slot: any) => Boolean(slot?.name))
+            ? remote : local;
+          setDuelist(selected);
+          setHistory(Array.isArray(msg.history) ? msg.history : []);
+          setAccountReady(true);
+          socket.send(JSON.stringify({ type: 'social:hello',
+            status: socialStatusRef.current, name: selected.slots[selected.active]?.name || 'Duelista',
+            portrait: selected.slots[selected.active]?.appearance?.portrait || 'xervias' }));
+          if (sessionRef.current) socket.send(JSON.stringify({ type: 'resume', ...sessionRef.current }));
+        } else if (msg.type === 'social:identity') {
           socialReadyRef.current = true; setSocialReady(true);
           setSocialId(msg.id);
-          if (typeof msg.secret === 'string') {
-            try { localStorage.setItem(SOCIAL_KEY, msg.secret); } catch { /* private mode */ }
-          }
           setSocialFriends(Array.isArray(msg.friends) ? msg.friends : []);
           setFriendRequests(Array.isArray(msg.requests) ? msg.requests : []);
         } else if (msg.type === 'social:roster') {
@@ -171,7 +199,7 @@ export default function MultiplayerScreen() {
           setInvitationStarting(false);
           const next: Session = { code: msg.code, matchId: msg.matchId, token: msg.token,
             slot: msg.slot, name: msg.name, randomQueue: Boolean(msg.randomQueue) };
-          sessionRef.current = next; setSession(next); storeSession(next);
+          sessionRef.current = next; setSession(next); storeSession(next, account.uid);
           if (inviteOnLoad.current) {
             const url = new URL(window.location.href);
             url.searchParams.delete('sala');
@@ -221,13 +249,13 @@ export default function MultiplayerScreen() {
             sessionRef.current = null; setSession(null); setView(null); setWaiting(false);
             previousView.current = null; statsRef.current = null;
             setStats(null); setDrawCues([]);
-            try { sessionStorage.removeItem(SESSION_KEY); } catch { /* private mode */ }
+            try { sessionStorage.removeItem(SESSION_KEY + '.' + account.uid); } catch { /* private mode */ }
           }
         }
       });
       socket.addEventListener('close', () => {
         if (!active) return;
-        setOnline(false); socialReadyRef.current = false; setSocialReady(false);
+        setOnline(false); socialReadyRef.current = false; setSocialReady(false); setAccountReady(false);
         setInvitationStarting(false);
         setSocialPeers([]); setSocialTotal(0);
         pendingRef.current = null; setPending(false);
@@ -237,7 +265,7 @@ export default function MultiplayerScreen() {
     }
     connect();
     return () => { active = false; clearTimeout(retry); socketRef.current?.close(); };
-  }, []);
+  }, [account.uid]);
 
   React.useEffect(() => {
     const ws = socketRef.current;
@@ -346,7 +374,7 @@ export default function MultiplayerScreen() {
     queuedCues.current = [];
     activeCue.current = null;
     setCinematicCue(null);
-    try { sessionStorage.removeItem(SESSION_KEY); } catch { /* private mode */ }
+    try { sessionStorage.removeItem(SESSION_KEY + '.' + account.uid); } catch { /* private mode */ }
     socketRef.current?.close(4000, 'Salir de la sala');
   };
   const copyCode = async () => {
@@ -462,7 +490,13 @@ export default function MultiplayerScreen() {
       status={socialStatus} myId={socialId} online={online && socialReady}
       onStatus={updateSocialStatus} onSend={send} onClose={() => setShowSocial(false)}/>}
     {!session && showProfile && <DuelistProfilePanel profile={duelist} onChange={setDuelist}
-      onClose={() => setShowProfile(false)}/>}
+       email={account.email} history={history}
+       onSignOut={async () => {
+         if (!window.confirm('¿Deseas cerrar sesión? Tus amistades y estadísticas permanecerán guardadas.')) return;
+         try { await account.signOut(); }
+         catch { setError('No se pudo cerrar la sesión. Inténtalo nuevamente.'); }
+       }}
+       onClose={() => setShowProfile(false)}/>}
     {view && <MultiplayerBattleBoard view={view} online={online} activeTurn={activeTurn && !cinematicCue}
       cinematicCue={cinematicCue} onCueEnded={finishCue} onCinematicEffect={onCinematicEffect}
       stats={stats} drawCues={drawCues}
