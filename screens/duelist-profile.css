@@ -57,3 +57,13 @@
 .dr-pvp-home .dr-duelist-done{background:linear-gradient(#992d42,#651b33);min-height:44px;margin-top:auto}
 @media (max-height:610px){.dr-pvp-home .dr-duelist-panel{gap:6px}.dr-duelist-panel-header h2{font-size:22px}.dr-pvp-home .dr-duelist-cosmetics .dr-duelist-option{min-height:86px}.dr-duelist-option img,.dr-duelist-symbol{width:43px;height:43px}.dr-duelist-back{height:43px}.dr-duelist-help{font-size:11px!important}}
 @media(prefers-reduced-motion:reduce){.dr-duelist-preview-name,.dr-duelist-preview-name:before,.dr-duelist-preview-name:after{animation:none!important}}
+
+/* A compact entry button keeps the existing private and random matchmaking visible. */
+.dr-pvp-home .dr-pvp-profile-shortcut{
+  width:100%;min-height:38px;padding:7px 11px;border:1px solid #d6b176;
+  border-radius:10px;background:linear-gradient(135deg,#3e3045,#1b2943);
+  color:#ffe1ab;font:700 13px/1.25 system-ui,sans-serif
+}
+.dr-pvp-identity-symbol img{display:block;width:45px;height:48px;object-fit:cover;object-position:center top;border-radius:6px}
+.dr-pvp-home .dr-pvp-code{margin:auto;padding:10px 20px;letter-spacing:.2em;border:1px solid #e5b675;
+  border-radius:12px;background:#131726;color:#ffe1a7;font:900 clamp(27px,7vw,38px) Georgia,serif}
