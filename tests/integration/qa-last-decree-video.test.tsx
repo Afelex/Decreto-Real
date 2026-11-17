@@ -121,15 +121,47 @@ test('decreto: una sola cinta WebM sin franja CSS; texto sincronizado con el vid
   fireEvent.playing(video);
   expect(stage.getAttribute('data-decree-video')).toBe('playing');
   expect(stage.classList.contains('is-playing')).toBe(true);
+  // Once the first frame was shown, intermittent VP9 buffering must not
+  // flash the whole banner and its text off/on (observed on real Android).
   fireEvent.waiting(video);
-  expect(stage.getAttribute('data-decree-video')).toBe('loading');
-  expect(stage.classList.contains('is-playing')).toBe(false);
+  fireEvent.waiting(video);
+  expect(stage.getAttribute('data-decree-video')).toBe('playing');
+  expect(stage.classList.contains('is-playing')).toBe(true);
+  expect(stage.querySelector('video')).toBe(video);
+  expect(stage.querySelector('.dr-decree-banner__copy')).toBeTruthy();
+  fireEvent.playing(video);
+  expect(stage.classList.contains('is-playing')).toBe(true);
   fireEvent.error(video);
   expect(stage.querySelector('video')).toBeNull();
   expect(stage.getAttribute('data-decree-video')).toBe('failed');
   expect(stage.classList.contains('is-playing')).toBe(false);
   expect(container.querySelector('.dr-cinematic-fallback')).toBeNull();
 });
+
+for (const isPlayer of [true, false]) {
+  test(`decreto ${isPlayer ? 'rojo' : 'azul'} permanece estable durante waiting y pausa`, () => {
+    const card: CardData = { id:'order', type:'ORDER', name:'Decreto de Orden',
+      description:'Roba 1 carta', cost:0, img:'' };
+    const { container, rerender } = render(
+      <CardActivationBanner card={card} isPlayer={isPlayer} paused={false}/>,
+    );
+    const stage=container.querySelector('.dr-decree-banner')!;
+    const video=stage.querySelector('video')!;
+    fireEvent.playing(video);
+    expect(stage.classList.contains('is-playing')).toBe(true);
+    fireEvent.waiting(video);
+    rerender(<CardActivationBanner card={card} isPlayer={isPlayer} paused={true}/>);
+    expect(stage.classList.contains('is-playing')).toBe(true);
+    expect(stage.querySelector('video')).toBe(video);
+    rerender(<CardActivationBanner card={card} isPlayer={isPlayer} paused={false}/>);
+    fireEvent.waiting(video);
+    expect(stage.classList.contains('is-playing')).toBe(true);
+    expect(stage.querySelector('source')?.getAttribute('src')).toContain(
+      isPlayer ? 'banner-jugador-rojo.webm' : 'banner-rival-azul.webm',
+    );
+    expect(container.querySelector('.dr-cinematic-fallback')).toBeNull();
+  });
+}
 
 test('decreto: effect phase has a fallback and never shows the banner simultaneously', () => {
   const card: CardData = { id:'defense', type:'DEFENSE', name:'Decreto de Defensa',
