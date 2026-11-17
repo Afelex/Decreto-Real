@@ -29,6 +29,7 @@ actual antes de preparar la infraestructura.
    `caring-encouragement` (root directory `/multiplayer/server`), montar un
    **volumen persistente** en `/data`, con una sola réplica de backend.
    A continuación configurar `DR_DATA_FILE=/data/decreto-real-accounts.json`.
+   El modo invitado seguirá funcionando durante la transición.
    No habilitar este valor sin el volumen: el archivo no sobreviviría un despliegue.
    Opcional: `DR_FIREBASE_PROJECT_ID=peruanistas-531e5` (valor por defecto).
 4. Publicar la web de GitHub Pages compilada con
@@ -37,7 +38,10 @@ actual antes de preparar la infraestructura.
 5. Validar desde dos navegadores/correos reales: enlace, sesión persistente,
    dos perfiles aislados, solicitud y aceptación de amistad, partida finalizada,
    reconexión, reinicio de Railway y recuperación de estadísticas.
-6. Conservar un respaldo del volumen antes de cualquier cambio de formato;
+6. Solo entonces configurar `DR_REQUIRE_EMAIL_ACCOUNTS=true` en Railway
+   para exigir correo también a clientes antiguos. Si se necesita revertir,
+   desactivar primero esta bandera y luego la bandera del navegador.
+7. Conservar un respaldo del volumen antes de cualquier cambio de formato;
    no activar varias réplicas que escriban el mismo JSON simultáneamente.
 
 ## Seguridad y límites
