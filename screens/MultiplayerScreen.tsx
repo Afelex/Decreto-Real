@@ -19,7 +19,6 @@ type View = { revision: number; ruleset: string; status: 'playing' | 'finished';
   opponent: Player & { handCount: number }; lastEvent: string };
 type Session = { code: string; matchId?: string; token: string; slot: number; name: string; randomQueue?: boolean };
 const SESSION_KEY = 'decreto-real.pvp.session.v1';
-const NAME_KEY = 'decreto-real.pvp.nickname.v1';
 const configuredUrl = import.meta.env.VITE_MULTIPLAYER_WS_URL as string | undefined;
 const SOCKET_URL = configuredUrl || (typeof window !== 'undefined' && ['localhost', '127.0.0.1'].includes(window.location.hostname)
   ? 'ws://localhost:3001' : '');
