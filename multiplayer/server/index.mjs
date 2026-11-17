@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { WebSocket, WebSocketServer } from 'ws';
 import { createMatch, act, viewFor } from './engine.mjs';
 import { createSocialHub } from './social.mjs';
+import { createMatchLedger } from './matchLedger.mjs';
 
 const port = Number(process.env.PORT || 3001);
 const origins = new Set((process.env.ALLOWED_ORIGINS || 'http://localhost:5173,http://127.0.0.1:5173,https://afelex.github.io,https://decreto-real-production.up.railway.app')
@@ -16,6 +17,8 @@ const MAX_ROOMS = 1000;
 const CODE_LETTERS = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
 const failedJoinAttempts = new Map();
 let waitingRandom = null;
+let waitingRanked = null;
+const ledger = createMatchLedger(process.env.DR_PVP_RECORD_FILE || '');
 
 const previewHtml = readFileSync(new URL('./pvp-preview.html', import.meta.url));
 const server = createServer((req, res) => {
@@ -82,12 +85,33 @@ function registerWrongCode(ws) {
     count: previous && now - previous.at < 60_000 ? previous.count + 1 : 1 });
 }
 function token() { return randomBytes(24).toString('hex'); }
-function createRoom(name, appearance, randomQueue = false) {
+function createRoom(name, appearance, randomQueue = false, ranked = false, ownerId = null) {
   const room = { code: roomCode(), matchId: randomBytes(12).toString('hex'),
-    seats: [{ name, appearance, token: token() }], sockets: [null, null],
-    match: null, randomQueue, lastUsed: Date.now(), disconnected: [null, null], actionIds: [new Set(), new Set()] };
+    seats: [{ name, appearance, id: ownerId, token: token() }], sockets: [null, null],
+    match: null, randomQueue, ranked, lastUsed: Date.now(), disconnected: [null, null], actionIds: [new Set(), new Set()] };
   rooms.set(room.code, room);
   return room;
+}
+function sendRecords(ws) {
+  if (ws?.social?.id) send(ws, ledger.snapshot(ws.social.id));
+}
+function commitResult(room) {
+  if (room.recorded || room.match?.status !== 'finished' || room.seats.length !== 2) return;
+  try {
+    const ok = ledger.record({ matchId: room.matchId,
+      mode: room.ranked ? 'ranked' : 'casual',
+      players: room.seats.map(seat => ({ id: seat.id, name: seat.name })),
+      winner: room.match.winner, turns: room.match.turnNumber,
+      reason: room.match.lastEvent.includes('desconexión') ? 'desconexion'
+        : room.match.lastEvent.includes('rindió') ? 'rendicion'
+        : room.match.winner === null ? 'agotamiento' : 'combate' });
+    if (!ok) { console.warn('[pvp-ledger] Partida omitida:', room.matchId); return; }
+    room.recorded = true;
+    for (const ws of room.sockets) sendRecords(ws);
+  } catch (error) {
+    console.error('[pvp-ledger] No se pudo guardar el duelo:', error);
+    for (const ws of room.sockets) send(ws, { type: 'records:error', reason: 'El resultado no pudo guardarse.' });
+  }
 }
 function broadcast(room) {
   for (let slot = 0; slot < room.seats.length; slot++) {
@@ -99,6 +123,7 @@ function broadcast(room) {
     } else {
       const view = viewFor(room.match, slot,
         room.sockets.map(client => client?.readyState === WebSocket.OPEN));
+      view.mode = room.ranked ? 'ranked' : 'casual';
       view.me.appearance = room.seats[slot].appearance;
       view.opponent.appearance = room.seats[1 - slot].appearance;
       send(ws, { type: 'state', code: room.code, matchId: room.matchId, view });
@@ -119,6 +144,7 @@ function attach(ws, room, slot) {
     slot, name: room.seats[slot].name, randomQueue: room.randomQueue });
   broadcast(room);
   social.broadcast();
+  sendRecords(ws);
 }
 function enter(ws, room, name, appearance) {
   if (ws.seat) return fail(ws, 'Ya perteneces a una sala.');
@@ -128,16 +154,17 @@ function enter(ws, room, name, appearance) {
     return fail(ws, 'Esta invitación ha caducado.');
   if (room.seats.length !== 1 || room.match) return fail(ws, 'La sala ya está completa.');
   if (room.sockets[0]?.readyState !== WebSocket.OPEN) return fail(ws, 'El creador de la sala está desconectado.');
-  room.seats.push({ name, appearance, token: token() });
+  room.seats.push({ name, appearance, id: ws.social?.id || null, token: token() });
   room.match = createMatch(room.seats.map(seat => seat.name));
   if (waitingRandom === room.code) waitingRandom = null;
+  if (waitingRanked === room.code) waitingRanked = null;
   attach(ws, room, 1);
 }
 const social = createSocialHub({
   send, fail,
   onChallenge(ws, other) {
     if (rooms.size >= MAX_ROOMS) { fail(ws, 'Servidor ocupado. Intenta más tarde.'); return null; }
-    const room = createRoom(ws.social.name, appearanceOf({ portrait: ws.social.portrait }));
+    const room = createRoom(ws.social.name, appearanceOf({ portrait: ws.social.portrait }), false, false, ws.social.id);
     room.invitedId = other.social.id;
     room.inviteExpires = Date.now() + 90_000;
     attach(ws, room, 0);
@@ -182,6 +209,7 @@ function onDisconnect(ws) {
     room.match.lastEvent = room.seats[slot].name + ' perdió por desconexión.';
     room.match.revision++;
     room.lastUsed = Date.now();
+    commitResult(room);
     broadcast(room);
   }, REJOIN_MS);
 }
@@ -199,25 +227,38 @@ sockets.on('connection', ws => {
     try { msg = JSON.parse(payload.toString()); }
     catch { return fail(ws, 'Mensaje JSON inválido.'); }
     if (!msg || typeof msg !== 'object' || Array.isArray(msg)) return fail(ws, 'Mensaje inválido.');
-    if (social.handle(ws, msg)) return;
+    if (social.handle(ws, msg)) {
+      if (msg.type === 'social:hello') sendRecords(ws);
+      return;
+    }
+    if (msg.type === 'records:get') { sendRecords(ws); return; }
     if (msg.type === 'create' || msg.type === 'queue') {
       if (ws.seat) return fail(ws, 'Ya perteneces a una sala.');
+      if (!ws.social?.id) return fail(ws, 'Debes conectar tu perfil primero.');
+      const ranked = msg.type === 'queue' && msg.ranked === true;
+      if (ranked && !ledger.durable) return fail(ws, 'Ranked requiere almacenamiento permanente en el servidor.');
       const name = nameOf(msg.name);
       if (!name) return fail(ws, 'El apodo debe tener de 2 a 24 caracteres.');
-      if (msg.type === 'queue' && waitingRandom) {
-        const existing = rooms.get(waitingRandom);
+      const waitingCode = ranked ? waitingRanked : waitingRandom;
+      if (msg.type === 'queue' && waitingCode) {
+        const existing = rooms.get(waitingCode);
         if (existing?.sockets[0]?.readyState === WebSocket.OPEN && !existing.match) {
           enter(ws, existing, name, appearanceOf(msg.appearance)); return;
         }
-        waitingRandom = null;
+        if (ranked) waitingRanked = null;
+        else waitingRandom = null;
       }
       if (rooms.size >= MAX_ROOMS) return fail(ws, 'Servidor ocupado. Intenta más tarde.');
-      const room = createRoom(name, appearanceOf(msg.appearance), msg.type === 'queue');
-      if (msg.type === 'queue') waitingRandom = room.code;
+      const room = createRoom(name, appearanceOf(msg.appearance), msg.type === 'queue', ranked, ws.social.id);
+      if (msg.type === 'queue') {
+        if (ranked) waitingRanked = room.code;
+        else waitingRandom = room.code;
+      }
       attach(ws, room, 0);
       return;
     }
     if (msg.type === 'join') {
+      if (!ws.social?.id) return fail(ws, 'Debes conectar tu perfil primero.');
       const name = nameOf(msg.name), code = typeof msg.code === 'string' ? msg.code.trim().toUpperCase() : '';
       if (!name) return fail(ws, 'El apodo debe tener de 2 a 24 caracteres.');
       if (!/^[0-9]{2}[A-HJ-NP-Z]{2}$/.test(code)) return fail(ws, 'Introduce un código de 2 números y 2 letras.');
@@ -234,6 +275,8 @@ sockets.on('connection', ws => {
       const room = rooms.get(typeof msg.code === 'string' ? msg.code.toUpperCase() : '');
       const slot = room?.seats.findIndex(seat => seat.token === msg.token);
       if (slot === undefined || slot < 0) return fail(ws, 'Sesión caducada. Abre una nueva partida.');
+      if (room.seats[slot].id && room.seats[slot].id !== ws.social?.id)
+        return fail(ws, 'El perfil actual no corresponde a esta sesión.');
       attach(ws, room, slot); return;
     }
     if (msg.type === 'action') {
@@ -251,6 +294,7 @@ sockets.on('connection', ws => {
       if (room.actionIds[slot].size > HISTORY_LIMIT) room.actionIds[slot].delete(room.actionIds[slot].values().next().value);
       room.lastUsed = Date.now();
       send(ws, { type: 'ack', id: msg.id });
+      commitResult(room);
       broadcast(room);
       return;
     }
@@ -271,6 +315,7 @@ const heartbeat = setInterval(() => {
     for (const ws of room.sockets) ws?.close(4000, 'Sala expirada');
     rooms.delete(code);
     if (waitingRandom === code) waitingRandom = null;
+    if (waitingRanked === code) waitingRanked = null;
   }
 }, 30_000);
 server.on('close', () => clearInterval(heartbeat));
