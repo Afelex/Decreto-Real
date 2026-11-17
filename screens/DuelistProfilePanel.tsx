@@ -128,6 +128,6 @@ export function DuelistProfilePanel({ profile, onChange, onClose, onSignOut, ema
     </section>}
     <button type="button" className="dr-duelist-done" onClick={onClose}>Volver al multijugador</button>
     {onSignOut && <button type="button" className="dr-duelist-done" onClick={onSignOut}
-      style={{ background: '#6c2027', marginTop: '.6rem' }}>Cerrar sesión</button>
+      style={{ background: '#6c2027', marginTop: '.6rem' }}>Cerrar sesión</button>}
   </section>;
 }
