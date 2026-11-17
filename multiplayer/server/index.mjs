@@ -254,7 +254,7 @@ sockets.on('connection', ws => {
         else waitingRandom = null;
       }
       if (rooms.size >= MAX_ROOMS) return fail(ws, 'Servidor ocupado. Intenta más tarde.');
-      const room = createRoom(name, appearanceOf(msg.appearance), msg.type === 'queue', ranked, ws.social.id);
+      const room = createRoom(name, appearanceOf(msg.appearance), msg.type === 'queue', ranked, ws.social?.id || null);
       if (msg.type === 'queue') {
         if (ranked) waitingRanked = room.code;
         else waitingRandom = room.code;
