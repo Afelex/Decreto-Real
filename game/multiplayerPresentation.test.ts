@@ -46,9 +46,15 @@ test('todos los decretos activan efectos de vídeo en ambas pantallas', () => {
   }
 });
 
-test('un combo o una reconexión sin nueva carta no inventan vídeo de decreto', () => {
+test('los combos reales disparan el mismo FX G3 y las reconexiones no lo duplican', () => {
   const before = state(4, true, 'Ana jugó Decreto de Ataque.');
-  assert.equal(multiplayerCueFromState(before,
-    state(5, true, 'Ana: combo ×2, -1 vida rival.')), null);
+  assert.deepEqual(multiplayerCueFromState(before,
+    state(5, true, 'Ana: combo ×2, -1 vida rival.')),
+    { kind: 'combo', id: 5, isPlayer: true, level: 2, ability: 'DAMAGE' });
+  assert.deepEqual(multiplayerCueFromState(state(6, false, 'Otro decreto.'),
+    state(7, false, 'Luis: combo ×3, +3 vida.')),
+    { kind: 'combo', id: 7, isPlayer: false, level: 3, ability: 'HEAL' });
   assert.equal(multiplayerCueFromState(before, before), null);
+  assert.equal(multiplayerCueFromState(before,
+    state(5, true, 'Ana se rindió.', 1, 'finished')), null);
 });

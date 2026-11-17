@@ -1,7 +1,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './multiplayer.css';
-import { MultiplayerCinematicCue } from './MultiplayerCinematicCue';
+import { MultiplayerBattleBoard } from './MultiplayerBattleBoard';
+import { useAudio } from '../contexts/AudioContext';
+import { freeDuelMusicScene } from '../game/musicScene';
+import type { GamePhase } from '../types';
+import { advancePvpStats, confirmedPvpDraws, type PvpStats } from '../game/multiplayerStats';
 import { multiplayerCueFromState, type MultiplayerCue } from '../game/multiplayerPresentation';
 
 type Card = { id: string; type: 'ATTACK' | 'DEFENSE' | 'IMPACT' | 'ORDER'; rank?: number };
@@ -16,13 +20,6 @@ const NAME_KEY = 'decreto-real.pvp.nickname.v1';
 const configuredUrl = import.meta.env.VITE_MULTIPLAYER_WS_URL as string | undefined;
 const SOCKET_URL = configuredUrl || (typeof window !== 'undefined' && ['localhost', '127.0.0.1'].includes(window.location.hostname)
   ? 'ws://localhost:3001' : '');
-const CARD_IMAGES: Record<Card['type'],string> = {
-  ATTACK: import.meta.env.BASE_URL + 'cartas/decreto-ataque.webp',
-  DEFENSE: import.meta.env.BASE_URL + 'cartas/decreto-defensa.webp',
-  ORDER: import.meta.env.BASE_URL + 'cartas/decreto-orden.webp',
-  IMPACT: import.meta.env.BASE_URL + 'cartas/decreto-impacto.webp',
-};
-const LABELS = { ATTACK: 'Ataque', DEFENSE: 'Defensa', ORDER: 'Orden', IMPACT: 'Impacto' };
 function getStored<T>(key: string): T | null {
   try { const raw = sessionStorage.getItem(key); return raw ? JSON.parse(raw) as T : null; } catch { return null; }
 }
@@ -32,6 +29,9 @@ function storeSession(session: Session) {
 
 export default function MultiplayerScreen() {
   const navigate = useNavigate();
+  const { setMusicScene, playSound } = useAudio();
+  const soundRef = React.useRef(playSound);
+  soundRef.current = playSound;
   const [nickname, setNickname] = React.useState(() => { try { return localStorage.getItem(NAME_KEY) || ''; } catch { return ''; } });
   const [joinCode, setJoinCode] = React.useState(() => new URLSearchParams(window.location.search).get('sala') || '');
   const [showJoinCode, setShowJoinCode] = React.useState(() => Boolean(new URLSearchParams(window.location.search).get('sala')));
@@ -51,6 +51,12 @@ export default function MultiplayerScreen() {
   const activeCue = React.useRef<MultiplayerCue | null>(null);
   const queuedCues = React.useRef<MultiplayerCue[]>([]);
   const [cinematicCue, setCinematicCue] = React.useState<MultiplayerCue | null>(null);
+  const statsRef = React.useRef<PvpStats | null>(null);
+  const [stats, setStats] = React.useState<PvpStats | null>(null);
+  const drawCounter = React.useRef(0);
+  const [drawCues, setDrawCues] = React.useState<Array<{
+    id: number; side: 'PLAYER' | 'OPPONENT'; count: number;
+  }>>([]);
   const enqueueCue = (next: MultiplayerCue) => {
     if (activeCue.current) queuedCues.current.push(next);
     else { activeCue.current = next; setCinematicCue(next); }
@@ -92,9 +98,18 @@ export default function MultiplayerScreen() {
           }
         } else if (msg.type === 'waiting') {
           setWaiting(true); setView(null);
+          previousView.current = null;
+          statsRef.current = null; setStats(null); setDrawCues([]);
         } else if (msg.type === 'state') {
           const latest = msg.view as View;
-          const animation = multiplayerCueFromState(previousView.current, latest);
+          const previous = previousView.current;
+          const animation = multiplayerCueFromState(previous, latest);
+          const updatedStats = advancePvpStats(statsRef.current, previous, latest);
+          statsRef.current = updatedStats;
+          setStats(updatedStats);
+          const draws = confirmedPvpDraws(previous, latest);
+          if (draws.length) setDrawCues(current => [...current.slice(-6),
+            ...draws.map(draw => ({ ...draw, id: ++drawCounter.current }))]);
           previousView.current = latest;
           setWaiting(false); setView(latest);
           if (animation) enqueueCue(animation);
@@ -106,6 +121,8 @@ export default function MultiplayerScreen() {
           if (msg.id === pendingRef.current) { pendingRef.current = null; setPending(false); }
           if (msg.reason?.includes('Sesión caducada')) {
             sessionRef.current = null; setSession(null); setView(null); setWaiting(false);
+            previousView.current = null; statsRef.current = null;
+            setStats(null); setDrawCues([]);
             try { sessionStorage.removeItem(SESSION_KEY); } catch { /* private mode */ }
           }
         }
@@ -120,6 +137,28 @@ export default function MultiplayerScreen() {
     connect();
     return () => { active = false; clearTimeout(retry); socketRef.current?.close(); };
   }, []);
+
+  // La banda sonora utiliza la misma selección de escenas que Versus IA.
+  // No se altera el estado del combate ni la autoridad del servidor.
+  React.useEffect(() => {
+    if (!view) return;
+    const phase: GamePhase = view.status !== 'finished' ? 'PLAYER_TURN'
+      : view.winner === 'me' ? 'VICTORY'
+      : view.winner === 'opponent' ? 'DEFEAT' : 'PLAYER_TURN';
+    setMusicScene(freeDuelMusicScene({
+      entranceActive: false, phase, playerHP: view.me.hp, opponentHP: view.opponent.hp,
+    }));
+  }, [view?.status, view?.winner, view?.me.hp, view?.opponent.hp, setMusicScene]);
+  React.useEffect(() => () => setMusicScene(null), [setMusicScene]);
+  React.useEffect(() => {
+    if (!cinematicCue) return;
+    if (cinematicCue.kind === 'combo') soundRef.current('IMPACT');
+    if (cinematicCue.kind === 'card') {
+      const sound = { ATTACK: 'ATTACK', DEFENSE: 'DEFENSE', ORDER: 'FLIP', IMPACT: 'IMPACT' } as const;
+      soundRef.current(sound[cinematicCue.cardType]);
+    }
+  }, [cinematicCue?.id]);
+
 
   const send = (data: object) => {
     const ws = socketRef.current;
@@ -142,12 +181,11 @@ export default function MultiplayerScreen() {
     }
   };
   const activeTurn = Boolean(online && view?.isMyTurn && view.status === 'playing' && view.opponent.connected && !pending);
-  const canPlay = (card: Card) => !!view && activeTurn && !view.pendingCombo &&
-    (card.type !== 'IMPACT' || (card.rank === view.me.impact + 1 && !view.me.impactThisTurn));
   const resetSession = () => {
     sessionRef.current = null; setSession(null); setView(null); setWaiting(false); setError('');
     pendingRef.current = null; setPending(false);
     previousView.current = null;
+    statsRef.current = null; setStats(null); setDrawCues([]);
     queuedCues.current = [];
     activeCue.current = null;
     setCinematicCue(null);
@@ -228,40 +266,15 @@ export default function MultiplayerScreen() {
     {session && !waiting && !view && <section className="dr-pvp-lobby"><h2>Restableciendo la partida</h2>
       <p>Reconectando con la sala {session.code}…</p><div className="dr-pvp-ornament" aria-hidden="true"><span>✦</span></div></section>}
 
-    {view && <section className="dr-pvp-duel" aria-label="Tablero de duelo en línea">
-      <div className="dr-pvp-rival dr-pvp-player">
-        <div><strong>{view.opponent.name}</strong><small>{view.opponent.connected ? 'En línea' : 'Reconectando…'}</small></div>
-        <b>{view.opponent.hp}<small>/20 PV</small></b>
-      </div>
-      <div className="dr-pvp-impacts" aria-label="Impactos del rival">{[1,2,3,4].map(i => <span key={i} className={view.opponent.impact >= i ? 'done' : ''}>{i === 4 ? 'FINAL' : i}</span>)}</div>
-      <div className="dr-pvp-opponent-hand">Rival: {view.opponent.handCount} cartas en mano · {view.opponent.deckCount} en mazo</div>
-      <div className="dr-pvp-center"><strong>{view.status === 'finished'
-        ? view.winner === 'me' ? '¡VICTORIA!' : view.winner === 'opponent' ? 'DERROTA' : 'EMPATE'
-        : !view.opponent.connected ? 'Esperando reconexión' : view.isMyTurn ? 'TU TURNO' : 'TURNO DEL RIVAL'}</strong>
-        <small>Turno {view.turnNumber} · {view.lastEvent}</small></div>
-      <div className="dr-pvp-impacts" aria-label="Tus Impactos">{[1,2,3,4].map(i => <span key={i} className={view.me.impact >= i ? 'done' : ''}>{i === 4 ? 'FINAL' : i}</span>)}</div>
-      <div className="dr-pvp-player"><div><strong>{view.me.name}</strong><small>Mazo: {view.me.deckCount} · Combo: ×{view.me.comboCount || 0}</small></div>
-        <b>{view.me.hp}<small>/20 PV</small></b></div>
-      {view.pendingCombo && <div className="dr-pvp-combo"><h2>Combo ×{view.pendingCombo}</h2>
-        <button disabled={!activeTurn} onClick={() => action({type:'combo',choice:'DAMAGE'})}>Ataque −{view.pendingCombo === 3 ? 3 : 1} PV</button>
-        <button disabled={!activeTurn} onClick={() => action({type:'combo',choice:'HEAL'})}>Curación +{view.pendingCombo === 3 ? 3 : 1} PV</button>
-      </div>}
-      <div className="dr-pvp-hand" role="group" aria-label="Tu mano de cartas">
-        {view.me.hand.map(card => <button type="button" key={card.id} disabled={!canPlay(card)}
-          onClick={() => action({ type: 'play', cardId: card.id })} aria-label={'Jugar Decreto de ' + LABELS[card.type] + (card.rank ? ' ' + card.rank : '')}>
-          <img alt="" src={CARD_IMAGES[card.type]} draggable={false}/>
-          <strong>{card.type === 'IMPACT' ? 'Impacto ' + (card.rank === 4 ? 'Final' : card.rank) : LABELS[card.type]}</strong>
-        </button>)}
-      </div>
-      <footer className="dr-pvp-controls">
-        <button type="button" className="dr-pvp-primary" disabled={!activeTurn || Boolean(view.pendingCombo)} onClick={() => action({ type: 'end_turn' })}>Fin de turno</button>
-        {view.status === 'playing' && <button type="button" onClick={() => {
-          if (window.confirm('¿Rendirte? La partida contará como derrota.')) action({type:'surrender'});
-        }} disabled={!online || pending}>Rendirse</button>}
-        {view.status === 'finished' && <button type="button" onClick={resetSession}>Nueva partida</button>}
-        {view.status === 'finished' && <button type="button" onClick={() => navigate('/')}>Volver al menú</button>}
-      </footer>
-    </section>}
-    {cinematicCue && <MultiplayerCinematicCue cue={cinematicCue} onEnded={finishCue} />}
+    {view && <MultiplayerBattleBoard view={view} online={online} activeTurn={activeTurn && !cinematicCue}
+      cinematicCue={cinematicCue} onCueEnded={finishCue}
+      stats={stats} drawCues={drawCues}
+      onDrawFinished={id => setDrawCues(current => current.filter(cue => cue.id !== id))}
+      onPlayCard={card => action({ type: 'play', cardId: card.id })}
+      onEndTurn={() => action({ type: 'end_turn' })}
+      onCombo={choice => action({ type: 'combo', choice })}
+      onSurrender={() => action({ type: 'surrender' })}
+      onNewGame={resetSession}
+      onExit={() => { resetSession(); navigate('/'); }}/>}
   </main>;
 }

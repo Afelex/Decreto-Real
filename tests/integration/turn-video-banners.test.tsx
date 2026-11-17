@@ -30,35 +30,33 @@ test('Studio conserva la cinta estática editable', () => {
   expect(container.querySelector('.dr-event-turn--studio-preview .dr-event-turn__ribbon')).toBeTruthy();
 });
 
-test('PvP conserva su propio WebM para los cambios de turno', () => {
-  const { container } = render(<MultiplayerCinematicCue
-    cue={{ kind: 'turn', id: 1, isPlayer: false }} onEnded={() => {}}/>);
-  expect(container.querySelector('source')?.getAttribute('src')).toContain('animaciones/banner-rival-azul.webm');
+test('PvP reutiliza la misma transición de turno de IA, sin segundo WebM', async () => {
+  vi.useFakeTimers();
+  const finished = vi.fn();
+  const { unmount } = render(<MultiplayerCinematicCue
+    cue={{ kind: 'turn', id: 1, isPlayer: false }} onEnded={finished}/>);
+  expect(document.querySelector('.dr-turn-portal--opponent .dr-event-turn__ribbon')).toBeTruthy();
+  expect(document.querySelector('.dr-turn-portal video')).toBeNull();
+  await act(async () => { await vi.advanceTimersByTimeAsync(TURN_TRANSITION_DURATION_MS); });
+  expect(finished).toHaveBeenCalledTimes(1);
+  unmount();
 });
 
-test('PvP primero presenta el banner y solo después la animación del decreto', async () => {
+test('PvP reutiliza el banner oficial IA y después reproduce solo el efecto del decreto', async () => {
   vi.useFakeTimers();
-  for (const [type, file] of [
-    ['ATTACK', 'efectos/ataque.webm'],
-    ['DEFENSE', 'efectos/defensa.webm'],
-    ['ORDER', 'efectos/orden.webm'],
-    ['IMPACT', null],
-  ] as const) {
+  for (const type of ['ATTACK', 'DEFENSE', 'ORDER', 'IMPACT'] as const) {
     const finished = vi.fn();
     const { container, unmount } = render(<MultiplayerCinematicCue
       cue={{ kind: 'card', id: 12, isPlayer: true, cardType: type, ...(type === 'IMPACT' ? { rank: 1 } : {}) }}
       onEnded={finished}/>);
     expect(container.querySelector('[data-decree-stage]')?.getAttribute('data-decree-stage')).toBe('banner');
     expect(container.querySelector('source')?.getAttribute('src')).toContain('animaciones/banner-jugador-rojo.webm');
-    expect(container.querySelector('.dr-pvp-cinematic-copy')).toBeTruthy();
+    expect(container.querySelector('.dr-decree-banner__copy')).toBeTruthy();
     await act(async () => { await vi.advanceTimersByTimeAsync(1500); });
-    if (file) {
-      expect(container.querySelector('[data-decree-stage]')?.getAttribute('data-decree-stage')).toBe('effect');
-      expect(container.querySelector('source')?.getAttribute('src')).toContain(file);
-      expect(container.querySelector('.dr-pvp-cinematic-copy')).toBeNull();
-      expect(finished).not.toHaveBeenCalled();
-      await act(async () => { await vi.advanceTimersByTimeAsync(1500); });
-    }
+    expect(container.querySelector('[data-decree-stage]')?.getAttribute('data-decree-stage')).toBe('effect');
+    expect(container.querySelector('.dr-decree-banner__copy')).toBeNull();
+    expect(finished).not.toHaveBeenCalled();
+    await act(async () => { await vi.advanceTimersByTimeAsync(1500); });
     expect(finished).toHaveBeenCalledTimes(1);
     unmount();
   }

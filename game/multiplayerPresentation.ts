@@ -3,6 +3,7 @@
 export type MultiplayerCue = (
   | { kind: 'turn'; id: number; isPlayer: boolean }
   | { kind: 'card'; id: number; isPlayer: boolean; cardType: 'ATTACK' | 'DEFENSE' | 'ORDER' | 'IMPACT'; rank?: number }
+  | { kind: 'combo'; id: number; isPlayer: boolean; level: 2 | 3; ability: 'DAMAGE' | 'HEAL' }
 );
 export type MultiplayerCueView = {
   revision: number;
@@ -25,6 +26,12 @@ export function multiplayerCueFromState(previous: MultiplayerCueView | null, nex
   // The backend reports one accepted card per revision. On a final blow the
   // new state has no active turn, so use the PREVIOUS owner to identify actor.
   const event = next.lastEvent;
+  // Server-authoritative combo resolutions use this exact event grammar.
+  // Their cinematic is a separate approved G3 effect, never a second decree banner.
+  const combo = event.match(/: combo ×([23]), ([+-])\d+ vida(?: rival)?\.$/);
+  if (combo) return { kind: 'combo', id: next.revision,
+    isPlayer: previous.isMyTurn, level: Number(combo[1]) as 2 | 3,
+    ability: combo[2] === '-' ? 'DAMAGE' : 'HEAL' };
   const decree = event.match(/ jugó Decreto de (Ataque|Defensa|Orden)\.$/);
   if (decree) {
     const kind = { Ataque: 'ATTACK', Defensa: 'DEFENSE', Orden: 'ORDER' } as const;
