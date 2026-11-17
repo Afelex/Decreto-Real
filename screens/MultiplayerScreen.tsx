@@ -236,7 +236,7 @@ export default function MultiplayerScreen() {
     {session && !waiting && !view && <section className="dr-pvp-lobby"><h2>Restableciendo la partida</h2>
       <p>Reconectando con la sala {session.code}…</p><div className="dr-pvp-ornament" aria-hidden="true"><span>✦</span></div></section>}
 
-    {view && <MultiplayerBattleBoard view={view} online={online} activeTurn={activeTurn}
+    {view && <MultiplayerBattleBoard view={view} online={online} activeTurn={activeTurn && !cinematicCue}
       cinematicCue={cinematicCue} onCueEnded={finishCue}
       onPlayCard={card => action({ type: 'play', cardId: card.id })}
       onEndTurn={() => action({ type: 'end_turn' })}
