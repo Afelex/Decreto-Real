@@ -117,13 +117,17 @@
    special · Impacto/Místico: cinta completa con viñeta ceremonial.
    combo2  · como hasta ahora.
    combo3  · viñeta + sacudida de mesa al aplicar el daño (GameBoard). */
-.dr-royal-screen[data-cue-tier="normal"] .dr-cinematic-overlay[data-decree-stage="banner"] .dr-cinematic-media {
-  scale:.86;
+/* Scale the one shared film/caption stage, not the movie and text separately. */
+.dr-royal-screen[data-cue-tier="normal"] .dr-decree-banner {
+  transform:translate(-50%,-50%) scale(.86);
 }
-.dr-royal-screen[data-cue-tier="normal"] .dr-cinematic-overlay[data-decree-stage="banner"] .dr-cinematic-copy {
-  scale:.92;
+/* During a decree the small persistent turn ribbon and last-decree chips
+   temporarily recede; they return immediately after the cue. */
+.dr-royal-screen[data-hud-mode="cue"] .dr-event-indicator,
+.dr-royal-screen[data-hud-mode="cue"] .dr-last-decree-stack {
+  opacity:0;
+  pointer-events:none;
 }
-.dr-royal-screen[data-cue-tier="special"] .dr-cinematic-overlay::before,
 .dr-royal-screen[data-cue-tier="combo3"] .dr-energy-overlay--combo::before,
 .dr-royal-screen[data-cue-tier="combo3"] .dr-mystic-combo-overlay::before {
   content:"";
@@ -258,7 +262,6 @@
   .dr-royal-screen .dr-royal-character-frame .dr-royal-hp__ghost {transition:none;}
   .dr-royal-screen .dr-royal-character-frame .dr-royal-hp-delta {animation:none;}
   .dr-royal-screen .dr-royal-end-seal {animation:none;}
-  .dr-royal-screen[data-cue-tier] .dr-cinematic-overlay::before,
   .dr-royal-screen[data-cue-tier] .dr-energy-overlay--combo::before,
   .dr-royal-screen[data-cue-tier] .dr-mystic-combo-overlay::before {animation:none;}
   .dr-royal-screen[data-hud-mode] .dr-royal-activation-target,
