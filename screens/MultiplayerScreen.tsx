@@ -2,7 +2,9 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './multiplayer.css';
 import { MultiplayerBattleBoard } from './MultiplayerBattleBoard';
-import { MultiplayerCinematicCue } from './MultiplayerCinematicCue';
+import { useAudio } from '../contexts/AudioContext';
+import { freeDuelMusicScene } from '../game/musicScene';
+import type { GamePhase } from '../types';
 import { multiplayerCueFromState, type MultiplayerCue } from '../game/multiplayerPresentation';
 
 type Card = { id: string; type: 'ATTACK' | 'DEFENSE' | 'IMPACT' | 'ORDER'; rank?: number };
@@ -26,6 +28,7 @@ function storeSession(session: Session) {
 
 export default function MultiplayerScreen() {
   const navigate = useNavigate();
+  const { setMusicScene } = useAudio();
   const [nickname, setNickname] = React.useState(() => { try { return localStorage.getItem(NAME_KEY) || ''; } catch { return ''; } });
   const [joinCode, setJoinCode] = React.useState(() => new URLSearchParams(window.location.search).get('sala') || '');
   const [showJoinCode, setShowJoinCode] = React.useState(() => Boolean(new URLSearchParams(window.location.search).get('sala')));
@@ -114,6 +117,19 @@ export default function MultiplayerScreen() {
     connect();
     return () => { active = false; clearTimeout(retry); socketRef.current?.close(); };
   }, []);
+
+  // La banda sonora utiliza la misma selección de escenas que Versus IA.
+  // No se altera el estado del combate ni la autoridad del servidor.
+  React.useEffect(() => {
+    if (!view) return;
+    const phase: GamePhase = view.status !== 'finished' ? 'PLAYER_TURN'
+      : view.winner === 'me' ? 'VICTORY'
+      : view.winner === 'opponent' ? 'DEFEAT' : 'PLAYER_TURN';
+    setMusicScene(freeDuelMusicScene({
+      entranceActive: false, phase, playerHP: view.me.hp, opponentHP: view.opponent.hp,
+    }));
+    return () => setMusicScene(null);
+  }, [view?.status, view?.winner, view?.me.hp, view?.opponent.hp, setMusicScene]);
 
   const send = (data: object) => {
     const ws = socketRef.current;
@@ -221,12 +237,12 @@ export default function MultiplayerScreen() {
       <p>Reconectando con la sala {session.code}…</p><div className="dr-pvp-ornament" aria-hidden="true"><span>✦</span></div></section>}
 
     {view && <MultiplayerBattleBoard view={view} online={online} activeTurn={activeTurn}
+      cinematicCue={cinematicCue} onCueEnded={finishCue}
       onPlayCard={card => action({ type: 'play', cardId: card.id })}
       onEndTurn={() => action({ type: 'end_turn' })}
       onCombo={choice => action({ type: 'combo', choice })}
       onSurrender={() => action({ type: 'surrender' })}
       onNewGame={resetSession}
       onExit={() => { resetSession(); navigate('/'); }}/>}
-    {cinematicCue && <MultiplayerCinematicCue cue={cinematicCue} onEnded={finishCue} />}
   </main>;
 }
