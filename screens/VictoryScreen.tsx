@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAudio } from '../contexts/AudioContext';
 import BattleResultScreen from './BattleResultScreen';
+import { formatBattleDuration } from '../game/battleStats';
 
 /** Final libre: usa el fondo real de la partida y nunca muestra puntuaciones de ejemplo. */
 const VictoryScreen: React.FC = () => {
@@ -13,6 +14,10 @@ const VictoryScreen: React.FC = () => {
     turnCount?: number;
     playerHP?: number;
     playerImpactLevel?: number;
+    durationMs?: number;
+    healthRecovered?: number;
+    damageDealt?: number;
+    impactsSummoned?: number;
   } | null;
   const won = result?.outcome !== 'DEFEAT';
   useEffect(() => {
@@ -31,8 +36,11 @@ const VictoryScreen: React.FC = () => {
     won={won}
     stats={[
       { label: 'Turnos', value: count(result?.turnCount) },
+      { label: 'Tiempo', value: formatBattleDuration(result?.durationMs) },
+      { label: 'Vida recuperada', value: count(result?.healthRecovered) },
+      { label: 'Daño realizado', value: count(result?.damageDealt) },
+      { label: 'Impactos convocados', value: count(result?.impactsSummoned ?? result?.playerImpactLevel) },
       { label: 'Vida restante', value: count(result?.playerHP) },
-      { label: 'Impactos', value: count(result?.playerImpactLevel) },
     ]}
     actions={[
       { label: 'Jugar de nuevo', primary: true, onClick: () => { playSound('CLICK'); navigate('/game'); } },
