@@ -11,6 +11,10 @@ type DuelEntranceProps = {
   /** PvP presents the real player names; Versus IA keeps its approved defaults. */
   playerName?: string;
   rivalName?: string;
+  playerNameFx?: string;
+  rivalNameFx?: string;
+  playerEntranceFx?: string;
+  rivalEntranceFx?: string;
   ariaLabel?: string;
 };
 
@@ -21,7 +25,9 @@ type DuelEntranceProps = {
  */
 export const DuelEntrance: React.FC<DuelEntranceProps> = ({
   playerPortrait, rivalPortrait, onFinish, playerName = 'XERVIAS',
-  rivalName = 'RIVAL IA', ariaLabel = 'Presentación del duelo contra la IA',
+  rivalName = 'RIVAL IA', playerNameFx = 'clasico', rivalNameFx = 'clasico',
+  playerEntranceFx = 'clasica', rivalEntranceFx = 'clasica',
+  ariaLabel = 'Presentación del duelo contra la IA',
 }) => {
   const [stage, setStage] = React.useState<EntranceStage>('gate');
   const [gateLoaded, setGateLoaded] = React.useState({ left: false, right: false });
@@ -65,21 +71,21 @@ export const DuelEntrance: React.FC<DuelEntranceProps> = ({
       </div>
 
       <section className="dr-duel-entrance__rivals" aria-label="Combatientes">
-        <figure className="dr-duel-entrance__fighter dr-duel-entrance__fighter--player">
+        <figure className={'dr-duel-entrance__fighter dr-duel-entrance__fighter--player entrance-' + playerEntranceFx}>
           <div className="dr-duel-entrance__portrait-wrap">
             <img className="dr-duel-entrance__portrait" src={playerPortrait} alt="" draggable={false} />
             <img className="dr-duel-entrance__portrait-ornament" src={G3_UI_ASSETS.playerFrame} alt="" aria-hidden="true" draggable={false}
               onError={event => { event.currentTarget.style.display = 'none'; }}/>
-            <figcaption>{playerName}</figcaption>
+            <figcaption className={'dr-duelist-intro-name namefx-' + playerNameFx}>{playerName}</figcaption>
           </div>
         </figure>
         <div className="dr-duel-entrance__versus" aria-hidden="true">VS</div>
-        <figure className="dr-duel-entrance__fighter dr-duel-entrance__fighter--rival">
+        <figure className={'dr-duel-entrance__fighter dr-duel-entrance__fighter--rival entrance-' + rivalEntranceFx}>
           <div className="dr-duel-entrance__portrait-wrap">
             <img className="dr-duel-entrance__portrait" src={rivalPortrait} alt="" draggable={false} />
             <img className="dr-duel-entrance__portrait-ornament" src={G3_UI_ASSETS.rivalFrame} alt="" aria-hidden="true" draggable={false}
               onError={event => { event.currentTarget.style.display = 'none'; }}/>
-            <figcaption>{rivalName}</figcaption>
+            <figcaption className={'dr-duelist-intro-name namefx-' + rivalNameFx}>{rivalName}</figcaption>
           </div>
         </figure>
         <h2>QUE COMIENCE EL DUELO</h2>
