@@ -118,6 +118,7 @@ export class AccountStore {
       user.history = user.history.slice(0, 250);
       user.duelist.progress.matches++;
       if (result === 'victoria') user.duelist.progress.wins++;
+      user.duelist.progress.impacts += Math.max(0, Math.min(50, room.impactCounts?.[slot] || 0));
       user.duelist.rewardedRooms = [room.matchId, ...user.duelist.rewardedRooms].slice(0, 80);
     }
     this.flush();
