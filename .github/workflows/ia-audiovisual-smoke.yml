@@ -23,6 +23,8 @@ on:
       - 'game/effectCues.ts'
       - 'screens/GameBoard.tsx'
       - 'screens/CardActivationBanner.tsx'
+      - 'screens/hud-modes.css'
+      - 'tests/e2e/decree-banner-video-only.spec.ts'
       - 'screens/ComboEffectOverlay.tsx'
       - 'screens/card-activation-banner.css'
       - 'tests/integration/qa-last-decree-video.test.tsx'
@@ -64,7 +66,7 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - name: Check duels and turn graphics on supported mobile viewports
-        run: npx playwright test tests/e2e/duel-entrance.spec.ts tests/e2e/turn-indicator-viewport.spec.ts tests/e2e/route-loading.spec.ts tests/e2e/mobile-performance-lifecycle.spec.ts --project=mobile-390 --project=short-360 --workers=2 --trace off --reporter=line
+        run: npx playwright test tests/e2e/duel-entrance.spec.ts tests/e2e/turn-indicator-viewport.spec.ts tests/e2e/decree-banner-video-only.spec.ts tests/e2e/route-loading.spec.ts tests/e2e/mobile-performance-lifecycle.spec.ts --project=mobile-390 --project=short-360 --workers=2 --trace off --reporter=line
       - name: Guardar mediciones de entrada IA y capturas de errores
         if: always()
         uses: actions/upload-artifact@v4
