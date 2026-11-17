@@ -19,6 +19,7 @@ export function DuelistProfilePanel({ profile, onChange, onClose }: {
   const [draftName, setDraftName] = React.useState(slot.name);
   const [message, setMessage] = React.useState('');
   const [preview, setPreview] = React.useState(false);
+  const [category, setCategory] = React.useState<CosmeticKind>('portrait');
   React.useEffect(() => { setDraftName(slot.name); setMessage(''); }, [profile.active]);
 
   const saveName = () => {
@@ -74,7 +75,11 @@ export function DuelistProfilePanel({ profile, onChange, onClose }: {
       <span>{profile.progress.matches} duelos</span><span>{profile.progress.wins} victorias</span>
       <span>{profile.progress.impacts} Impactos</span>
     </div>
-    {SECTIONS.map(({ kind, title }) => <section className="dr-duelist-section" key={kind}
+    <div className="dr-duelist-tabs" role="group" aria-label="Categorías de personalización">
+      {SECTIONS.map(({ kind, title }) => <button type="button" key={kind} className={category === kind ? 'active' : ''}
+        aria-pressed={category === kind} onClick={() => setCategory(kind)}>{title}</button>)}
+    </div>
+    {SECTIONS.filter(({ kind }) => category === kind).map(({ kind, title }) => <section className="dr-duelist-section" key={kind}
       aria-label={title}>
       <h3>{title}</h3>
       <div className="dr-duelist-cosmetics">
@@ -106,7 +111,7 @@ export function DuelistProfilePanel({ profile, onChange, onClose }: {
       <div className={'dr-duelist-preview-card back-' + slot.appearance.back} aria-label="Dorso seleccionado">✥</div>
       <p>Vista previa visual · Sin alterar el combate</p>
     </div>}
-    <p className="dr-duelist-help">Los desbloqueos y nombres se guardan en este dispositivo. La sincronización con la cuenta de Peruanistas se incorporará cuando el servidor admita perfiles.</p>
+    <p className="dr-duelist-help">Versión inicial: se guarda en este dispositivo. La sincronización con Peruanistas está pendiente.</p>
     <button type="button" className="dr-duelist-done" onClick={onClose}>Volver al multijugador</button>
   </section>;
 }
