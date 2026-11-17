@@ -205,3 +205,118 @@
     gap:1px;
   }
 }
+
+
+/* QA móvil · noviembre 2026: tipografía HP más legible sin desplazar la barra.
+   Se amplía la cifra de ambos jugadores, conservando el color por daño. */
+.dr-royal-screen.dr-pvp-royal[data-hud-mode] .dr-royal-character-frame .dr-royal-hp__label {
+  font:900 clamp(13px,3.4cqw,18px)/1 Cinzel,Georgia,serif;
+  letter-spacing:-.02em;
+  text-align:center;
+}
+.dr-royal-screen.dr-pvp-royal[data-hud-mode] .dr-royal-character-frame .dr-royal-hp__label > b {
+  font-size:1.24em;
+  line-height:1;
+  font-weight:900;
+}
+.dr-royal-screen.dr-pvp-royal[data-hud-mode] .dr-royal-character-frame .dr-royal-hp__label > small {
+  font-size:.84em;
+  line-height:1;
+  font-weight:900;
+}
+
+/* Ambos apodos deben leerse sobre cielo, nieve y adoquines. */
+.dr-royal-screen.dr-pvp-royal .dr-royal-character .dr-pvp-portrait-name {
+  max-width:min(180px,48cqw);
+  font:800 clamp(12px,3.1cqw,15px)/1.1 Georgia,serif;
+  -webkit-text-stroke:.65px #070409;
+  paint-order:stroke fill;
+  text-shadow:-1px -1px 0 #070409,1px -1px 0 #070409,
+              -1px 1px 0 #070409,1px 1px 0 #070409,
+              0 2px 4px #000;
+}
+@media(max-height:590px) {
+  .dr-royal-screen.dr-pvp-royal .dr-royal-character .dr-pvp-portrait-name {
+    font-size:clamp(10px,2.8cqw,13px);
+  }
+}
+
+/* El abanico sube ligeramente; la parte superior del footer queda libre
+   para el historial, incluso con 5 o más cartas y carta seleccionada. */
+.dr-royal-screen.dr-pvp-royal .dr-royal-player-hand {
+  position:relative;
+  z-index:3;
+}
+.dr-royal-screen.dr-pvp-royal .dr-royal-player-hand .dr-royal-player-fan {
+  top:-12px;
+  bottom:12px;
+}
+.dr-royal-screen.dr-pvp-royal .dr-royal-player-area {
+  position:relative;
+  z-index:8;
+}
+.dr-royal-screen.dr-pvp-royal .dr-royal-player-area > .dr-last-decree-stack {
+  top:clamp(7px,1.1dvh,15px);
+  right:clamp(4px,1.5cqw,10px);
+  bottom:auto;
+  z-index:60;
+  width:max-content;
+  max-width:clamp(120px,35cqw,156px);
+  transform:none;
+  gap:4px;
+  visibility:visible;
+}
+.dr-royal-screen.dr-pvp-royal .dr-pvp-decree-empty {
+  box-sizing:border-box;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:22px;
+  min-width:75px;
+  padding:2px 7px;
+  border:1px solid #d2b886;
+  border-radius:99px;
+  color:#fff2d1;
+  font:800 clamp(9px,2.4cqw,11px)/1.15 Georgia,serif;
+  text-shadow:0 1px 2px #000;
+  box-shadow:0 2px 7px #0007;
+}
+.dr-royal-screen.dr-pvp-royal .dr-pvp-decree-empty--opponent {background:#0a1a37f5;}
+.dr-royal-screen.dr-pvp-royal .dr-pvp-decree-empty--player {background:#360c18f5;}
+@media (max-height:650px) {
+  .dr-royal-screen.dr-pvp-royal .dr-royal-player-hand .dr-royal-player-fan {
+    top:-8px;
+    bottom:8px;
+  }
+  .dr-royal-screen.dr-pvp-royal .dr-royal-player-area > .dr-last-decree-stack {
+    top:2px;
+    transform:scale(.84);
+    transform-origin:top right;
+    gap:2px;
+  }
+}
+
+/* La palabra de victoria o derrota pertenece a la etiqueta ornamental G3:
+   texto real sobre la imagen, nunca como encabezado debajo del arte. */
+.dr-royal-screen.dr-pvp-royal .dr-pvp-outcome .dr-royal-end-cartela {
+  position:relative;
+}
+.dr-royal-screen.dr-pvp-royal .dr-pvp-outcome .dr-royal-end-cartela > h2 {
+  position:absolute;
+  z-index:2;
+  left:17%;
+  right:17%;
+  top:40%;
+  height:33%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:0;
+  padding:0;
+  font:900 clamp(20px,5.8cqw,28px)/1 Cinzel,Georgia,serif;
+  letter-spacing:.01em;
+  color:#4b2118;
+  text-shadow:0 1px 0 #fff1ce,0 0 1px #fff8dc;
+  white-space:nowrap;
+  text-align:center;
+}
