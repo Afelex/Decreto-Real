@@ -73,3 +73,16 @@ test('desafío desde Amigos y chat exige pulsar Empezar partida', async ({ page 
   expect(actions.some((m: any) => m.type === 'social:decline_challenge' && m.code === '27KP')).toBe(true);
   expect(actions.some((m: any) => m.type === 'social:accept_challenge')).toBe(false);
 });
+
+
+test('un código manual ofrece Empezar partida y Volver al menú Multijugador', async ({ page }) => {
+  await openGuest(page, '/Decreto-Real/?sala=27KP#/multijugador');
+  await page.getByRole('button', { name: 'Volver al menú Multijugador' }).click();
+  await page.getByRole('button', { name: /Tengo un código de invitación/ }).click();
+  await page.getByRole('textbox', { name: 'Código recibido' }).fill('27KP');
+  await expect(page.getByRole('button', { name: 'Empezar partida' })).toBeEnabled();
+  await expect(page.getByRole('button', { name: 'Volver al menú Multijugador' })).toBeVisible();
+  await page.getByRole('button', { name: 'Volver al menú Multijugador' }).click();
+  await expect(page.getByRole('textbox', { name: 'Código recibido' })).toHaveCount(0);
+  expect(await page.evaluate(() => (window as any).__pvpSent.some((m: any) => m.type === 'join'))).toBe(false);
+});
