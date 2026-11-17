@@ -4,10 +4,15 @@ import { readFileSync } from 'node:fs';
 import { WebSocket, WebSocketServer } from 'ws';
 import { createMatch, act, viewFor } from './engine.mjs';
 import { createSocialHub } from './social.mjs';
+import { AccountStore, verifyFirebaseToken } from './accounts.mjs';
 
 const port = Number(process.env.PORT || 3001);
 const origins = new Set((process.env.ALLOWED_ORIGINS || 'http://localhost:5173,http://127.0.0.1:5173,https://afelex.github.io,https://decreto-real-production.up.railway.app')
   .split(',').map(item => item.trim()).filter(Boolean));
+// Roll out email accounts only when a persistent Railway volume is configured.
+// Without DR_DATA_FILE the existing guest PvP remains fully functional.
+const accounts = process.env.DR_DATA_FILE ? new AccountStore(process.env.DR_DATA_FILE) : null;
+const requireAccounts = Boolean(accounts && process.env.DR_REQUIRE_EMAIL_ACCOUNTS === 'true');
 const rooms = new Map();
 const REJOIN_MS = 120_000;
 const ROOM_TTL_MS = 30 * 60_000;
@@ -82,14 +87,23 @@ function registerWrongCode(ws) {
     count: previous && now - previous.at < 60_000 ? previous.count + 1 : 1 });
 }
 function token() { return randomBytes(24).toString('hex'); }
-function createRoom(name, appearance, randomQueue = false) {
+function createRoom(name, appearance, randomQueue = false, accountId = null) {
   const room = { code: roomCode(), matchId: randomBytes(12).toString('hex'),
-    seats: [{ name, appearance, token: token() }], sockets: [null, null],
-    match: null, randomQueue, lastUsed: Date.now(), disconnected: [null, null], actionIds: [new Set(), new Set()] };
+    seats: [{ name, appearance, token: token(), accountId }], sockets: [null, null],
+    impactCounts: [0, 0], match: null, randomQueue, lastUsed: Date.now(), disconnected: [null, null], actionIds: [new Set(), new Set()] };
   rooms.set(room.code, room);
   return room;
 }
 function broadcast(room) {
+  if (accounts && room.match?.status === 'finished' && !room.finishedStored) {
+    try {
+      if (accounts.recordMatch(room)) for (const player of room.sockets) {
+        if (player?.account?.uid) send(player, { type: 'account:history',
+          history: accounts.getHistory(player.account.uid),
+          profile: accounts.getDuelist(player.account.uid) });
+      }
+    } catch (error) { console.error('No se pudo guardar el resultado de la partida.', error); }
+  }
   for (let slot = 0; slot < room.seats.length; slot++) {
     const ws = room.sockets[slot];
     if (!ws) continue;
@@ -128,16 +142,16 @@ function enter(ws, room, name, appearance) {
     return fail(ws, 'Esta invitación ha caducado.');
   if (room.seats.length !== 1 || room.match) return fail(ws, 'La sala ya está completa.');
   if (room.sockets[0]?.readyState !== WebSocket.OPEN) return fail(ws, 'El creador de la sala está desconectado.');
-  room.seats.push({ name, appearance, token: token() });
+  room.seats.push({ name, appearance, token: token(), accountId: ws.account?.uid });
   room.match = createMatch(room.seats.map(seat => seat.name));
   if (waitingRandom === room.code) waitingRandom = null;
   attach(ws, room, 1);
 }
 const social = createSocialHub({
-  send, fail,
+  send, fail, accountStore: accounts, requireAccount: requireAccounts,
   onChallenge(ws, other) {
     if (rooms.size >= MAX_ROOMS) { fail(ws, 'Servidor ocupado. Intenta más tarde.'); return null; }
-    const room = createRoom(ws.social.name, appearanceOf({ portrait: ws.social.portrait }));
+    const room = createRoom(ws.social.name, appearanceOf({ portrait: ws.social.portrait }), false, ws.account?.uid || null);
     room.invitedId = other.social.id;
     room.inviteExpires = Date.now() + 90_000;
     attach(ws, room, 0);
@@ -199,6 +213,30 @@ sockets.on('connection', ws => {
     try { msg = JSON.parse(payload.toString()); }
     catch { return fail(ws, 'Mensaje JSON inválido.'); }
     if (!msg || typeof msg !== 'object' || Array.isArray(msg)) return fail(ws, 'Mensaje inválido.');
+    if (msg.type === 'account:hello') {
+      if (!accounts) return fail(ws, 'El acceso por correo todavía no está habilitado en el servidor.');
+      if (ws.account || ws.authPending) return fail(ws, 'La sesión ya está identificada.');
+      ws.authPending = true;
+      void verifyFirebaseToken(msg.idToken).then(account => {
+        if (ws.readyState !== WebSocket.OPEN) return;
+        ws.account = account;
+        send(ws, { type: 'account:ready',
+          profile: accounts.getDuelist(account.uid),
+          history: accounts.getHistory(account.uid) });
+      }).catch(() => fail(ws, 'No se pudo validar el correo. Inicia sesión nuevamente.'))
+        .finally(() => { ws.authPending = false; });
+      return;
+    }
+    // No playable or social action can run under a name or an unverified email.
+    if (requireAccounts && !ws.account) return fail(ws, 'Inicia sesión con tu correo para jugar.');
+    if (msg.type === 'account:save_profile') {
+      if (!accounts || !ws.account) return fail(ws, 'Debes verificar tu correo.');
+      if (JSON.stringify(msg.profile || {}).length > 4500)
+        return fail(ws, 'El perfil es demasiado grande.');
+      try { accounts.saveDuelist(ws.account.uid, msg.profile); }
+      catch { fail(ws, 'No se pudo guardar tu perfil.'); }
+      return;
+    }
     if (social.handle(ws, msg)) return;
     if (msg.type === 'create' || msg.type === 'queue') {
       if (ws.seat) return fail(ws, 'Ya perteneces a una sala.');
@@ -212,7 +250,7 @@ sockets.on('connection', ws => {
         waitingRandom = null;
       }
       if (rooms.size >= MAX_ROOMS) return fail(ws, 'Servidor ocupado. Intenta más tarde.');
-      const room = createRoom(name, appearanceOf(msg.appearance), msg.type === 'queue');
+      const room = createRoom(name, appearanceOf(msg.appearance), msg.type === 'queue', ws.account?.uid || null);
       if (msg.type === 'queue') waitingRandom = room.code;
       attach(ws, room, 0);
       return;
@@ -233,7 +271,8 @@ sockets.on('connection', ws => {
       if (ws.seat) return fail(ws, 'Ya perteneces a una sala.');
       const room = rooms.get(typeof msg.code === 'string' ? msg.code.toUpperCase() : '');
       const slot = room?.seats.findIndex(seat => seat.token === msg.token);
-      if (slot === undefined || slot < 0) return fail(ws, 'Sesión caducada. Abre una nueva partida.');
+      if (slot === undefined || slot < 0 || (accounts && room.seats[slot].accountId !== ws.account.uid))
+        return fail(ws, 'Sesión caducada. Abre una nueva partida.');
       attach(ws, room, slot); return;
     }
     if (msg.type === 'action') {
@@ -245,8 +284,11 @@ sockets.on('connection', ws => {
       if (room.sockets.some(client => !client || client.readyState !== WebSocket.OPEN) && msg.action?.type !== 'surrender')
         return fail(ws, 'Esperando a que el rival se reconecte.', msg.id);
       if (msg.revision !== room.match.revision) return fail(ws, 'Estado desactualizado; espera la sincronización.', msg.id);
+      const impactPlayed = msg.action?.type === 'play' &&
+        room.match.players[slot].hand.some(card => card.id === msg.action.cardId && card.type === 'IMPACT');
       const error = act(room.match, slot, msg.action);
       if (error) return fail(ws, error, msg.id);
+      if (impactPlayed) room.impactCounts[slot]++;
       room.actionIds[slot].add(msg.id);
       if (room.actionIds[slot].size > HISTORY_LIMIT) room.actionIds[slot].delete(room.actionIds[slot].values().next().value);
       room.lastUsed = Date.now();

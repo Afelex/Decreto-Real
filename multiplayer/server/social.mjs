@@ -1,7 +1,7 @@
 import { createHash, randomBytes } from 'node:crypto';
 
-// Social room for guest duelists. No Peruanistas authentication is implied:
-// the bearer secret stays on this device and is never sent to other players.
+// Signed-in identities are stable across devices. Legacy guests remain available
+// in isolated unit tests, but the live hub requires an authenticated account.
 const VALID_STATES = new Set(['available', 'busy', 'hidden']);
 const HEX_SECRET = /^[0-9a-f]{64}$/i;
 
@@ -18,12 +18,26 @@ function textContent(value) {
   return value.replace(/[\u0000-\u0008\u000b-\u001f]/g, '').trim().slice(0, 500);
 }
 
-export function createSocialHub({ send, fail, onChallenge, onAcceptChallenge, onDeclineChallenge }) {
-  const profiles = new Map(); // Guest profiles survive reconnect, not a server restart.
+export function createSocialHub({ send, fail, onChallenge, onAcceptChallenge, onDeclineChallenge,
+  accountStore = null, requireAccount = false }) {
+  const profiles = new Map(); // Presence is ephemeral; friends/blocks/requests are durable.
   const active = new Map();   // One active social socket per guest identity.
   const requests = new Map();
   const MAX_PEERS = 100;
   const LIMIT_CONTACTS = 100;
+
+  function remember(profile) {
+    if (!profile?.ownerUid || !accountStore) return;
+    accountStore.saveSocial(profile.ownerUid, {
+      name: profile.name, portrait: profile.portrait,
+      friends: [...profile.friends], blocked: [...profile.blocked],
+      requests: [...(requests.get(profile.id)?.values() || [])],
+    });
+  }
+  function rememberRequest(owner) {
+    const account = active.get(owner)?.social;
+    if (account) remember(account);
+  }
 
   function visiblePeers(profile) {
     return [...active.entries()]
@@ -53,27 +67,34 @@ export function createSocialHub({ send, fail, onChallenge, onAcceptChallenge, on
   }
 
   function handleHello(ws, msg) {
-    const secret = typeof msg.secret === 'string' && HEX_SECRET.test(msg.secret)
-      ? msg.secret.toLowerCase() : randomBytes(32).toString('hex');
-    const id = identityFromSecret(secret);
+    if (requireAccount && !ws.account?.uid) return fail(ws, 'Debes verificar tu correo para entrar al multijugador.');
+    const uid = ws.account?.uid || null;
+    const secret = !uid && typeof msg.secret === 'string' && HEX_SECRET.test(msg.secret)
+      ? msg.secret.toLowerCase() : !uid ? randomBytes(32).toString('hex') : null;
+    const id = uid ? createHash('sha256').update('decreto-real:' + uid).digest('hex').slice(0, 24)
+      : identityFromSecret(secret);
     let profile = profiles.get(id);
     if (!profile) {
-      profile = { id, name: safeName(msg.name), portrait: 'xervias',
-        status: 'hidden', friends: new Set(), blocked: new Set(), lastChat: [],
-        lastRequest: [] };
+      const saved = uid && accountStore ? accountStore.getSocial(uid) : null;
+      profile = { id, ownerUid: uid, name: saved?.name || safeName(msg.name),
+        portrait: saved?.portrait || 'xervias', status: 'hidden',
+        friends: new Set(saved?.friends || []), blocked: new Set(saved?.blocked || []),
+        lastChat: [], lastRequest: [] };
       profiles.set(id, profile);
+      if (saved?.requests?.length) requests.set(id, new Map(saved.requests.map(item => [item.from, item])));
     }
     if (ws.social && ws.social.id !== id) return fail(ws, 'Esta conexión ya tiene un perfil social.');
     const previous = active.get(id);
     if (previous && previous !== ws) previous.social = null;
     ws.social = profile;
-    profile.name = safeName(msg.name);
+    profile.name = safeName(msg.name || profile.name);
     profile.portrait = typeof msg.portrait === 'string' && /^[a-z]{2,20}$/.test(msg.portrait)
-      ? msg.portrait : 'xervias';
+      ? msg.portrait : profile.portrait;
     // Private by default on each new page; explicit reconnect may restore a selected state.
     profile.status = VALID_STATES.has(msg.status) ? msg.status : 'hidden';
     active.set(id, ws);
-    send(ws, { type: 'social:identity', id, secret,
+    remember(profile);
+    send(ws, { type: 'social:identity', id, ...(secret ? { secret } : {}),
       friends: [...profile.friends],
       requests: [...(requests.get(id)?.values() || [])] });
     broadcast();
@@ -91,6 +112,7 @@ export function createSocialHub({ send, fail, onChallenge, onAcceptChallenge, on
         me.name = safeName(msg.name);
         if (typeof msg.portrait === 'string' && /^[a-z]{2,20}$/.test(msg.portrait))
           me.portrait = msg.portrait;
+        remember(me);
         broadcast();
         break;
       }
@@ -121,6 +143,7 @@ export function createSocialHub({ send, fail, onChallenge, onAcceptChallenge, on
         const request = { from: me.id, name: me.name };
         inbox.set(me.id, request);
         requests.set(target, inbox);
+        rememberRequest(target);
         send(ws, { type: 'social:request_sent', to: target });
         alertTo(target, { type: 'social:friend_request', ...request });
         break;
@@ -130,11 +153,13 @@ export function createSocialHub({ send, fail, onChallenge, onAcceptChallenge, on
         const inbox = requests.get(me.id);
         if (!inbox?.has(from)) { fail(ws, 'La solicitud ya no está disponible.'); break; }
         inbox.delete(from);
+        remember(me);
         send(ws, { type: 'social:request_closed', from });
         if (msg.accept === true) {
           const other = profiles.get(from);
           if (!other || other.blocked.has(me.id) || me.blocked.has(from)) break;
           me.friends.add(from); other.friends.add(me.id);
+          remember(me); remember(other);
           send(ws, { type: 'social:friend_added', id: from });
           alertTo(from, { type: 'social:friend_added', id: me.id });
           broadcast();
@@ -166,6 +191,7 @@ export function createSocialHub({ send, fail, onChallenge, onAcceptChallenge, on
         profiles.get(id)?.friends.delete(me.id);
         requests.get(me.id)?.delete(id);
         requests.get(id)?.delete(me.id);
+        remember(me); remember(profiles.get(id));
         send(ws, { type: 'social:blocked', id });
         broadcast();
         break;
