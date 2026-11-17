@@ -41,6 +41,7 @@ test('pausa, reanudación y cierre congelan el cronómetro una sola vez', () => 
   stats.stop(15000);
   stats.updateHealth('PLAYER', hp => hp + 2);
   stats.summonImpact(true);
+  stats.resume(18000); // cerrar el menú tras la derrota no reduce el tiempo jugado
   assert.deepEqual(stats.snapshot(20000), {
     durationMs: 4000, healthRecovered: 0, damageDealt: 0, impactsSummoned: 0,
   });
