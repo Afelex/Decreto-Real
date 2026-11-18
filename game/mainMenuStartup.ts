@@ -18,11 +18,12 @@ export type MenuStartupProgress = Readonly<{
   label: string;
 }>;
 
-const MENU_LOOP_PATH = root + 'portada/portada-loop.mp4';
+// Cambiar esta versión cuando se sustituya el MP4 para evitar reutilizar copias antiguas del navegador/CDN.
+const MENU_LOOP_PATH = root + 'portada/portada-loop.mp4?v=448b7ab';
 let bufferedMenuVideo: string | null = null;
 
-/** Reuse the verified MP4 Blob after loading instead of requesting it twice
- * when the cinematic menu mounts; one original video under 1 MB in memory. */
+/** Reuse the versioned MP4 Blob after loading instead of requesting it twice
+ * when the cinematic menu mounts. The version query invalidates stale cached video URLs. */
 export const menuLoopSource = () => bufferedMenuVideo ?? MENU_LOOP_PATH;
 
 export async function loadMenuLoop(signal: AbortSignal): Promise<void> {
