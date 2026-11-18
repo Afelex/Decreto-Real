@@ -271,7 +271,7 @@ sockets.on('connection', ws => {
       if (ws.seat) return fail(ws, 'Ya perteneces a una sala.');
       const room = rooms.get(typeof msg.code === 'string' ? msg.code.toUpperCase() : '');
       const slot = room?.seats.findIndex(seat => seat.token === msg.token);
-      if (slot === undefined || slot < 0 || (accounts && room.seats[slot].accountId !== ws.account.uid))
+      if (slot === undefined || slot < 0 || (accounts && room.seats[slot].accountId !== (ws.account?.uid || null)))
         return fail(ws, 'Sesión caducada. Abre una nueva partida.');
       attach(ws, room, slot); return;
     }
