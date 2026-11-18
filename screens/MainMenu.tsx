@@ -352,7 +352,7 @@ const MainMenu: React.FC = () => {
           <div className="dr-vsia-loading__panel">
             <small>DECRETO REAL</small>
             <h2 id="dr-vsia-difficulty-title">Elige tu dificultad</h2>
-            <p className="dr-vsia-loading__subtitle">La IA comienza con 20 PV. Solo cambia la vida máxima del jugador.</p>
+            <p className="dr-vsia-loading__subtitle">La IA tiene 20 PV. Tu vida inicial depende de la dificultad y puedes curarte hasta 20 PV.</p>
             <div className="dr-vsia-difficulty__choices" role="radiogroup" aria-label="Nivel de dificultad">
               {VERSUS_IA_DIFFICULTIES.map(option => (
                 <label key={option.id} className={'dr-vsia-difficulty__option' + (difficulty === option.id ? ' is-selected' : '')}>
@@ -363,7 +363,7 @@ const MainMenu: React.FC = () => {
                     <strong>{option.title}</strong>
                     <small>{option.description}</small>
                   </span>
-                  <b>{option.hp} PV</b>
+                  <b>{option.hp} / 20 PV</b>
                 </label>
               ))}
             </div>
