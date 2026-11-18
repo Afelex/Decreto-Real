@@ -17,3 +17,6 @@ export function versusIaPlayerHp(value: unknown): number {
   const selected = versusIaDifficulty(value);
   return VERSUS_IA_DIFFICULTIES.find(option => option.id === selected)!.hp;
 }
+export function limitVersusIaPlayerHp(hp: number, value: unknown): number {
+  return Math.max(0, Math.min(versusIaPlayerHp(value), hp));
+}
