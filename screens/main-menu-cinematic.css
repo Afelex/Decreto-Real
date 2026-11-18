@@ -495,10 +495,10 @@
   }
 
   .dr-cinematic-side-logo--left {
-    left: clamp(100px, 18vw, 340px);
+    left: max(24px, calc(25vw - 14.0625dvh));
   }
 
   .dr-cinematic-side-logo--right {
-    right: clamp(100px, 18vw, 340px);
+    right: max(24px, calc(25vw - 14.0625dvh));
   }
 }
