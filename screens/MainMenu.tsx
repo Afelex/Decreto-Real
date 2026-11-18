@@ -220,6 +220,20 @@ const MainMenu: React.FC = () => {
       >
         <source src={menuLoopSource()} type="video/mp4" />
       </video>
+      <img
+        className="dr-cinematic-side-logo dr-cinematic-side-logo--left"
+        src={`${import.meta.env.BASE_URL}portada/decreto-real-logo.png`}
+        alt=""
+        aria-hidden="true"
+        draggable={false}
+      />
+      <img
+        className="dr-cinematic-side-logo dr-cinematic-side-logo--right"
+        src={`${import.meta.env.BASE_URL}portada/decreto-real-logo.png`}
+        alt=""
+        aria-hidden="true"
+        draggable={false}
+      />
       <div className="dr-cinematic-shade" aria-hidden="true" />
       {audio && (
         <button className="dr-cinematic-music-toggle" type="button"

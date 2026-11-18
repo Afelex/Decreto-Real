@@ -459,3 +459,46 @@
 }
 .dr-cinematic-account-toggle:focus-visible {outline:3px solid #fff1a0;outline-offset:3px;}
 .dr-cinematic-account-toggle:active {transform:scale(.95);}
+
+
+/* Escritorio: conservar íntegro el video vertical y usar sus márgenes como
+   bandas negras decoradas. En móvil/tablet táctil se conserva el encuadre actual. */
+.dr-cinematic-side-logo {
+  display: none;
+}
+
+@media (min-width: 1024px) and (orientation: landscape) and (pointer: fine) {
+  .dr-cinematic-screen {
+    background: #000;
+  }
+
+  .dr-cinematic-background {
+    object-fit: contain;
+    object-position: center center;
+  }
+
+  .dr-cinematic-side-logo {
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    display: block;
+    width: clamp(90px, 10vw, 180px);
+    max-width: 20vw;
+    max-height: 38dvh;
+    height: auto;
+    object-fit: contain;
+    opacity: .94;
+    filter: drop-shadow(0 5px 14px rgba(0, 0, 0, .72));
+    transform: translateY(-50%);
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .dr-cinematic-side-logo--left {
+    left: max(24px, calc(25vw - 14.0625dvh));
+  }
+
+  .dr-cinematic-side-logo--right {
+    right: max(24px, calc(25vw - 14.0625dvh));
+  }
+}
