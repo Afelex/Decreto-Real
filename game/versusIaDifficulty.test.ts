@@ -2,17 +2,19 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { VS_IA_BASE_HP, VERSUS_IA_DIFFICULTIES, versusIaDifficulty, versusIaPlayerHp, limitVersusIaPlayerHp } from './versusIaDifficulty.ts';
 
-test('Normal 20 PV, Difícil 15 PV y Extremo 5 PV contra rival de 20 PV', () => {
+test('Normal 20 PV, Difícil 15 PV y Extremo 8 PV iniciales; todos conservan 20 PV máximos', () => {
   assert.equal(VS_IA_BASE_HP, 20);
-  assert.deepEqual(VERSUS_IA_DIFFICULTIES.map(option => option.hp), [20, 15, 5]);
+  assert.deepEqual(VERSUS_IA_DIFFICULTIES.map(option => option.hp), [20, 15, 8]);
   assert.equal(versusIaPlayerHp('normal'), 20);
   assert.equal(versusIaPlayerHp('dificil'), 15);
-  assert.equal(versusIaPlayerHp('extremo'), 5);
+  assert.equal(versusIaPlayerHp('extremo'), 8);
 });
-test('Las curaciones de cada nivel no pueden superar la vida máxima inicial', () => {
-  assert.equal(limitVersusIaPlayerHp(30, 'normal'), 20);
-  assert.equal(limitVersusIaPlayerHp(30, 'dificil'), 15);
-  assert.equal(limitVersusIaPlayerHp(30, 'extremo'), 5);
+test('Las curaciones de todos los niveles pueden alcanzar 20 PV, sin exceder el máximo', () => {
+  for (const level of ['normal', 'dificil', 'extremo']) {
+    assert.equal(limitVersusIaPlayerHp(30, level), 20);
+    assert.equal(limitVersusIaPlayerHp(20, level), 20);
+  }
+  assert.equal(limitVersusIaPlayerHp(8, 'extremo'), 8);
   assert.equal(limitVersusIaPlayerHp(-2, 'extremo'), 0);
 });
 test('Enlaces directos, valores inválidos y campañas conservan Normal', () => {
