@@ -50,7 +50,7 @@ function storeSession(session: Session, uid?: string) {
 }
 
 export default function MultiplayerScreen() {
-  return EMAIL_ENABLED ? <EmailAccountGate><AuthenticatedMultiplayer/></EmailAccountGate>
+  return EMAIL_ENABLED ? <EmailAccountGate allowGuest><AuthenticatedMultiplayer/></EmailAccountGate>
     : <AuthenticatedMultiplayer/>;
 }
 
