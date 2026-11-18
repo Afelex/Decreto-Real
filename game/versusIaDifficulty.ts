@@ -2,9 +2,9 @@
 export const VS_IA_BASE_HP = 20;
 export type VersusIaDifficulty = 'normal' | 'dificil' | 'extremo';
 export const VERSUS_IA_DIFFICULTIES = [
-  { id: 'normal', title: 'Normal', hp: 20, description: 'La partida clásica, sin cambios.' },
-  { id: 'dificil', title: 'Difícil', hp: 15, description: '25 % menos de vida para el jugador.' },
-  { id: 'extremo', title: 'Extremo', hp: 5, description: 'Solo el 25 % de la vida normal.' },
+  { id: 'normal', title: 'Normal', hp: 20, description: 'Comienzas con 20 PV.' },
+  { id: 'dificil', title: 'Difícil', hp: 15, description: 'Comienzas con 15 PV; puedes curarte hasta 20.' },
+  { id: 'extremo', title: 'Extremo', hp: 8, description: 'Comienzas con 8 PV; puedes curarte hasta 20.' },
 ] as const satisfies readonly {
   id: VersusIaDifficulty; title: string; hp: number; description: string;
 }[];
@@ -17,6 +17,7 @@ export function versusIaPlayerHp(value: unknown): number {
   const selected = versusIaDifficulty(value);
   return VERSUS_IA_DIFFICULTIES.find(option => option.id === selected)!.hp;
 }
-export function limitVersusIaPlayerHp(hp: number, value: unknown): number {
-  return Math.max(0, Math.min(versusIaPlayerHp(value), hp));
+export function limitVersusIaPlayerHp(hp: number, _value: unknown): number {
+  // La dificultad solo modifica los PV iniciales: el máximo siempre es 20.
+  return Math.max(0, Math.min(VS_IA_BASE_HP, hp));
 }
