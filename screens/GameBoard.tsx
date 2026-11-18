@@ -27,7 +27,7 @@ import { freeDuelMusicScene } from '../game/musicScene';
 import { getRoyalCardText } from '../game/royalCardText';
 import { resolveBattleEnd, resolveSurrender, resolveDevelopmentVictory, type BattleEndResult } from '../game/battleEnd';
 import { BattleStatsTracker } from '../game/battleStats';
-import { versusIaDifficulty, versusIaPlayerHp } from '../game/versusIaDifficulty';
+import { limitVersusIaPlayerHp, versusIaDifficulty, versusIaPlayerHp } from '../game/versusIaDifficulty';
 import { BattleSceneryLayer } from './BattleSceneryLayer';
 import { DuelEntrance } from './DuelEntrance';
 import { RoyalPauseMenu } from './RoyalPauseMenu';
@@ -287,7 +287,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const setPlayerHP = (update: React.SetStateAction<number>) =>
     setPlayerHPState(battleStats.current.updateHealth('PLAYER', previous => {
       const next = typeof update === 'function' ? update(previous) : update;
-      return Math.max(0, Math.min(playerMaxHp, next));
+      return limitVersusIaPlayerHp(next, difficulty);
     }));
   const setOpponentHP = (update: React.SetStateAction<number>, creditedToPlayer = true) =>
     setOpponentHPState(battleStats.current.updateHealth('OPPONENT', update, creditedToPlayer));
