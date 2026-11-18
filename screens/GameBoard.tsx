@@ -27,6 +27,7 @@ import { freeDuelMusicScene } from '../game/musicScene';
 import { getRoyalCardText } from '../game/royalCardText';
 import { resolveBattleEnd, resolveSurrender, resolveDevelopmentVictory, type BattleEndResult } from '../game/battleEnd';
 import { BattleStatsTracker } from '../game/battleStats';
+import { versusIaDifficulty, versusIaPlayerHp } from '../game/versusIaDifficulty';
 import { BattleSceneryLayer } from './BattleSceneryLayer';
 import { DuelEntrance } from './DuelEntrance';
 import { RoyalPauseMenu } from './RoyalPauseMenu';
@@ -153,6 +154,11 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const rivalPortrait = presentation?.opponentPortrait ?? OPPONENT_IMG;
   const navigate = useNavigate();
   const location = useLocation();
+  // Los modos reducen la vida inicial Y su tope de curación. Campaña y tutorial
+  // mantienen 20 PV y el rival siempre conserva sus 20 PV originales.
+  const freeVsIa = !onOutcome && !guidedOpening && !storyConversation;
+  const difficulty = versusIaDifficulty(freeVsIa ? location.state?.difficulty : undefined);
+  const playerMaxHp = freeVsIa ? versusIaPlayerHp(difficulty) : MAX_HP;
   // La ceremonia solo se habilita al elegir Versus IA en el menú.
   // Acceso directo, campaña, tutorial y editor conservan su inicio habitual.
   const [entranceActive, setEntranceActive] = useState(() =>
@@ -257,7 +263,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const expectedGuideAction = currentGuide?.action;
   const guidedCardId = expectedGuideAction ? GUIDED_ACTION_CARDS[expectedGuideAction] : undefined;
 
-  const [playerHP, setPlayerHPState] = useState(MAX_HP);
+  const [playerHP, setPlayerHPState] = useState(playerMaxHp);
   const [playerDeck, setPlayerDeck] = useState<CardData[]>([]);
   const playerDeckRef = useRef<CardData[]>([]);
   const [playerHand, setPlayerHand] = useState<CardData[]>([]);
@@ -276,23 +282,26 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const [opponentHP, setOpponentHPState] = useState(MAX_HP);
   // El acumulador se actualiza por acción, no por render: incluye combos y
   // variaciones sucesivas de PV aunque React agrupe varias actualizaciones.
-  const battleStats = useRef(new BattleStatsTracker());
+  const battleStats = useRef(new BattleStatsTracker(playerMaxHp, MAX_HP));
+  // Todo efecto de curación, incluso cartas místicas, respeta el límite del modo.
   const setPlayerHP = (update: React.SetStateAction<number>) =>
-    setPlayerHPState(battleStats.current.updateHealth('PLAYER', update));
+    setPlayerHPState(battleStats.current.updateHealth('PLAYER', previous => {
+      const next = typeof update === 'function' ? update(previous) : update;
+      return Math.max(0, Math.min(playerMaxHp, next));
+    }));
   const setOpponentHP = (update: React.SetStateAction<number>, creditedToPlayer = true) =>
     setOpponentHPState(battleStats.current.updateHealth('OPPONENT', update, creditedToPlayer));
   // The free IA duel owns its soundtrack. Story missions retain their
   // independent DRStudio narrative music and must not inherit this scene.
-  const freeVsIa = !onOutcome && !guidedOpening && !storyConversation;
   useEffect(() => {
     if (!freeVsIa) return;
     const scene = freeDuelMusicScene({ entranceActive, phase, playerHP, opponentHP });
     setMusicScene(scene);
     return () => { if (!navigatingToStats.current) setMusicScene(null); };
-  }, [freeVsIa, entranceActive, phase, playerHP <= MAX_HP * .2,
+  }, [freeVsIa, entranceActive, phase, playerHP <= playerMaxHp * .2,
     opponentHP <= MAX_HP * .2, setMusicScene]);
   // Trigger a short portrait motion for every real HP loss, never for healing.
-  const previousPlayerHp = useRef(MAX_HP);
+  const previousPlayerHp = useRef(playerMaxHp);
   const previousOpponentHp = useRef(MAX_HP);
   const [playerHitCount, setPlayerHitCount] = useState(0);
   const [opponentHitCount, setOpponentHitCount] = useState(0);
@@ -471,7 +480,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
     if (user === 'PLAYER') {
       if (level === 3) { setPlayerGauge(0); setPlayerLastType(null); setPlayerLastDecreeLevel(1); }
       if (ability === 'DAMAGE') setOpponentHP(p => Math.max(0, p - value));
-      else setPlayerHP(p => Math.min(MAX_HP, p + value));
+      else setPlayerHP(p => Math.min(playerMaxHp, p + value));
     } else {
       if (level === 3) { setOpponentGauge(0); setOpponentLastType(null); setOpponentLastDecreeLevel(1); }
       if (ability === 'DAMAGE') setPlayerHP(p => Math.max(0, p - value));
@@ -642,14 +651,14 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
     } else if (card.type === 'MYSTIC' && card.mysticId) {
       activateMysticPower(isPlayer, mysticPower(card.mysticId as MysticId, 1), mysticDisplayName(card.mysticId as MysticId));
     } else if (card.type === 'DEFENSE') {
-      if (isPlayer) setPlayerHP(p => Math.min(MAX_HP, p + 1 + playerLegacyRef.current.defense));
+      if (isPlayer) setPlayerHP(p => Math.min(playerMaxHp, p + 1 + playerLegacyRef.current.defense));
       else setOpponentHP(p => Math.min(MAX_HP, p + 1 + opponentLegacyRef.current.defense));
     } else if (card.type === 'ORDER') {
       drawCards(isPlayer ? 'PLAYER' : 'OPPONENT', 1);
     } else if (card.type === 'IMPACT') {
       // Impacto G3 se reproduce en la fase visual anterior, sin duplicar animaciones.
       battleStats.current.summonImpact(isPlayer);
-      if (isPlayer) { setPlayerImpactLevel(p => p + 1); setPlayerImpactPlayedThisTurn(true); setOpponentHP(p => Math.max(0, p - 1)); setPlayerHP(p => Math.min(MAX_HP, p + 1)); }
+      if (isPlayer) { setPlayerImpactLevel(p => p + 1); setPlayerImpactPlayedThisTurn(true); setOpponentHP(p => Math.max(0, p - 1)); setPlayerHP(p => Math.min(playerMaxHp, p + 1)); }
       else { setOpponentImpactLevel(p => p + 1); setOpponentImpactPlayedThisTurn(true); setPlayerHP(p => Math.max(0, p - 1)); setOpponentHP(p => Math.min(MAX_HP, p + 1)); }
     }
 
@@ -872,7 +881,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
     playSound('CLICK');
     aiController.current?.cancel();
     announcementClock.current.cancel();
-    navigate('/game', { replace: true, state: { duelEntrance: false } });
+    navigate('/game', { replace: true, state: { duelEntrance: false, difficulty } });
   };
   /** Use the normal battle-end banner and Continue action, never exit directly. */
   const finishManually = (result: BattleEndResult) => {
@@ -1185,7 +1194,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
                 className={playerHitCount > 0 ? 'dr-portrait-hit' : undefined}
                 data-hit-count={playerHitCount}/>
               <PortraitOrnament/>
-              <RoyalHpMeter hp={playerHP} maxHp={MAX_HP} side="player"/>
+              <RoyalHpMeter hp={playerHP} maxHp={playerMaxHp} side="player"/>
               <HpDeltaCue hp={playerHP} side="player"/>
             </div>
 
