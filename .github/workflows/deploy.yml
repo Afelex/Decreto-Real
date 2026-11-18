@@ -32,6 +32,7 @@ jobs:
       - name: Build project
         env:
           VITE_MULTIPLAYER_WS_URL: wss://decreto-real-production.up.railway.app
+          VITE_DR_EMAIL_ACCOUNTS: 'true'
         run: npm run build
 
       - name: Install FFmpeg for the mobile battle background
