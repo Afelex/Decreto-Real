@@ -31,6 +31,7 @@ test('producción: la portada no descarga el MP4 del duelo antes de entrar', asy
   });
   const clickAt=Date.now();
   await page.getByRole('button',{name:'Versus IA'}).click();
+  await page.getByRole('button',{name:'Comenzar duelo'}).click();
   await expect(page.getByTestId('duel-entrance')).toBeVisible();
   await page.getByRole('button',{name:'Omitir introducción'}).click();
   await expect(page.getByRole('button',{name:'Lanzar Moneda'})).toBeEnabled();
