@@ -11,6 +11,7 @@ import { G3_UI_ASSETS } from '../game/g3UiAssets';
 import { menuLoopSource } from '../game/mainMenuStartup';
 import { useOptionalAudio } from '../contexts/AudioContext';
 import { preloadVersusIa, type DuelLoadProgress } from '../game/versusIaPreload';
+import { VERSUS_IA_DIFFICULTIES, type VersusIaDifficulty } from '../game/versusIaDifficulty';
 import './main-menu-cinematic.css';
 import './versus-ia-loading.css';
 
@@ -116,6 +117,8 @@ const MainMenu: React.FC = () => {
     return () => setMusicScene?.(null);
   }, [setMusicScene]);
   const [loading, setLoading] = React.useState<LoadingView | null>(null);
+  const [difficultyOpen, setDifficultyOpen] = React.useState(false);
+  const [difficulty, setDifficulty] = React.useState<VersusIaDifficulty>('normal');
   const preloadController = React.useRef<AbortController | null>(null);
   React.useEffect(() => () => preloadController.current?.abort(), []);
   const cancelVsIa = React.useCallback(() => {
@@ -141,7 +144,7 @@ const MainMenu: React.FC = () => {
         if (typeof requestAnimationFrame === 'function') requestAnimationFrame(() => resolve());
         else setTimeout(resolve, 0);
       });
-      if (!controller.signal.aborted) navigate('/game', { state: { duelEntrance: true } });
+      if (!controller.signal.aborted) navigate('/game', { state: { duelEntrance: true, difficulty } });
     }).catch((error: unknown) => {
       if (controller.signal.aborted) return;
       setLoading(current => ({
@@ -154,7 +157,7 @@ const MainMenu: React.FC = () => {
     }).finally(() => {
       if (preloadController.current === controller) preloadController.current = null;
     });
-  }, [navigate]);
+  }, [navigate, difficulty]);
   // Warm the IA code only after explicit interest. The background MP4 of the
   // battle should NEVER compete with the menu's visible cinematic resources.
   const warmDuel = React.useCallback(() => {
@@ -236,6 +239,16 @@ const MainMenu: React.FC = () => {
         </button>
       )}
 
+      <button className="dr-cinematic-account-toggle" type="button"
+        aria-label="Mi cuenta de duelista" title="Mi cuenta"
+        onClick={() => navigate('/cuenta')}>
+        <svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor"
+          strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <circle cx="12" cy="8" r="3.5" />
+          <path d="M4.5 20c0-4.2 3.1-6.5 7.5-6.5s7.5 2.3 7.5 6.5" />
+        </svg>
+      </button>
+
       {/* El centro del logo coincide exactamente con el 50 % del viewport. */}
       <header className="dr-cinematic-brand">
         <h1 className="dr-cinematic-title">
@@ -276,7 +289,7 @@ const MainMenu: React.FC = () => {
           onPointerEnter={warmDuel}
           onTouchStart={warmDuel}
           onFocus={warmDuel}
-          onClick={openVsIa}
+          onClick={() => { setDifficulty('normal'); setDifficultyOpen(true); }}
           disabled={Boolean(loading)}
         >
           
@@ -333,6 +346,35 @@ const MainMenu: React.FC = () => {
         )}
       </nav>
 
+      {difficultyOpen && !loading && (
+        <section className="dr-vsia-loading dr-vsia-difficulty" role="dialog" aria-modal="true"
+          aria-labelledby="dr-vsia-difficulty-title" data-testid="vs-ia-difficulty">
+          <div className="dr-vsia-loading__panel">
+            <small>DECRETO REAL</small>
+            <h2 id="dr-vsia-difficulty-title">Elige tu dificultad</h2>
+            <p className="dr-vsia-loading__subtitle">La IA comienza con 20 PV. Solo cambia la vida máxima del jugador.</p>
+            <div className="dr-vsia-difficulty__choices" role="radiogroup" aria-label="Nivel de dificultad">
+              {VERSUS_IA_DIFFICULTIES.map(option => (
+                <label key={option.id} className={'dr-vsia-difficulty__option' + (difficulty === option.id ? ' is-selected' : '')}>
+                  <input type="radio" name="vsia-difficulty" value={option.id}
+                    checked={difficulty === option.id}
+                    onChange={() => setDifficulty(option.id)}/>
+                  <span className="dr-vsia-difficulty__copy">
+                    <strong>{option.title}</strong>
+                    <small>{option.description}</small>
+                  </span>
+                  <b>{option.hp} PV</b>
+                </label>
+              ))}
+            </div>
+            <div className="dr-vsia-loading__actions">
+              <button type="button" className="dr-vsia-difficulty__start"
+                onClick={() => { setDifficultyOpen(false); openVsIa(); }}>Comenzar duelo</button>
+              <button type="button" onClick={() => setDifficultyOpen(false)}>Cancelar</button>
+            </div>
+          </div>
+        </section>
+      )}
       {loading && (
         <section className="dr-vsia-loading" role="dialog" aria-modal="true"
           aria-labelledby="dr-vsia-loading-title" data-testid="vs-ia-loading">
