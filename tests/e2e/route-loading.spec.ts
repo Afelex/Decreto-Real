@@ -32,6 +32,8 @@ test('desde el menú, multijugador y duelo IA cargan sus pantallas bajo demanda'
   await page.getByRole('button', { name: 'Volver al menú principal' }).click();
   await expect(page.getByRole('button', { name: 'Versus IA' })).toBeVisible();
   await page.getByRole('button', { name: 'Versus IA' }).click();
+  await expect(page.getByRole('heading', { name: 'Elige tu dificultad' })).toBeVisible();
+  await page.getByRole('button', { name: 'Comenzar duelo' }).click();
   await expect(page.getByTestId('duel-entrance')).toBeVisible();
   await page.getByRole('button', { name: 'Omitir introducción' }).click();
   await expect(page.getByRole('button', { name: 'Lanzar Moneda' })).toBeEnabled();
