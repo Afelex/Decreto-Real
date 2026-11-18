@@ -22,6 +22,12 @@ export class BattleStatsTracker {
   private damage = 0;
   private impacts = 0;
 
+  /** Las estadísticas empiezan con la vida real de la dificultad escogida. */
+  constructor(playerHp = 20, opponentHp = 20) {
+    this.playerHp = playerHp;
+    this.opponentHp = opponentHp;
+  }
+
   start(now = Date.now()): void {
     if (this.startAt === null) this.startAt = now;
   }
