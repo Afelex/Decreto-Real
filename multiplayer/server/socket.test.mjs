@@ -1,17 +1,23 @@
 import test, { before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
 import { WebSocket } from 'ws';
 
 let child;
+let dataDir;
 let endpoint;
 const ORIGIN = 'https://afelex.github.io';
 const timeoutMs = 7000;
 
 before(async () => {
+  dataDir = mkdtempSync(join(tmpdir(), 'dr-pvp-socket-'));
   const childProcess = spawn(process.execPath, ['index.mjs'], {
     cwd: import.meta.dirname,
-    env: { ...process.env, PORT: '0', ALLOWED_ORIGINS: ORIGIN },
+    env: { ...process.env, PORT: '0', ALLOWED_ORIGINS: ORIGIN,
+      DR_DATA_FILE: join(dataDir, 'accounts.json'), DR_REQUIRE_EMAIL_ACCOUNTS: 'false' },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
   child = childProcess;
@@ -29,7 +35,10 @@ before(async () => {
   });
 });
 
-after(() => { if (child && !child.killed) child.kill('SIGTERM'); });
+after(() => {
+  if (child && !child.killed) child.kill('SIGTERM');
+  if (dataDir) rmSync(dataDir, { recursive: true, force: true });
+});
 
 function connect() {
   return new Promise((resolve, reject) => {
@@ -101,6 +110,33 @@ test('salas privadas, manos ocultas, turnos y rechazo de jugadas ilegales', asyn
     assert.equal(updatedA.view.revision, current.revision + 1);
   } finally {
     a.close(); b.close();
+  }
+});
+
+test('un invitado puede reanudar su sala cuando el almacenamiento persistente de cuentas está activo', async () => {
+  const first = await connect();
+  let second;
+  try {
+    const created = waitMessage(first, 'session');
+    const waiting = waitMessage(first, 'waiting');
+    send(first, { type: 'create', name: 'Invitado Uno' });
+    const session = await created;
+    await waiting;
+    await new Promise(resolve => { first.once('close', resolve); first.close(); });
+
+    second = await connect();
+    const resumed = waitMessage(second, 'session');
+    const waitingAgain = waitMessage(second, 'waiting');
+    send(second, { type: 'resume', code: session.code, token: session.token,
+      slot: session.slot, name: session.name });
+    const restored = await resumed;
+    await waitingAgain;
+    assert.equal(restored.code, session.code);
+    assert.equal(restored.token, session.token);
+    assert.equal(restored.slot, session.slot);
+  } finally {
+    first.close();
+    second?.close();
   }
 });
 

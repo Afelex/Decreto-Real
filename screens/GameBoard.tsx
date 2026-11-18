@@ -154,11 +154,12 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const rivalPortrait = presentation?.opponentPortrait ?? OPPONENT_IMG;
   const navigate = useNavigate();
   const location = useLocation();
-  // Los modos reducen la vida inicial Y su tope de curación. Campaña y tutorial
-  // mantienen 20 PV y el rival siempre conserva sus 20 PV originales.
+  // La dificultad modifica únicamente la vida inicial. El máximo de todos es 20 PV;
+  // campaña, tutorial y el rival mantienen sus 20 PV habituales.
   const freeVsIa = !onOutcome && !guidedOpening && !storyConversation;
   const difficulty = versusIaDifficulty(freeVsIa ? location.state?.difficulty : undefined);
-  const playerMaxHp = freeVsIa ? versusIaPlayerHp(difficulty) : MAX_HP;
+  const playerInitialHp = freeVsIa ? versusIaPlayerHp(difficulty) : MAX_HP;
+  const playerMaxHp = MAX_HP;
   // La ceremonia solo se habilita al elegir Versus IA en el menú.
   // Acceso directo, campaña, tutorial y editor conservan su inicio habitual.
   const [entranceActive, setEntranceActive] = useState(() =>
@@ -263,7 +264,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const expectedGuideAction = currentGuide?.action;
   const guidedCardId = expectedGuideAction ? GUIDED_ACTION_CARDS[expectedGuideAction] : undefined;
 
-  const [playerHP, setPlayerHPState] = useState(playerMaxHp);
+  const [playerHP, setPlayerHPState] = useState(playerInitialHp);
   const [playerDeck, setPlayerDeck] = useState<CardData[]>([]);
   const playerDeckRef = useRef<CardData[]>([]);
   const [playerHand, setPlayerHand] = useState<CardData[]>([]);
@@ -282,7 +283,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   const [opponentHP, setOpponentHPState] = useState(MAX_HP);
   // El acumulador se actualiza por acción, no por render: incluye combos y
   // variaciones sucesivas de PV aunque React agrupe varias actualizaciones.
-  const battleStats = useRef(new BattleStatsTracker(playerMaxHp, MAX_HP));
+  const battleStats = useRef(new BattleStatsTracker(playerInitialHp, MAX_HP));
   // Todo efecto de curación, incluso cartas místicas, respeta el límite del modo.
   const setPlayerHP = (update: React.SetStateAction<number>) =>
     setPlayerHPState(battleStats.current.updateHealth('PLAYER', previous => {
@@ -301,7 +302,7 @@ const GameBoardScreen: React.FC<GameBoardProps> = ({ onOutcome, onReturn, presen
   }, [freeVsIa, entranceActive, phase, playerHP <= playerMaxHp * .2,
     opponentHP <= MAX_HP * .2, setMusicScene]);
   // Trigger a short portrait motion for every real HP loss, never for healing.
-  const previousPlayerHp = useRef(playerMaxHp);
+  const previousPlayerHp = useRef(playerInitialHp);
   const previousOpponentHp = useRef(MAX_HP);
   const [playerHitCount, setPlayerHitCount] = useState(0);
   const [opponentHitCount, setOpponentHitCount] = useState(0);

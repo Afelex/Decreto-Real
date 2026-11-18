@@ -58,8 +58,9 @@ function validEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim()) && value.trim().length <= 254;
 }
 
-export function EmailAccountGate({ children }: { children: React.ReactNode }) {
+export function EmailAccountGate({ children, allowGuest = false }: { children: React.ReactNode; allowGuest?: boolean }) {
   const [user, setUser] = React.useState<any>(null);
+  const [guestMode, setGuestMode] = React.useState(false);
   const [status, setStatus] = React.useState<'loading' | 'ready' | 'sent' | 'working'>('loading');
   const [email, setEmail] = React.useState('');
   const [linkPending, setLinkPending] = React.useState(false);
@@ -94,6 +95,34 @@ export function EmailAccountGate({ children }: { children: React.ReactNode }) {
     });
     return () => { live = false; unsubscribe?.(); };
   }, []);
+
+  const signInWithGoogle = async () => {
+    setError(''); setStatus('working');
+    try {
+      const api = await sdk();
+      const provider = new api.GoogleAuthProvider();
+      try {
+        await api.signInWithPopup(api.auth, provider);
+      } catch (popupError: any) {
+        const code = String(popupError?.code || '');
+        if (code === 'auth/popup-blocked' || code === 'auth/operation-not-supported-in-this-environment') {
+          await api.signInWithRedirect(api.auth, provider);
+          return;
+        }
+        throw popupError;
+      }
+      setStatus('ready');
+    } catch (err: any) {
+      setStatus('ready');
+      const code = String(err?.code || '');
+      setError(code === 'auth/operation-not-allowed'
+        ? 'El acceso con Google todavía debe habilitarse en Firebase.'
+        : code === 'auth/unauthorized-domain'
+          ? 'Es necesario autorizar afelex.github.io en Firebase.'
+          : code === 'auth/popup-closed-by-user' ? ''
+            : 'No se pudo iniciar sesión con Google. Intenta nuevamente.');
+    }
+  };
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -142,14 +171,18 @@ export function EmailAccountGate({ children }: { children: React.ReactNode }) {
     };
     return <AccountContext.Provider value={account}>{children}</AccountContext.Provider>;
   }
+  if (allowGuest && guestMode) return <>{children}</>;
   return <main className="dr-pvp dr-pvp-home">
     <img className="dr-pvp-backdrop" src={import.meta.env.BASE_URL + 'portada/portada-poster.jpg'} alt=""/>
     <div className="dr-pvp-vignette" aria-hidden="true"/>
     <section className="dr-pvp-lobby" aria-label="Acceso al multijugador" style={{ margin: 'auto', zIndex: 1 }}>
       <h1>Tu cuenta de duelista</h1>
-      <p>Un correo verificado conserva tus apodos, amistades y estadísticas. No necesitas contraseña.</p>
+      <p>Vincula tu perfil con Google o con un enlace enviado a tu correo. Tus apodos, amistades y estadísticas podrán acompañarte entre dispositivos.</p>
       {status === 'loading' ? <p role="status">Comprobando sesión…</p> : <>
         {status === 'sent' ? <p role="status">Te enviamos un enlace. Abre tu correo y sigue las instrucciones.</p> : null}
+        <button type="button" className="dr-pvp-secondary dr-pvp-feature-button"
+          onClick={signInWithGoogle} disabled={status === 'working'}>Continuar con Google</button>
+        <p style={{ textAlign: 'center', opacity: .8 }}>O utiliza tu correo electrónico</p>
         <form onSubmit={submit} className="dr-pvp-code-join">
           <label>Correo electrónico
             <input type="email" value={email} autoComplete="email" maxLength={254}
@@ -163,6 +196,9 @@ export function EmailAccountGate({ children }: { children: React.ReactNode }) {
         {error && <p className="dr-pvp-alert" role="alert">{error}</p>}
         <p className="dr-pvp-tip">Puedes usar Gmail, Outlook, Yahoo o cualquier otro correo que recibas.</p>
       </>}
+      {allowGuest && <button type="button" className="dr-pvp-secondary dr-pvp-feature-button"
+        onClick={() => setGuestMode(true)}>Continuar como invitado</button>}
+      {allowGuest && <p className="dr-pvp-tip">Como invitado puedes jugar sin registrarte. El perfil y los datos sociales no se sincronizan entre dispositivos.</p>}
       <a href={import.meta.env.BASE_URL + '#/'} className="dr-pvp-secondary">Volver al menú principal</a>
     </section>
   </main>;
