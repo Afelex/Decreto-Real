@@ -33,9 +33,16 @@ test('the QA home menu exposes exactly the two duel modes', () => {
   }
 });
 
-test('QA menu enters a duel against the AI after preload', async () => {
+test('QA menu lets the player select difficulty before the IA preload', async () => {
   openMenu();
   fireEvent.click(screen.getByRole('button', { name: 'Versus IA' }));
+  expect(screen.getByRole('heading', { name: 'Elige tu dificultad' })).toBeTruthy();
+  expect(screen.getAllByRole('radio')).toHaveLength(3);
+  expect(screen.getByRole('radio', { name: /Normal/ }).getAttribute('checked') !== null ||
+    (screen.getByRole('radio', { name: /Normal/ }) as HTMLInputElement).checked).toBe(true);
+  fireEvent.click(screen.getByRole('radio', { name: /Extremo/ }));
+  expect((screen.getByRole('radio', { name: /Extremo/ }) as HTMLInputElement).checked).toBe(true);
+  fireEvent.click(screen.getByRole('button', { name: 'Comenzar duelo' }));
   expect(await screen.findByRole('heading', { name: 'Partida contra IA' })).toBeTruthy();
 });
 

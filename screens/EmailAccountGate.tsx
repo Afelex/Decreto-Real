@@ -11,6 +11,7 @@ const firebaseConfig = {
 };
 const EMAIL_KEY = 'decreto-real.email-link.pending.v1';
 const INVITE_KEY = 'decreto-real.email-link.invite.v1';
+const RETURN_KEY = 'decreto-real.email-link.return.v1';
 function savedInvitation() {
   const fromUrl = new URLSearchParams(window.location.search).get('sala') || '';
   const fromStorage = localStorage.getItem(INVITE_KEY) || '';
@@ -21,8 +22,10 @@ function finishEmailLink() {
   const code = savedInvitation();
   localStorage.removeItem(EMAIL_KEY);
   localStorage.removeItem(INVITE_KEY);
+  const returnTo = localStorage.getItem(RETURN_KEY) === 'cuenta' ? 'cuenta' : 'multijugador';
+  localStorage.removeItem(RETURN_KEY);
   window.history.replaceState({}, '', window.location.pathname
-    + (code ? '?sala=' + encodeURIComponent(code) : '') + '#/multijugador');
+    + (code ? '?sala=' + encodeURIComponent(code) : '') + '#/' + (code ? 'multijugador' : returnTo));
 }
 let sdkPromise: Promise<any> | null = null;
 async function sdk() {
@@ -107,10 +110,12 @@ export function EmailAccountGate({ children }: { children: React.ReactNode }) {
       } else {
         // This domain must be authorized and Email Link enabled in Firebase Console.
         const code = savedInvitation();
+        const returnTo = window.location.hash.startsWith('#/cuenta') && !code ? 'cuenta' : 'multijugador';
         const destination = window.location.origin + import.meta.env.BASE_URL
-          + (code ? '?sala=' + encodeURIComponent(code) : '') + '#/multijugador';
+          + (code ? '?sala=' + encodeURIComponent(code) : '') + '#/' + returnTo;
         await api.sendSignInLinkToEmail(api.auth, address, { url: destination, handleCodeInApp: true });
         localStorage.setItem(EMAIL_KEY, address);
+        localStorage.setItem(RETURN_KEY, returnTo);
         if (code) localStorage.setItem(INVITE_KEY, code);
         setStatus('sent');
       }

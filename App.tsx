@@ -17,6 +17,7 @@ import './screens/royal-hud-art.css';
 
 /** Cargar cada pantalla sólo cuando se visita: evita incluir DRStudio/campaña en el menú. */
 const MainMenu = React.lazy(() => import('./screens/MainMenu'));
+const AccountScreen = React.lazy(() => import('./screens/AccountScreen'));
 const GameBoard = React.lazy(() => import('./screens/GameBoard'));
 const VictoryScreen = React.lazy(() => import('./screens/VictoryScreen'));
 const RulesScreen = React.lazy(() => import('./screens/RulesScreen'));
@@ -68,6 +69,7 @@ const CampaignRoutes: React.FC = () => {
         <React.Suspense fallback={<RouteLoading />}>
         <Routes>
           <Route path="/" element={<MainMenu />} />
+          <Route path="/cuenta" element={<AccountScreen />} />
           <Route path="/game" element={<GameBoard />} />
           <Route path="/multijugador" element={<MultiplayerScreen />} />
           <Route path="/duelo-v1" element={<CombatPrototype />} />

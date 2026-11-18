@@ -5,6 +5,7 @@ test('desde Versus IA, abre el campo, presenta rivales y termina en moneda', asy
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('/Decreto-Real/#/');
   await page.getByRole('button', { name: 'Versus IA' }).click();
+  await page.getByRole('button', { name: 'Comenzar duelo' }).click();
 
   const opening = page.getByTestId('duel-entrance');
   await expect(opening).toBeVisible();
@@ -31,6 +32,7 @@ test('desde Versus IA, abre el campo, presenta rivales y termina en moneda', asy
 test('omitir introduccion abre la moneda sin alterar el sorteo', async ({ page }) => {
   await page.goto('/Decreto-Real/#/');
   await page.getByRole('button', { name: 'Versus IA' }).click();
+  await page.getByRole('button', { name: 'Comenzar duelo' }).click();
   await page.getByRole('button', { name: 'Omitir introducción' }).click();
   await expect(page.getByTestId('duel-entrance')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: '¿Quién comienza?' })).toBeVisible();
@@ -47,6 +49,18 @@ test('reducir movimiento evita la animacion sin perder el acceso a la moneda', a
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/Decreto-Real/#/');
   await page.getByRole('button', { name: 'Versus IA' }).click();
+  await page.getByRole('button', { name: 'Comenzar duelo' }).click();
   await expect(page.getByTestId('duel-entrance')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Lanzar Moneda' })).toBeEnabled();
+});
+
+test('Extremo: el jugador comienza con 5 PV y el rival conserva 20 PV', async ({ page }) => {
+  await page.goto('/Decreto-Real/#/');
+  await page.getByRole('button', { name: 'Versus IA' }).click();
+  await page.getByRole('radio', { name: /Extremo/ }).check();
+  await page.getByRole('button', { name: 'Comenzar duelo' }).click();
+  await expect(page.getByTestId('duel-entrance')).toBeVisible();
+  await page.getByRole('button', { name: 'Omitir introducción' }).click();
+  await expect(page.getByRole('progressbar', { name: 'Tu vida: 5 de 5' })).toBeVisible();
+  await expect(page.getByRole('progressbar', { name: 'Vida del rival: 20 de 20' })).toBeVisible();
 });

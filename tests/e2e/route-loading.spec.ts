@@ -28,10 +28,17 @@ test('desde el menú, multijugador y duelo IA cargan sus pantallas bajo demanda'
   await page.goto('/Decreto-Real/#/');
   await page.getByRole('button', { name: 'Multijugador' }).click();
   await expect(page.locator('main.dr-pvp')).toBeVisible();
+  // La primera visita solicita crear el perfil. Cerrarlo antes de volver al menú.
+  const initialProfile = page.getByRole('dialog', { name: 'Mi perfil de duelista' });
+  if (await initialProfile.isVisible()) {
+    await initialProfile.getByRole('button', { name: 'Cerrar perfil' }).click();
+  }
   await expect(page.getByRole('button', { name: 'Volver al menú principal' })).toBeVisible();
   await page.getByRole('button', { name: 'Volver al menú principal' }).click();
   await expect(page.getByRole('button', { name: 'Versus IA' })).toBeVisible();
   await page.getByRole('button', { name: 'Versus IA' }).click();
+  await expect(page.getByRole('heading', { name: 'Elige tu dificultad' })).toBeVisible();
+  await page.getByRole('button', { name: 'Comenzar duelo' }).click();
   await expect(page.getByTestId('duel-entrance')).toBeVisible();
   await page.getByRole('button', { name: 'Omitir introducción' }).click();
   await expect(page.getByRole('button', { name: 'Lanzar Moneda' })).toBeEnabled();
