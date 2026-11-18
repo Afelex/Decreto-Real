@@ -54,13 +54,13 @@ test('reducir movimiento evita la animacion sin perder el acceso a la moneda', a
   await expect(page.getByRole('button', { name: 'Lanzar Moneda' })).toBeEnabled();
 });
 
-test('Extremo: el jugador comienza con 5 PV y el rival conserva 20 PV', async ({ page }) => {
+test('Extremo: el jugador comienza con 8 PV de un máximo de 20 y el rival conserva 20 PV', async ({ page }) => {
   await page.goto('/Decreto-Real/#/');
   await page.getByRole('button', { name: 'Versus IA' }).click();
   await page.getByRole('radio', { name: /Extremo/ }).check();
   await page.getByRole('button', { name: 'Comenzar duelo' }).click();
   await expect(page.getByTestId('duel-entrance')).toBeVisible();
   await page.getByRole('button', { name: 'Omitir introducción' }).click();
-  await expect(page.getByRole('progressbar', { name: 'Tu vida: 5 de 5' })).toBeVisible();
+  await expect(page.getByRole('progressbar', { name: 'Tu vida: 8 de 20' })).toBeVisible();
   await expect(page.getByRole('progressbar', { name: 'Vida del rival: 20 de 20' })).toBeVisible();
 });
