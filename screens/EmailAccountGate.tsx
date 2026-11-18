@@ -193,12 +193,12 @@ export function EmailAccountGate({ children, allowGuest = false }: { children: R
             {status === 'working' ? 'Verificando…' : linkPending ? 'Confirmar mi correo' : 'Enviar enlace de acceso'}
           </button>
         </form>
-        {allowGuest && <button type="button" className="dr-pvp-secondary dr-pvp-feature-button"
-          onClick={() => setGuestMode(true)}>Continuar como invitado</button>}
         {error && <p className="dr-pvp-alert" role="alert">{error}</p>}
         <p className="dr-pvp-tip">Puedes usar Gmail, Outlook, Yahoo o cualquier otro correo que recibas.</p>
-        {allowGuest && <p className="dr-pvp-tip">Como invitado puedes jugar sin registrarte. El perfil y los datos sociales no se sincronizan entre dispositivos.</p>}
       </>}
+      {allowGuest && <button type="button" className="dr-pvp-secondary dr-pvp-feature-button"
+        onClick={() => setGuestMode(true)}>Continuar como invitado</button>}
+      {allowGuest && <p className="dr-pvp-tip">Como invitado puedes jugar sin registrarte. El perfil y los datos sociales no se sincronizan entre dispositivos.</p>}
       <a href={import.meta.env.BASE_URL + '#/'} className="dr-pvp-secondary">Volver al menú principal</a>
     </section>
   </main>;
