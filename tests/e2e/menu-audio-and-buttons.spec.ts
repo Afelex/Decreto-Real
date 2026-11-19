@@ -36,28 +36,37 @@ test('el logo aparece mientras se descarga el MP3; no se muestra el menú si fal
   await expect(page.getByRole('button',{name:'Versus IA'})).toBeVisible({ timeout:25000 });
 });
 
-test('si Chrome bloquea autoplay aparece un botón que habilita la música con un toque', async ({ page }) => {
+test('si Chrome bloquea autoplay, la bocina pequeña permite reanudar la música sin diálogo', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.setItem('decreto_music','true');
-    const nativePlay=HTMLMediaElement.prototype.play;
-    let audioUnlocked=false;
-    document.addEventListener('pointerdown',event=>{
-      if ((event.target as HTMLElement).closest('.dr-cinematic-music-unlock')) audioUnlocked=true;
-    },true);
-    HTMLMediaElement.prototype.play=function() {
-      if(this instanceof HTMLAudioElement) {
+    const nativePlay = HTMLMediaElement.prototype.play;
+    let audioUnlocked = false;
+    document.addEventListener('pointerdown', event => {
+      // The G3 speaker replaced the old full-width "Activar música" button.
+      if ((event.target as HTMLElement).closest('.dr-cinematic-music-toggle')) audioUnlocked = true;
+    }, true);
+    HTMLMediaElement.prototype.play = function() {
+      if (this instanceof HTMLAudioElement) {
         return audioUnlocked ? Promise.resolve() :
-          Promise.reject(new DOMException('Autoplay blocked','NotAllowedError'));
+          Promise.reject(new DOMException('Autoplay blocked', 'NotAllowedError'));
       }
       return nativePlay.call(this);
     };
   });
   await page.goto('/Decreto-Real/#/');
-  const menu = page.getByRole('button',{name:'Versus IA'});
-  await expect(menu).toBeVisible({timeout:25000});
-  const button = page.getByRole('button',{name:'Activar música del menú'});
-  await expect(button).toBeVisible();
-  await button.click();
-  await expect(button).toHaveCount(0);
+  const menu = page.getByRole('button', { name: 'Versus IA' });
+  await expect(menu).toBeVisible({ timeout: 25000 });
+  // Autoplay must not introduce a large activation prompt. The accessible
+  // speaker remains visible, and its pressed state reflects actual playback.
+  await expect(page.getByRole('button', { name: 'Activar música del menú' })).toHaveCount(0);
+  const speaker = page.getByRole('button', { name: 'Reproducir música' });
+  await expect(speaker).toBeVisible();
+  await expect(speaker).toHaveAttribute('aria-pressed', 'false');
+  await expect(speaker.locator('img')).toHaveAttribute('src', /sonido_silenciado\.webp$/);
+  await speaker.click();
+  const playing = page.getByRole('button', { name: 'Silenciar música' });
+  await expect(playing).toBeVisible();
+  await expect(playing).toHaveAttribute('aria-pressed', 'true');
+  await expect(playing.locator('img')).toHaveAttribute('src', /sonido_activado\.webp$/);
   await expect(menu).toBeVisible();
 });
